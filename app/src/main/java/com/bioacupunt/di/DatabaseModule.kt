@@ -3,22 +3,24 @@ package com.bioacupunt.di
 import android.content.Context
 import androidx.room.Room
 import com.bioacupunt.data.local.database.AppDatabase
-import com.bioacupunt.data.local.database.KnowledgeNodeDao
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-object AppContainer {
-    private var db: AppDatabase? = null
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
 
-    fun getDatabase(context: Context): AppDatabase {
-        return db ?: synchronized(this) {
-            Room.databaseBuilder(context, AppDatabase::class.java, "bioacupunt_db").build().also { db = it }
-        }
-    }
-
-    fun getKnowledgeNodeDao(context: Context): KnowledgeNodeDao {
-        return getDatabase(context).knowledgeNodeDao()
-    }
-
-    fun getSyncManager(): SyncManager {
-        return SyncManager()
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "bioacupunt_db"
+        ).build()
     }
 }
