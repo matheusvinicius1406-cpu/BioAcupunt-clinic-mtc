@@ -1,0 +1,12 @@
+{
+  "name": "BioAcupunt",
+  "description": "Clinical Management System for Acupuncturists",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
+

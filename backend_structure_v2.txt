@@ -1,0 +1,26 @@
+backend/
+├── app/
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── supabase_client.py
+│   │   ├── rate_limiter.py
+│   │   └── cache.py
+│   ├── routers/
+│   │   ├── auth.py
+│   │   ├── library.py
+│   │   ├── sync.py
+│   │   └── knowledge.py
+│   ├── services/
+│   │   ├── semantic_scholar.py
+│   │   ├── wikimedia.py
+│   │   ├── qdrant_service.py
+│   │   └── embedding.py
+│   ├── celery_worker/
+│   │   ├── celery_app.py
+│   │   └── tasks.py
+│   └── models/
+│       └── schemas.py
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+└── .env.example

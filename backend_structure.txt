@@ -1,0 +1,13 @@
+backend/
+├── app/
+│   ├── core/
+│   ├── routers/
+│   ├── services/
+│   ├── models/
+│   ├── celery_worker/
+│   ├── db/
+│   └── utils/
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+└── .env.example

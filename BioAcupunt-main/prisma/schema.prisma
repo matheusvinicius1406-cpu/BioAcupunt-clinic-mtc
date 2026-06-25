@@ -1,0 +1,421 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+// ... EXISTING MODELS ...
+
+model Ebook {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  authors     String
+  isbn        String?
+  edition     String?
+  year        Int
+  description String?
+  coverUrl    String?
+  pdfUrl      String?
+  chapters    EbookChapter[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model EbookChapter {
+  id          String   @id @default(cuid())
+  ebookId     String
+  ebook       Ebook    @relation(fields: [ebookId], references: [id])
+  number      Int
+  title       String
+  content     Json
+  createdAt   DateTime @default(now())
+}
+
+model Patient {
+  id               String           @id @default(uuid())
+  name             String
+  email            String?
+  phone            String?
+  cpf              String?
+  birthDate        DateTime?
+  sex              String?
+  profession       String?
+  address          String?
+  status           String           @default("ACTIVE")
+  
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  
+  // New normalized relations
+  clinicalRecords  Anamnesis[]
+  appointments     Appointment[]
+  packages         PackageSession[]
+  finances         Finance[]
+  balance          Float?
+
+  @@index([status])
+}
+
+model Anamnesis {
+  id                String            @id @default(uuid())
+  patientId         String
+  patient           Patient           @relation(fields: [patientId], references: [id])
+  date              DateTime          @default(now())
+  
+  // Sections
+  queixa            Queixa?
+  baGang            BaGangAssessment?
+  zangFu            ZangFuAssessment?
+  lingua            TongueExam?
+  pulso             PulseExam?
+  diagnostico       DiagnosisRecord?
+  treatmentPlan     TreatmentPlan?
+  
+  evolution         String?
+  evaInitial        Int?
+  evaFinal          Int?
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([patientId])
+  @@index([date])
+}
+
+model Queixa {
+  id          String    @id @default(uuid())
+  anamnesisId String    @unique
+  anamnesis   Anamnesis @relation(fields: [anamnesisId], references: [id])
+  principal   String
+  inicio      String?
+  cronologia  String?
+  gatilho     String?
+  evolucao    String?
+  mapaDor     Json?     // Coordinates and intensity
+}
+
+model BaGangAssessment {
+  id              String    @id @default(uuid())
+  anamnesisId     String    @unique
+  anamnesis       Anamnesis @relation(fields: [anamnesisId], references: [id])
+  
+  // 8 Principles (Traditional)
+  interior        String?
+  exterior        String?
+  frio            String?
+  calor           String?
+  deficiencia     String?
+  excesso         String?
+  yin             String?
+  yang            String?
+
+  // Functional assessments (Combined)
+  termorregulacao String[]
+  transpiracao    String[]
+  sono            String[]
+  digestao        String[]
+  gosto           String[]
+  fezes           String[]
+  urina           String[]
+  ciclo           String[]
+  fluxo           String?
+  emocional       String[]
+  energia         String[]
+  notas           String?
+}
+
+model ZangFuAssessment {
+  id          String    @id @default(uuid())
+  anamnesisId String    @unique
+  anamnesis   Anamnesis @relation(fields: [anamnesisId], references: [id])
+  coracao     String?
+  baco        String?
+  rim         String?
+  pulmao      String?
+  figado      String?
+  estomago    String?
+  bexiga      String?
+  vesicula    String?
+  intestinos  String?
+}
+
+model TongueExam {
+  id                 String    @id @default(uuid())
+  anamnesisId        String    @unique
+  anamnesis          Anamnesis @relation(fields: [anamnesisId], references: [id])
+  cor                String?
+  forma              String?
+  marcas             String?
+  saburraCor         String?
+  saburraEspessura   String?
+  saburraDistribuicao String?
+  umidade            String?
+  obs                String?
+}
+
+model PulseExam {
+  id             String    @id @default(uuid())
+  anamnesisId    String    @unique
+  anamnesis      Anamnesis @relation(fields: [anamnesisId], references: [id])
+  esquerdocun    String[]
+  esquerdoguan   String[]
+  esquerdochi    String[]
+  direitocun     String[]
+  direitoguan    String[]
+  direitochi     String[]
+  frequencia     String?
+  forca          String?
+  impressao      String?
+}
+
+model DiagnosisRecord {
+  id               String    @id @default(uuid())
+  anamnesisId      String    @unique
+  anamnesis        Anamnesis @relation(fields: [anamnesisId], references: [id])
+  diagnosis        String
+  rationale        String
+  syndromes        String[]
+  biomedicalCorrelate String?
+  confidenceScore  Float     @default(0.0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([anamnesisId])
+}
+
+model TreatmentPlan {
+  id               String    @id @default(uuid())
+  anamnesisId      String    @unique
+  anamnesis        Anamnesis @relation(fields: [anamnesisId], references: [id])
+  pontos           String[]
+  tecnicas         String[]
+  meridianos       String[]
+  orientacoes      String?
+  contraindications String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Appointment {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  date          DateTime
+  duration      Int
+  status        String   @default("scheduled")
+  treatmentType String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([patientId])
+  @@index([date])
+}
+
+model Package {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  totalSessions Int
+  price        Float
+  discount     Float?
+  validityDays Int?
+  status       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sessions     PackageSession[]
+}
+
+model PackageSession {
+  id            String   @id @default(cuid())
+  packageId     String
+  package       Package  @relation(fields: [packageId], references: [id])
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  sessionNumber Int
+  usedAt        DateTime?
+  used          Boolean  @default(false)
+  appointmentId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Finance {
+  id            String   @id @default(cuid())
+  type          String
+  description   String
+  amount        Float
+  date          DateTime
+  category      String?
+  paymentMethod String?
+  patientId     String?
+  patient       Patient? @relation(fields: [patientId], references: [id])
+  appointmentId String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Synergy {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  procedure   String
+  category    String
+  mainPoints  String[]
+  rationale   String
+  precautions String
+  steps       String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Knowledge {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  categoryId  String?
+  category    KnowledgeCategory? @relation(fields: [categoryId], references: [id])
+  categoryName String?   // Legacy backup
+  subcategory String?
+  content     String
+  summary     String?
+  tags        String[]
+  references  String[]
+  images      String[]
+  videoUrl    String?
+  metadata    Json?
+  isActive    Boolean   @default(true)
+  viewCount   Int       @default(0)
+  embedding   Unsupported("vector(1536)")?
+  tagEntries  KnowledgeTag[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  author      String?
+
+  @@index([title])
+  @@index([createdAt])
+}
+
+model KnowledgeCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  icon        String?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  parentId    String?
+  parent      KnowledgeCategory? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    KnowledgeCategory[] @relation("CategoryHierarchy")
+  knowledge   Knowledge[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model KnowledgeTag {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  createdAt   DateTime  @default(now())
+  knowledge   Knowledge[]
+}
+
+model Conceito {
+  id        String   @id @default(uuid())
+  tipo      String   // 'sintoma', 'diagnostico', 'ponto', 'meridiano', 'tecnica'
+  nome      String
+  descricao String?
+  metadata  Json?    // dados específicos por tipo
+  createdAt DateTime @default(now())
+}
+
+model Relacao {
+  id        String   @id @default(uuid())
+  origemId  String
+  destinoId String
+  tipo      String   // 'causa', 'trata', 'reforca'
+  peso      Float    @default(1.0)
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+model Sintoma {
+  id        String   @id @default(uuid())
+  nome      String
+  grupo     String   // 'Subjetivo', 'Lingua', 'Pulso', 'Emocional'
+  descricao String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+model Hipotese {
+  id        String   @id @default(uuid())
+  nome      String
+  descricao String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+model Regra {
+  id              String   @id @default(uuid())
+  nome            String
+  condicoes       Json     // Lista/Array de regras ou sintomas
+  peso            Float    @default(1.0)
+  diagnosticoAlvo String
+  metadata        Json?
+  createdAt       DateTime @default(now())
+}
+
+model Protocolo {
+  id           String   @id @default(uuid())
+  nome         String
+  pontosChave  String[]
+  procedimento String
+  passos       String[]
+  metadata     Json?
+  createdAt    DateTime @default(now())
+}
+
+model CasoClinico {
+  id               String   @id @default(uuid())
+  pacienteFicticio String
+  idade            Int
+  genero           String
+  queixaPrincipal  String
+  historico        String
+  sintomas         String[]
+  diagnostico      String
+  desfecho         String
+  metadata         Json?
+  createdAt        DateTime @default(now())
+}
+
+model Evidencia {
+  id               String   @id @default(uuid())
+  titulo           String
+  estudoLink       String?
+  autores          String?
+  sumarioEvidencia String
+  metadata         Json?
+  createdAt        DateTime @default(now())
+}
+
+model ClinicalAudit {
+  id        String   @id @default(cuid())
+  traceId   String
+  domain    String
+  action    String
+  data      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([traceId])
+  @@index([domain])
+  @@index([createdAt])
+}
+

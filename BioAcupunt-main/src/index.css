@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Custom Emerald & Swiss Biomedicine Colors */
+  --color-emerald-primary: #009B77;
+  --color-emerald-dark: #0D3B2E;
+  --color-emerald-light: #E0F2E6;
+  --color-emerald-medium: #A8D5BA;
+  --color-gold-lux: #C9A96E;
+  --color-gold-light: #F5D89C;
+  --color-gold-muted: #EAD4A6;
+  --color-white-pure: #FFFFFF;
+  --color-gray-soft: #F7F8FA;
+  --color-black-lux: #1A1A1A;
+}
+
+body {
+  @apply bg-[#F4F7F5] text-[#2D2D2D] font-sans antialiased;
+}
+
+/* Custom premium scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #C8E6D9;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #009B77;
+}
+
+/* Glassmorphism utility */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Smooth lift transition preset */
+.hover-lift {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -10px rgba(0, 155, 119, 0.15);
+}
+
+/* Quality golden border styling */
+.gold-border {
+  border: 1.5px solid #C9A96E;
+}
+
+/* Pulse animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, #E0F2E6 25%, #C8E6D9 50%, #E0F2E6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
