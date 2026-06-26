@@ -27,15 +27,11 @@ jobs:
           build-tools-version: 36.0.0
           platforms: android-36
 
-      - name: Install Gradle (no wrapper dependency)
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-disabled: false
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-          gradle-version: 8.11
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
 
-      - name: Build Debug APK with Gradle
-        run: gradle clean assembleDebug
+      - name: Build Debug APK with Gradle Wrapper
+        run: ./gradlew clean assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
