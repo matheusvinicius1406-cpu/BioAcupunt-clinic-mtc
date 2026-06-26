@@ -3,9 +3,8 @@ package com.bioacupunt.data.repository
 import com.bioacupunt.data.local.database.KnowledgeNodeDao
 import com.bioacupunt.data.local.model.KnowledgeNode
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
-class KnowledgeRepository @Inject constructor(
+class KnowledgeRepository(
     private val dao: KnowledgeNodeDao
 ) {
     val allNodes: Flow<List<KnowledgeNode>> = dao.getAllNodes()

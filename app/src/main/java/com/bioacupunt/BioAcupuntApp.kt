@@ -1,7 +1,6 @@
 package com.bioacupunt
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import androidx.multidex.MultiDexApplication
 
-@HiltAndroidApp
-class BioAcupuntApp : Application()
+class BioAcupuntApp : MultiDexApplication() {

@@ -5,9 +5,8 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.bioacupunt.data.remote.PatientApi
 import com.bioacupunt.sync.data.local.SyncQueueDao
-import javax.inject.Inject
 
-class SyncWorkerFactory @Inject constructor(
+class SyncWorkerFactory(
     private val dao: SyncQueueDao,
     private val api: PatientApi
 ) : WorkerFactory() {
