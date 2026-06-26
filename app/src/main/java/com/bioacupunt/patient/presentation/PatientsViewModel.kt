@@ -11,11 +11,12 @@ import com.bioacupunt.sync.data.local.SyncQueueDao
 
 @Composable
 fun rememberPatientsViewModel(): PatientsViewModel {
-    val appDatabase = com.bioacupunt.di.DatabaseModule.provideAppDatabase(localContext.current)
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val appDatabase = com.bioacupunt.di.DatabaseModule.provideAppDatabase(context)
     val api = PatientDataModule.providePatientApi()
     val dao = PatientDataModule.providePatientDao(appDatabase)
     val syncQueueDao = PatientDataModule.provideSyncQueueDao(appDatabase)
-    val scheduler = PatientDataModule.provideSyncScheduler(localContext.current)
+    val scheduler = PatientDataModule.provideSyncScheduler(context)
     val repository = PatientDataModule.providePatientRepository(api, appDatabase, scheduler)
     val viewModel: PatientsViewModel = viewModel(
         factory = PatientsViewModelFactory(

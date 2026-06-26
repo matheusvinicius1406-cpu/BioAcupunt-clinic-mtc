@@ -22,15 +22,12 @@ object PatientDataModule {
 
     fun providePatientRepository(
         api: PatientApi = providePatientApi(),
-        database: AppDatabase, // required
-        scheduler: SyncScheduler = provideSyncScheduler(DatabaseModule.requireContext())
+        database: AppDatabase,
+        scheduler: SyncScheduler = provideSyncScheduler(com.bioacupunt.di.AppContainerHolder.requireContext())
     ): PatientRepository = PatientRepositoryImpl(api, database, scheduler)
 
     fun provideSyncWorkerFactory(
-        database: AppDatabase
-    ): SyncWorkerFactory {
-        val dao = provideSyncQueueDao(database)
-        val api = providePatientApi()
-        return SyncWorkerFactory(dao, api)
-    }
+        dao: SyncQueueDao,
+        api: PatientApi
+    ): SyncWorkerFactory = SyncWorkerFactory(dao, api)
 }

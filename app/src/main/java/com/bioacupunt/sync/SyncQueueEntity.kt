@@ -11,7 +11,9 @@ data class SyncQueueEntity(
     val operation: String,
     val payloadJson: String,
     val status: String = "PENDING",
+    val version: Int = 1,
     val retryCount: Int = 0,
     val lastError: String? = null,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val syncedAt: Long? = null
 )

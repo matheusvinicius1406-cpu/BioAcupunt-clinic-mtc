@@ -9,7 +9,6 @@ import com.bioacupunt.sync.SyncWorkerFactory
 import com.bioacupunt.sync.data.local.SyncQueueDao
 
 object PatientModule {
-
     fun providePatientDao(database: AppDatabase): PatientDao = database.patientDao()
 
     fun provideSyncQueueDao(database: AppDatabase): SyncQueueDao = database.syncQueueDao()
