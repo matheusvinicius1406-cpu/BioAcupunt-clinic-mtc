@@ -6,11 +6,22 @@ import com.bioacupunt.data.local.database.AppDatabase
 
 object DatabaseModule {
 
+    private var initialized = false
+    private lateinit var instance: AppDatabase
+
     fun provideAppDatabase(context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "bioacupunt_db"
-        ).build()
+        if (!initialized) {
+            synchronized(this) {
+                if (!initialized) {
+                    instance = Room.databaseBuilder(
+                        context.applicationContext,
+                        AppDatabase::class.java,
+                        "bioacupunt_db"
+                    ).build()
+                    initialized = true
+                }
+            }
+        }
+        return instance
     }
 }

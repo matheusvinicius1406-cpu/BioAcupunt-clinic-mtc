@@ -14,20 +14,23 @@ object PatientDataModule {
 
     fun providePatientApi(): PatientApi = RetrofitInstance.api
 
-    fun providePatientDao(db: AppDatabase): PatientDao = db.patientDao()
+    fun providePatientDao(database: AppDatabase): PatientDao = database.patientDao()
+
+    fun provideSyncQueueDao(database: AppDatabase): SyncQueueDao = database.syncQueueDao()
 
     fun provideSyncScheduler(context: android.content.Context): SyncScheduler = SyncScheduler(context)
 
     fun providePatientRepository(
-        api: PatientApi,
-        db: AppDatabase,
-        scheduler: SyncScheduler
-    ): PatientRepository = PatientRepositoryImpl(api, db, scheduler)
-
-    fun provideSyncQueueDao(db: AppDatabase): SyncQueueDao = db.syncQueueDao()
+        api: PatientApi = providePatientApi(),
+        database: AppDatabase, // required
+        scheduler: SyncScheduler = provideSyncScheduler(DatabaseModule.requireContext())
+    ): PatientRepository = PatientRepositoryImpl(api, database, scheduler)
 
     fun provideSyncWorkerFactory(
-        dao: SyncQueueDao,
-        api: PatientApi
-    ): SyncWorkerFactory = SyncWorkerFactory(dao, api)
+        database: AppDatabase
+    ): SyncWorkerFactory {
+        val dao = provideSyncQueueDao(database)
+        val api = providePatientApi()
+        return SyncWorkerFactory(dao, api)
+    }
 }
