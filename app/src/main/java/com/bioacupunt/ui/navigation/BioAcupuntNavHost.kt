@@ -58,7 +58,7 @@ fun BioAcupuntNavHost(
         ) {
             composable(Screen.Biblioteca.route) { com.bioacupunt.ui.screens.BibliotecaScreen() }
             composable(Screen.Simulador.route) { com.bioacupunt.ui.screens.SimuladorScreen() }
-            composable(Screen.Prontuario.route) { com.bioacupunt.ui.screens.ProntuarioScreen() }
+            composable(Screen.Prontuario.route) { com.bioacupunt.ui.screens.PatientsScreen() }
             composable(Screen.Flashcards.route) { com.bioacupunt.ui.screens.FlashcardsScreen() }
             composable(Screen.Analytics.route) { com.bioacupunt.ui.screens.AnalyticsScreen() }
         }
