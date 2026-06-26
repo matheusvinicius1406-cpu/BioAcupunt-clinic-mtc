@@ -12,29 +12,31 @@ fun BioAcupuntTheme(
 ) {
     val colors = if (darkTheme) {
         darkColorScheme(
-            primary = SwissGreenPrimary,
-            secondary = SwissGreenLight,
-            background = SwissBeige,
-            surface = SwissWhite,
-            onPrimary = SwissWhite,
-            onBackground = TextPrimary,
-            onSurface = TextPrimary,
+            primary = Primary,
+            onPrimary = OnPrimary,
+            secondary = PrimaryDark,
+            background = Color(0xFF121212),
+            surface = Color(0x1DFFFFFF),
+            onSurface = Color(0xE6FFFFFF),
+            surfaceVariant = Color(0x14FFFFFF),
+            onSurfaceVariant = Color(0xBFFFFFFF)
         )
     } else {
         lightColorScheme(
-            primary = SwissGreenPrimary,
-            secondary = SwissGreenLight,
-            background = SwissBeige,
-            surface = SwissWhite,
-            onPrimary = SwissWhite,
-            onBackground = TextPrimary,
-            onSurface = TextPrimary,
+            primary = Primary,
+            onPrimary = OnPrimary,
+            secondary = PrimaryDark,
+            background = Background,
+            surface = Surface,
+            onSurface = OnSurface,
+            surfaceVariant = SurfaceVariant,
+            onSurfaceVariant = OnSurfaceVariant
         )
     }
 
     MaterialTheme(
         colorScheme = colors,
-        typography = Typography(),
+        typography = Typography,
         content = content
     )
 }
