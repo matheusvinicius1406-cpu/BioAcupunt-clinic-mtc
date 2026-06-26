@@ -30,7 +30,7 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
-      - name: Build Debug APK with Gradle Wrapper
+      - name: Build Debug APK
         run: ./gradlew clean assembleDebug
 
       - name: Upload APK artifact
