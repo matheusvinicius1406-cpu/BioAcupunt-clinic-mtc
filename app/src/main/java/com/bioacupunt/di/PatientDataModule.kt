@@ -23,7 +23,7 @@ object PatientDataModule {
     fun providePatientRepository(
         api: PatientApi = providePatientApi(),
         database: AppDatabase,
-        scheduler: SyncScheduler = provideSyncScheduler(com.bioacupunt.di.AppContainerHolder.requireContext())
+        scheduler: SyncScheduler = provideSyncScheduler(android.app.Application())
     ): PatientRepository = PatientRepositoryImpl(api, database, scheduler)
 
     fun provideSyncWorkerFactory(
