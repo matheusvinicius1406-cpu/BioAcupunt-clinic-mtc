@@ -6,27 +6,28 @@ import com.bioacupunt.data.remote.RetrofitInstance
 import com.bioacupunt.patient.data.local.PatientDao
 import com.bioacupunt.patient.data.repository.PatientRepositoryImpl
 import com.bioacupunt.patient.domain.repository.PatientRepository
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.SingletonComponent
-import javax.inject.Singleton
+import com.bioacupunt.sync.SyncScheduler
+import com.bioacupunt.sync.SyncWorkerFactory
+import com.bioacupunt.sync.data.local.SyncQueueDao
 
-@Module
-@InstallIn(SingletonComponent::class)
 object PatientDataModule {
-    @Provides
-    @Singleton
+
     fun providePatientApi(): PatientApi = RetrofitInstance.api
 
-    @Provides
-    @Singleton
     fun providePatientDao(db: AppDatabase): PatientDao = db.patientDao()
 
-    @Provides
-    @Singleton
+    fun provideSyncScheduler(context: android.content.Context): SyncScheduler = SyncScheduler(context)
+
     fun providePatientRepository(
         api: PatientApi,
-        db: AppDatabase
-    ): PatientRepository = PatientRepositoryImpl(api, db)
+        db: AppDatabase,
+        scheduler: SyncScheduler
+    ): PatientRepository = PatientRepositoryImpl(api, db, scheduler)
+
+    fun provideSyncQueueDao(db: AppDatabase): SyncQueueDao = db.syncQueueDao()
+
+    fun provideSyncWorkerFactory(
+        dao: SyncQueueDao,
+        api: PatientApi
+    ): SyncWorkerFactory = SyncWorkerFactory(dao, api)
 }

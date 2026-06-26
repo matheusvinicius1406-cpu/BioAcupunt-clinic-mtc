@@ -11,9 +11,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
-class PatientRepositoryImpl @Inject constructor(
+class PatientRepositoryImpl(
     private val api: PatientApi,
     private val db: AppDatabase,
     private val scheduler: SyncScheduler

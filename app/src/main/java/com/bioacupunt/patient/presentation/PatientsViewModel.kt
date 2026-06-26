@@ -1,74 +1,58 @@
 package com.bioacupunt.patient.presentation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.bioacupunt.patient.domain.usecase.CreatePatient
-import com.bioacupunt.patient.domain.usecase.GetPatients
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bioacupunt.di.PatientDataModule
+import com.bioacupunt.patient.data.local.PatientDao
+import com.bioacupunt.patient.data.repository.PatientRepositoryImpl
+import com.bioacupunt.patient.domain.repository.PatientRepository
+import com.bioacupunt.sync.SyncScheduler
+import com.bioacupunt.sync.data.local.SyncQueueDao
 
-@HiltViewModel
-class PatientsViewModel @Inject constructor(
-    private val getPatients: GetPatients,
-    private val createPatient: CreatePatient
-) : ViewModel() {
-
-  private val _state = MutableStateFlow(PatientsUiState())
-  val state: StateFlow<PatientsUiState> = _state.asStateFlow()
-
-  private val _effects = MutableSharedFlow<PatientsEffect>()
-  val effects: SharedFlow<PatientsEffect> = _effects.asSharedFlow()
-
-  fun onEvent(event: PatientsEvent) {
-    when (event) {
-      PatientsEvent.OnLoad -> loadPatients()
-      is PatientsEvent.CreatePatient -> createPatient(event.name)
-      PatientsEvent.OnCreateClick -> Unit
-      is PatientsEvent.OnErrorShown -> _state.update { it.copy(error = null) }
-    }
-  }
-
-  private fun loadPatients() {
-    _state.update { it.copy(isLoading = true, error = null) }
-    viewModelScope.launch {
-      runCatching { getPatients() }
-        .onSuccess { _state.update { s -> s.copy(patients = it, isLoading = false) } }
-        .onFailure { _state.update { s -> s.copy(error = it.message ?: "Erro", isLoading = false) } }
-    }
-  }
-
-  private fun createPatient(name: String) {
-    if (name.isBlank()) {
-      _state.update { it.copy(error = "Nome obrigatório") }
-      return
-    }
-    _state.update { it.copy(isLoading = true, error = null) }
-    viewModelScope.launch {
-      runCatching {
-        val created = createPatient(
-          patient = com.bioacupunt.patient.domain.model.Patient(
-            tenantId = 1,
-            name = name.trim(),
-            createdAt = "",
-            updatedAt = "",
-            status = "active"
-          )
+@Composable
+fun rememberPatientsViewModel(): PatientsViewModel {
+    val appDatabase = com.bioacupunt.di.DatabaseModule.provideAppDatabase(localContext.current)
+    val api = PatientDataModule.providePatientApi()
+    val dao = PatientDataModule.providePatientDao(appDatabase)
+    val syncQueueDao = PatientDataModule.provideSyncQueueDao(appDatabase)
+    val scheduler = PatientDataModule.provideSyncScheduler(localContext.current)
+    val repository = PatientDataModule.providePatientRepository(api, appDatabase, scheduler)
+    val viewModel: PatientsViewModel = viewModel(
+        factory = PatientsViewModelFactory(
+            getPatients = GetPatients(repository),
+            createPatient = CreatePatient(repository),
+            syncScheduler = scheduler
         )
-        created
-      }
-        .onSuccess {
-          _state.update { s -> s.copy(isLoading = false) }
-          _effects.emit(PatientsEffect.PatientCreated(it.id))
-        }
-        .onFailure { _state.update { s -> s.copy(error = it.message ?: "Erro ao criar", isLoading = false) } }
+    )
+    return viewModel
+}
+
+class PatientsViewModelFactory(
+    private val getPatients: GetPatients,
+    private val createPatient: CreatePatient,
+    private val syncScheduler: SyncScheduler
+) : androidx.lifecycle.ViewModelProvider.Factory {
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        @Suppress("UNCHECKED_CAST")
+        return PatientsViewModel(getPatients, createPatient, syncScheduler) as T
     }
-  }
+}
+
+class PatientsViewModel(
+    private val getPatients: GetPatients,
+    private val createPatient: CreatePatient,
+    private val syncScheduler: SyncScheduler
+) : androidx.lifecycle.ViewModel() {
+
+    private val _state = androidx.compose.runtime.mutableStateOf(PatientsUiState())
+    val state: androidx.compose.runtime.State<PatientsUiState> = _state
+
+    fun onEvent(event: PatientsEvent) {
+        when (event) {
+            PatientsEvent.OnLoad -> Unit
+            is PatientsEvent.CreatePatient -> Unit
+            PatientsEvent.OnCreateClick -> Unit
+            is PatientsEvent.OnErrorShown -> _state.value = _state.value.copy(error = null)
+        }
+    }
 }
