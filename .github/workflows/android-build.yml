@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,6 +32,12 @@ jobs:
 
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
+
+      - name: Generate local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+      - name: Local verification
+        run: python 'C:/Users/mathe/AppData/Local/Temp/hermes-verify-build-state.py'
 
       - name: Build Debug APK
         run: ./gradlew clean assembleDebug
