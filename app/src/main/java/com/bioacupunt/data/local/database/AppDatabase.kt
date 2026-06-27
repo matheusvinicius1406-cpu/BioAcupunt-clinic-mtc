@@ -6,7 +6,7 @@ import com.bioacupunt.data.local.model.KnowledgeNode
 import com.bioacupunt.patient.data.local.PatientDao
 import com.bioacupunt.patient.data.local.PatientEntity
 import com.bioacupunt.sync.data.local.SyncQueueDao
-import com.bioacupunt.sync.SyncQueueEntity
+import com.bioacupunt.sync.data.local.SyncQueueEntity
 
 @Database(
     entities = [KnowledgeNode::class, PatientEntity::class, SyncQueueEntity::class],

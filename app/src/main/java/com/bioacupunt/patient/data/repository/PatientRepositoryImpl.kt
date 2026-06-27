@@ -5,7 +5,7 @@ import com.bioacupunt.data.remote.PatientApi
 import com.bioacupunt.patient.data.local.PatientEntity
 import com.bioacupunt.patient.domain.model.Patient
 import com.bioacupunt.patient.domain.repository.PatientRepository
-import com.bioacupunt.sync.SyncQueueEntity
+import com.bioacupunt.sync.data.local.SyncQueueEntity
 import com.bioacupunt.sync.SyncScheduler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
