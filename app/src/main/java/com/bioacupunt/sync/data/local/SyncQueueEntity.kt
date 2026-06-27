@@ -1,4 +1,4 @@
-package com.bioacupunt.sync
+package com.bioacupunt.sync.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
