@@ -30,14 +30,11 @@ jobs:
           build-tools-version: 36.0.0
           platforms: android-36
 
-      - name: Make Gradle wrapper executable
+      - name: Prepare Gradle wrapper
         run: chmod +x gradlew
 
       - name: Generate local.properties
-        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
-
-      - name: Local verification
-        run: python 'C:/Users/mathe/AppData/Local/Temp/hermes-verify-build-state.py'
+        run: echo "sdk.dir=${{ env.ANDROID_HOME }}" > local.properties
 
       - name: Build Debug APK
         run: ./gradlew clean assembleDebug
