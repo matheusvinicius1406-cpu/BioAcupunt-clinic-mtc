@@ -1,23 +1,24 @@
 package com.bioacupunt
 
 import android.app.Application
-import androidx.multidex.MultiDexApplication
+import android.util.Log
 import androidx.work.Configuration
+import androidx.work.WorkManager
 import com.bioacupunt.di.AppContainer
 
-class BioAcupuntApp : MultiDexApplication() {
+class BioAcupuntApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
         AppContainer.init(applicationContext)
 
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(android.util.Log.INFO)
+        // Periodic background sync (safety net) — battery & network aware
+        AppContainer.syncScheduler.schedulePeriodicSync()
+    }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setMinimumLoggingLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.ERROR)
             .setWorkerFactory(AppContainer.syncWorkerFactory)
             .build()
-
-        androidx.work.WorkManager.initialize(this, config)
-
-        AppContainer.syncScheduler.scheduleSync()
-    }
 }

@@ -6,7 +6,7 @@ import com.bioacupunt.patient.domain.model.Patient
 
 @Entity(tableName = "patients")
 data class PatientEntity(
-    @PrimaryKey val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val tenantId: Long,
     val name: String,
     val document: String?,

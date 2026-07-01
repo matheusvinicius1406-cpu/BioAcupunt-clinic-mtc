@@ -17,7 +17,9 @@ object DatabaseModule {
                         context.applicationContext,
                         AppDatabase::class.java,
                         "bioacupunt_db"
-                    ).build()
+                    )
+                        .fallbackToDestructiveMigration(dropAllTables = true)
+                        .build()
                     initialized = true
                 }
             }

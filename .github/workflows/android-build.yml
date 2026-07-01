@@ -34,14 +34,43 @@ jobs:
         run: chmod +x gradlew
 
       - name: Generate local.properties
-        run: echo "sdk.dir=${{ env.ANDROID_HOME }}" > local.properties
+        run: |
+          echo "sdk.dir=${{ env.ANDROID_HOME }}" > local.properties
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> local.properties
+
+      - name: Lint
+        run: ./gradlew lint --continue
+        continue-on-error: true
+
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+        continue-on-error: true
 
       - name: Build Debug APK
-        run: ./gradlew clean assembleDebug
+        run: ./gradlew clean assembleDebug --stacktrace
 
-      - name: Upload APK artifact
+      - name: Build Release APK (unsigned)
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Upload Debug APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
+
+      - name: Upload Release APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk-unsigned
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload Lint Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-debug.html
+          retention-days: 7
+          if-no-files-found: ignore

@@ -1,26 +1,28 @@
 package com.bioacupunt.ui.design
 
+import androidx.compose.ui.unit.dp
+
 object Spacing {
-    val xs = 4
-    val sm = 8
-    val md = 12
-    val lg = 16
-    val xl = 24
-    val xxl = 32
-    val screen = 20
+    val xs = 4.dp
+    val sm = 8.dp
+    val md = 12.dp
+    val lg = 16.dp
+    val xl = 24.dp
+    val xxl = 32.dp
+    val screen = 20.dp
 }
 
 object Radius {
-    val xs = 4
-    val sm = 8
-    val md = 12
-    val lg = 16
-    val xl = 24
+    val xs = 4.dp
+    val sm = 8.dp
+    val md = 12.dp
+    val lg = 16.dp
+    val xl = 24.dp
 }
 
 object ElevationTokens {
-    val level0 = 0
-    val level1 = 1
-    val level2 = 3
-    val level3 = 6
+    val level0 = 0.dp
+    val level1 = 1.dp
+    val level2 = 3.dp
+    val level3 = 6.dp
 }
