@@ -1,0 +1,10 @@
+# Code owners for build-critical files
+/app/ @matheusvinicius1406-cpu
+/build.gradle.kts @matheusvinicius1406-cpu
+/settings.gradle.kts @matheusvinicius1406-cpu
+/gradle/ @matheusvinicius1406-cpu
+/gradle.properties @matheusvinicius1406-cpu
+/local.defaults.properties @matheusvinicius1406-cpu
+/local.properties @matheusvinicius1406-cpu
+/.github/workflows/ @matheusvinicius1406-cpu
+/backend/ @matheusvinicius1406-cpu

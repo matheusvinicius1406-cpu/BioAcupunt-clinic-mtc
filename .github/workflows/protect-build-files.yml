@@ -1,0 +1,18 @@
+name: Protect Build Files
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  protect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ensure script is executable
+        run: chmod +x ./scripts/verify_protected_changes.sh
+      - name: Run protected-files check
+        run: ./scripts/verify_protected_changes.sh
