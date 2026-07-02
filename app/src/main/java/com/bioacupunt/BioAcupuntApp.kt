@@ -12,6 +12,11 @@ class BioAcupuntApp : Application(), Configuration.Provider {
         super.onCreate()
         AppContainer.init(applicationContext)
 
+        WorkManager.initialize(
+            applicationContext,
+            workManagerConfiguration
+        )
+
         // Periodic background sync (safety net) — battery & network aware
         AppContainer.syncScheduler.schedulePeriodicSync()
     }

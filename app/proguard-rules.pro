@@ -41,7 +41,6 @@
 # ── WorkManager ──────────────────────────────────────────────
 -keep class com.bioacupunt.sync.SyncWorker { *; }
 -keep class com.bioacupunt.sync.SyncWorkerFactory { *; }
--keep class androidx.work.impl.WorkManagerInitializer
 
 # ── Domain & data models (serialized / reflected) ────────────
 -keep class com.bioacupunt.**.domain.model.** { *; }

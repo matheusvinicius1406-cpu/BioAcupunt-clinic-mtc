@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -6,6 +8,24 @@ plugins {
     alias(libs.plugins.secrets)
     alias(libs.plugins.kotlin.serialization)
 }
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+
+val defaultProperties = Properties().apply {
+    val defaultPropertiesFile = rootProject.file("local.defaults.properties")
+    if (defaultPropertiesFile.exists()) {
+        defaultPropertiesFile.inputStream().use { load(it) }
+    }
+}
+
+val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
+    ?: defaultProperties.getProperty("GEMINI_API_KEY")
+    ?: "REPLACE_ME"
 
 android {
     namespace = "com.bioacupunt"
@@ -18,6 +38,7 @@ android {
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
     buildTypes {
@@ -106,6 +127,7 @@ dependencies {
 
     // Security
     implementation(libs.androidx.security.crypto)
+    implementation(libs.errorprone.annotations)
 
     // Coil - Image loading
     implementation(libs.coil.compose)
