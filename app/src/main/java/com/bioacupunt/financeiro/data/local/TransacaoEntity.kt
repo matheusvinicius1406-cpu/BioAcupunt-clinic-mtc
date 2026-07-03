@@ -35,6 +35,8 @@ data class TransacaoEntity(
     val status: String = com.bioacupunt.financeiro.domain.model.TransactionStatus.PAID.name,
     val notes: String = "",
     val pendingSync: Boolean = false,
+    val deleted: Boolean = false,
     val createdAt: String = "",
-    val updatedAt: String = ""
+    val updatedAt: String = "",
+    val lastModified: String = ""
 )

@@ -102,18 +102,17 @@ fun AiAssistantScreen() {
         scope.launch {
             listState.animateScrollToItem(messages.size)
 
-            val apiKey = com.bioacupunt.di.AppContainer.securePreferences.geminiApiKey
-                ?: com.bioacupunt.BuildConfig.GEMINI_API_KEY
+            val request = com.bioacupunt.ai.domain.model.AiRequest(
+                prompt = text.trim(),
+                systemPrompt = "",
+                temperature = 0.7,
+                maxTokens = 2048
+            )
 
-            val response: String = if (apiKey.isNotBlank()) {
-                val result = com.bioacupunt.ai.ecosystem.AiAgents.ClinicalAssistant.chat(
-                    apiKey = apiKey,
-                    message = text.trim(),
-                    cache = com.bioacupunt.di.AppContainer.cacheManager
-                )
-                result.getOrElse { generateMockResponse(text.trim(), selectedMode) }
-            } else {
-                delay(900)
+            val response: String = try {
+                val result = com.bioacupunt.di.AppContainer.generateAiResponse(request)
+                result.getOrNull()?.text.orEmpty().ifBlank { generateMockResponse(text.trim(), selectedMode) }
+            } catch (e: Exception) {
                 generateMockResponse(text.trim(), selectedMode)
             }
 

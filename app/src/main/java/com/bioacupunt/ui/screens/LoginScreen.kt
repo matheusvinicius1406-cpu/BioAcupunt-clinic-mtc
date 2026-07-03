@@ -33,7 +33,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
     var showGDriveInfo by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -137,11 +136,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
-                    isLoading = true
-                    errorMsg = null
                     scope.launch {
                         val result = AppContainer.authRepository.login(email.trim(), password)
-                        isLoading = false
                         result.onSuccess { onLoginSuccess() }
                             .onFailure { errorMsg = it.localizedMessage ?: "Erro ao entrar. Tente novamente." }
                     }
@@ -165,26 +161,20 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             Button(
                 onClick = {
                     focusManager.clearFocus()
-                    isLoading = true
                     errorMsg = null
                     scope.launch {
                         val result = AppContainer.authRepository.login(email.trim(), password)
-                        isLoading = false
                         result.onSuccess { onLoginSuccess() }
                             .onFailure { errorMsg = it.localizedMessage ?: "Erro ao entrar. Tente novamente." }
                     }
                 },
-                enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
+                enabled = email.isNotBlank() && password.isNotBlank(),
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Primary)
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
-                } else {
-                    Icon(Icons.Default.Login, null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Entrar", fontWeight = FontWeight.Bold)
-                }
+                Icon(Icons.Default.Login, null)
+                Spacer(Modifier.width(8.dp))
+                Text("Entrar", fontWeight = FontWeight.Bold)
             }
 
             Divider(

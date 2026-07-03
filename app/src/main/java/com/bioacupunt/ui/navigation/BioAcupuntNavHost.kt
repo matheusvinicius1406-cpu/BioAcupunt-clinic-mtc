@@ -11,6 +11,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bioacupunt.ui.screens.*
+import com.bioacupunt.security.AppHardening
+import com.bioacupunt.security.AuthThrottle
+import com.bioacupunt.ui.lock.BiometricLockScreen
 
 private data class BottomNavItem(
     val screen: Screen,
@@ -33,7 +36,7 @@ fun BioAcupuntNavHost(
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
 
-    val showBottomBar = currentRoute != null && currentRoute != Screen.Login.route
+    val showBottomBar = currentRoute != null && currentRoute != Screen.Login.route && currentRoute != Screen.BiometricLock.route
 
     Scaffold(
         bottomBar = {
@@ -66,7 +69,7 @@ fun BioAcupuntNavHost(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route,
+            startDestination = if (AppContainer.isBiometricAvailable()) Screen.BiometricLock.route else Screen.Login.route,
             modifier = androidx.compose.ui.Modifier.padding(innerPadding)
         ) {
             composable(Screen.Login.route) {

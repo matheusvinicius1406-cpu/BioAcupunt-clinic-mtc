@@ -28,9 +28,13 @@ import com.bioacupunt.core.domain.UserState
 import com.bioacupunt.core.domain.SettingsState
 import com.bioacupunt.sync.SyncWorkerFactory
 import com.bioacupunt.sync.data.local.SyncQueueDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * Manual DI container. Single source of truth for all dependencies.
@@ -74,6 +78,14 @@ object AppContainer {
 
     // ── Security ───────────────────────────────────────────
     val securePreferences: SecurePreferences by lazy { SecurePreferences(appContext) }
+    val authThrottle: AuthThrottle by lazy { AuthThrottle(appContext) }
+
+    fun isBiometricAvailable(): Boolean {
+        return runCatching {
+            val bm = androidx.biometric.BiometricManager.from(appContext)
+            bm.canAuthenticate(androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG) == androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
+        }.getOrDefault(false)
+    }
 
     // ── Cache ──────────────────────────────────────────────
     val cacheManager: AppCacheManager by lazy { AppCacheManager.getInstance(appContext) }
@@ -82,7 +94,7 @@ object AppContainer {
     val appEventManager: com.bioacupunt.core.util.AppEventManager by lazy { com.bioacupunt.core.util.AppEventManager }
 
     // ── Auth ───────────────────────────────────────────────
-    val authRepository: AuthRepository by lazy { AuthRepositoryImpl(securePreferences) }
+    val authRepository: AuthRepository by lazy { AuthRepositoryImpl(securePreferences, authThrottle) }
 
     // ── Database ───────────────────────────────────────────
     val database: AppDatabase by lazy { DatabaseModule.provideAppDatabase(appContext) }
@@ -166,10 +178,38 @@ object AppContainer {
         com.bioacupunt.relatorios.presentation.RelatoriosViewModelFactory(relatoriosUseCases)
     }
 
+    // ── AI ─────────────────────────────────────────────────
+    private val aiOrchestrator: com.bioacupunt.ai.orchestrator.AiOrchestrator by lazy {
+        com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
+            providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
+                registry.register(com.bioacupunt.ai.data.provider.GeminiProvider(cacheManager, aiSecretsProvider))
+                registry.register(com.bioacupunt.ai.data.provider.MockProvider())
+            },
+            healthRegistry = com.bioacupunt.ai.health.DefaultHealthRegistry()
+        )
+    }
+    val aiRepository: com.bioacupunt.ai.core.AiRepository by lazy {
+        com.bioacupunt.ai.data.repository.AiRepositoryImpl(aiOrchestrator)
+    }
+    val aiHealthRegistry: com.bioacupunt.ai.health.HealthRegistry by lazy {
+        com.bioacupunt.ai.health.DefaultHealthRegistry()
+    }
+    val generateAiResponse: com.bioacupunt.ai.domain.usecase.GenerateAiResponseUseCase by lazy {
+        com.bioacupunt.ai.domain.usecase.GenerateAiResponseUseCase(aiRepository)
+    }
+    val aiConfigManager: com.bioacupunt.ai.config.AiConfigManager by lazy {
+        com.bioacupunt.ai.config.AndroidAiConfigManager(appContext)
+    }
+    val aiSecretsProvider: com.bioacupunt.ai.config.AiSecretsProvider by lazy {
+        com.bioacupunt.ai.config.AndroidAiSecretsProvider(appContext)
+    }
+
     // ── Seeder ──────────────────────────────────────────────
+    private val _seederScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     fun seedDemoDataIfNeeded() {
         // TODO: Configurar produção - atualmente seed apenas para ambientes dev sem dados.
-        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+        if (!com.bioacupunt.security.AppHardening.isDebugDebuggable(appContext)) return
+        _seederScope.launch {
             val hasPatients = patientDao.count() > 0
             if (hasPatients) return@launch
             val now = java.time.Instant.now().toString()

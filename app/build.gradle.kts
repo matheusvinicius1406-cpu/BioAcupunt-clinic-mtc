@@ -2,11 +2,11 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.secrets)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 val localProperties = Properties().apply {
@@ -25,7 +25,8 @@ val defaultProperties = Properties().apply {
 
 val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
     ?: defaultProperties.getProperty("GEMINI_API_KEY")
-    ?: "REPLACE_ME"
+    ?: System.getenv("GEMINI_API_KEY")
+    ?: "PLACEHOLDER"
 
 android {
     namespace = "com.bioacupunt"
@@ -131,12 +132,6 @@ dependencies {
 
     // Coil - Image loading
     implementation(libs.coil.compose)
-
-    // Network
-    implementation(libs.retrofit)
-    implementation(libs.converter.moshi)
-    implementation(libs.okhttp)
-    implementation(libs.logging.interceptor)
 
     // Moshi
     implementation(libs.moshi.kotlin)

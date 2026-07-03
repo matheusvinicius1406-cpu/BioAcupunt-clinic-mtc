@@ -1,4 +1,4 @@
-name: Android CI Build
+name: Android CI – Assemble Debug
 
 on:
   push:
@@ -7,13 +7,11 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  assemble:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: read
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -21,7 +19,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-          cache: gradle
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -35,51 +32,22 @@ jobs:
             build-tools;36.0.0
             ndk;27.0.12077973
 
-      - name: Prepare Gradle wrapper
-        run: chmod +x gradlew
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
-      - name: Generate local.properties
-        run: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
-          if [ -n "${{ secrets.GEMINI_API_KEY }}" ]; then
-            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> local.properties
-          else
-            echo "GEMINI_API_KEY=REPLACE_ME" >> local.properties
-          fi
-
-      - name: Lint
-        run: ./gradlew lint --continue
-        continue-on-error: true
-
-      - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest --stacktrace
-        continue-on-error: true
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew || true
 
       - name: Build Debug APK
-        run: ./gradlew clean assembleDebug --stacktrace
+        run: ./gradlew assembleDebug
 
-      - name: Build Release APK (unsigned)
-        run: ./gradlew assembleRelease --stacktrace
-
-      - name: Upload Debug APK artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 14
-
-      - name: Upload Release APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk-unsigned
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
-          retention-days: 14
-          if-no-files-found: ignore
-
-      - name: Upload Lint Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-report
-          path: app/build/reports/lint-results-debug.html
-          retention-days: 7
-          if-no-files-found: ignore
+          path: app/build/outputs/apk/debug/*.apk

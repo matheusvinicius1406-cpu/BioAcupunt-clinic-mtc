@@ -3,6 +3,7 @@ package com.bioacupunt.ui.navigation
 sealed class Screen(val route: String, val label: String, val emoji: String = "") {
     // Auth
     data object Login       : Screen("login",       "Login",       "🔐")
+    data object BiometricLock: Screen("biometric_lock","Biometria","🔒")
 
     // Main navigation (bottom bar)
     data object Dashboard   : Screen("dashboard",   "Início",      "🏠")

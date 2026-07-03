@@ -41,3 +41,5 @@ data class AppointmentEntity(
     val pendingSync: Boolean = false,
     val deleted: Boolean = false,
     val lastModified: String = ""
+
+)
