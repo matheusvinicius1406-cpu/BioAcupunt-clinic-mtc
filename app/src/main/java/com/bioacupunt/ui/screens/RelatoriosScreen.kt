@@ -12,6 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.theme.Primary
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -36,7 +39,10 @@ fun RelatoriosScreen(
     val tabs = listOf("Modelos", "Gerados", "Financeiro")
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab) {
+        TabRow(
+        selectedTabIndex = selectedTab,
+        modifier = Modifier.premiumShadow(Color.Transparent, MaterialTheme.shapes.extraLarge, 0.dp)
+    ) {
             tabs.forEachIndexed { i, t ->
                 Tab(selected = selectedTab == i, onClick = { selectedTab = i }, text = { Text(t) })
             }

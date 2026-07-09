@@ -12,6 +12,11 @@ class BioAcupuntApp : Application(), Configuration.Provider {
         super.onCreate()
         AppContainer.init(applicationContext)
 
+        RetrofitInstance.init(
+            tokenProvider = { AppContainer.authRepository.getTokenSuspend() },
+            tenantProvider = { AppContainer.tenantManager.currentTenantId() }
+        )
+
         WorkManager.initialize(
             applicationContext,
             workManagerConfiguration

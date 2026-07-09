@@ -1,6 +1,5 @@
 package com.bioacupunt.ui.screens
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -14,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -40,9 +40,13 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition(label = "bg")
     val gradientAngle by infiniteTransition.animateFloat(
         initialValue = 0f, targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(6000), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(7000), RepeatMode.Reverse),
         label = "gradient"
     )
+
+    val surfaceColor = if (MaterialTheme.colorScheme.surface.alpha < 0.8f)
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
+    else MaterialTheme.colorScheme.surface
 
     Box(
         modifier = Modifier
@@ -50,9 +54,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF1B2F1A),
-                        Color(0xFF2D4E2C),
-                        Color(0xFF1B2F1A)
+                        PrimaryDark.copy(alpha = 0.55f + 0.2f * gradientAngle),
+                        Color(0xFF07210C),
+                        Primary.copy(alpha = 0.45f + 0.15f * gradientAngle)
                     )
                 )
             ),
@@ -60,51 +64,70 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 32.dp, vertical = 48.dp),
+                .fillMaxWidth(0.92f)
+                .shadow(24.dp, shape = MaterialTheme.shapes.extraLarge, spotColor = Primary.copy(alpha = 0.25f))
+                .clip(MaterialTheme.shapes.extraLarge)
+                .background(surfaceColor.copy(alpha = 0.64f))
+                .border(
+                    width = 1.dp,
+                    color = Color.White.copy(alpha = 0.18f),
+                    shape = MaterialTheme.shapes.extraLarge
+                )
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.08f),
+                            Color.White.copy(alpha = 0.02f)
+                        )
+                    )
+                )
+                .padding(horizontal = 24.dp, vertical = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Logo / Icon
             Box(
                 modifier = Modifier
-                    .size(96.dp)
+                    .size(80.dp)
                     .clip(CircleShape)
-                    .background(Primary.copy(alpha = 0.15f))
-                    .border(2.dp, Primary.copy(alpha = 0.4f), CircleShape),
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Primary.copy(alpha = 0.25f),
+                                Primary.copy(alpha = 0.08f)
+                            )
+                        )
+                    )
+                    .border(2.dp, Primary.copy(alpha = 0.35f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.LocalHospital,
                     contentDescription = null,
                     tint = Primary,
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(40.dp)
                 )
             }
-
-            Spacer(Modifier.height(4.dp))
 
             Text(
                 "BioAcupunt",
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     color = Color.White
                 )
             )
             Text(
                 "Gestão Clínica MTC",
-                style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.7f))
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.75f))
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
 
-            // Email field
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it; errorMsg = null },
                 label = { Text("E-mail") },
-                leadingIcon = { Icon(Icons.Default.Email, null) },
+                leadingIcon = { Icon(Icons.Default.Email, null, tint = Primary.copy(alpha = 0.9f)) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
@@ -112,20 +135,27 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                colors = outlinedTextFieldColors()
+                shape = MaterialTheme.shapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Primary,
+                    unfocusedBorderColor = Color.White.copy(alpha = 0.25f),
+                    containerColor = Color.White.copy(alpha = 0.08f),
+                    focusedTextColor = Color(0xFFE8F5E9),
+                    unfocusedTextColor = Color(0xFFE8F5E9)
+                )
             )
 
-            // Password field
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it; errorMsg = null },
                 label = { Text("Senha") },
-                leadingIcon = { Icon(Icons.Default.Lock, null) },
+                leadingIcon = { Icon(Icons.Default.Lock, null, tint = Primary.copy(alpha = 0.9f)) },
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
                             if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = "Mostrar senha"
+                            contentDescription = "Mostrar senha",
+                            tint = Color(0xFFD7E8D3)
                         )
                     }
                 },
@@ -144,10 +174,16 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 }),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                colors = outlinedTextFieldColors()
+                shape = MaterialTheme.shapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Primary,
+                    unfocusedBorderColor = Color.White.copy(alpha = 0.25f),
+                    containerColor = Color.White.copy(alpha = 0.08f),
+                    focusedTextColor = Color(0xFFE8F5E9),
+                    unfocusedTextColor = Color(0xFFE8F5E9)
+                )
             )
 
-            // Error message
             AnimatedVisibility(visible = errorMsg != null) {
                 Text(
                     text = errorMsg ?: "",
@@ -157,7 +193,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 )
             }
 
-            // Login button
+            Spacer(Modifier.height(6.dp))
+
             Button(
                 onClick = {
                     focusManager.clearFocus()
@@ -169,20 +206,21 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                     }
                 },
                 enabled = email.isNotBlank() && password.isNotBlank(),
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Primary)
-            ) {
-                Icon(Icons.Default.Login, null)
-                Spacer(Modifier.width(8.dp))
-                Text("Entrar", fontWeight = FontWeight.Bold)
-            }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .shadow(10.dp, shape = MaterialTheme.shapes.large, spotColor = Primary.copy(alpha = 0.32f)),
+                shape = MaterialTheme.shapes.large,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Primary.copy(alpha = 0.82f),
+                    contentColor = Color.White,
+                    disabledContainerColor = Primary.copy(alpha = 0.35f)
+                ),
+                contentPadding = PaddingValues(vertical = 6.dp)
+            ) { Text("Entrar", fontWeight = FontWeight.Bold) }
 
-            Divider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = Color.White.copy(alpha = 0.2f)
-            )
+            Divider(modifier = Modifier.padding(vertical = 8.dp), color = Color.White.copy(alpha = 0.18f))
 
-            // Google Drive connect section
             Text(
                 "Integrações",
                 style = MaterialTheme.typography.labelMedium.copy(color = Color.White.copy(alpha = 0.6f))
@@ -191,64 +229,25 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             OutlinedButton(
                 onClick = { showGDriveInfo = true },
                 modifier = Modifier.fillMaxWidth(),
-                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+                shape = MaterialTheme.shapes.medium,
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.22f)),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFD7E8D3))
             ) {
-                Icon(Icons.Default.CloudSync, null, tint = Color(0xFF4285F4))
-                Spacer(Modifier.width(8.dp))
-                Text("Conectar Google Drive", color = Color.White)
+                Icon(Icons.Default.CloudSync, null, tint = Color(0xFFA8C9B8))
+                Spacer(Modifier.width(10.dp))
+                Text("Conectar Google Drive", color = Color(0xFFE8F5E9))
             }
-
-            Text(
-                "v1.0.0 · BioAcupunt Clinic MTC",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = Color.White.copy(alpha = 0.3f)
-                ),
-                textAlign = TextAlign.Center
-            )
-        }
-
-        // Google Drive info dialog
-        if (showGDriveInfo) {
-            AlertDialog(
-                onDismissRequest = { showGDriveInfo = false },
-                icon = { Icon(Icons.Default.Cloud, null, tint = Color(0xFF4285F4)) },
-                title = { Text("Google Drive") },
-                text = {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Ao conectar o Google Drive você pode:")
-                        listOf(
-                            "☁️ Backup automático dos prontuários",
-                            "📂 Sincronizar documentos e laudos",
-                            "🔒 Armazenamento seguro e criptografado",
-                            "📱 Acesso offline com sync automático"
-                        ).forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            "⚠️ Faça login primeiro para conectar sua conta Google.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = { showGDriveInfo = false }) { Text("Entendido") }
-                }
-            )
         }
     }
-}
 
-@Composable
-private fun outlinedTextFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = Color.White,
-    unfocusedTextColor = Color.White.copy(alpha = 0.9f),
-    focusedLabelColor = Primary,
-    unfocusedLabelColor = Color.White.copy(alpha = 0.6f),
-    focusedLeadingIconColor = Primary,
-    unfocusedLeadingIconColor = Color.White.copy(alpha = 0.6f),
-    focusedBorderColor = Primary,
-    unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-    cursorColor = Primary,
-    focusedTrailingIconColor = Color.White.copy(alpha = 0.8f),
-    unfocusedTrailingIconColor = Color.White.copy(alpha = 0.5f)
-)
+    if (showGDriveInfo) {
+        AlertDialog(
+            onDismissRequest = { showGDriveInfo = false },
+            icon = { Icon(Icons.Default.CloudSync, null, tint = Primary) },
+            title = { Text("Google Drive") },
+            text = { Text("Conecte sua conta para sincronizar arquivos clínicos com segurança.") },
+            confirmButton = { TextButton(onClick = { showGDriveInfo = false }) { Text("Entendi", color = Primary) } },
+            dismissButton = { TextButton(onClick = { showGDriveInfo = false }) { Text("Fechar") } }
+        )
+    }
+}

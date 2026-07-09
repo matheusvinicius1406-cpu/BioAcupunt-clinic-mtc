@@ -7,6 +7,7 @@ import com.bioacupunt.agenda.domain.model.AppointmentType
 fun AppointmentEntity.toDomain(): Appointment {
     return Appointment(
         id = id,
+        tenantId = tenantId,
         patientId = patientId,
         patientName = patientName,
         date = date,
@@ -15,7 +16,7 @@ fun AppointmentEntity.toDomain(): Appointment {
         type = type,
         status = status,
         notes = notes,
-        sessionNumber = 1,
+        sessionNumber = sessionNumber,
         valueBrl = valueBrl,
         paid = paid,
         createdAt = createdAt
@@ -26,6 +27,7 @@ fun Appointment.toEntity(now: String = ""): AppointmentEntity {
     val ts = now.ifBlank { java.time.Instant.now().toString() }
     return AppointmentEntity(
         id = id,
+        tenantId = tenantId,
         patientId = patientId,
         patientName = patientName,
         date = date,
@@ -34,6 +36,8 @@ fun Appointment.toEntity(now: String = ""): AppointmentEntity {
         type = type,
         status = status,
         notes = notes,
+        sessionNumber = sessionNumber,
+        reminderMinutesBefore = reminderMinutesBefore,
         valueBrl = valueBrl,
         paid = paid,
         createdAt = createdAt,

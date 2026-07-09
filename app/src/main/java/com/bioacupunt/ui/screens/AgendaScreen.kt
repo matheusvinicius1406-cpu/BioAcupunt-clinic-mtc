@@ -38,9 +38,11 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null) {
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { showNewAppointment = true }, containerColor = Primary) {
-                Icon(Icons.Default.Add, null, tint = Color.White)
-            }
+            FloatingActionButton(
+                onClick = { showNewAppointment = true },
+                containerColor = Primary,
+                modifier = Modifier.premiumShadow(shape = MaterialTheme.shapes.large, elevationDp = 18.dp)
+            ) { Icon(Icons.Default.Add, null, tint = Color.White) }
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {

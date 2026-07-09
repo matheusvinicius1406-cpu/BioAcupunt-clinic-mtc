@@ -34,10 +34,11 @@
 ## 2. Dependências
 
 ### ✅ Dentro do padrão
-- Android Gradle Plugin 9.1.1
-- Kotlin 2.2.10
-- Jetpack Compose BOM 2024.09.00
-- Room 2.7.0
+- Android Gradle Plugin 8.9.2
+- Kotlin 2.1.20
+- KSP 2.1.20-1.0.31
+- Jetpack Compose BOM 2025.05.01
+- Room 2.7.1
 - Retrofit 2.12.0 + Moshi
 - WorkManager (ok via `androidx.work:work-runtime-ktx`)
 - Navigation Compose 2.8.9

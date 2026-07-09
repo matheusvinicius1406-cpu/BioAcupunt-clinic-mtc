@@ -1,11 +1,12 @@
 package com.bioacupunt.sync
 
+import com.bioacupunt.observability.AppLogger
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.bioacupunt.data.remote.PatientApi
 import com.bioacupunt.data.remote.SyncPatientRequest
+import com.bioacupunt.data.remote.SyncAppointmentRequest
 import com.bioacupunt.sync.data.local.SyncQueueDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,7 +26,6 @@ class SyncWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
-        private const val TAG = "SyncWorker"
         private const val MAX_RETRIES = 5
     }
 
@@ -53,18 +53,25 @@ class SyncWorker(
                                 payloadJson = item.payloadJson
                             )
                         )
+                        "Appointment" -> api.syncAppointment(
+                            SyncAppointmentRequest(
+                                entityId = item.entityId,
+                                operation = item.operation,
+                                payloadJson = item.payloadJson
+                            )
+                        )
                     }
 
                     dao.updateStatus(item.id, "SYNCED")
                 } catch (e: IOException) {
                     // Network error — retry later
-                    Log.w(TAG, "Network error syncing ${item.entityType}#${item.entityId}", e)
+                    com.bioacupunt.observability.AppLogger.w("SyncWorker", "Network error syncing ${item.entityType}#${item.entityId}", e)
                     dao.incrementRetry(item.id, e.message)
                     dao.updateStatus(item.id, "PENDING")
                     hasTransientFailure = true
                 } catch (e: Exception) {
                     // Server / data error — log but don't block other items
-                    Log.e(TAG, "Sync failed for ${item.entityType}#${item.entityId}", e)
+                    com.bioacupunt.observability.AppLogger.e("SyncWorker", "Sync failed for ${item.entityType}#${item.entityId}", e)
                     dao.incrementRetry(item.id, e.message)
                     dao.updateStatus(item.id, "ERROR")
                 }
@@ -72,7 +79,7 @@ class SyncWorker(
 
             if (hasTransientFailure) Result.retry() else Result.success()
         } catch (e: Exception) {
-            Log.e(TAG, "Fatal sync worker error", e)
+            com.bioacupunt.observability.AppLogger.e("SyncWorker", "Fatal sync worker error", e)
             Result.failure()
         }
     }

@@ -1,6 +1,7 @@
 package com.bioacupunt.crm.data.repository
 
 import com.bioacupunt.cache.AppCacheManager
+import com.bioacupunt.core.multitenancy.TenantManager
 import com.bioacupunt.crm.data.local.CrmPatientDao
 import com.bioacupunt.crm.data.local.CrmPatientEntity
 import com.bioacupunt.crm.data.local.toDomain
@@ -17,20 +18,22 @@ import java.util.concurrent.TimeUnit
 
 class CrmPatientRepositoryImpl(
     private val dao: CrmPatientDao,
-    private val cache: AppCacheManager
+    private val cache: AppCacheManager,
+    private val tenantManager: TenantManager
 ) : CrmPatientRepository {
 
     private val cacheKeyAll = "crm:patients:all"
     private val cacheKeyStagePrefix = "crm:patients:stage:"
+    private val tenantId: Long get() = tenantManager.requireTenantId()
 
     override fun observeAll(): Flow<List<CrmPatient>> {
-        return dao.getAll()
+        return dao.getAll(tenantId)
             .map<List<CrmPatientEntity>, List<CrmPatient>> { list -> list.map { it.toDomain() } }
             .catch { emit(emptyList()) }
     }
 
     override fun observeByStage(stage: String): Flow<List<CrmPatient>> {
-        return dao.getByStage(stage)
+        return dao.getByStage(tenantId, stage)
             .map { it.map { e -> e.toDomain() } }
             .catch { emit(emptyList()) }
     }
@@ -44,7 +47,7 @@ class CrmPatientRepositoryImpl(
                 return@flow
             }
 
-            dao.search(query).collect { entities ->
+            dao.search(tenantId, query).collect { entities ->
                 val domain = entities.map { it.toDomain() }
                 cache.putMemory(key, domain, 5, TimeUnit.MINUTES)
                 emit(domain)
@@ -54,7 +57,7 @@ class CrmPatientRepositoryImpl(
 
     override suspend fun getById(id: Long): Result<CrmPatient> {
         return try {
-            val entity = dao.getById(id)
+            val entity = dao.getById(id, tenantId)
             if (entity == null) {
                 Result.Error(AppError.DatabaseError("Paciente não encontrado"))
             } else {
@@ -67,6 +70,7 @@ class CrmPatientRepositoryImpl(
 
     override suspend fun save(entity: CrmPatient): Result<CrmPatient> {
         return try {
+            validateTenant(entity.tenantId)
             val now = java.time.Instant.now().toString()
             val savedId = dao.save(entity.toEntity(now))
             val saved = entity.copy(id = if (entity.id == 0L) savedId else entity.id)
@@ -79,6 +83,7 @@ class CrmPatientRepositoryImpl(
 
     override suspend fun saveAll(entities: List<CrmPatient>): Result<Int> {
         return try {
+            entities.forEach { validateTenant(it.tenantId) }
             val now = java.time.Instant.now().toString()
             dao.saveAll(entities.map { it.toEntity(now) })
             cache.remove(cacheKeyAll)
@@ -90,7 +95,7 @@ class CrmPatientRepositoryImpl(
 
     override suspend fun stageCount(stage: String): Result<Int> {
         return try {
-            val count = dao.countByStage(stage)
+            val count = dao.countByStage(tenantId, stage)
             Result.Success(count)
         } catch (e: Exception) {
             Result.Error(AppError.DatabaseError(e))
@@ -99,10 +104,17 @@ class CrmPatientRepositoryImpl(
 
     override suspend fun getPendingSync(since: String): Result<List<CrmPatient>> {
         return try {
-            val entities = dao.getChangedSince(since)
+            val entities = dao.getChangedSince(tenantId, since)
             Result.Success(entities.map { it.toDomain() })
         } catch (e: Exception) {
             Result.Error(AppError.SyncError(e))
+        }
+    }
+
+    private fun validateTenant(entityTenantId: Long) {
+        val current = tenantManager.currentTenantId()
+        if (current != null && entityTenantId != current) {
+            throw IllegalArgumentException("Tenant mismatch on CRM patient operation")
         }
     }
 }

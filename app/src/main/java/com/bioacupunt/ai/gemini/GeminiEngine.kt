@@ -1,6 +1,6 @@
 package com.bioacupunt.ai.gemini
 
-import android.util.Log
+import com.bioacupunt.observability.AppLogger
 import com.bioacupunt.cache.AppCacheManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -66,7 +66,7 @@ object GeminiEngine {
             }
             Result.success(text)
         } catch (e: Exception) {
-            Log.e(TAG, "generate failed", e)
+            com.bioacupunt.observability.AppLogger.e("GeminiEngine", "generate failed", e)
             Result.failure(e)
         }
     }

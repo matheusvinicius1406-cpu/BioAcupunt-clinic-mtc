@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "crm_patients",
     indices = [
+        Index("tenantId"),
         Index("name"),
         Index("phone"),
         Index("stage"),
@@ -16,6 +17,7 @@ import androidx.room.PrimaryKey
 )
 data class CrmPatientEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    val tenantId: Long,
     val name: String,
     val phone: String = "",
     val email: String = "",

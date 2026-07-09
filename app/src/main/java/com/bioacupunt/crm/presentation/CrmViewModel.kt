@@ -9,6 +9,7 @@ import com.bioacupunt.crm.domain.repository.CrmPatientRepository
 import com.bioacupunt.crm.domain.usecase.SearchCrmPatients
 import com.bioacupunt.crm.domain.usecase.SaveCrmPatient
 import com.bioacupunt.crm.domain.usecase.UpdateCrmStage
+import com.bioacupunt.core.multitenancy.TenantManager
 import com.bioacupunt.core.util.AppError
 import com.bioacupunt.core.util.Result
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,11 +33,12 @@ class CrmViewModelFactory(
     private val saveCrmPatient: SaveCrmPatient,
     private val updateCrmStage: UpdateCrmStage,
     private val searchCrmPatients: SearchCrmPatients,
-    private val repository: CrmPatientRepository? = null
+    private val repository: CrmPatientRepository? = null,
+    private val tenantManager: TenantManager? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return CrmViewModel(saveCrmPatient, updateCrmStage, searchCrmPatients, repository) as T
+        return CrmViewModel(saveCrmPatient, updateCrmStage, searchCrmPatients, repository, tenantManager) as T
     }
 }
 
@@ -44,8 +46,11 @@ class CrmViewModel(
     private val saveCrmPatient: SaveCrmPatient,
     private val updateCrmStage: UpdateCrmStage,
     private val searchCrmPatients: SearchCrmPatients,
-    private val repository: CrmPatientRepository? = null
+    private val repository: CrmPatientRepository,
+    private val tenantManager: TenantManager
 ) : ViewModel() {
+
+    val tenantId: Long get() = tenantManager.currentTenantId() ?: 0L
 
     private val _state = MutableStateFlow(CrmUiState())
     val state: StateFlow<CrmUiState> = _state.asStateFlow()
@@ -81,6 +86,7 @@ class CrmViewModel(
             val now = java.time.Instant.now().toString()
             val patient = CrmPatient(
                 id = 0,
+                tenantId = tenantId ?: 0L,
                 name = name.trim(),
                 phone = phone.trim(),
                 email = email.trim(),
@@ -115,6 +121,29 @@ class CrmViewModel(
                 _state.update { it.copy(isLoading = false, error = result.kind.userMessage) }
             } else {
                 _state.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun deletePatient(patientId: Long) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            val result = repository?.let { repo ->
+                runCatching { repo.getById(patientId) }
+                    .mapCatching { r -> r as? Result.Success }
+                    .getOrNull()
+            }
+            when (val current = result?.data) {
+                is Result.Success -> {
+                    val updated = current.data.copy(notes = "[SOFT_DELETED]")
+                    val saveResult = saveCrmPatient(updated)
+                    if (saveResult is Result.Error) {
+                        _state.update { it.copy(isLoading = false, error = saveResult.kind.userMessage) }
+                    } else {
+                        _state.update { it.copy(isLoading = false) }
+                    }
+                }
+                else -> _state.update { it.copy(isLoading = false, error = "Paciente não encontrado.") }
             }
         }
     }

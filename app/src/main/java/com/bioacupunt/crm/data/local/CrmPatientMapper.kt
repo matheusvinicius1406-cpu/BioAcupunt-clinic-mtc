@@ -6,6 +6,7 @@ import com.bioacupunt.crm.domain.model.PatientStage
 fun CrmPatientEntity.toDomain(): CrmPatient {
     return CrmPatient(
         id = id,
+        tenantId = tenantId,
         name = name,
         phone = phone,
         email = email,
@@ -29,6 +30,7 @@ fun CrmPatient.toEntity(now: String = ""): CrmPatientEntity {
     val ts = now.ifBlank { java.time.Instant.now().toString() }
     return CrmPatientEntity(
         id = id,
+        tenantId = tenantId,
         name = name,
         phone = phone,
         email = email,

@@ -25,4 +25,7 @@ interface PatientDao {
 
     @Query("SELECT COUNT(*) FROM patients")
     suspend fun count(): Int
+
+    @Query("SELECT * FROM patients WHERE LOWER(name) LIKE '%' || LOWER(:q) || '%' OR (document IS NOT NULL AND LOWER(document) LIKE '%' || LOWER(:q) || '%')")
+    fun searchPatients(q: String): Flow<List<PatientEntity>>
 }

@@ -55,6 +55,19 @@ object SecurePreferences {
         get() = this ?: ""
         set(value) = if (value.isBlank()) get { it.remove("biometric_password") } else get { it.putString("biometric_password", value) }
 
+    fun currentTenantId(): Long? {
+        val value = prefs.getLong("current_tenant_id", -1L)
+        return value.takeIf { it != -1L }
+    }
+
+    fun setCurrentTenantId(value: Long?) {
+        if (value == null || value <= 0) {
+            get { it.remove("current_tenant_id") }
+        } else {
+            get { it.putLong("current_tenant_id", value) }
+        }
+    }
+
     fun clearAll() {
         get { it.clear() }
     }

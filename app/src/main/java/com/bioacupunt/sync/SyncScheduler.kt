@@ -31,7 +31,7 @@ class SyncScheduler(private val context: Context) {
             .build()
 
         WorkManager.getInstance(context)
-            .enqueueUniqueWork("immediate_sync", ExistingWorkPolicy.REPLACE, request)
+            .enqueueUniqueWork("immediate_sync", ExistingWorkPolicy.KEEP, request)
     }
 
     fun schedulePeriodicSync() {

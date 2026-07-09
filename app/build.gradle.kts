@@ -23,14 +23,10 @@ val defaultProperties = Properties().apply {
     }
 }
 
-val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
-    ?: defaultProperties.getProperty("GEMINI_API_KEY")
-    ?: System.getenv("GEMINI_API_KEY")
-    ?: "PLACEHOLDER"
-
 android {
     namespace = "com.bioacupunt"
     compileSdk = 36
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.aistudio.bioacupunt.xyz"
@@ -39,7 +35,6 @@ android {
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
     buildTypes {

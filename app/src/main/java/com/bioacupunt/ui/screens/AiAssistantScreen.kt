@@ -1,6 +1,7 @@
 package com.bioacupunt.ui.screens
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.*
@@ -61,7 +63,6 @@ fun AiAssistantScreen() {
     var selectedMode by remember { mutableStateOf(AiMode.CLINICAL) }
     var showModeSelector by remember { mutableStateOf(false) }
 
-    // Quick prompts per mode
     val quickPrompts = remember(selectedMode) {
         when (selectedMode) {
             AiMode.CLINICAL -> listOf(
@@ -127,11 +128,10 @@ fun AiAssistantScreen() {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // ── Agent mode selector bar ─────────────────────
         Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(0.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            modifier = Modifier.fillMaxWidth().premiumShadow(MaterialTheme.shapes.extraLarge, Primary.copy(alpha = 0.18f), 12.dp),
+            shape = MaterialTheme.shapes.extraLarge,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
         ) {
             Row(
                 modifier = Modifier
@@ -141,9 +141,7 @@ fun AiAssistantScreen() {
             ) {
                 Text(
                     "${selectedMode.emoji} ${selectedMode.label}",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = Primary, fontWeight = FontWeight.SemiBold
-                    ),
+                    style = MaterialTheme.typography.labelMedium.copy(color = Primary, fontWeight = FontWeight.SemiBold),
                     modifier = Modifier.weight(1f)
                 )
                 TextButton(onClick = { showModeSelector = true }) {
@@ -153,30 +151,23 @@ fun AiAssistantScreen() {
             }
         }
 
-        // ── Chat messages ───────────────────────────────
         LazyColumn(
             modifier = Modifier.weight(1f).fillMaxWidth(),
             state = listState,
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(messages, key = { it.id }) { msg ->
-                ChatBubble(msg)
-            }
+            items(messages, key = { it.id }) { msg -> ChatBubble(msg) }
 
             if (isTyping) {
                 item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
-                    ) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
                         TypingIndicator()
                     }
                 }
             }
         }
 
-        // ── Quick prompts ───────────────────────────────
         if (messages.size <= 1) {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 12.dp),
@@ -192,8 +183,7 @@ fun AiAssistantScreen() {
             }
         }
 
-        // ── Input bar ───────────────────────────────────
-        Surface(shadowElevation = 4.dp) {
+        Surface(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f), tonalElevation = 2.dp) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -209,7 +199,13 @@ fun AiAssistantScreen() {
                     shape = RoundedCornerShape(24.dp),
                     maxLines = 3,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                    keyboardActions = KeyboardActions(onSend = { sendMessage(inputText) })
+                    keyboardActions = KeyboardActions(onSend = { sendMessage(inputText) }),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        containerColor = Color.White.copy(alpha = 0.10f),
+                        cursorColor = Primary,
+                        focusedBorderColor = Primary.copy(alpha = 0.6f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.25f)
+                    )
                 )
                 IconButton(
                     onClick = { sendMessage(inputText) },
@@ -217,18 +213,26 @@ fun AiAssistantScreen() {
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(if (inputText.isNotBlank()) Primary else MaterialTheme.colorScheme.surfaceVariant)
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    Primary,
+                                    Primary.copy(alpha = 0.75f)
+                                )
+                            )
+                        )
+                        .border(1.dp, Color.White.copy(alpha = 0.20f), CircleShape)
+                        .shadow(8.dp, shape = CircleShape, spotColor = Primary.copy(alpha = 0.25f))
                 ) {
                     Icon(
                         Icons.Default.Send, null,
-                        tint = if (inputText.isNotBlank()) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = Color.White
                     )
                 }
             }
         }
     }
 
-    // ── Mode selector dialog ────────────────────────────
     if (showModeSelector) {
         AlertDialog(
             onDismissRequest = { showModeSelector = false },
@@ -242,7 +246,8 @@ fun AiAssistantScreen() {
                                 containerColor = if (mode == selectedMode) Primary.copy(alpha = 0.1f)
                                 else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             ),
-                            border = if (mode == selectedMode) BorderStroke(1.dp, Primary.copy(alpha = 0.4f)) else null
+                            border = if (mode == selectedMode) BorderStroke(1.dp, Primary.copy(alpha = 0.4f)) else null,
+                            modifier = Modifier.fillMaxWidth().premiumShadow(MaterialTheme.shapes.large, Color.Black.copy(alpha = 0.06f), 10.dp)
                         ) {
                             Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Text(mode.emoji, style = MaterialTheme.typography.titleMedium)
@@ -264,6 +269,9 @@ fun AiAssistantScreen() {
 
 @Composable
 private fun ChatBubble(msg: ChatMessage) {
+    val alphaInfinite = rememberInfiniteTransition(label = "bubble")
+    val pulse by alphaInfinite.animateFloat(1f, 1.35f, animationSpec = infiniteRepeatable(tween(1400), RepeatMode.Reverse), label = "pulse")
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (msg.isUser) Arrangement.End else Arrangement.Start
@@ -273,7 +281,8 @@ private fun ChatBubble(msg: ChatMessage) {
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(Brush.linearGradient(listOf(Primary, Color(0xFF2D4E2C)))),
+                    .background(Brush.linearGradient(listOf(Primary, Color(0xFF2D4E2C))))
+                    .padding(2.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(Icons.Default.SmartToy, null, tint = Color.White, modifier = Modifier.size(18.dp))
@@ -298,8 +307,8 @@ private fun ChatBubble(msg: ChatMessage) {
                     topEnd = if (msg.isUser) 4.dp else 16.dp,
                     bottomStart = 16.dp, bottomEnd = 16.dp
                 ),
-                color = if (msg.isUser) Primary else MaterialTheme.colorScheme.surfaceVariant,
-                shadowElevation = 1.dp
+                color = if (msg.isUser) Primary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f),
+                shadowElevation = 2.dp
             ) {
                 Text(
                     msg.content,
@@ -316,128 +325,39 @@ private fun ChatBubble(msg: ChatMessage) {
 @Composable
 private fun TypingIndicator() {
     val dots = listOf(0, 200, 400)
-    Surface(
-        shape = RoundedCornerShape(topStart = 4.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant
-    ) {
-        Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            repeat(3) {
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
-                )
-            }
+    val phase = rememberInfiniteTransition(label = "typing")
+    val t by phase.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(1200), RepeatMode.Reverse),
+        label = "typingPhase"
+    )
+
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f), shadowElevation = 1.dp) {
+            Text("🩺", modifier = Modifier.padding(4.dp))
+        }
+        repeat(3) { index ->
+            val progress = ((t * 3f - index).coerceIn(0f, 1f))
+            val d = 4.dp + (6.dp * progress)
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(Primary.copy(alpha = 0.4f + 0.6f * progress)),
+                contentAlignment = Alignment.Center
+            ) {}
         }
     }
 }
 
-private fun generateMockResponse(input: String, mode: AiMode): String {
+private fun generateMockResponse(question: String, mode: AiMode): String {
+    val q = question.lowercase()
     return when (mode) {
-        AiMode.CLINICAL -> """**Análise Clínica MTC** 🩺
-
-Com base nas informações fornecidas:
-
-**Padrão de Desarmonia:**
-Estagnação de Qi do Fígado com tendência a Hiperatividade de Yang
-
-**Órgãos Envolvidos:**
-• Fígado (Gan) — principal
-• Rim (Shen) — secundário
-
-**Princípio de Tratamento:**
-Mover o Qi do Fígado · Ancorar o Yang · Nutrir o Yin
-
-**Pontos Sugeridos:**
-• F3 (Taichong) — Yuan do Fígado, move Qi
-• VB34 (Yanglingquan) — Influência dos tendões
-• PC6 (Neiguan) — Acalma o Shen
-• R3 (Taixi) — Nutre Yin do Rim
-• Du20 (Baihui) — Ancorar Yang ascendente
-
-*⚠️ Requer avaliação clínica completa para diagnóstico definitivo.*"""
-
-        AiMode.KNOWLEDGE -> """**Conhecimento MTC** 📚
-
-$input
-
-Os pontos Yuan-Fonte (原穴) são os pontos onde o Yuan Qi (Energia Original, proveniente dos Rins) está mais acessível em cada meridiano.
-
-**Principais características:**
-• Cada meridiano principal tem um ponto Yuan
-• Diagnóstico: pressão dolorosa indica disfunção do órgão
-• Terapia: tonificam ou regulam o órgão diretamente
-
-**Exemplo clínico:**
-F3-Taichong para estagnação de Qi do Fígado, C7-Shenmen para insônia por deficiência de Sangue do Coração.
-
-*Quer saber mais sobre algum ponto específico?*"""
-
-        AiMode.FLASHCARD -> """**Flashcards Gerados** 🃏
-
-```
-CARD 1
-Frente: O que são os Cinco Elementos?
-Verso: Madeira, Fogo, Terra, Metal e Água —
-categorias funcionais que descrevem padrões
-de movimento e transformação no corpo e na natureza.
-Dificuldade: Fácil
-
-CARD 2
-Frente: Qual elemento corresponde ao Fígado?
-Verso: Madeira (Mu). Estação: Primavera.
-Emoção: Raiva. Cor: Verde. Sabor: Ácido.
-Dificuldade: Médio
-
-CARD 3
-Frente: O que é o Ciclo Sheng?
-Verso: Ciclo de Geração: Madeira→Fogo→Terra→Metal→Água→Madeira.
-Cada elemento nutre o próximo.
-Dificuldade: Médio
-```
-
-*Cards adicionados à biblioteca de Flashcards!*"""
-
-        AiMode.REPORT -> """**Nota de Evolução** 📄
-
----
-**NOTA DE EVOLUÇÃO CLÍNICA**
-Data: ${java.time.LocalDate.now()}
-Sessão: #__
-
-**Queixa Principal:**
-${input.take(100)}...
-
-**Avaliação:**
-Paciente apresentou evolução satisfatória do quadro clínico. Língua com melhora gradual. Pulso menos tenso em relação à sessão anterior.
-
-**Intervenção:**
-Sessão de acupuntura com retenção de 25 minutos. Pontos utilizados: [inserir pontos]. Resposta ao De Qi adequada em todos os pontos.
-
-**Plano:**
-Manter protocolo atual. Próxima sessão em 7 dias. Orientações de dietoterapia fornecidas.
-
----
-*Dr(a). Camila — CRM: CFMTC-12345*"""
-
-        AiMode.CRM -> """**Insights de CRM** 👥
-
-Com base na sua clínica:
-
-**🎯 Retenção:**
-• Enviar lembrete 24h antes da consulta via WhatsApp
-• Ligar para pacientes sem retorno há 21+ dias
-• Criar programa de fidelidade (ex: desconto na 10ª sessão)
-
-**📊 Captação:**
-• 65% dos seus pacientes chegam por indicação — incentive com cartão de indicação
-• Pacientes do Instagram têm menor LTV — qualificar melhor no primeiro contato
-
-**💡 Oportunidade:**
-• 7 pacientes ativos com padrão similar — considere grupo de Qigong/meditação
-• Pacientes com deficiência de Yin tendem a precisar de mais sessões — informe no início
-
-*Quer análise detalhada de algum paciente específico?*"""
+        AiMode.CLINICAL -> "Pelo padrão descrito, pode indicar Desequilíbrio de Fígado + Deficiência de Yin. Sugiro pontos: LV3, KI6, PC6 e follow-up em 7 dias."
+        AiMode.KNOWLEDGE -> "Os pontos Yuan-Fonte são pontos de origem do Jing nos meridianos, abertos apenas em deficiência orgânica. São usados para tonificar o elemento raiz."
+        AiMode.FLASHCARD -> "Flashcards criados para revisão rápida, com reiteração espaçada e ícones visuais por elemento."
+        AiMode.REPORT -> "Relatório gerado com base na sessão atual. Inclui pontos, sinais e plano terapêutico."
+        AiMode.CRM -> "Sugestão: para fidelizar, use lembretes automáticos e follow-up pós-sessão em até 48h."
     }
 }

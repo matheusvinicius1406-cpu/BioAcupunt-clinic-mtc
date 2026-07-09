@@ -2,19 +2,10 @@ package com.bioacupunt.crm.domain.model
 
 import kotlinx.serialization.Serializable
 
-enum class PatientStage(val label: String, val emoji: String) {
-    LEAD("Interessado", "🌱"),
-    FIRST_CONTACT("Primeiro Contato", "📞"),
-    ACTIVE("Ativo", "✅"),
-    TREATMENT("Em Tratamento", "💉"),
-    MAINTENANCE("Manutenção", "🔄"),
-    INACTIVE("Inativo", "😴"),
-    CHURNED("Perdido", "❌")
-}
-
 @Serializable
 data class CrmPatient(
     val id: Long = 0L,
+    val tenantId: Long = 0L,
     val name: String,
     val phone: String = "",
     val email: String = "",

@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "appointments",
     indices = [
+        Index("tenantId"),
         Index("patientId"),
         Index("date"),
         Index("status"),
@@ -25,6 +26,7 @@ import androidx.room.PrimaryKey
 )
 data class AppointmentEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    val tenantId: Long,
     val patientId: Long,
     val patientName: String,
     val date: String,
@@ -33,6 +35,7 @@ data class AppointmentEntity(
     val type: String = com.bioacupunt.agenda.domain.model.AppointmentType.ACUPUNCTURE.name,
     val status: String = com.bioacupunt.agenda.domain.model.AppointmentStatus.SCHEDULED.name,
     val notes: String = "",
+    val sessionNumber: Int = 1,
     val reminderMinutesBefore: Int = 30,
     val valueBrl: Double = 0.0,
     val paid: Boolean = false,
@@ -41,5 +44,4 @@ data class AppointmentEntity(
     val pendingSync: Boolean = false,
     val deleted: Boolean = false,
     val lastModified: String = ""
-
 )

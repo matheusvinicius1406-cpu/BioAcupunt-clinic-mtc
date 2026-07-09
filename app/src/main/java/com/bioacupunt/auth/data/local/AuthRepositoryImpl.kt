@@ -1,21 +1,22 @@
 package com.bioacupunt.auth.data.local
 
 import com.bioacupunt.auth.domain.model.AuthUser
-import com.bioacupunt.auth.domain.repository.AuthRepository
-import com.bioacupunt.security.SecurePreferences
 import com.bioacupunt.security.AuthThrottle
-import java.security.MessageDigest
+import com.bioacupunt.security.SecurePreferences
+import kotlin.math.abs
+import kotlin.streams.toList
 
 class AuthRepositoryImpl(
     private val securePrefs: SecurePreferences,
     private val throttle: AuthThrottle
-) {
+) : AuthRepository {
 
     override suspend fun login(email: String, password: String): Result<AuthUser> {
         return try {
             val user = loginInternal(email, password)
             securePrefs.isLoggedIn = true
             throttle.recordSuccess()
+            ensureTenantFromUser(user)
             Result.success(user)
         } catch (e: Exception) {
             throttle.recordFailure()
@@ -30,8 +31,10 @@ class AuthRepositoryImpl(
         if (email.isBlank() || password.isBlank()) return Result.failure(IllegalStateException("Credenciais biométricas indisponíveis"))
         return try {
             val user = loginInternal(email, password)
+            ensureTenantFromUser(user)
             Result.success(user)
         } catch (e: Exception) {
+            throttle.recordFailure()
             Result.failure(e)
         }
     }
@@ -64,6 +67,11 @@ class AuthRepositoryImpl(
 
     fun hasBiometricCredentials(): Boolean = securePrefs.biometricEnabled.isNotBlank() && securePrefs.userEmail.isNotBlank()
 
+    suspend fun ensureTenantFromUser(user: AuthUser) {
+        val derived = deterministicTenantId(user.email, user.id)
+        securePrefs.currentTenantId = derived
+    }
+
     private suspend fun loginInternal(email: String, password: String): AuthUser {
         val block = throttle.blockOrAllow()
         if (!block && email.isNotBlank() && password.isNotBlank()) {
@@ -72,24 +80,27 @@ class AuthRepositoryImpl(
         if (email.isBlank() || password.length < 6) {
             throw IllegalArgumentException("Credenciais inválidas")
         }
-        val user = AuthUser(
+
+        val token = "local|${email.hashCode()}|${System.currentTimeMillis()}"
+        val refreshToken = "refresh|${System.currentTimeMillis()}"
+
+        securePrefs.authToken = token
+        securePrefs.refreshToken = refreshToken
+        securePrefs.userId = 1L
+        securePrefs.userEmail = email
+
+        return AuthUser(
             id = 1L,
-            name = "Dra. Camila",
+            name = email.substringBefore("@"),
             email = email,
             role = "practitioner",
-            token = generateDemoToken(email),
-            refreshToken = "refresh_${System.currentTimeMillis()}"
+            token = token,
+            refreshToken = refreshToken
         )
-        securePrefs.authToken = user.token
-        securePrefs.refreshToken = user.refreshToken
-        securePrefs.userId = user.id
-        securePrefs.userEmail = user.email
-        return user
     }
 
-    private fun generateDemoToken(email: String): String {
-        val md = MessageDigest.getInstance("SHA-256")
-        val hash = md.digest("$email${System.currentTimeMillis()}".toByteArray())
-        return hash.joinToString("") { "%02x".format(it) }
+    fun deterministicTenantId(seed: String, id: Long): Long {
+        val raw = abs((seed + id.toString()).toList().map { it.code }.fold(0L) { acc, code -> (acc * 31L) + code })
+        return (raw % 1_000_000L) + 1L
     }
 }
