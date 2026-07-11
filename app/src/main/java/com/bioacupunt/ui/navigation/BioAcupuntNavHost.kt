@@ -81,6 +81,13 @@ fun BioAcupuntNavHost(
                     }
                 })
             }
+            composable(Screen.BiometricLock.route) {
+                BiometricLockScreen(onUnlocked = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.BiometricLock.route) { inclusive = true }
+                    }
+                })
+            }
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     onNavigateToAgenda     = { navController.navigate(Screen.Agenda.route) },
