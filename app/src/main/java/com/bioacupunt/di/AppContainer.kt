@@ -18,7 +18,6 @@ import com.bioacupunt.core.network.ConnectivityObserverHandler
 import com.bioacupunt.core.network.NetworkStatus
 import com.bioacupunt.data.local.database.AppDatabase
 import com.bioacupunt.data.local.database.KnowledgeNodeDao
-import com.bioacupunt.data.remote.AppointmentApi
 import com.bioacupunt.data.remote.PatientApi
 import com.bioacupunt.data.remote.RetrofitInstance
 import com.bioacupunt.data.repository.KnowledgeRepository
@@ -121,7 +120,9 @@ object AppContainer {
     val appEventManager: com.bioacupunt.core.util.AppEventManager by lazy { com.bioacupunt.core.util.AppEventManager }
 
     // ── Auth ───────────────────────────────────────────────
-    val authRepository: AuthRepository by lazy { AuthRepositoryImpl(securePreferences, authThrottle) }
+    val authRepository: AuthRepository by lazy {
+        AuthRepositoryImpl(securePreferences, authThrottle, RetrofitInstance.authApi, tenantManager)
+    }
     val tokenManager: com.bioacupunt.auth.data.local.TokenManager by lazy {
         com.bioacupunt.auth.data.local.TokenManager(securePreferences)
     }
@@ -129,7 +130,7 @@ object AppContainer {
     // ── Sync ───────────────────────────────────────────────
     val syncScheduler: SyncScheduler by lazy { SyncScheduler(appContext) }
     val syncWorkerFactory: SyncWorkerFactory by lazy {
-        SyncWorkerFactory(syncQueueDao, RetrofitInstance.api, RetrofitInstance.appointmentApi)
+        SyncWorkerFactory(daoProvider = { syncQueueDao }, apiProvider = { RetrofitInstance.api })
     }
 
     // ── Database ───────────────────────────────────────────

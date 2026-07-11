@@ -2,22 +2,34 @@ package com.bioacupunt.auth.data.local
 
 import com.bioacupunt.auth.domain.model.AuthUser
 import com.bioacupunt.auth.domain.repository.AuthRepository
+import com.bioacupunt.core.multitenancy.TenantManager
+import com.bioacupunt.data.remote.AuthApi
+import com.bioacupunt.data.remote.LoginRequest
+import com.bioacupunt.data.remote.RefreshRequest
+import com.bioacupunt.data.remote.TokenPairResponse
 import com.bioacupunt.security.AuthThrottle
 import com.bioacupunt.security.SecurePreferences
-import kotlin.math.abs
-import kotlin.streams.toList
 
 class AuthRepositoryImpl(
     private val securePrefs: SecurePreferences,
-    private val throttle: AuthThrottle
+    private val throttle: AuthThrottle,
+    private val authApi: AuthApi,
+    private val tenantManager: TenantManager
 ) : AuthRepository {
 
     override suspend fun login(email: String, password: String): Result<AuthUser> {
         return try {
-            val user = loginInternal(email, password)
+            if (!throttle.blockOrAllow()) {
+                throw SecurityException("Muitas tentativas. Aguarde um pouco.")
+            }
+            if (email.isBlank() || password.isBlank()) {
+                throw IllegalArgumentException("Informe e-mail e senha.")
+            }
+
+            val tokens = authApi.login(LoginRequest(email.trim(), password))
+            val user = persistSession(tokens)
             securePrefs.isLoggedIn = true
             throttle.recordSuccess()
-            ensureTenantFromUser(user)
             Result.success(user)
         } catch (e: Exception) {
             throttle.recordFailure()
@@ -30,17 +42,14 @@ class AuthRepositoryImpl(
         val email = securePrefs.userEmail.orEmpty()
         val password = securePrefs.biometricPassword.orEmpty()
         if (email.isBlank() || password.isBlank()) return Result.failure(IllegalStateException("Credenciais biométricas indisponíveis"))
-        return try {
-            val user = loginInternal(email, password)
-            ensureTenantFromUser(user)
-            Result.success(user)
-        } catch (e: Exception) {
-            throttle.recordFailure()
-            Result.failure(e)
-        }
+        return login(email, password)
     }
 
     override suspend fun logout() {
+        val refreshToken = securePrefs.refreshToken
+        if (refreshToken.isNotBlank()) {
+            runCatching { authApi.logout(RefreshRequest(refreshToken)) }
+        }
         securePrefs.clearAll()
     }
 
@@ -68,40 +77,24 @@ class AuthRepositoryImpl(
 
     fun hasBiometricCredentials(): Boolean = securePrefs.biometricEnabled && securePrefs.userEmail.isNotBlank()
 
-    suspend fun ensureTenantFromUser(user: AuthUser) {
-        val derived = deterministicTenantId(user.email, user.id)
-        securePrefs.currentTenantId = derived
-    }
+    private suspend fun persistSession(tokens: TokenPairResponse): AuthUser {
+        securePrefs.authToken = tokens.accessToken
+        securePrefs.refreshToken = tokens.refreshToken
 
-    private suspend fun loginInternal(email: String, password: String): AuthUser {
-        val block = throttle.blockOrAllow()
-        if (!block && email.isNotBlank() && password.isNotBlank()) {
-            throw SecurityException("Muitas tentativas. Aguarde um pouco.")
-        }
-        if (email.isBlank() || password.length < 6) {
-            throw IllegalArgumentException("Credenciais inválidas")
-        }
-
-        val token = "local|${email.hashCode()}|${System.currentTimeMillis()}"
-        val refreshToken = "refresh|${System.currentTimeMillis()}"
-
-        securePrefs.authToken = token
-        securePrefs.refreshToken = refreshToken
-        securePrefs.userId = 1L
-        securePrefs.userEmail = email
+        // Requires the access token just stored above: AuthInterceptor reads it
+        // fresh from SecurePreferences on every request.
+        val me = authApi.me()
+        securePrefs.userId = me.id
+        securePrefs.userEmail = me.email
+        tenantManager.setCurrentTenantId(me.clinicId)
 
         return AuthUser(
-            id = 1L,
-            name = email.substringBefore("@"),
-            email = email,
-            role = "practitioner",
-            token = token,
-            refreshToken = refreshToken
+            id = me.id,
+            name = me.fullName,
+            email = me.email,
+            role = me.role,
+            token = tokens.accessToken,
+            refreshToken = tokens.refreshToken
         )
-    }
-
-    fun deterministicTenantId(seed: String, id: Long): Long {
-        val raw = abs((seed + id.toString()).toList().map { it.code }.fold(0L) { acc, code -> (acc * 31L) + code })
-        return (raw % 1_000_000L) + 1L
     }
 }

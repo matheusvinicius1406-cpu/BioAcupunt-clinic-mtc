@@ -1,9 +1,6 @@
 package com.bioacupunt.data.remote
 
 import com.bioacupunt.BuildConfig
-import kotlinx.coroutines.runBlocking
-import okhttp3.Interceptor
-import okhttp3.Response
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,6 +9,10 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
 
+    // Backend's own dev server default (see backend/README.md). 10.0.2.2 is the
+    // Android emulator's alias for the host machine's localhost; a physical
+    // device needs this pointed at a LAN-reachable host or a deployed backend
+    // URL instead — there is no deployed instance yet.
     private const val BASE_URL = "http://10.0.2.2:8000/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -19,14 +20,9 @@ object RetrofitInstance {
     }
 
     private lateinit var authInterceptor: AuthInterceptor
-    private lateinit var tenantInterceptor: TenantInterceptor
 
-    fun init(
-        tokenProvider: suspend () -> String,
-        tenantProvider: suspend () -> Long?
-    ) {
+    fun init(tokenProvider: suspend () -> String) {
         authInterceptor = AuthInterceptor(tokenProvider)
-        tenantInterceptor = TenantInterceptor(tenantProvider)
     }
 
     private val okHttpClient: OkHttpClient by lazy {
@@ -36,46 +32,18 @@ object RetrofitInstance {
             .writeTimeout(30, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
             .addInterceptor(authInterceptor)
-            .addInterceptor(tenantInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
     }
 
-    val api: PatientApi by lazy {
+    private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
-            .create(PatientApi::class.java)
     }
 
-    val appointmentApi: AppointmentApi by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create())
-            .build()
-            .create(AppointmentApi::class.java)
-    }
-}
-
-private class TenantInterceptor(
-    private val tenantProvider: suspend () -> Long?
-) : Interceptor {
-
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val original = chain.request()
-        val tenantId = runCatching { runBlocking { tenantProvider() } }.getOrNull()
-
-        val request = if (tenantId == null) {
-            original
-        } else {
-            original.newBuilder()
-                .header("X-Tenant-Id", tenantId.toString())
-                .build()
-        }
-
-        return chain.proceed(request)
-    }
+    val authApi: AuthApi by lazy { retrofit.create(AuthApi::class.java) }
+    val api: PatientApi by lazy { retrofit.create(PatientApi::class.java) }
 }
