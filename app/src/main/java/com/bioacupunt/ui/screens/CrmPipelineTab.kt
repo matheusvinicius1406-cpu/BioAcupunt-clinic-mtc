@@ -124,7 +124,7 @@ private fun PipelineColumn(
                                 .background(stageColor.copy(alpha = 0.2f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(p.name.first().toString(), style = MaterialTheme.typography.titleSmall.copy(color = stageColor))
+                            Text(p.name.firstOrNull()?.uppercase() ?: "?", style = MaterialTheme.typography.titleSmall.copy(color = stageColor))
                         }
                         Column(Modifier.weight(1f)) {
                             Text(p.name, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium))

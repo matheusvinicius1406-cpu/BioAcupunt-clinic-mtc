@@ -250,9 +250,19 @@ object AppContainer {
     fun seedDemoDataIfNeeded() {
         // TODO: Configurar produção - atualmente seed apenas para ambientes dev sem dados.
         if (!com.bioacupunt.security.AppHardening.isDebugDebuggable(appContext)) return
+        // Fire-and-forget on a SupervisorJob scope: without this guard an
+        // exception here (a failed insert, a constraint violation) would reach
+        // the default uncaught-exception handler and crash the whole app on
+        // startup instead of just skipping the demo data.
         _seederScope.launch {
+            runCatching { seedDemoData() }
+                .onFailure { e -> com.bioacupunt.observability.AppLogger.e("AppContainer", "Demo seed failed", e) }
+        }
+    }
+
+    private suspend fun seedDemoData() {
             val hasPatients = patientDao.count() > 0
-            if (hasPatients) return@launch
+            if (hasPatients) return
             val now = java.time.Instant.now().toString()
             val demoPatients = listOf(
                 com.bioacupunt.patient.domain.model.Patient(
@@ -329,4 +339,3 @@ object AppContainer {
             }
         }
     }
-}

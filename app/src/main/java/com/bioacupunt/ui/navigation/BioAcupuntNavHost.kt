@@ -40,6 +40,20 @@ fun BioAcupuntNavHost(
 
     val showBottomBar = currentRoute != null && currentRoute != Screen.Login.route && currentRoute != Screen.BiometricLock.route
 
+    // Biometric lock is opt-in: only gate startup with it when the user has
+    // actually enabled it in Settings AND the device supports it AND there is a
+    // logged-in session to protect. A fresh/logged-out launch always goes to
+    // Login, and a logged-in user who never turned biometrics on goes straight
+    // to the Dashboard — the fingerprint prompt is never forced on hardware
+    // presence alone.
+    val startDestination = remember {
+        when {
+            !AppContainer.authRepository.isLoggedIn() -> Screen.Login.route
+            AppContainer.securePreferences.biometricEnabled && AppContainer.isBiometricAvailable() -> Screen.BiometricLock.route
+            else -> Screen.Dashboard.route
+        }
+    }
+
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
@@ -71,7 +85,7 @@ fun BioAcupuntNavHost(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = if (AppContainer.isBiometricAvailable()) Screen.BiometricLock.route else Screen.Login.route,
+            startDestination = startDestination,
             modifier = androidx.compose.ui.Modifier.padding(innerPadding)
         ) {
             composable(Screen.Login.route) {

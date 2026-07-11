@@ -20,8 +20,19 @@
 }
 
 # ── Room ────────────────────────────────────────────────────
+# The @Database class and its Room-generated *_Impl must stay unobfuscated:
+# Room resolves the generated implementation by reflection on the class name
+# at build() time and throws in release if the name was renamed. The old
+# "com.bioacupunt.**.data.local.**" pattern required an intermediate package
+# segment, so it matched feature DAOs (com.bioacupunt.agenda.data.local.*) but
+# NOT the central com.bioacupunt.data.local.database.AppDatabase itself — which
+# is exactly what crashed release builds on first database access.
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
+-keep @androidx.room.Database class * { *; }
+-keep @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao class * { *; }
+-keep class com.bioacupunt.data.local.** { *; }
 -keep class com.bioacupunt.**.data.local.** { *; }
--keep class com.bioacupunt.**.SyncQueueEntity { *; }
 -dontwarn androidx.room.paging.**
 
 # ── Retrofit / OkHttp / Moshi ───────────────────────────────

@@ -84,7 +84,7 @@ private fun PatientCrmCard(
                     .background(Primary.copy(0.15f)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(p.name.first().toString(), style = MaterialTheme.typography.titleMedium.copy(color = Primary))
+                Text(p.name.firstOrNull()?.uppercase() ?: "?", style = MaterialTheme.typography.titleMedium.copy(color = Primary))
             }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
