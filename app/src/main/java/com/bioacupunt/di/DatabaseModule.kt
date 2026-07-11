@@ -17,6 +17,12 @@ object DatabaseModule {
     private var initialized = false
     private lateinit var instance: AppDatabase
 
+    private val schemaVersion: Int by lazy {
+        checkNotNull(AppDatabase::class.java.getAnnotation(Database::class.java)) {
+            "AppDatabase must be annotated with @Database"
+        }.version
+    }
+
     fun provideAppDatabase(context: Context): AppDatabase {
         if (!initialized) {
             synchronized(this) {
@@ -27,7 +33,7 @@ object DatabaseModule {
                         runCatching { getCurrentDbVersion(databaseFile) }.getOrNull()
                     } else null
 
-                    if (existingVersion != null && existingVersion < AppDatabase::class.java.getAnnotation(Database::class.java).version) {
+                    if (existingVersion != null && existingVersion < schemaVersion) {
                         backupDatabase(appContext)
                     }
 
@@ -90,7 +96,7 @@ object DatabaseModule {
     }
 
     private fun buildMigrations(): List<androidx.room.migration.Migration> {
-        val current = AppDatabase::class.java.getAnnotation(Database::class.java).version
+        val current = schemaVersion
         val migrations = mutableListOf<androidx.room.migration.Migration>()
 
         if (current >= 2) migrations.add(MIGRATION_1_2)

@@ -92,7 +92,7 @@ class AppointmentRepositoryImpl(
 
     private fun validateTenant(entityTenantId: Long) {
         val current = tenantManager.currentTenantId()
-        if (current != null && entityTenantId != current) {
+        if (entityTenantId != current) {
             throw IllegalArgumentException("Tenant mismatch on appointment operation")
         }
     }
