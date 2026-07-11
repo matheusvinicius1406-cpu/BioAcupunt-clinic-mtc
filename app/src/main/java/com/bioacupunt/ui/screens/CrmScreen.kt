@@ -22,9 +22,8 @@ import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.crm.domain.model.PatientStage
 import com.bioacupunt.crm.presentation.CrmViewModel
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.premiumShadow
 import kotlinx.coroutines.launch
-
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun CrmScreen(
@@ -60,7 +59,7 @@ fun CrmScreen(
         TabRow(
             selectedTabIndex = selectedTab,
             containerColor = Color.Transparent,
-            modifier = Modifier.premiumShadow(Color.Transparent, MaterialTheme.shapes.extraLarge, 0.dp)
+            modifier = Modifier.premiumShadow(shape = MaterialTheme.shapes.extraLarge, color = Color.Transparent, elevationDp = 0.dp)
         ) {
             tabs.forEachIndexed { i, t ->
                 Tab(

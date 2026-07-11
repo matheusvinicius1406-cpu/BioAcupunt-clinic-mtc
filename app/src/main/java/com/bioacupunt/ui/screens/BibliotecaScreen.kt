@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.biblioteca.domain.model.BibliotecaNode
 import com.bioacupunt.di.AppContainer
@@ -26,7 +27,7 @@ fun BibliotecaScreen(
     onNavigateToSimulador: () -> Unit = {},
     onNavigateToAnalytics: () -> Unit = {}
 ) {
-    val vm = viewModel(factory = AppContainer.bibliotecaViewModelFactory)
+    val vm = viewModel<com.bioacupunt.biblioteca.presentation.BibliotecaViewModel>(factory = AppContainer.bibliotecaViewModelFactory)
     val state by vm.state.collectAsStateWithLifecycle()
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 

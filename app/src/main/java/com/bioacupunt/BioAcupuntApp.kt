@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import com.bioacupunt.data.remote.RetrofitInstance
 import com.bioacupunt.di.AppContainer
 
 class BioAcupuntApp : Application(), Configuration.Provider {
@@ -13,7 +14,7 @@ class BioAcupuntApp : Application(), Configuration.Provider {
         AppContainer.init(applicationContext)
 
         RetrofitInstance.init(
-            tokenProvider = { AppContainer.authRepository.getTokenSuspend() },
+            tokenProvider = { AppContainer.tokenManager.getToken() },
             tenantProvider = { AppContainer.tenantManager.currentTenantId() }
         )
 

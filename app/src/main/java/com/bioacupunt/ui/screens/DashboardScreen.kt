@@ -1,6 +1,8 @@
 package com.bioacupunt.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
@@ -13,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
@@ -20,6 +23,7 @@ import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.core.network.NetworkStatus
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.observability.SyncStatus
+import com.bioacupunt.observability.SyncStatusMonitor
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

@@ -1,4 +1,8 @@
-package com.bioacupunt.ai.core
+package com.bioacupunt.ai.registry
+
+import com.bioacupunt.ai.core.AiCapability
+import com.bioacupunt.ai.core.AiModelDescriptor
+import com.bioacupunt.ai.core.AiProvider
 
 interface ModelRegistry {
     suspend fun allModels(): List<AiModelDescriptor>

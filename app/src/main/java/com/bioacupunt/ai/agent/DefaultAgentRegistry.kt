@@ -3,6 +3,7 @@ package com.bioacupunt.ai.agent
 import com.bioacupunt.ai.core.AiCapability
 import com.bioacupunt.ai.core.AiRequest
 import com.bioacupunt.ai.core.AiResult
+import com.bioacupunt.ai.tool.DefaultToolRegistry
 import com.bioacupunt.ai.tool.ToolRegistry
 
 class DefaultAgentRegistry(

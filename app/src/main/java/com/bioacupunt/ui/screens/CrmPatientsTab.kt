@@ -1,9 +1,16 @@
 package com.bioacupunt.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -13,10 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.crm.domain.model.PatientStage
+import com.bioacupunt.ui.theme.Primary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PatientsListTab(
+fun PatientsListTab(
     patients: List<CrmPatient>,
     searchQuery: String,
     onSearch: (String) -> Unit,
@@ -34,14 +42,6 @@ private fun PatientsListTab(
             singleLine = true,
             shape = RoundedCornerShape(12.dp)
         )
-        OutlinedButton(
-            onClick = onOpenProntuario,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-        ) {
-            Icon(Icons.Default.Description, null, modifier = Modifier.size(16.dp))
-            Spacer(Modifier.width(6.dp))
-            Text("Ver Prontuários")
-        }
         Spacer(Modifier.height(8.dp))
         if (patients.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -53,6 +53,7 @@ private fun PatientsListTab(
             items(patients, key = { it.id }) { p ->
                 PatientCrmCard(
                     p,
+                    onOpen = { onOpenProntuario(p.id) },
                     onDelete = { onDelete(p.id) },
                     onStatusChange = onStatusChange
                 )
@@ -64,6 +65,7 @@ private fun PatientsListTab(
 @Composable
 private fun PatientCrmCard(
     p: CrmPatient,
+    onOpen: () -> Unit,
     onDelete: () -> Unit,
     onStatusChange: (Long, PatientStage) -> Unit
 ) {
@@ -71,7 +73,7 @@ private fun PatientCrmCard(
     var pickerStage by remember { mutableStateOf<PatientStage?>(null) }
     val stage = remember(p.stage) { PatientStage.entries.find { it.name == p.stage } ?: PatientStage.ACTIVE }
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onOpen),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -137,6 +139,7 @@ private fun PatientCrmCard(
                     }
                 }
             },
+            confirmButton = {},
             dismissButton = { TextButton(onClick = { pickerStage = null }) { Text("Fechar") } }
         )
     }

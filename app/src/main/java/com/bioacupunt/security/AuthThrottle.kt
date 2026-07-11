@@ -31,6 +31,10 @@ class AuthThrottle(private val context: Context) {
         val message: String? = null
     ) {
         enum class Code { Allowed, Throttled, Locked }
+
+        companion object {
+            val Allowed = Status(Code.Allowed)
+        }
     }
 
     init {

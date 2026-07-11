@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.*
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.premiumShadow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -103,7 +105,7 @@ fun AiAssistantScreen() {
         scope.launch {
             listState.animateScrollToItem(messages.size)
 
-            val request = com.bioacupunt.ai.domain.model.AiRequest(
+            val request = com.bioacupunt.ai.core.AiRequest(
                 prompt = text.trim(),
                 systemPrompt = "",
                 temperature = 0.7,
@@ -201,7 +203,8 @@ fun AiAssistantScreen() {
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                     keyboardActions = KeyboardActions(onSend = { sendMessage(inputText) }),
                     colors = OutlinedTextFieldDefaults.colors(
-                        containerColor = Color.White.copy(alpha = 0.10f),
+                        focusedContainerColor = Color.White.copy(alpha = 0.10f),
+                        unfocusedContainerColor = Color.White.copy(alpha = 0.10f),
                         cursorColor = Primary,
                         focusedBorderColor = Primary.copy(alpha = 0.6f),
                         unfocusedBorderColor = Color.White.copy(alpha = 0.25f)

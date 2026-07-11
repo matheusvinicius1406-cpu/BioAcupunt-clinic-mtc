@@ -1,6 +1,7 @@
 package com.bioacupunt.data.remote
 
 import com.bioacupunt.BuildConfig
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.OkHttpClient
@@ -65,7 +66,7 @@ private class TenantInterceptor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
-        val tenantId = runCatching { tenantProvider() }.getOrNull()
+        val tenantId = runCatching { runBlocking { tenantProvider() } }.getOrNull()
 
         val request = if (tenantId == null) {
             original

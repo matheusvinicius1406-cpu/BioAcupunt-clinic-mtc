@@ -16,5 +16,6 @@ enum class AiCapability(val value: String) {
     Summarization("summarization"),
     ToolCalling("tool_calling"),
     Rag("rag"),
-    StructuredOutput("structured_output")
+    StructuredOutput("structured_output"),
+    Multimodal("multimodal")
 }

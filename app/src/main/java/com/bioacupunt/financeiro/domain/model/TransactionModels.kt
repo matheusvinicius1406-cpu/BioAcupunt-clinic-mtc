@@ -1,12 +1,12 @@
 package com.bioacupunt.financeiro.domain.model
 
-enum class TransactionType(val name: String) {
+enum class TransactionType(val label: String) {
     PAYMENT("PAGAMENTO"),
     REFUND("REEMBOLSO"),
     ADJUSTMENT("AJUSTE")
 }
 
-enum class TransactionStatus(val name: String) {
+enum class TransactionStatus(val label: String) {
     PAID("PAGO"),
     PENDING("PENDENTE"),
     CANCELLED("CANCELADO"),

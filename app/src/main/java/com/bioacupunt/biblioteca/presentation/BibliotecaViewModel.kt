@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class BibliotecaUiState(
@@ -46,7 +47,7 @@ class BibliotecaViewModel(
         if (query.isBlank()) {
             observeAll()
         } else {
-            search(query)
+            performSearch(query)
         }
     }
 
@@ -63,7 +64,7 @@ class BibliotecaViewModel(
         }
     }
 
-    private fun search(query: String) {
+    private fun performSearch(query: String) {
         viewModelScope.launch {
             _state.update { it.copy(loading = true, error = null) }
             search(query)

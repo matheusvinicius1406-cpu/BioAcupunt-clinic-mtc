@@ -1,6 +1,7 @@
 package com.bioacupunt.relatorios.domain.usecase
 
 import com.bioacupunt.core.util.Result
+import com.bioacupunt.relatorios.domain.model.FinancialSummary
 import com.bioacupunt.relatorios.domain.model.Report
 import com.bioacupunt.relatorios.domain.repository.ReportRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,6 +14,10 @@ class ObserveReports(private val repo: ReportRepository, private val dispatcher:
 
 class SaveReport(private val repo: ReportRepository, private val dispatcher: CoroutineDispatcher = Dispatchers.IO) {
     suspend operator fun invoke(report: Report): Result<Report> = repo.save(report)
+}
+
+class FinancialSummaryCase(private val repo: ReportRepository, private val dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    suspend operator fun invoke(start: String, end: String): Result<FinancialSummary> = repo.financialSummary(start, end)
 }
 
 class RelatoriosUseCases(

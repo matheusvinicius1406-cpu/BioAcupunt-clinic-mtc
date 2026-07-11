@@ -28,7 +28,6 @@ import com.bioacupunt.patient.domain.repository.PatientRepository
 import com.bioacupunt.patient.domain.usecase.CreatePatient
 import com.bioacupunt.patient.domain.usecase.GetPatients
 import com.bioacupunt.patient.presentation.PatientsViewModelFactory
-import com.bioacupunt.patient.presentation.ProntuarioViewModelFactory
 import com.bioacupunt.security.AuthThrottle
 import com.bioacupunt.security.SecurePreferences
 import com.bioacupunt.sync.SyncScheduler
@@ -65,9 +64,9 @@ object AppContainer {
             _seederScope.launch {
                 connectivityObserverHandler.status.collect { status ->
                     _appState.value = when (status) {
-                        NetworkStatus.ONLINE -> (_appState.value as? AppState.Ready)?.copy(network = NetworkState(online = true))
-                        NetworkStatus.OFFLINE -> (_appState.value as? AppState.Ready)?.copy(network = NetworkState(online = false))
-                        NetworkStatus.UNKNOWN -> (_appState.value as? AppState.Ready)?.copy(network = NetworkState(online = false))
+                        NetworkStatus.ONLINE -> (_appState.value as? AppState.Ready)?.copy(network = NetworkState(isConnected = true))
+                        NetworkStatus.OFFLINE -> (_appState.value as? AppState.Ready)?.copy(network = NetworkState(isConnected = false))
+                        NetworkStatus.UNKNOWN -> (_appState.value as? AppState.Ready)?.copy(network = NetworkState(isConnected = false))
                     } ?: _appState.value
                 }
             }
@@ -106,6 +105,7 @@ object AppContainer {
     val tenantManager: TenantManager by lazy { TenantManager(securePreferences) }
     val connectivityObserver: ConnectivityObserver by lazy { ConnectivityObserver(appContext) }
     val connectivityObserverHandler: ConnectivityObserverHandler by lazy { ConnectivityObserverHandler(connectivityObserver) }
+    val syncStatusManager: com.bioacupunt.observability.SyncStatusManager by lazy { com.bioacupunt.observability.SyncStatusManager() }
 
     fun isBiometricAvailable(): Boolean {
         return runCatching {
@@ -122,6 +122,15 @@ object AppContainer {
 
     // ── Auth ───────────────────────────────────────────────
     val authRepository: AuthRepository by lazy { AuthRepositoryImpl(securePreferences, authThrottle) }
+    val tokenManager: com.bioacupunt.auth.data.local.TokenManager by lazy {
+        com.bioacupunt.auth.data.local.TokenManager(securePreferences)
+    }
+
+    // ── Sync ───────────────────────────────────────────────
+    val syncScheduler: SyncScheduler by lazy { SyncScheduler(appContext) }
+    val syncWorkerFactory: SyncWorkerFactory by lazy {
+        SyncWorkerFactory(syncQueueDao, RetrofitInstance.api, RetrofitInstance.appointmentApi)
+    }
 
     // ── Database ───────────────────────────────────────────
     val database: AppDatabase by lazy { DatabaseModule.provideAppDatabase(appContext) }
@@ -162,8 +171,8 @@ object AppContainer {
     val patientsViewModelFactory: PatientsViewModelFactory by lazy {
         PatientsViewModelFactory(getPatients, createPatient, syncScheduler)
     }
-    val prontuarioViewModelFactory: com.bioacupunt.patient.presentation.ProntuarioViewModelFactory by lazy {
-        com.bioacupunt.patient.presentation.ProntuarioViewModelFactory(
+    val prontuarioViewModelFactory: com.bioacupunt.prontuario.presentation.ProntuarioViewModelFactory by lazy {
+        com.bioacupunt.prontuario.presentation.ProntuarioViewModelFactory(
             cases = com.bioacupunt.prontuario.domain.usecase.ProntuarioUseCases(
                 repository = com.bioacupunt.prontuario.data.repository.ProntuarioRepositoryImpl(prontuarioDao)
             )
@@ -211,8 +220,10 @@ object AppContainer {
     private val aiOrchestrator: com.bioacupunt.ai.orchestrator.AiOrchestrator by lazy {
         com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
             providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
-                registry.register(com.bioacupunt.ai.data.provider.GeminiProvider(cacheManager, aiSecretsProvider))
-                registry.register(com.bioacupunt.ai.data.provider.MockProvider())
+                kotlinx.coroutines.runBlocking {
+                    registry.register(com.bioacupunt.ai.data.provider.GeminiProvider(cacheManager, aiSecretsProvider))
+                    registry.register(com.bioacupunt.ai.data.provider.MockProvider())
+                }
             },
             healthRegistry = com.bioacupunt.ai.health.DefaultHealthRegistry()
         )
@@ -257,8 +268,9 @@ object AppContainer {
                 val saved = createPatient(p)
                 val patientId = if (p.id == 0L) 1L else p.id
                 crmPatientRepository.save(
-                    com.bioacupunt.crm.data.local.CrmPatientEntity(
+                    com.bioacupunt.crm.domain.model.CrmPatient(
                         id = patientId,
+                        tenantId = 1L,
                         name = p.name,
                         phone = "",
                         email = "",
@@ -268,7 +280,7 @@ object AppContainer {
                         totalRevenueBrl = 0.0,
                         lastVisit = now,
                         nextAppointment = "",
-                        tags = "seed",
+                        tags = listOf("seed"),
                         notes = "Seed",
                         referralSource = "",
                         npsScore = null,
@@ -278,6 +290,7 @@ object AppContainer {
                     )
                 )
                 val apptEntity = com.bioacupunt.agenda.data.local.AppointmentEntity(
+                    tenantId = 1L,
                     patientId = patientId,
                     patientName = p.name,
                     date = java.time.LocalDate.now().toString(),

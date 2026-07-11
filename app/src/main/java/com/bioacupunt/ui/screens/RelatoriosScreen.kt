@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.premiumShadow
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -41,7 +42,7 @@ fun RelatoriosScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(
         selectedTabIndex = selectedTab,
-        modifier = Modifier.premiumShadow(Color.Transparent, MaterialTheme.shapes.extraLarge, 0.dp)
+        modifier = Modifier.premiumShadow(shape = MaterialTheme.shapes.extraLarge, color = Color.Transparent, elevationDp = 0.dp)
     ) {
             tabs.forEachIndexed { i, t ->
                 Tab(selected = selectedTab == i, onClick = { selectedTab = i }, text = { Text(t) })

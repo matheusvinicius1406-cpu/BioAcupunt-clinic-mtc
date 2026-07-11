@@ -24,61 +24,65 @@ class ScoredAiOrchestrator(
 ) : AiOrchestrator {
     override suspend fun execute(request: AiRequest): Result<AiResult> {
         val candidateModels = resolveCandidates(request)
-        if (candidateModels.isEmpty()) return Result.failure(AiError.NoProviderAvailable)
+        if (candidateModels.isEmpty()) return Result.failure(com.bioacupunt.ai.core.AiException(AiError.NoProviderAvailable))
 
         val providersScores = scoreCandidateModels(request, candidateModels)
-        val selected = providersScores.firstOrNull() ?: candidateModels.first()
+        val selected = providersScores.firstOrNull() ?: candidateModels.first().let {
+            AiProviderScore(providerId = it.providerId, modelId = it.id, score = 0.0)
+        }
 
         val provider = providers.providerById(selected.providerId)
-            ?: return Result.failure(AiError.NoProviderAvailable)
+            ?: return Result.failure(com.bioacupunt.ai.core.AiException(AiError.NoProviderAvailable))
 
         val started = System.currentTimeMillis()
-        return runCatching { provider.generate(request.copy(modelId = selected.modelId)) }
-            .onSuccess { result ->
-                telemetry?.invoke(
-                    AiTelemetryEvent(
-                        providerId = provider.id,
-                        modelId = selected.modelId,
-                        capabilitiesUsed = result.capabilitiesUsed,
-                        latencyMs = System.currentTimeMillis() - started,
-                        success = true,
-                        decisionReason = selected.reasons.firstOrNull()
-                    )
+        val primaryResult = provider.generate(request.copy(modelId = selected.modelId))
+
+        val primarySuccess = primaryResult.getOrNull()
+        if (primarySuccess != null) {
+            telemetry?.invoke(
+                AiTelemetryEvent(
+                    providerId = provider.id,
+                    modelId = selected.modelId,
+                    capabilitiesUsed = primarySuccess.capabilitiesUsed,
+                    latencyMs = System.currentTimeMillis() - started,
+                    success = true,
+                    decisionReason = selected.reasons.firstOrNull()
                 )
-            }.onFailure { error ->
-                telemetry?.invoke(
-                    AiTelemetryEvent(
-                        providerId = provider.id,
-                        modelId = selected.modelId,
-                        capabilitiesUsed = emptySet(),
-                        latencyMs = System.currentTimeMillis() - started,
-                        success = false,
-                        errorType = error::class.simpleName,
-                        decisionReason = selected.reasons.firstOrNull()
-                    )
+            )
+            return primaryResult
+        }
+
+        val error = primaryResult.exceptionOrNull() ?: com.bioacupunt.ai.core.AiException(AiError.InvalidResponse("empty"))
+        telemetry?.invoke(
+            AiTelemetryEvent(
+                providerId = provider.id,
+                modelId = selected.modelId,
+                capabilitiesUsed = emptySet(),
+                latencyMs = System.currentTimeMillis() - started,
+                success = false,
+                errorType = error::class.simpleName,
+                decisionReason = selected.reasons.firstOrNull()
+            )
+        )
+
+        val fallback = providers.allProviders().firstOrNull { it.id != provider.id } ?: return primaryResult
+        val fbStarted = System.currentTimeMillis()
+        val fbResult = fallback.generate(request)
+        val fbSuccess = fbResult.getOrNull()
+        if (fbSuccess != null) {
+            telemetry?.invoke(
+                AiTelemetryEvent(
+                    providerId = fallback.id,
+                    modelId = fbSuccess.modelId,
+                    capabilitiesUsed = fbSuccess.capabilitiesUsed,
+                    latencyMs = System.currentTimeMillis() - fbStarted,
+                    success = true,
+                    fallbackUsed = true,
+                    decisionReason = "primary_failed"
                 )
-                return Result.failure(error)
-            }.getOrElse { error ->
-                val fallback = providers.allProviders().firstOrNull { it.id != provider.id }
-                if (fallback != null) {
-                    val fbStarted = System.currentTimeMillis()
-                    val fbResult = fallback.generate(request)
-                    fbResult.onSuccess { result ->
-                        telemetry?.invoke(
-                            AiTelemetryEvent(
-                                providerId = fallback.id,
-                                modelId = result.modelId,
-                                capabilitiesUsed = result.capabilitiesUsed,
-                                latencyMs = System.currentTimeMillis() - fbStarted,
-                                success = true,
-                                fallbackUsed = true,
-                                decisionReason = "primary_failed"
-                            )
-                        )
-                    }
-                    fbResult
-                } else Result.failure(error)
-            }
+            )
+        }
+        return fbResult
     }
 
     private suspend fun resolveCandidates(request: AiRequest): List<AiModelDescriptor> {
@@ -89,7 +93,7 @@ class ScoredAiOrchestrator(
         val matches = candidates.filter { model ->
             val provider = providers.providerById(model.providerId)
             val metadata = provider?.metadata
-            val healthModel = if (health != null && model.modelId != null) health.get(model.providerId, model.id) else null
+            val healthModel = health?.get(model.providerId, model.id)
             val meetsCapabilities = required.isEmpty() || model.capabilities.containsAll(required)
             val meetsConstraints = meetsCapabilities &&
                 !rules.blockedProviders.contains(model.providerId) &&
@@ -151,7 +155,8 @@ class ScoredAiOrchestrator(
     private fun meetsLatency(model: AiModelDescriptor, constraint: AiLatencyConstraint?, healthModel: com.bioacupunt.ai.health.ProviderHealth?): Boolean {
         if (constraint == null) return true
         val observed = healthModel?.avgLatencyMs ?: return true
-        return observed <= constraint.maxResponseTimeMs
+        val max = constraint.maxResponseTimeMs ?: return true
+        return observed <= max
     }
 
     private fun meetsContext(model: AiModelDescriptor, maxContextTokens: Int?): Boolean {

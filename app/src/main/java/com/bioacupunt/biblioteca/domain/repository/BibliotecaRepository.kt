@@ -1,6 +1,7 @@
 package com.bioacupunt.biblioteca.domain.repository
 
 import com.bioacupunt.biblioteca.domain.model.BibliotecaNode
+import com.bioacupunt.core.util.Result
 import kotlinx.coroutines.flow.Flow
 
 interface BibliotecaRepository {

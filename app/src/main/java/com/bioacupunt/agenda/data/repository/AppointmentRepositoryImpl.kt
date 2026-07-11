@@ -47,7 +47,7 @@ class AppointmentRepositoryImpl(
     override suspend fun getById(id: Long): Result<Appointment> {
         return try {
             val entity = dao.getById(id, tenantId)
-            if (entity == null) Result.Error(AppError.DatabaseError("Consultar não encontrada"))
+            if (entity == null) Result.Error(AppError.DatabaseError())
             else Result.Success(entity.toDomain())
         } catch (e: Exception) {
             Result.Error(AppError.DatabaseError(e))

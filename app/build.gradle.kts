@@ -124,6 +124,7 @@ dependencies {
     // Security
     implementation(libs.androidx.security.crypto)
     implementation(libs.errorprone.annotations)
+    implementation(libs.androidx.biometric)
 
     // Coil - Image loading
     implementation(libs.coil.compose)
@@ -131,6 +132,12 @@ dependencies {
     // Moshi
     implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)
+
+    // Retrofit / OkHttp
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)

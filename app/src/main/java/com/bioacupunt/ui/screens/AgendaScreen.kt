@@ -1,7 +1,11 @@
 package com.bioacupunt.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -11,6 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.premiumShadow
 import com.bioacupunt.agenda.domain.model.Appointment
 import com.bioacupunt.agenda.domain.model.AppointmentStatus
 import com.bioacupunt.agenda.domain.model.AppointmentType

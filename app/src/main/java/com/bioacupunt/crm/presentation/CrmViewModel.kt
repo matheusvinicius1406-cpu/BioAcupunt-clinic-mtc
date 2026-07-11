@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class CrmUiState(
@@ -46,18 +47,17 @@ class CrmViewModel(
     private val saveCrmPatient: SaveCrmPatient,
     private val updateCrmStage: UpdateCrmStage,
     private val searchCrmPatients: SearchCrmPatients,
-    private val repository: CrmPatientRepository,
-    private val tenantManager: TenantManager
+    private val repository: CrmPatientRepository? = null,
+    private val tenantManager: TenantManager? = null
 ) : ViewModel() {
 
-    val tenantId: Long get() = tenantManager.currentTenantId() ?: 0L
+    val tenantId: Long get() = tenantManager?.currentTenantId() ?: 0L
 
     private val _state = MutableStateFlow(CrmUiState())
     val state: StateFlow<CrmUiState> = _state.asStateFlow()
 
     init {
         observePatients()
-        computeSummary()
     }
 
     fun onQueryChanged(query: String) {
@@ -128,12 +128,7 @@ class CrmViewModel(
     fun deletePatient(patientId: Long) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            val result = repository?.let { repo ->
-                runCatching { repo.getById(patientId) }
-                    .mapCatching { r -> r as? Result.Success }
-                    .getOrNull()
-            }
-            when (val current = result?.data) {
+            when (val current = repository?.getById(patientId)) {
                 is Result.Success -> {
                     val updated = current.data.copy(notes = "[SOFT_DELETED]")
                     val saveResult = saveCrmPatient(updated)
@@ -161,12 +156,13 @@ class CrmViewModel(
                 searchCrmPatients(_state.value.selectedStageName!!)
             }
             baseFlow
-                .catch { e -> _state.update { it.copy(isLoading = false, error = it.error ?: e.localizedMessage.orEmpty()) } }
+                .catch { e -> _state.update { it.copy(isLoading = false, error = e.localizedMessage) } }
                 .collect { list ->
                     _state.update { current ->
                         current.copy(
                             items = list,
                             filteredPatients = if (current.query.isBlank()) list else filterQuery(list, current.query),
+                            reportSummary = computeSummary(list),
                             isLoading = false,
                             error = null
                         )
@@ -180,24 +176,16 @@ class CrmViewModel(
         _state.update { current.copy(filteredPatients = filterQuery(current.items, current.query)) }
     }
 
-    private fun computeSummary() {
-        viewModelScope.launch {
-            try {
-                val repo = repository ?: return@launch
-                val total = repo.count()
-                val active = repo.countByStage(PatientStage.ACTIVE.name)
-                val revenue = repo.sumRevenue(java.time.LocalDate.now().minusDays(30).toString(), java.time.LocalDate.now().toString())
-                val summary = mapOf(
-                    "total" to total,
-                    "active" to active,
-                    "revenue" to (revenue as? Result.Success)?.data ?: 0.0,
-                    "retention" to if (total > 0) active.toDouble() / total else 0.0
-                )
-                _state.update { it.copy(reportSummary = summary) }
-            } catch (e: Exception) {
-                // best-effort summary only
-            }
-        }
+    private fun computeSummary(items: List<CrmPatient>): Map<String, Any> {
+        val total = items.size
+        val active = items.count { it.stage == PatientStage.ACTIVE.name }
+        val revenue = items.sumOf { it.totalRevenueBrl }
+        return mapOf(
+            "total" to total,
+            "active" to active,
+            "revenue" to revenue,
+            "retention" to if (total > 0) active.toDouble() / total else 0.0
+        )
     }
 
     private fun filterQuery(items: List<CrmPatient>, query: String): List<CrmPatient> {

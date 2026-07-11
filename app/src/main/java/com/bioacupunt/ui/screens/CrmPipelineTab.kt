@@ -1,6 +1,7 @@
 package com.bioacupunt.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -19,7 +20,7 @@ import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.crm.domain.model.PatientStage
 
 @Composable
-private fun PipelineTab(
+fun PipelineTab(
     stages: List<PatientStage>,
     patients: List<CrmPatient>,
     viewModel: com.bioacupunt.crm.presentation.CrmViewModel
@@ -36,9 +37,36 @@ private fun PipelineTab(
                 PipelineColumn(stage, stagePatients) { targetStage ->
                     stagePatients.forEach { p ->
                         if (p.stage != targetStage.name) {
-                            viewModel.onEvent(com.bioacupunt.crm.presentation.CrmEvent.ChangeStage(p.id, targetStage))
+                            viewModel.updateStage(p.id, targetStage)
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CrmReportsTab(summary: Map<String, Any>) {
+    if (summary.isEmpty()) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Nenhum dado de relatório disponível.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        return
+    }
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(summary.entries.toList()) { (key, value) ->
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(key, style = MaterialTheme.typography.bodyMedium)
+                    Text(value.toString(), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                 }
             }
         }
@@ -109,7 +137,7 @@ private fun PipelineColumn(
                                     DropdownMenuItem(
                                         text = { Text("${target.emoji} Mover para ${target.label}") },
                                         onClick = { onMoveAll(target); showMenu = -1 }
-                                    ) {}
+                                    )
                                 }
                             }
                         }

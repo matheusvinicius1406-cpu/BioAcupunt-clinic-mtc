@@ -1,6 +1,7 @@
 package com.bioacupunt.ai.core.rules
 
 import com.bioacupunt.ai.core.AiCapability
+import com.bioacupunt.ai.core.AiPrivacyRestriction
 
 data class AiRoutingRules(
     val blockedProviders: Set<String> = emptySet(),

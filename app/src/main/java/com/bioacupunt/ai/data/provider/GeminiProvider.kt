@@ -10,6 +10,7 @@ import com.bioacupunt.ai.core.AiResult
 import com.bioacupunt.ai.core.AiExecutionType
 import com.bioacupunt.ai.core.AiPricingModel
 import com.bioacupunt.ai.core.DevicePreference
+import com.bioacupunt.ai.gemini.GeminiEngine
 import kotlin.coroutines.cancellation.CancellationException
 
 class GeminiProvider(
@@ -71,38 +72,22 @@ class GeminiProvider(
         val started = System.currentTimeMillis()
         return runCatching {
             runWithTimeout(30_000L) {
-                if (request.attachments.any { it.type == com.bioacupunt.ai.core.AiInputType.Image }) {
-                    GeminiEngine.generateWithImage(
-                        apiKey = apiKey,
-                        prompt = request.prompt,
-                        imageUris = request.attachments.filter { it.type == com.bioacupunt.ai.core.AiInputType.Image }.mapNotNull { it.uri },
-                        systemPrompt = request.systemPrompt,
-                        temperature = request.temperature,
-                        maxTokens = request.maxTokens,
-                        cacheKey = null,
-                        cache = cache
-                    )
-                } else {
-                    GeminiEngine.generate(
-                        apiKey = apiKey,
-                        prompt = request.prompt,
-                        systemPrompt = request.systemPrompt,
-                        temperature = request.temperature,
-                        maxTokens = request.maxTokens,
-                        cacheKey = null,
-                        cache = cache
-                    )
-                }
+                GeminiEngine.generate(
+                    apiKey = apiKey,
+                    prompt = request.prompt,
+                    systemPrompt = request.systemPrompt,
+                    temperature = request.temperature,
+                    maxTokens = request.maxTokens,
+                    cacheKey = null,
+                    cache = cache
+                ).getOrThrow()
             }
         }.mapCatching { text ->
-            val usedCapabilities = mutableSetOf<AiCapability>(AiCapability.Chat)
-            if (request.attachments.any { it.type == com.bioacupunt.ai.core.AiInputType.Image }) usedCapabilities += AiCapability.Vision
-            if (request.attachments.any { it.type == com.bioacupunt.ai.core.AiInputType.Pdf || it.type == com.bioacupunt.ai.core.AiInputType.Document }) usedCapabilities += AiCapability.DocumentAnalysis
             AiResult(
                 text = text,
                 providerId = id,
                 modelId = effectiveModel,
-                capabilitiesUsed = usedCapabilities,
+                capabilitiesUsed = setOf(AiCapability.Chat),
                 tokensUsed = coerceTokens(request.maxTokens),
                 latencyMs = System.currentTimeMillis() - started
             )

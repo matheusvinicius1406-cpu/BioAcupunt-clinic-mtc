@@ -10,3 +10,5 @@ sealed interface AiError {
     data class CapabilityNotSupported(val required: String) : AiError
     data class Security(val reason: String) : AiError
 }
+
+class AiException(val error: AiError) : Exception()

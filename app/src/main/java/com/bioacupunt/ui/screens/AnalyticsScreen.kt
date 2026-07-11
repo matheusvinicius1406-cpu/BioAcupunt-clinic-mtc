@@ -141,7 +141,7 @@ fun AnalyticsScreen(onBack: (() -> Unit)? = null) {
 
         // Patient retention funnel
         item {
-            AnalyticsCard("Funil de Retenção", Icons.Default.Funnel) {
+            AnalyticsCard("Funil de Retenção", Icons.Default.FilterAlt) {
                 val funnel = listOf(
                     "1ª Consulta" to 1f to Color(0xFF64B5F6),
                     "Retornou" to 0.78f to Primary,

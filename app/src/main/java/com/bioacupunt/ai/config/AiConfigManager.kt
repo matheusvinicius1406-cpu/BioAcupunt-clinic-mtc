@@ -1,4 +1,4 @@
-package com.bioacupunt.ai.core
+package com.bioacupunt.ai.config
 
 interface AiConfigManager {
     suspend fun isProviderEnabled(providerId: String): Boolean

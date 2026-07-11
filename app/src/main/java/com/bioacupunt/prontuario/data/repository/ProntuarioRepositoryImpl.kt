@@ -31,7 +31,7 @@ class ProntuarioRepositoryImpl(private val dao: ProntuarioDao) : ProntuarioRepos
         )
         dao.save(entity)
         prontuario
-    }.fold(onSuccess = { Result.Success(it) }, onFailure = { Result.Error(com.bioacupunt.core.util.AppErrorKind.IO("Falha ao salvar prontuário")) })
+    }.fold(onSuccess = { Result.Success(it) }, onFailure = { Result.Error(com.bioacupunt.core.util.AppError.DatabaseError()) })
 
     override fun observeEntries(patientId: Long): Flow<List<ProntuarioEntry>> =
         dao.observeEntries(patientId).map { list -> list.map { it.toDomain() } }
@@ -50,7 +50,7 @@ class ProntuarioRepositoryImpl(private val dao: ProntuarioDao) : ProntuarioRepos
         )
         val id = dao.saveEntry(entity)
         entry.copy(id = if (id > 0) id else entry.id)
-    }.fold(onSuccess = { Result.Success(it) }, onFailure = { Result.Error(com.bioacupunt.core.util.AppErrorKind.IO("Falha ao adicionar entrada")) })
+    }.fold(onSuccess = { Result.Success(it) }, onFailure = { Result.Error(com.bioacupunt.core.util.AppError.DatabaseError()) })
 
     override suspend fun updateEntry(entry: ProntuarioEntry): Result<ProntuarioEntry> = runCatching {
         val now = Instant.now().toString()
@@ -66,12 +66,12 @@ class ProntuarioRepositoryImpl(private val dao: ProntuarioDao) : ProntuarioRepos
         )
         dao.saveEntry(entity)
         entry
-    }.fold(onSuccess = { Result.Success(it) }, onFailure = { Result.Error(com.bioacupunt.core.util.AppErrorKind.IO("Falha ao atualizar entrada")) })
+    }.fold(onSuccess = { Result.Success(it) }, onFailure = { Result.Error(com.bioacupunt.core.util.AppError.DatabaseError()) })
 
     override suspend fun deleteEntry(id: Long): Result<Boolean> = runCatching {
         dao.deleteEntry(id)
         true
-    }.fold(onSuccess = { Result.Success(it) }, onFailure = { Result.Error(com.bioacupunt.core.util.AppErrorKind.IO("Falha ao remover entrada")) })
+    }.fold(onSuccess = { Result.Success(it) }, onFailure = { Result.Error(com.bioacupunt.core.util.AppError.DatabaseError()) })
 
     override suspend fun getPendingSync(since: String): Result<List<ProntuarioEntry>> {
         // Placeholder: sync pendente via Room será integrado com fila downstream.

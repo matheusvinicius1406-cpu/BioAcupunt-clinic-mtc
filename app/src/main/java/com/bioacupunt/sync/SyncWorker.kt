@@ -4,9 +4,10 @@ import com.bioacupunt.observability.AppLogger
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.bioacupunt.data.remote.AppointmentApi
 import com.bioacupunt.data.remote.PatientApi
 import com.bioacupunt.data.remote.SyncPatientRequest
-import com.bioacupunt.data.remote.SyncAppointmentRequest
+import com.bioacupunt.data.remote.model.SyncAppointmentRequest
 import com.bioacupunt.sync.data.local.SyncQueueDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,7 +23,8 @@ class SyncWorker(
     appContext: Context,
     workerParams: WorkerParameters,
     private val dao: SyncQueueDao,
-    private val api: PatientApi
+    private val api: PatientApi,
+    private val appointmentApi: AppointmentApi
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -53,8 +55,9 @@ class SyncWorker(
                                 payloadJson = item.payloadJson
                             )
                         )
-                        "Appointment" -> api.syncAppointment(
+                        "Appointment" -> appointmentApi.syncAppointment(
                             SyncAppointmentRequest(
+                                tenantId = "1",
                                 entityId = item.entityId,
                                 operation = item.operation,
                                 payloadJson = item.payloadJson

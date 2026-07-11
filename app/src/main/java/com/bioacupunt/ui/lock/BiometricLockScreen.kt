@@ -29,13 +29,13 @@ fun BiometricLockScreen(onUnlocked: () -> Unit) {
     var isProcessing by remember { mutableStateOf(false) }
     var hasPrompted by remember { mutableStateOf(false) }
 
-    val executor = remember { androidx.core.os.HandlerCompat.createAsync(context.mainLooper) }
+    val executor = remember { androidx.core.content.ContextCompat.getMainExecutor(context) }
     val activity = context as? androidx.fragment.app.FragmentActivity
     val prompt = remember(activity, executor) {
         activity?.let {
             androidx.biometric.BiometricPrompt(it, executor, object : androidx.biometric.BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    if (errorCode == android.hardware.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == android.hardware.biometric.BiometricPrompt.ERROR_USER_CANCELED) {
+                    if (errorCode == androidx.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == androidx.biometric.BiometricPrompt.ERROR_USER_CANCELED) {
                         scope.launch { status = "Autenticação cancelada" }
                     } else {
                         scope.launch { error = errString.toString(); status = "Falha na autenticação" }

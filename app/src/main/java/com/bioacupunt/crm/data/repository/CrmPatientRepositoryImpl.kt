@@ -39,27 +39,16 @@ class CrmPatientRepositoryImpl(
     }
 
     override fun search(query: String): Flow<List<CrmPatient>> {
-        val key = cacheKeyAll + ":search:" + query.trim().lowercase()
-        return flow {
-            val cached = cache.getMemory<String, List<CrmPatient>>(key)
-            if (cached != null) {
-                emit(cached)
-                return@flow
-            }
-
-            dao.search(tenantId, query).collect { entities ->
-                val domain = entities.map { it.toDomain() }
-                cache.putMemory(key, domain, 5, TimeUnit.MINUTES)
-                emit(domain)
-            }
-        }.catch { emit(emptyList()) }
+        return dao.search(tenantId, query)
+            .map { it.map { e -> e.toDomain() } }
+            .catch { emit(emptyList()) }
     }
 
     override suspend fun getById(id: Long): Result<CrmPatient> {
         return try {
             val entity = dao.getById(id, tenantId)
             if (entity == null) {
-                Result.Error(AppError.DatabaseError("Paciente não encontrado"))
+                Result.Error(AppError.DatabaseError())
             } else {
                 Result.Success(entity.toDomain())
             }

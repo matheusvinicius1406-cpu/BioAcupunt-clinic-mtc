@@ -5,70 +5,75 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 
-object SecurePreferences {
-    private const val FILE = "bio_secure_prefs"
+class SecurePreferences(context: Context) {
+    companion object {
+        private const val FILE = "bio_secure_prefs"
+    }
 
-    private lateinit var prefs: SharedPreferences
-
-    fun init(context: Context) {
-        if (::prefs.isInitialized) return
+    private val prefs: SharedPreferences = run {
         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        prefs = EncryptedSharedPreferences.create(
+        EncryptedSharedPreferences.create(
             FILE,
             masterKeyAlias,
-            context,
+            context.applicationContext,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }
 
-    fun get(scope: (SharedPreferences.Editor) -> Unit) {
-        check(::prefs.isInitialized) { "SecurePreferences not initialized" }
+    private fun edit(scope: (SharedPreferences.Editor) -> Unit) {
         prefs.edit().also(scope).apply()
     }
 
-    fun read(default: String = "", key: String = ""): String =
-        if (key.isBlank()) default else prefs.getString(key, default) ?: default
+    fun getString(key: String, default: String? = null): String? = prefs.getString(key, default)
 
-    var String?.authToken
-        get() = this ?: ""
-        set(value) = if (value.isNullOrBlank()) get { it.remove("auth_token") } else get { it.putString("auth_token", value) }
-    var String?.refreshToken
-        get() = this ?: ""
-        set(value) = if (value.isNullOrBlank()) get { it.remove("refresh_token") } else get { it.putString("refresh_token", value) }
-    var Long?.userId: Long
-        get() = this ?: 0L
-        set(value) = get { it.putLong("user_id", value) }
-    var String?.userEmail
-        get() = this ?: ""
-        set(value) = if (value.isNullOrBlank()) get { it.remove("user_email") } else get { it.putString("user_email", value) }
-    var Boolean?.isLoggedIn: Boolean
-        get() = this ?: false
-        set(value) = get { it.putBoolean("is_logged_in", value) }
-    var String?.biometricEnabled
-        get() = this ?: ""
-        set(value) = if (value.isNullOrBlank()) get { it.remove("biometric_enabled") } else get { it.putString("biometric_enabled", value) }
-    var Boolean?.hasOnboarded: Boolean
-        get() = this ?: false
-        set(value) = get { it.putBoolean("has_onboarded", value) }
-    var String?.biometricPassword
-        get() = this ?: ""
-        set(value) = if (value.isBlank()) get { it.remove("biometric_password") } else get { it.putString("biometric_password", value) }
+    fun putString(key: String, value: String) = edit { it.putString(key, value) }
 
-    fun currentTenantId(): Long? {
-        val value = prefs.getLong("current_tenant_id", -1L)
-        return value.takeIf { it != -1L }
-    }
+    var authToken: String
+        get() = prefs.getString("auth_token", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("auth_token") } else edit { it.putString("auth_token", value) }
 
-    fun setCurrentTenantId(value: Long?) {
-        if (value == null || value <= 0) {
-            get { it.remove("current_tenant_id") }
-        } else {
-            get { it.putLong("current_tenant_id", value) }
-        }
-    }
+    var refreshToken: String
+        get() = prefs.getString("refresh_token", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("refresh_token") } else edit { it.putString("refresh_token", value) }
+
+    var userId: Long
+        get() = prefs.getLong("user_id", 0L)
+        set(value) = edit { it.putLong("user_id", value) }
+
+    var userEmail: String
+        get() = prefs.getString("user_email", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("user_email") } else edit { it.putString("user_email", value) }
+
+    var isLoggedIn: Boolean
+        get() = prefs.getBoolean("is_logged_in", false)
+        set(value) = edit { it.putBoolean("is_logged_in", value) }
+
+    var biometricEnabled: Boolean
+        get() = prefs.getBoolean("biometric_enabled", false)
+        set(value) = edit { it.putBoolean("biometric_enabled", value) }
+
+    var hasOnboarded: Boolean
+        get() = prefs.getBoolean("has_onboarded", false)
+        set(value) = edit { it.putBoolean("has_onboarded", value) }
+
+    var biometricPassword: String
+        get() = prefs.getString("biometric_password", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("biometric_password") } else edit { it.putString("biometric_password", value) }
+
+    var googleDriveLinked: Boolean
+        get() = prefs.getBoolean("google_drive_linked", false)
+        set(value) = edit { it.putBoolean("google_drive_linked", value) }
+
+    var geminiApiKey: String?
+        get() = prefs.getString("gemini_api_key", null)
+        set(value) = if (value.isNullOrBlank()) edit { it.remove("gemini_api_key") } else edit { it.putString("gemini_api_key", value) }
+
+    var currentTenantId: Long?
+        get() = prefs.getLong("current_tenant_id", -1L).takeIf { it != -1L }
+        set(value) = if (value == null || value <= 0) edit { it.remove("current_tenant_id") } else edit { it.putLong("current_tenant_id", value) }
 
     fun clearAll() {
-        get { it.clear() }
+        edit { it.clear() }
     }
 }

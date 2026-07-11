@@ -1,8 +1,7 @@
-package com.bioacupunt.patient.presentation
+package com.bioacupunt.prontuario.presentation
 
 import androidx.lifecycle.ViewModelProvider
 import com.bioacupunt.prontuario.domain.usecase.ProntuarioUseCases
-import com.bioacupunt.prontuario.presentation.ProntuarioViewModel
 
 class ProntuarioViewModelFactory(
     private val cases: ProntuarioUseCases
@@ -14,7 +13,7 @@ class ProntuarioViewModelFactory(
             saveProntuario = cases.saveProntuario,
             observeEntries = cases.observeEntries,
             addEntry = cases.addEntry,
-            updateEntry = cases.updateEntry,
+            updateEntryUC = cases.updateEntry,
             deleteEntry = cases.deleteEntry
         ) as T
     }

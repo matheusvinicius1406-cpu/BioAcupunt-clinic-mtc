@@ -1,5 +1,6 @@
 package com.bioacupunt.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -139,7 +140,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Primary,
                     unfocusedBorderColor = Color.White.copy(alpha = 0.25f),
-                    containerColor = Color.White.copy(alpha = 0.08f),
+                    focusedContainerColor = Color.White.copy(alpha = 0.08f),
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.08f),
                     focusedTextColor = Color(0xFFE8F5E9),
                     unfocusedTextColor = Color(0xFFE8F5E9)
                 )
@@ -178,7 +180,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Primary,
                     unfocusedBorderColor = Color.White.copy(alpha = 0.25f),
-                    containerColor = Color.White.copy(alpha = 0.08f),
+                    focusedContainerColor = Color.White.copy(alpha = 0.08f),
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.08f),
                     focusedTextColor = Color(0xFFE8F5E9),
                     unfocusedTextColor = Color(0xFFE8F5E9)
                 )

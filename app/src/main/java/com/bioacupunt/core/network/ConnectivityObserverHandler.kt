@@ -1,6 +1,7 @@
 package com.bioacupunt.core.network
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
 class ConnectivityObserverHandler(private val observer: ConnectivityObserver) {

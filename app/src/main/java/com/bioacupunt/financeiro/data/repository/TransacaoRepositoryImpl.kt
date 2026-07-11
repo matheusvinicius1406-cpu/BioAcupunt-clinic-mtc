@@ -27,7 +27,7 @@ class TransacaoRepositoryImpl(
     override suspend fun getById(id: Long): Result<Transacao> {
         return try {
             val entity = dao.getById(id)
-            if (entity == null) Result.Error(AppError.DatabaseError("Transação não encontrada"))
+            if (entity == null) Result.Error(AppError.DatabaseError())
             else Result.Success(entity.toDomain())
         } catch (e: Exception) {
             Result.Error(AppError.DatabaseError(e))

@@ -45,12 +45,14 @@ object AppHardening {
                     || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
                     || Settings.Secure.getInt(contentResolver, Settings.Secure.ADB_ENABLED, 0) == 1
         } catch (e: Exception) { false }
-        val hasBinary = paths.any { it.exists() }
+        val hasBinary = paths.any { java.io.File(it).exists() }
         val hasRuntimeRoot: Boolean = try {
             Runtime.getRuntime().exec("su").waitFor() == 0
         } catch (e: Exception) { false }
         return hasProp || hasBinary || hasRuntimeRoot
     }
+
+    fun isDebugDebuggable(context: Context): Boolean = context.isDebuggable()
 
     private fun Context.isDebuggable(): Boolean {
         return try {

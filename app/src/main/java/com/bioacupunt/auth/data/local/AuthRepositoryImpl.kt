@@ -1,6 +1,7 @@
 package com.bioacupunt.auth.data.local
 
 import com.bioacupunt.auth.domain.model.AuthUser
+import com.bioacupunt.auth.domain.repository.AuthRepository
 import com.bioacupunt.security.AuthThrottle
 import com.bioacupunt.security.SecurePreferences
 import kotlin.math.abs
@@ -57,15 +58,15 @@ class AuthRepositoryImpl(
     fun setBiometricCredentials(email: String, password: String) {
         securePrefs.userEmail = email
         securePrefs.biometricPassword = password
-        securePrefs.biometricEnabled = "true"
+        securePrefs.biometricEnabled = true
     }
 
     fun clearBiometricCredentials() {
         securePrefs.biometricPassword = ""
-        securePrefs.biometricEnabled = ""
+        securePrefs.biometricEnabled = false
     }
 
-    fun hasBiometricCredentials(): Boolean = securePrefs.biometricEnabled.isNotBlank() && securePrefs.userEmail.isNotBlank()
+    fun hasBiometricCredentials(): Boolean = securePrefs.biometricEnabled && securePrefs.userEmail.isNotBlank()
 
     suspend fun ensureTenantFromUser(user: AuthUser) {
         val derived = deterministicTenantId(user.email, user.id)

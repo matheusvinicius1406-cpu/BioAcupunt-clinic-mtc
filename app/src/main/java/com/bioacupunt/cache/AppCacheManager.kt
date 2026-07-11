@@ -13,8 +13,8 @@ import java.io.File
 class AppCacheManager(context: Context) {
 
     // In-memory LRU: max 4MB
-    private val memCache = LruCache<String, String>(4 * 1024 * 1024) {
-        _, value -> value.length
+    private val memCache = object : LruCache<String, String>(4 * 1024 * 1024) {
+        override fun sizeOf(key: String, value: String): Int = value.length
     }
 
     private val cacheDir = File(context.cacheDir, "bioacupunt_cache").also { it.mkdirs() }

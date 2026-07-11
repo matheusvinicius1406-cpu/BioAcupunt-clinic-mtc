@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Appointment(
     val id: Long = 0L,
+    val tenantId: Long = 0L,
     val patientId: Long = 0L,
     val patientName: String = "",
     val date: String = "",      // ISO date: yyyy-MM-dd
