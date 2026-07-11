@@ -46,6 +46,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Signs with AGP's auto-generated debug keystore (~/.android/debug.keystore,
+            // well-known "android"/"android" credentials) so the release APK is
+            // installable for sideloading/internal testing without a real signing
+            // key ever touching this public repo. Replace with a real release
+            // signingConfig (keystore kept out of git, credentials from CI secrets
+            // or Play App Signing) before any actual distribution.
+            signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             isDebuggable = true
