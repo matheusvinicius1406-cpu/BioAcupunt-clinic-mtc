@@ -4,6 +4,7 @@
 *.stacktrace
 
 /local.properties
+/.bashrc
 
 /.android-build-cache
 /.gradle
