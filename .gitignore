@@ -3,6 +3,8 @@
 *.tmp
 *.stacktrace
 
+/local.properties
+
 /.android-build-cache
 /.gradle
 /.kotlin

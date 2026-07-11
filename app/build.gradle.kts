@@ -26,7 +26,7 @@ val defaultProperties = Properties().apply {
 android {
     namespace = "com.bioacupunt"
     compileSdk = 36
-    buildToolsVersion = "35.0.0"
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "com.aistudio.bioacupunt.xyz"
