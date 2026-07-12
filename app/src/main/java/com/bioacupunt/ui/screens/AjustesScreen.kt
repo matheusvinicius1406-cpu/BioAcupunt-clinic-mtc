@@ -473,7 +473,7 @@ private fun SystemTab() {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        "Endereço do backend. Deixe em branco para usar o servidor local de desenvolvimento.",
+                        "O app já vem conectado ao servidor de produção. Só mude aqui se quiser apontar para outro backend (ex.: um servidor local de desenvolvimento).",
                         style = MaterialTheme.typography.bodySmall
                     )
                     OutlinedTextField(

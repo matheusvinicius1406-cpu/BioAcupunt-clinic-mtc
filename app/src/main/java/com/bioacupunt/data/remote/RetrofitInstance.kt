@@ -12,12 +12,13 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
 
-    // Placeholder base URL for Retrofit — the real target host/scheme/port is
-    // rewritten per-request by HostSelectionInterceptor from the user-configured
-    // server address, so the backend can be pointed at a deployed URL from
-    // Settings without rebuilding the app. 10.0.2.2 is the emulator's alias for
-    // the host's localhost and is the default for local dev.
-    private const val DEFAULT_SERVER_URL = "http://10.0.2.2:8000/"
+    // Default backend the app talks to out of the box: the deployed production
+    // API. A fresh install works with no configuration. This is only the base
+    // URL — never a secret; all server secrets stay on the backend. Advanced
+    // users can override it in Settings > Sistema > Servidor (e.g. point at a
+    // local backend during development), and HostSelectionInterceptor rewrites
+    // each request's host/scheme/port accordingly without a rebuild.
+    private const val DEFAULT_SERVER_URL = "https://bioacupunt-api.onrender.com/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
