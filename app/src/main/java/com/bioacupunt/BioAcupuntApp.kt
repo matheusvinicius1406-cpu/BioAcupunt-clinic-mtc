@@ -6,25 +6,33 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.bioacupunt.data.remote.RetrofitInstance
 import com.bioacupunt.di.AppContainer
+import com.bioacupunt.observability.AppLogger
+import com.bioacupunt.observability.CrashReporter
 
 class BioAcupuntApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        AppContainer.init(applicationContext)
+        // First: capture any uncaught exception to a file so it can be shown
+        // on the next launch instead of the app vanishing silently.
+        CrashReporter.install(this)
 
-        RetrofitInstance.init(
-            tokenProvider = { AppContainer.tokenManager.getToken() },
-            serverUrlProvider = { AppContainer.securePreferences.serverUrl }
-        )
+        // Each step is guarded so a failure in one subsystem can't take down
+        // the whole app at startup — it is logged and captured instead.
+        runCatching { AppContainer.init(applicationContext) }
+            .onFailure { AppLogger.e("BioAcupuntApp", "AppContainer.init failed", it) }
 
-        WorkManager.initialize(
-            applicationContext,
-            workManagerConfiguration
-        )
+        runCatching {
+            RetrofitInstance.init(
+                tokenProvider = { AppContainer.tokenManager.getToken() },
+                serverUrlProvider = { AppContainer.securePreferences.serverUrl }
+            )
+        }.onFailure { AppLogger.e("BioAcupuntApp", "RetrofitInstance.init failed", it) }
 
-        // Periodic background sync (safety net) — battery & network aware
-        AppContainer.syncScheduler.schedulePeriodicSync()
+        runCatching {
+            WorkManager.initialize(applicationContext, workManagerConfiguration)
+            AppContainer.syncScheduler.schedulePeriodicSync()
+        }.onFailure { AppLogger.e("BioAcupuntApp", "WorkManager init failed", it) }
     }
 
     override val workManagerConfiguration: Configuration
