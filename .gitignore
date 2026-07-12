@@ -6,6 +6,15 @@
 /local.properties
 /.bashrc
 
+# Agent-framework files regenerated at the repo root by an external tool.
+# The canonical archived copies live in legacy/agent-framework-residue/.
+/AGENTS.md
+/SOUL.md
+/HEARTBEAT.md
+/IDENTITY.md
+/USER.md
+/TOOLS.md
+
 /.android-build-cache
 /.gradle
 /.kotlin

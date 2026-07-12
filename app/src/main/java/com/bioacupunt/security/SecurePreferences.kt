@@ -73,6 +73,11 @@ class SecurePreferences(context: Context) {
         get() = prefs.getLong("current_tenant_id", -1L).takeIf { it != -1L }
         set(value) = if (value == null || value <= 0) edit { it.remove("current_tenant_id") } else edit { it.putLong("current_tenant_id", value) }
 
+    /** Base URL of the backend the app talks to (e.g. the deployed HTTPS URL). */
+    var serverUrl: String
+        get() = prefs.getString("server_url", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("server_url") } else edit { it.putString("server_url", value) }
+
     fun clearAll() {
         edit { it.clear() }
     }

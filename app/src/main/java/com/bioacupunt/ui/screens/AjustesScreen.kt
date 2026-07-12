@@ -458,13 +458,45 @@ private fun SecurityTab(onLogout: () -> Unit) {
 // ── SYSTEM TAB ──────────────────────────────────────────────
 @Composable
 private fun SystemTab() {
+    val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     var darkMode by remember { mutableStateOf(false) }
     var notificationsEnabled by remember { mutableStateOf(true) }
     var reminderMin by remember { mutableIntStateOf(30) }
     var cacheSize by remember { mutableStateOf("2.4 MB") }
     var language by remember { mutableStateOf("Português (Brasil)") }
+    var serverUrl by remember { mutableStateOf(securePrefs.serverUrl) }
+    var serverSaved by remember { mutableStateOf(false) }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        item { SectionHeader("Servidor") }
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "Endereço do backend. Deixe em branco para usar o servidor local de desenvolvimento.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    OutlinedTextField(
+                        value = serverUrl,
+                        onValueChange = { serverUrl = it; serverSaved = false },
+                        label = { Text("URL do servidor") },
+                        placeholder = { Text("https://bioacupunt-api.onrender.com") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Button(
+                        onClick = { securePrefs.serverUrl = serverUrl.trim(); serverSaved = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar servidor")
+                    }
+                    if (serverSaved) {
+                        Text("✅ Servidor salvo.", style = MaterialTheme.typography.labelMedium, color = Color(0xFF4CAF50))
+                    }
+                }
+            }
+        }
+
         item { SectionHeader("Aparência") }
         item { SettingsSwitchRow(Icons.Default.DarkMode, "Modo Escuro", "Tema escuro do aplicativo", darkMode, { darkMode = it }) }
 

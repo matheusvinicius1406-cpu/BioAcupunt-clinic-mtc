@@ -13,7 +13,10 @@ class BioAcupuntApp : Application(), Configuration.Provider {
         super.onCreate()
         AppContainer.init(applicationContext)
 
-        RetrofitInstance.init(tokenProvider = { AppContainer.tokenManager.getToken() })
+        RetrofitInstance.init(
+            tokenProvider = { AppContainer.tokenManager.getToken() },
+            serverUrlProvider = { AppContainer.securePreferences.serverUrl }
+        )
 
         WorkManager.initialize(
             applicationContext,

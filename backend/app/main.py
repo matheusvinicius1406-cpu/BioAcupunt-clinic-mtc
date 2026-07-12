@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,14 +11,24 @@ from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.limiter import limiter
 from app.db import all_models  # noqa: F401  — registers every model on Base.metadata
+from app.db.session import SessionLocal
 from app.middleware.request_audit import RequestAuditMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.services.bootstrap import bootstrap_admin_if_empty
 
 logging.basicConfig(level=logging.INFO)
 
 settings = get_settings()
 
-app = FastAPI(title="BioAcupunt API", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with SessionLocal() as session:
+        await bootstrap_admin_if_empty(session)
+    yield
+
+
+app = FastAPI(title="BioAcupunt API", version="0.1.0", lifespan=lifespan)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, lambda request, exc: _rate_limit_handler(request, exc))
