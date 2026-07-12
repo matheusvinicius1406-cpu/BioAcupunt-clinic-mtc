@@ -1,10 +1,7 @@
 package com.bioacupunt.di
 
 import android.content.Context
-import androidx.room.AutoMigration
-import androidx.room.Database
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.bioacupunt.data.local.database.AppDatabase
 import java.io.File
@@ -14,14 +11,17 @@ object DatabaseModule {
     private const val DB_NAME = "bioacupunt_db"
     private const val BACKUP_DIR_NAME = "db_backups"
 
+    // MUST match @Database(version = …) on AppDatabase. Kept as a plain
+    // constant on purpose: reading the version by reflecting the @Database
+    // annotation at runtime (AppDatabase::class.java.getAnnotation(...)) returns
+    // null on device — Room's @Database is consumed by the compile-time
+    // annotation processor and is not retained for runtime reflection — which
+    // crashed every database access with "AppDatabase must be annotated with
+    // @Database".
+    private const val DB_VERSION = 8
+
     private var initialized = false
     private lateinit var instance: AppDatabase
-
-    private val schemaVersion: Int by lazy {
-        checkNotNull(AppDatabase::class.java.getAnnotation(Database::class.java)) {
-            "AppDatabase must be annotated with @Database"
-        }.version
-    }
 
     fun provideAppDatabase(context: Context): AppDatabase {
         if (!initialized) {
@@ -33,7 +33,7 @@ object DatabaseModule {
                         runCatching { getCurrentDbVersion(databaseFile) }.getOrNull()
                     } else null
 
-                    if (existingVersion != null && existingVersion < schemaVersion) {
+                    if (existingVersion != null && existingVersion < DB_VERSION) {
                         backupDatabase(appContext)
                     }
 
@@ -96,7 +96,7 @@ object DatabaseModule {
     }
 
     private fun buildMigrations(): List<androidx.room.migration.Migration> {
-        val current = schemaVersion
+        val current = DB_VERSION
         val migrations = mutableListOf<androidx.room.migration.Migration>()
 
         if (current >= 2) migrations.add(MIGRATION_1_2)
