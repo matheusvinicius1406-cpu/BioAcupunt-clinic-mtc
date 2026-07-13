@@ -154,7 +154,21 @@ fun BioAcupuntNavHost(
                 // returns 0, so every patient's prontuário silently opened
                 // patient id 0 instead of the one actually tapped.
                 val pid = entry.arguments?.getLong("patientId") ?: 0L
-                ProntuarioScreen(onBack = { navController.popBackStack() }, patientId = pid)
+                ProntuarioScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenSupremo = { openPid -> navController.navigate(Screen.ProntuarioSupremo.routeFor(openPid)) },
+                    patientId = pid
+                )
+            }
+            composable(
+                route = Screen.ProntuarioSupremo.route,
+                arguments = listOf(androidx.navigation.navArgument("patientId") { type = androidx.navigation.NavType.LongType })
+            ) { entry ->
+                val pid = entry.arguments?.getLong("patientId") ?: 0L
+                val vm: com.bioacupunt.prontuario.presentation.SupremoViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                    factory = AppContainer.supremoViewModelFactory(pid)
+                )
+                ProntuarioSupremoScreen(viewModel = vm)
             }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }

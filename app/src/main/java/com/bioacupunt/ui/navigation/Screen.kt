@@ -21,6 +21,9 @@ sealed class Screen(val route: String, val label: String, val emoji: String = ""
         // registered destination and throws at navigate() time.
         fun routeFor(patientId: Long) = "prontuario/$patientId"
     }
+    data object ProntuarioSupremo : Screen("prontuario-supremo/{patientId}", "Avaliação MTC Supremo", "🧭") {
+        fun routeFor(patientId: Long) = "prontuario-supremo/$patientId"
+    }
     data object Flashcards  : Screen("flashcards",  "Flashcards",  "🃏")
     data object Analytics   : Screen("analytics",   "Analytics",   "📊")
     data object Simulador   : Screen("simulador",   "Simulador",   "🧪")

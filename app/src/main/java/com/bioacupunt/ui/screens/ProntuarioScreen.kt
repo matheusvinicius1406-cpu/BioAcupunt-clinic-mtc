@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProntuarioScreen(
     onBack: (() -> Unit)? = null,
+    onOpenSupremo: (Long) -> Unit = {},
     vm: ProntuarioViewModel = viewModel(factory = AppContainer.prontuarioViewModelFactory),
     patientId: Long = 0L
 ) {
@@ -62,6 +63,9 @@ fun ProntuarioScreen(
                 },
                 actions = {
                     if (state.patientId > 0L) {
+                        IconButton(onClick = { onOpenSupremo(state.patientId) }) {
+                            Icon(Icons.Default.Psychology, contentDescription = "Avaliação MTC Supremo")
+                        }
                         IconButton(onClick = { editingEntry = null; showSessionDialog = true }) { Icon(Icons.Default.Add, contentDescription = null) }
                     }
                 }
