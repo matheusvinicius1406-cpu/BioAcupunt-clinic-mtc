@@ -17,6 +17,7 @@ fun AppointmentEntity.toDomain(): Appointment {
         status = status,
         notes = notes,
         sessionNumber = sessionNumber,
+        reminderMinutesBefore = reminderMinutesBefore,
         valueBrl = valueBrl,
         paid = paid,
         createdAt = createdAt

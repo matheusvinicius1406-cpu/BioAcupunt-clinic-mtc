@@ -67,7 +67,13 @@ class AgendaViewModel(
         }
     }
 
-    fun createAppointment(patientId: Long, patientName: String, time: String) {
+    fun createAppointment(
+        patientId: Long,
+        patientName: String,
+        time: String,
+        valueBrl: Double,
+        type: com.bioacupunt.agenda.domain.model.AppointmentType
+    ) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             val now = java.time.Instant.now().toString()
@@ -76,6 +82,8 @@ class AgendaViewModel(
                 patientName = patientName,
                 date = _state.value.selectedDate,
                 time = time,
+                type = type.name,
+                valueBrl = valueBrl,
                 notes = "",
                 createdAt = now
             )

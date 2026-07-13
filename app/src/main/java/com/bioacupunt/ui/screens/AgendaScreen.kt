@@ -32,17 +32,21 @@ import com.bioacupunt.di.AppContainer
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgendaScreen(viewModel: AgendaViewModel? = null) {
-    val vm = viewModel ?: viewModel(factory = com.bioacupunt.agenda.presentation.AgendaViewModelFactory(
-        getAppointmentsByDate = com.bioacupunt.agenda.domain.usecase.GetAppointmentsByDate(com.bioacupunt.di.AppContainer.appointmentRepository),
-        saveAppointment = com.bioacupunt.agenda.domain.usecase.SaveAppointment(com.bioacupunt.di.AppContainer.appointmentRepository),
-        updateStatus = com.bioacupunt.agenda.domain.usecase.UpdateAppointmentStatus(com.bioacupunt.di.AppContainer.appointmentRepository),
-        calculateDayStats = com.bioacupunt.agenda.domain.usecase.CalculateDayStats(com.bioacupunt.di.AppContainer.appointmentRepository)
-    ))
+    val vm = viewModel ?: viewModel(factory = com.bioacupunt.di.AppContainer.agendaViewModelFactory)
     val state by vm.state.collectAsStateWithLifecycle()
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    val selectedDate = remember(state.selectedDate) { LocalDate.parse(state.selectedDate) }
     var showNewAppointment by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state.error) {
+        state.error?.let {
+            snackbarHostState.showSnackbar(it)
+            vm.clearError()
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showNewAppointment = true },
@@ -52,9 +56,8 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null) {
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            WeekStrip(selectedDate = selectedDate, onDateSelected = { selectedDate = it })
-            val dayString = selectedDate.toString()
-            val dayAppointments = state.appointments.filter { it.date == dayString }
+            WeekStrip(selectedDate = selectedDate, onDateSelected = { vm.onDateSelected(it.toString()) })
+            val dayAppointments = state.appointments
             if (dayAppointments.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -81,7 +84,7 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null) {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(dayAppointments, key = { it.id }) { appt ->
-                        AppointmentCard(appt)
+                        AppointmentCard(appt, onStatusChange = { newStatus -> vm.onStatusChange(appt.id, newStatus) })
                     }
                 }
             }
@@ -91,9 +94,9 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null) {
     if (showNewAppointment) {
         NewAppointmentDialog(
             onDismiss = { showNewAppointment = false },
-            onSave = { patientId, patientName, time, value ->
+            onSave = { patientId, patientName, time, value, type ->
                 showNewAppointment = false
-                vm.createAppointment(patientId, patientName, time)
+                vm.createAppointment(patientId, patientName, time, value, type)
             }
         )
     }
@@ -145,11 +148,23 @@ private fun WeekStrip(selectedDate: LocalDate, onDateSelected: (LocalDate) -> Un
     }
 }
 
+/** Status changes a doctor can make from a given state. Terminal states (cancelled,
+ * completed, no-show) offer none — reopening one is a deliberate re-booking, not a
+ * tap on a chip. */
+private fun nextStatusOptions(current: AppointmentStatus): List<AppointmentStatus> = when (current) {
+    AppointmentStatus.SCHEDULED -> listOf(AppointmentStatus.CONFIRMED, AppointmentStatus.CANCELLED)
+    AppointmentStatus.CONFIRMED -> listOf(AppointmentStatus.IN_PROGRESS, AppointmentStatus.CANCELLED, AppointmentStatus.NO_SHOW)
+    AppointmentStatus.IN_PROGRESS -> listOf(AppointmentStatus.COMPLETED)
+    else -> emptyList()
+}
+
 @Composable
-private fun AppointmentCard(appt: Appointment) {
+private fun AppointmentCard(appt: Appointment, onStatusChange: (AppointmentStatus) -> Unit) {
     val status = AppointmentStatus.entries.find { it.name == appt.status } ?: AppointmentStatus.SCHEDULED
     val type = AppointmentType.entries.find { it.name == appt.type } ?: AppointmentType.ACUPUNCTURE
     val statusColor = Color(status.color)
+    val options = nextStatusOptions(status)
+    var menuExpanded by remember { mutableStateOf(false) }
     Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.width(52.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -163,7 +178,24 @@ private fun AppointmentCard(appt: Appointment) {
                 Text("Sessão ${appt.sessionNumber}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Column(horizontalAlignment = Alignment.End) {
-                SuggestionChip(onClick = {}, label = { Text(status.label, style = MaterialTheme.typography.labelSmall) }, colors = SuggestionChipDefaults.suggestionChipColors(containerColor = statusColor.copy(alpha = 0.1f)))
+                Box {
+                    SuggestionChip(
+                        onClick = { if (options.isNotEmpty()) menuExpanded = true },
+                        label = { Text(status.label, style = MaterialTheme.typography.labelSmall) },
+                        colors = SuggestionChipDefaults.suggestionChipColors(containerColor = statusColor.copy(alpha = 0.1f))
+                    )
+                    DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                        options.forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option.label) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onStatusChange(option)
+                                }
+                            )
+                        }
+                    }
+                }
                 if (appt.valueBrl > 0) Text("R$ %.0f".format(appt.valueBrl), style = MaterialTheme.typography.labelSmall, color = if (appt.paid) Color(0xFF4CAF50) else Color(0xFFFF8A65))
             }
         }
@@ -171,7 +203,7 @@ private fun AppointmentCard(appt: Appointment) {
 }
 
 @Composable
-private fun NewAppointmentDialog(onDismiss: () -> Unit, onSave: (Long, String, String, String) -> Unit) {
+private fun NewAppointmentDialog(onDismiss: () -> Unit, onSave: (Long, String, String, Double, AppointmentType) -> Unit) {
     var patientIdText by remember { mutableStateOf("") }
     var patientName by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(AppointmentType.ACUPUNCTURE) }
@@ -197,7 +229,8 @@ private fun NewAppointmentDialog(onDismiss: () -> Unit, onSave: (Long, String, S
         confirmButton = {
             Button(onClick = {
                 val pid = patientIdText.toLongOrNull() ?: 0L
-                onSave(pid, patientName, time, value)
+                val valueBrl = value.toDoubleOrNull() ?: 0.0
+                onSave(pid, patientName, time, valueBrl, selectedType)
             }, colors = ButtonDefaults.buttonColors(containerColor = Primary)) { Text("Salvar") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }

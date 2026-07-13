@@ -20,6 +20,9 @@ sealed class AppError(
     data class SyncError(val cause: Throwable? = null) :
         AppError("ERR_SYNC_001", "Sincronização temporariamente indisponível.", retryable = true)
 
+    data class ValidationError(val message: String) :
+        AppError("ERR_VAL_001", message, retryable = false)
+
     data class Unknown(val cause: Throwable? = null) :
         AppError("ERR_UNK_001", "Erro inesperado.", retryable = false)
 }

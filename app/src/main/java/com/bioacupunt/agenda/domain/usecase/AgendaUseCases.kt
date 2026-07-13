@@ -4,6 +4,7 @@ import com.bioacupunt.agenda.domain.model.Appointment
 import com.bioacupunt.agenda.domain.model.AppointmentStatus
 import com.bioacupunt.agenda.domain.model.AppointmentType
 import com.bioacupunt.agenda.domain.repository.AppointmentRepository
+import com.bioacupunt.core.util.AppError
 import com.bioacupunt.core.util.Result
 import kotlinx.coroutines.flow.Flow
 
@@ -15,11 +16,40 @@ class GetAppointmentsByDate(
     }
 }
 
+/**
+ * Saving is where a double-booking would be created, so this is the one place that
+ * has to check for it — nothing upstream (UI, ViewModel) can be trusted to catch it,
+ * and there's only one practitioner's calendar to protect.
+ */
 class SaveAppointment(
     private val repository: AppointmentRepository
 ) {
     suspend operator fun invoke(appointment: Appointment): Result<Appointment> {
+        val sameDay = repository.getByDateSync(appointment.date)
+        val conflict = sameDay.any { other ->
+            other.id != appointment.id &&
+                other.status != AppointmentStatus.CANCELLED.name &&
+                overlaps(other, appointment)
+        }
+        if (conflict) {
+            return Result.Error(AppError.ValidationError("Já existe uma consulta nesse horário."))
+        }
         return repository.save(appointment)
+    }
+
+    private fun overlaps(a: Appointment, b: Appointment): Boolean {
+        val aStart = toMinutesOfDay(a.time)
+        val aEnd = aStart + a.durationMin
+        val bStart = toMinutesOfDay(b.time)
+        val bEnd = bStart + b.durationMin
+        return aStart < bEnd && bStart < aEnd
+    }
+
+    private fun toMinutesOfDay(hhmm: String): Int {
+        val parts = hhmm.split(":")
+        val hours = parts.getOrNull(0)?.toIntOrNull() ?: 0
+        val minutes = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        return hours * 60 + minutes
     }
 }
 
