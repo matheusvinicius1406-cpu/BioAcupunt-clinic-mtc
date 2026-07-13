@@ -111,42 +111,23 @@ fun BioAcupuntNavHost(
                 )
             }
             composable(Screen.CRM.route) {
-                val vm: com.bioacupunt.crm.presentation.CrmViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                    factory = com.bioacupunt.crm.presentation.CrmViewModelFactory(
-                        saveCrmPatient = com.bioacupunt.crm.domain.usecase.SaveCrmPatient(
-                            com.bioacupunt.di.AppContainer.crmPatientRepository
-                        ),
-                        updateCrmStage = com.bioacupunt.crm.domain.usecase.UpdateCrmStage(
-                            com.bioacupunt.di.AppContainer.crmPatientRepository
-                        ),
-                        searchCrmPatients = com.bioacupunt.crm.domain.usecase.SearchCrmPatients(
-                            com.bioacupunt.di.AppContainer.crmPatientRepository
-                        )
-                    )
-                )
+                // No explicit viewModel passed: CrmScreen's own default wires
+                // AppContainer.crmViewModelFactory, which (unlike a manual
+                // construction here) actually supplies repository/tenantManager.
+                // A previous inline factory here omitted both, so every created
+                // CrmPatient got tenantId=0 while the repository validated
+                // against the real tenant (1) — every patient save silently
+                // threw "Tenant mismatch" and the new-patient dialog just closed
+                // with nothing saved.
                 CrmScreen(
-                    onNavigateToProntuario = { pid -> navController.navigate("${Screen.Prontuario.route}/$pid") },
-                    viewModel = vm
+                    onNavigateToProntuario = { pid -> navController.navigate("${Screen.Prontuario.route}/$pid") }
                 )
             }
             composable(Screen.Agenda.route) {
-                val vm: com.bioacupunt.agenda.presentation.AgendaViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                    factory = com.bioacupunt.agenda.presentation.AgendaViewModelFactory(
-                        getAppointmentsByDate = com.bioacupunt.agenda.domain.usecase.GetAppointmentsByDate(
-                            com.bioacupunt.di.AppContainer.appointmentRepository
-                        ),
-                        saveAppointment = com.bioacupunt.agenda.domain.usecase.SaveAppointment(
-                            com.bioacupunt.di.AppContainer.appointmentRepository
-                        ),
-                        updateStatus = com.bioacupunt.agenda.domain.usecase.UpdateAppointmentStatus(
-                            com.bioacupunt.di.AppContainer.appointmentRepository
-                        ),
-                        calculateDayStats = com.bioacupunt.agenda.domain.usecase.CalculateDayStats(
-                            com.bioacupunt.di.AppContainer.appointmentRepository
-                        )
-                    )
-                )
-                AgendaScreen(viewModel = vm)
+                // Same reasoning as CRM above: let AgendaScreen's own default
+                // resolve AppContainer.agendaViewModelFactory instead of
+                // duplicating its construction here.
+                AgendaScreen()
             }
             composable(Screen.Biblioteca.route) {
                 BibliotecaScreen(
