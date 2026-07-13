@@ -13,7 +13,14 @@ sealed class Screen(val route: String, val label: String, val emoji: String = ""
     data object Ajustes     : Screen("ajustes",     "Ajustes",     "⚙️")
 
     // Secondary screens (não aparecem na bottom nav)
-    data object Prontuario  : Screen("prontuario/{patientId}", "Prontuário",  "📋")
+    data object Prontuario  : Screen("prontuario/{patientId}", "Prontuário",  "📋") {
+        // `route` above is the *pattern* NavHost registers a destination for.
+        // Navigating there needs a concrete path with the placeholder filled
+        // in — string-concatenating "$route/$id" instead (as this call site
+        // used to) produces "prontuario/{patientId}/123", which matches no
+        // registered destination and throws at navigate() time.
+        fun routeFor(patientId: Long) = "prontuario/$patientId"
+    }
     data object Flashcards  : Screen("flashcards",  "Flashcards",  "🃏")
     data object Analytics   : Screen("analytics",   "Analytics",   "📊")
     data object Simulador   : Screen("simulador",   "Simulador",   "🧪")

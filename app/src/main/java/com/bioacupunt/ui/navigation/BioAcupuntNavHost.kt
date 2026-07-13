@@ -13,8 +13,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.screens.*
-import com.bioacupunt.security.AppHardening
-import com.bioacupunt.security.AuthThrottle
 import com.bioacupunt.ui.lock.BiometricLockScreen
 
 private data class BottomNavItem(
@@ -120,7 +118,7 @@ fun BioAcupuntNavHost(
                 // threw "Tenant mismatch" and the new-patient dialog just closed
                 // with nothing saved.
                 CrmScreen(
-                    onNavigateToProntuario = { pid -> navController.navigate("${Screen.Prontuario.route}/$pid") }
+                    onNavigateToProntuario = { pid -> navController.navigate(Screen.Prontuario.routeFor(pid)) }
                 )
             }
             composable(Screen.Agenda.route) {
@@ -146,9 +144,16 @@ fun BioAcupuntNavHost(
                 )
             }
             // Secondary screens
-            composable(Screen.Prontuario.route) {
-                val entry = navController.currentBackStackEntry
-                val pid = entry?.arguments?.getLong("patientId") ?: 0L
+            composable(
+                route = Screen.Prontuario.route,
+                arguments = listOf(androidx.navigation.navArgument("patientId") { type = androidx.navigation.NavType.LongType })
+            ) { entry ->
+                // Without the explicit LongType above, Navigation Compose infers
+                // {patientId} as a String argument. Bundle.getLong() on a String
+                // value doesn't throw — it swallows the ClassCastException and
+                // returns 0, so every patient's prontuário silently opened
+                // patient id 0 instead of the one actually tapped.
+                val pid = entry.arguments?.getLong("patientId") ?: 0L
                 ProntuarioScreen(onBack = { navController.popBackStack() }, patientId = pid)
             }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }

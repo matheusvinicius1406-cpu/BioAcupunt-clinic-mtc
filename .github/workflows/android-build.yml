@@ -42,6 +42,16 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew || true
 
+      - name: Write Gemini API key for this build
+        # local.properties doesn't exist on the runner (gitignored — see commit
+        # a15237f, sdk.dir there would point at a dev machine that doesn't exist
+        # here). AGP falls back to $ANDROID_HOME for the SDK path regardless, so
+        # this file only needs the one line the secrets-gradle-plugin reads.
+        # Add the real key at: repo Settings > Secrets and variables > Actions >
+        # New repository secret > GEMINI_API_KEY. Missing/empty secret still
+        # builds fine (AndroidAiSecretsProvider treats a blank key as "not set").
+        run: echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> local.properties
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
