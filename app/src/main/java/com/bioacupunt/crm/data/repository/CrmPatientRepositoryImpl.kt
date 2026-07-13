@@ -100,6 +100,16 @@ class CrmPatientRepositoryImpl(
         }
     }
 
+    override suspend fun deleteById(id: Long): Result<Unit> {
+        return try {
+            dao.softDelete(id, tenantId, java.time.Instant.now().toString())
+            cache.remove(cacheKeyAll)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(AppError.DatabaseError(e))
+        }
+    }
+
     private fun validateTenant(entityTenantId: Long) {
         val current = tenantManager.currentTenantId()
         if (entityTenantId != current) {

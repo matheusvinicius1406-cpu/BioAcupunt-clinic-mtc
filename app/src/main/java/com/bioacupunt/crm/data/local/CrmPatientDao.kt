@@ -39,6 +39,9 @@ interface CrmPatientDao {
     @Query("UPDATE crm_patients SET pendingSync = 1, lastModified = :ts WHERE id = :id AND tenantId = :tenantId")
     suspend fun markPending(id: Long, ts: String, tenantId: Long)
 
+    @Query("UPDATE crm_patients SET deleted = 1, pendingSync = 1, updatedAt = :ts, lastModified = :ts WHERE id = :id AND tenantId = :tenantId")
+    suspend fun softDelete(id: Long, tenantId: Long, ts: String)
+
     @Query("SELECT * FROM crm_patients WHERE tenantId = :tenantId AND pendingSync = 1 AND deleted = 0 AND lastModified >= :since ORDER BY lastModified ASC")
     suspend fun getChangedSince(tenantId: Long, since: String): List<CrmPatientEntity>
 

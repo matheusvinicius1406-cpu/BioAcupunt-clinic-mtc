@@ -128,17 +128,15 @@ class CrmViewModel(
     fun deletePatient(patientId: Long) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            when (val current = repository?.getById(patientId)) {
-                is Result.Success -> {
-                    val updated = current.data.copy(notes = "[SOFT_DELETED]")
-                    val saveResult = saveCrmPatient(updated)
-                    if (saveResult is Result.Error) {
-                        _state.update { it.copy(isLoading = false, error = saveResult.kind.userMessage) }
-                    } else {
-                        _state.update { it.copy(isLoading = false) }
-                    }
-                }
-                else -> _state.update { it.copy(isLoading = false, error = "Paciente não encontrado.") }
+            // Soft-delete sets the entity's own `deleted` column (every DAO query
+            // already filters deleted = 0) instead of overwriting `notes` with a
+            // marker string — the previous approach neither hid the patient from
+            // any list nor stopped destroying their real clinical notes.
+            when (val result = repository?.deleteById(patientId)) {
+                is Result.Error -> _state.update { it.copy(isLoading = false, error = result.kind.userMessage) }
+                is Result.Success -> _state.update { it.copy(isLoading = false) }
+                is Result.Loading -> Unit
+                null -> _state.update { it.copy(isLoading = false, error = "Paciente não encontrado.") }
             }
         }
     }

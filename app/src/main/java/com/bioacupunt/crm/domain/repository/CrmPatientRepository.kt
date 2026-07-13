@@ -13,4 +13,5 @@ interface CrmPatientRepository {
     suspend fun saveAll(entities: List<CrmPatient>): Result<Int>
     suspend fun stageCount(stage: String): Result<Int>
     suspend fun getPendingSync(since: String): Result<List<CrmPatient>>
+    suspend fun deleteById(id: Long): Result<Unit>
 }
