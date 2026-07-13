@@ -18,7 +18,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 8
+    private const val DB_VERSION = 9
 
     private var initialized = false
     private lateinit var instance: AppDatabase
@@ -106,6 +106,7 @@ object DatabaseModule {
         if (current >= 6) migrations.add(MIGRATION_5_6)
         if (current >= 7) migrations.add(MIGRATION_6_7)
         if (current >= 8) migrations.add(MIGRATION_7_8)
+        if (current >= 9) migrations.add(MIGRATION_8_9)
         return migrations
     }
 
@@ -151,6 +152,55 @@ object DatabaseModule {
         override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL("ALTER TABLE appointments ADD COLUMN valueBrl REAL NOT NULL DEFAULT 0.0")
             database.execSQL("ALTER TABLE appointments ADD COLUMN paid INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
+    /**
+     * Adds the structured TCM assessment ("Prontuário Supremo").
+     *
+     * Additive only: no existing table is touched, so no chart written by v8 can be
+     * lost by upgrading. The column types and the index names must match exactly what
+     * Room derives from [com.bioacupunt.prontuario.data.local.MtcAssessmentEntity],
+     * or Room throws an IllegalStateException on open — which, given this app already
+     * died once at startup, is a failure mode worth being paranoid about.
+     */
+    private val MIGRATION_8_9 = object : androidx.room.migration.Migration(8, 9) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `mtc_assessments` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `patientId` INTEGER NOT NULL,
+                    `date` TEXT NOT NULL DEFAULT '',
+                    `chiefComplaint` TEXT NOT NULL DEFAULT '',
+                    `baGangPolarity` TEXT NOT NULL DEFAULT 'UNSET',
+                    `baGangDepth` TEXT NOT NULL DEFAULT 'UNSET',
+                    `baGangTemperature` TEXT NOT NULL DEFAULT 'UNSET',
+                    `baGangStrength` TEXT NOT NULL DEFAULT 'UNSET',
+                    `patternsJson` TEXT NOT NULL DEFAULT '[]',
+                    `tongueJson` TEXT NOT NULL DEFAULT '{}',
+                    `pulseJson` TEXT NOT NULL DEFAULT '{}',
+                    `bodyMarksJson` TEXT NOT NULL DEFAULT '[]',
+                    `flagsCsv` TEXT NOT NULL DEFAULT '',
+                    `gestationalWeeks` INTEGER,
+                    `clinicalImpression` TEXT NOT NULL DEFAULT '',
+                    `syncedAt` TEXT,
+                    `createdAt` TEXT NOT NULL DEFAULT '',
+                    `updatedAt` TEXT NOT NULL DEFAULT '',
+                    FOREIGN KEY(`patientId`) REFERENCES `patients`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent(),
+            )
+            database.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_mtc_assessments_patientId` ON `mtc_assessments` (`patientId`)",
+            )
+            database.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_mtc_assessments_date` ON `mtc_assessments` (`date`)",
+            )
+            database.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_mtc_assessments_updatedAt` ON `mtc_assessments` (`updatedAt`)",
+            )
         }
     }
 }

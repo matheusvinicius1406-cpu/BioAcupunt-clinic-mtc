@@ -24,21 +24,43 @@ object RetrofitInstance {
         level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     }
 
-    private lateinit var authInterceptor: AuthInterceptor
-    private lateinit var hostInterceptor: HostSelectionInterceptor
+    // These are deliberately NOT `lateinit`.
+    //
+    // They used to be, and that was the root cause of the launch crash: the
+    // interceptors were only assigned inside `init()`, but nothing ever called
+    // `RetrofitInstance.init()` — `AppContainer.init()` only stored the Context.
+    // So the first time the object graph touched `authApi`/`api`, the `okHttpClient`
+    // lazy dereferenced an unset `lateinit` and threw
+    // `UninitializedPropertyAccessException: lateinit property hostInterceptor has
+    // not been initialized`, killing the app before the first frame.
+    //
+    // Making these volatile providers with safe fallbacks means startup order can
+    // no longer crash the app: if `init()` is never called, the app still boots and
+    // talks to DEFAULT_SERVER_URL unauthenticated. `init()` becomes *configuration*
+    // rather than a fragile precondition. Providers are read per-request, so
+    // switching servers at runtime keeps working.
+    @Volatile private var tokenProvider: (suspend () -> String)? = null
+    @Volatile private var serverUrlProvider: (() -> String)? = null
+
+    private val authInterceptor = AuthInterceptor { tokenProvider?.invoke().orEmpty() }
+
+    private val hostInterceptor = HostSelectionInterceptor {
+        serverUrlProvider?.invoke()?.ifBlank { null } ?: DEFAULT_SERVER_URL
+    }
 
     /**
+     * Optional configuration. Call from [com.bioacupunt.di.AppContainer.init] once the
+     * Context is set. Safe to call more than once; safe to never call.
+     *
      * @param serverUrlProvider returns the base server URL (e.g. the deployed
-     *   HTTPS URL) chosen by the user; blank falls back to the local default.
+     *   HTTPS URL) chosen by the user; blank falls back to [DEFAULT_SERVER_URL].
      */
     fun init(
         tokenProvider: suspend () -> String,
         serverUrlProvider: () -> String
     ) {
-        authInterceptor = AuthInterceptor(tokenProvider)
-        hostInterceptor = HostSelectionInterceptor {
-            serverUrlProvider().ifBlank { DEFAULT_SERVER_URL }
-        }
+        this.tokenProvider = tokenProvider
+        this.serverUrlProvider = serverUrlProvider
     }
 
     private val okHttpClient: OkHttpClient by lazy {

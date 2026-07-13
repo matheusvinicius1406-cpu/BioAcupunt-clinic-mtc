@@ -19,9 +19,10 @@ import com.bioacupunt.sync.data.local.SyncQueueEntity
         com.bioacupunt.prontuario.data.local.ProntuarioEntity::class,
         com.bioacupunt.prontuario.data.local.ProntuarioEntryEntity::class,
         com.bioacupunt.biblioteca.data.local.BibliotecaNodeEntity::class,
-        com.bioacupunt.relatorios.data.local.ReportEntity::class
+        com.bioacupunt.relatorios.data.local.ReportEntity::class,
+        com.bioacupunt.prontuario.data.local.MtcAssessmentEntity::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -34,4 +35,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun prontuarioDao(): com.bioacupunt.prontuario.data.local.ProntuarioDao
     abstract fun bibliotecaDao(): com.bioacupunt.biblioteca.data.local.BibliotecaDao
     abstract fun reportDao(): com.bioacupunt.relatorios.data.local.ReportDao
+    abstract fun mtcAssessmentDao(): com.bioacupunt.prontuario.data.local.MtcAssessmentDao
 }

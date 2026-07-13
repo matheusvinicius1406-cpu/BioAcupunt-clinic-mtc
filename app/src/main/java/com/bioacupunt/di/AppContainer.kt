@@ -53,6 +53,16 @@ object AppContainer {
         if (_context == null) synchronized(this) {
             if (_context == null) _context = context.applicationContext
         }
+
+        // Wire the network layer. This call was missing, which is why the app
+        // crashed on launch: RetrofitInstance's interceptors were never configured.
+        // Must run *after* _context is set — `tokenManager` and `securePreferences`
+        // both resolve through `appContext`.
+        RetrofitInstance.init(
+            tokenProvider = { tokenManager.getToken() },
+            serverUrlProvider = { securePreferences.serverUrl },
+        )
+
         ensureNetworkObserverStarted()
     }
 
@@ -144,6 +154,32 @@ object AppContainer {
     val appointmentDao: com.bioacupunt.agenda.data.local.AppointmentDao by lazy { database.appointmentDao() }
     val transacaoDao: com.bioacupunt.financeiro.data.local.TransacaoDao by lazy { database.transacaoDao() }
     val prontuarioDao: com.bioacupunt.prontuario.data.local.ProntuarioDao by lazy { database.prontuarioDao() }
+
+    // --- Prontuário Supremo (structured TCM chart + clinical safety) ---
+    val mtcAssessmentDao: com.bioacupunt.prontuario.data.local.MtcAssessmentDao by lazy {
+        database.mtcAssessmentDao()
+    }
+
+    /**
+     * Single shared instance. The rule set is a clinic-wide policy, not per-screen
+     * state — every caller must screen against exactly the same rules.
+     */
+    val clinicalSafetyEngine: com.bioacupunt.prontuario.domain.safety.ClinicalSafetyEngine by lazy {
+        com.bioacupunt.prontuario.domain.safety.ClinicalSafetyEngine()
+    }
+
+    val mtcAssessmentRepository: com.bioacupunt.prontuario.domain.usecase.MtcAssessmentRepository by lazy {
+        com.bioacupunt.prontuario.domain.usecase.MtcAssessmentRepository(
+            dao = mtcAssessmentDao,
+            safetyEngine = clinicalSafetyEngine,
+        )
+    }
+
+    fun supremoViewModelFactory(patientId: Long) =
+        com.bioacupunt.prontuario.presentation.SupremoViewModelFactory(
+            repository = mtcAssessmentRepository,
+            patientId = patientId,
+        )
     val bibliotecaDao: com.bioacupunt.biblioteca.data.local.BibliotecaDao by lazy { database.bibliotecaDao() }
 
     // ── Financeiro ─────────────────────────────────────────
@@ -218,10 +254,24 @@ object AppContainer {
     }
 
     // ── AI ─────────────────────────────────────────────────
+    val localModelManager: com.bioacupunt.ai.data.provider.LocalModelManager by lazy {
+        com.bioacupunt.ai.data.provider.LocalModelManager(appContext)
+    }
+
+    val localLlmProvider: com.bioacupunt.ai.data.provider.LocalLlmProvider by lazy {
+        com.bioacupunt.ai.data.provider.LocalLlmProvider(appContext, localModelManager)
+    }
+
     private val aiOrchestrator: com.bioacupunt.ai.orchestrator.AiOrchestrator by lazy {
         com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
             providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
                 kotlinx.coroutines.runBlocking {
+                    // Registered first, and with fallbackOrder 0, so the orchestrator
+                    // prefers it whenever it can serve the request: patient data stays
+                    // on the device. It reports isAvailable() == false until the model
+                    // is downloaded, so the cloud providers below remain the graceful
+                    // fallback rather than a hard dependency.
+                    registry.register(localLlmProvider)
                     registry.register(com.bioacupunt.ai.data.provider.GeminiProvider(cacheManager, aiSecretsProvider))
                     registry.register(com.bioacupunt.ai.data.provider.MockProvider())
                 }
@@ -232,6 +282,21 @@ object AppContainer {
     val aiRepository: com.bioacupunt.ai.core.AiRepository by lazy {
         com.bioacupunt.ai.data.repository.AiRepositoryImpl(aiOrchestrator)
     }
+    // ── Biblioteca: busca BM25 + RAG ancorado ──────────────
+    val mtcRetriever: com.bioacupunt.biblioteca.domain.search.MtcRetriever by lazy {
+        com.bioacupunt.biblioteca.domain.search.MtcRetriever(
+            com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles,
+        )
+    }
+
+    /**
+     * The only sanctioned path for asking the AI a knowledge question: it refuses to
+     * call the model when the library has no evidence. See AskLibraryUseCase.
+     */
+    val askLibrary: com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase by lazy {
+        com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase(mtcRetriever, aiRepository)
+    }
+
     val aiHealthRegistry: com.bioacupunt.ai.health.HealthRegistry by lazy {
         com.bioacupunt.ai.health.DefaultHealthRegistry()
     }

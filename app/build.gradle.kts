@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val localProperties = Properties().apply {
@@ -137,6 +138,8 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Moshi
+    // On-device LLM (Gemma). Model weights are downloaded at runtime, never bundled.
+    implementation(libs.mediapipe.tasks.genai)
     implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)
 

@@ -21,9 +21,18 @@ import com.bioacupunt.ui.theme.BioAcupuntTheme
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppContainer.init(applicationContext)
-        AppContainer.seedDemoDataIfNeeded()
-        val crashReport = CrashReporter.consumeLastCrash(this)
+
+        // Bootstrap failures must become a *screen*, not a silent death.
+        // Anything here can legitimately fail on a real device — a Room migration,
+        // a corrupted Keystore behind SecurePreferences, a full disk. Previously
+        // any such failure killed the app before the first frame with no trace,
+        // which is exactly how the launch crash stayed invisible for so long.
+        val bootFailure = runCatching {
+            AppContainer.init(applicationContext)
+            AppContainer.seedDemoDataIfNeeded()
+        }.exceptionOrNull()?.stackTraceToString()
+
+        val crashReport = bootFailure ?: CrashReporter.consumeLastCrash(this)
         enableEdgeToEdge()
         setContent {
             BioAcupuntTheme {
