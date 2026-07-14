@@ -1,6 +1,7 @@
 package com.bioacupunt.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -9,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,39 +17,71 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.crm.domain.model.PatientStage
+import com.bioacupunt.crm.presentation.uiColor
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.TextMuted
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientsListTab(
     patients: List<CrmPatient>,
     searchQuery: String,
+    selectedStage: String?,
     onSearch: (String) -> Unit,
+    onStageFilter: (String?) -> Unit,
     onOpenProntuario: (Long) -> Unit,
     onDelete: (Long) -> Unit,
     onStatusChange: (Long, PatientStage) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = onSearch,
-            placeholder = { Text("Buscar paciente…") },
-            leadingIcon = { Icon(Icons.Default.Search, null) },
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp)
-        )
-        Spacer(Modifier.height(8.dp))
+        // Search pill
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clip(MaterialTheme.shapes.extraLarge)
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.extraLarge)
+                .padding(horizontal = 16.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(Icons.Default.Search, null, tint = TextMuted, modifier = Modifier.size(20.dp))
+            BasicTextFieldPlaceholder(searchQuery, onSearch, "Nome ou telefone…")
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // Status filter chips
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            item {
+                StatusChip("Todos", selected = selectedStage.isNullOrBlank(), color = Primary) { onStageFilter(null) }
+            }
+            items(PatientStage.entries) { stage ->
+                StatusChip(stage.label, selected = selectedStage == stage.name, color = stage.uiColor) {
+                    onStageFilter(stage.name)
+                }
+            }
+        }
+
+        Spacer(Modifier.height(14.dp))
+
         if (patients.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Nenhum paciente encontrado.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Box(Modifier.fillMaxSize().padding(top = 40.dp), contentAlignment = Alignment.TopCenter) {
+                Text("Nenhum paciente encontrado.", color = TextMuted, style = MaterialTheme.typography.bodySmall)
             }
             return
         }
-        LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             items(patients, key = { it.id }) { p ->
                 PatientCrmCard(
                     p,
@@ -63,6 +95,40 @@ fun PatientsListTab(
 }
 
 @Composable
+private fun BasicTextFieldPlaceholder(value: String, onValueChange: (String) -> Unit, placeholder: String) {
+    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)) {
+        androidx.compose.foundation.text.BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (value.isBlank()) {
+            Text(placeholder, style = MaterialTheme.typography.bodyMedium, color = TextMuted)
+        }
+    }
+}
+
+@Composable
+private fun StatusChip(label: String, selected: Boolean, color: Color, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(if (selected) color else MaterialTheme.colorScheme.surface)
+            .border(1.dp, if (selected) color else MaterialTheme.colorScheme.outline, MaterialTheme.shapes.extraLarge)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 6.dp)
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+            color = if (selected) Color.White else color,
+        )
+    }
+}
+
+@Composable
 private fun PatientCrmCard(
     p: CrmPatient,
     onOpen: () -> Unit,
@@ -72,35 +138,41 @@ private fun PatientCrmCard(
     var confirmDelete by remember { mutableStateOf(false) }
     var pickerStage by remember { mutableStateOf<PatientStage?>(null) }
     val stage = remember(p.stage) { PatientStage.entries.find { it.name == p.stage } ?: PatientStage.ACTIVE }
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onOpen),
-        elevation = CardDefaults.cardElevation(2.dp)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
+            .clickable(onClick = onOpen)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier.size(44.dp).clip(CircleShape).background(stage.uiColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(initialsOf(p.name), color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+        }
+        Column(Modifier.weight(1f)) {
+            Text(p.name, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            val secondLine = if (p.phone.isNotBlank()) "${stage.emoji} ${stage.label} · ${p.phone}" else "${stage.emoji} ${stage.label}"
+            Text(secondLine, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Box(
                 modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(Primary.copy(0.15f)),
-                contentAlignment = Alignment.Center
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(stage.uiColor.copy(alpha = 0.15f))
+                    .clickable { pickerStage = stage }
+                    .padding(horizontal = 12.dp, vertical = 3.dp)
             ) {
-                Text(p.name.firstOrNull()?.uppercase() ?: "?", style = MaterialTheme.typography.titleMedium.copy(color = Primary))
+                Text(stage.label, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = stage.uiColor)
             }
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(p.name, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                Text("${stage.emoji} ${stage.label}", style = MaterialTheme.typography.bodySmall)
-                if (p.phone.isNotBlank()) Text(p.phone, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text("${p.totalSessions}x", style = MaterialTheme.typography.titleSmall.copy(color = Primary, fontWeight = FontWeight.Bold))
-                Text("sessões", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text("R$ %.0f".format(p.totalRevenueBrl), style = MaterialTheme.typography.labelSmall, color = Color(0xFF4CAF50))
-                Spacer(Modifier.height(4.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    TextButton(onClick = { pickerStage = stage }) { Text("Etapa") }
-                    TextButton(onClick = { confirmDelete = true }) { Icon(Icons.Default.Delete, null) }
-                }
+            TextButton(onClick = { confirmDelete = true }, contentPadding = PaddingValues(0.dp)) {
+                Icon(Icons.Default.Delete, null, tint = TextMuted, modifier = Modifier.size(16.dp))
             }
         }
     }
@@ -142,5 +214,14 @@ private fun PatientCrmCard(
             confirmButton = {},
             dismissButton = { TextButton(onClick = { pickerStage = null }) { Text("Fechar") } }
         )
+    }
+}
+
+private fun initialsOf(name: String): String {
+    val parts = name.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+    return when {
+        parts.isEmpty() -> "?"
+        parts.size == 1 -> parts[0].take(2).uppercase()
+        else -> (parts.first().take(1) + parts.last().take(1)).uppercase()
     }
 }

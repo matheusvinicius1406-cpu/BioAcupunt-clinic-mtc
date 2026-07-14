@@ -3,28 +3,33 @@ package com.bioacupunt.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // ── BioAcupunt "Supremo" palette ─────────────────────────────
-// Vibrant emerald primary + gold accent over a very dark teal-navy,
-// matching the reference clinical platform.
+// Olive-green primary + gold accent over a warm cream, matching the
+// design mockups (dashboard/patients/prontuario/.../ajustes).
 
-val Primary = Color(0xFF10B981)        // emerald — nav active, buttons, chips
-val PrimaryDark = Color(0xFF0B8A62)
-val PrimaryContainer = Color(0x2610B981)
-val OnPrimary = Color(0xFF04160F)      // near-black green: dark text reads on bright emerald
+val Primary = Color(0xFF4A6B2A)        // olive — nav active, buttons, chips
+val PrimaryDark = Color(0xFF6B8F4A)    // olive-light
+val PrimaryContainer = Color(0xFFEAF3E0) // olive-soft
+val OnPrimary = Color(0xFFFFFFFF)
 
-val Accent = Color(0xFFD9A441)         // gold/amber — secondary highlight buttons
-val AccentDark = Color(0xFFB9852B)
-val OnAccent = Color(0xFF1A1206)
+val Accent = Color(0xFFC9A96E)         // gold — secondary highlight, badges
+val AccentDark = Color(0xFFE8D5A8)     // gold-light
+val OnAccent = Color(0xFF1E1B16)
+val AccentContainer = Color(0xFFF8F0E0) // gold-soft
 
-val Background = Color(0xFF081412)     // very dark teal-navy
-val Surface = Color(0xFF0F1D19)        // cards
-val SurfaceVariant = Color(0xFF16261F)
-val OnSurface = Color(0xFFE6F2EC)      // off-white
-val OnSurfaceVariant = Color(0xFF9FB5AC)
+val Background = Color(0xFFF6F5F2)     // warm cream
+val Surface = Color(0xFFFFFFFF)        // cards
+val SurfaceVariant = Color(0xFFE6E2DA) // border-color doubles as subtle fill
+val OnSurface = Color(0xFF1E1B16)      // text-primary
+val OnSurfaceVariant = Color(0xFF5A5548) // text-secondary
+val TextMuted = Color(0xFF8A8578)
 
-val Outline = Color(0x1FFFFFFF)
-val OutlineVariant = Color(0x0FFFFFFF)
+val Outline = Color(0xFFE6E2DA)
+val OutlineVariant = Color(0xFFF0EDE6)
 
-val SemanticSuccess = Color(0xFF34D399)
-val SemanticWarning = Color(0xFFFBBF24)
-val SemanticError = Color(0xFFEF5350)
-val SemanticInfo = Color(0xFF60A5FA)
+val SemanticSuccess = Color(0xFF4A6B2A)
+val SemanticWarningBg = Color(0xFFFEF3C7)
+val SemanticWarning = Color(0xFFD97706)
+val SemanticErrorBg = Color(0xFFFEF2F2)
+val SemanticError = Color(0xFFDC2626)
+val SemanticInfoBg = Color(0xFFEFF6FF)
+val SemanticInfo = Color(0xFF2563EB)

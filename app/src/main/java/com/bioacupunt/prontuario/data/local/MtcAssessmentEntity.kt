@@ -57,6 +57,15 @@ data class MtcAssessmentEntity(
     val gestationalWeeks: Int? = null,
 
     val clinicalImpression: String = "",
+
+    // Atendimento wizard fields — same "owned value object, serialised as a unit"
+    // reasoning as patterns/tongue/pulse above.
+    val relievingJson: String = "[]",
+    val aggravatingJson: String = "[]",
+    val reviewOfSystemsJson: String = "[]",
+    val interrogationNotes: String = "",
+    val orientations: String = "",
+
     val syncedAt: String? = null,
     val createdAt: String = "",
     val updatedAt: String = "",

@@ -16,6 +16,15 @@ class GetAppointmentsByDate(
     }
 }
 
+/** Backs the month calendar grid — one query for every appointment in the visible month. */
+class GetAppointmentsInRange(
+    private val repository: AppointmentRepository
+) {
+    operator fun invoke(start: String, end: String): Flow<List<Appointment>> {
+        return repository.observeBetween(start, end)
+    }
+}
+
 /**
  * Saving is where a double-booking would be created, so this is the one place that
  * has to check for it — nothing upstream (UI, ViewModel) can be trusted to catch it,

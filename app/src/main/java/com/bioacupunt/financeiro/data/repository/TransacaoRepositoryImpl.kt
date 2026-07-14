@@ -58,4 +58,8 @@ class TransacaoRepositoryImpl(
     override suspend fun sumPayments(start: String, end: String): Result<Double> {
         return try { Result.Success(dao.sumByStatusAndRange("PAGO", start, end, "PAGAMENTO")) } catch (e: Exception) { Result.Error(AppError.DatabaseError(e)) }
     }
+
+    override suspend fun sumPending(start: String, end: String): Result<Double> {
+        return try { Result.Success(dao.sumPending(start, end)) } catch (e: Exception) { Result.Error(AppError.DatabaseError(e)) }
+    }
 }

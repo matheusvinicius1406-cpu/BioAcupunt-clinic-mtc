@@ -9,6 +9,7 @@ interface AppointmentRepository {
     fun observeByPatient(patientId: Long): Flow<List<Appointment>>
     fun observeByStatus(status: String): Flow<List<Appointment>>
     fun observeBetween(start: String, end: String): Flow<List<Appointment>>
+    fun observeNextUpcoming(fromDate: String, fromTime: String): Flow<Appointment?>
     suspend fun getById(id: Long): Result<Appointment>
     suspend fun getByDateSync(date: String): List<Appointment>
     suspend fun save(appointment: Appointment): Result<Appointment>

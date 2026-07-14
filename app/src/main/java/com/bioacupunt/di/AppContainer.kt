@@ -38,6 +38,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -160,6 +161,12 @@ object AppContainer {
         database.mtcAssessmentDao()
     }
 
+    // --- Prontuário: exames (vitals/labs/medications/allergies) + documentos ---
+    val exameDao: com.bioacupunt.prontuario.data.local.ExameDao by lazy { database.exameDao() }
+    val prontuarioDocumentDao: com.bioacupunt.prontuario.data.local.ProntuarioDocumentDao by lazy {
+        database.prontuarioDocumentDao()
+    }
+
     /**
      * Single shared instance. The rule set is a clinic-wide policy, not per-screen
      * state — every caller must screen against exactly the same rules.
@@ -180,7 +187,37 @@ object AppContainer {
             repository = mtcAssessmentRepository,
             patientId = patientId,
         )
+
+    val exameRepository: com.bioacupunt.prontuario.domain.repository.ExameRepository by lazy {
+        com.bioacupunt.prontuario.data.repository.ExameRepositoryImpl(exameDao)
+    }
+    val exameUseCases: com.bioacupunt.prontuario.domain.usecase.ExameUseCases by lazy {
+        com.bioacupunt.prontuario.domain.usecase.ExameUseCases(exameRepository)
+    }
+    val prontuarioDocumentRepository: com.bioacupunt.prontuario.domain.repository.ProntuarioDocumentRepository by lazy {
+        com.bioacupunt.prontuario.data.repository.ProntuarioDocumentRepositoryImpl(prontuarioDocumentDao)
+    }
+    val prontuarioDocumentUseCases: com.bioacupunt.prontuario.domain.usecase.ProntuarioDocumentUseCases by lazy {
+        com.bioacupunt.prontuario.domain.usecase.ProntuarioDocumentUseCases(prontuarioDocumentRepository)
+    }
+    fun evolucaoViewModelFactory(patientId: Long) =
+        com.bioacupunt.prontuario.presentation.EvolucaoViewModelFactory(
+            mtcAssessmentRepository = mtcAssessmentRepository,
+            observeEntries = com.bioacupunt.prontuario.domain.usecase.ObserveEntries(
+                com.bioacupunt.prontuario.data.repository.ProntuarioRepositoryImpl(prontuarioDao)
+            ),
+            patientId = patientId,
+        )
+
+    fun exameViewModelFactory(patientId: Long) =
+        com.bioacupunt.prontuario.presentation.ExameViewModelFactory(
+            exameUseCases = exameUseCases,
+            documentUseCases = prontuarioDocumentUseCases,
+            patientId = patientId,
+        )
+
     val bibliotecaDao: com.bioacupunt.biblioteca.data.local.BibliotecaDao by lazy { database.bibliotecaDao() }
+    val favoriteArticleDao: com.bioacupunt.biblioteca.data.local.FavoriteArticleDao by lazy { database.favoriteArticleDao() }
 
     // ── Financeiro ─────────────────────────────────────────
     val transacaoRepository: com.bioacupunt.financeiro.domain.repository.TransacaoRepository by lazy {
@@ -219,27 +256,42 @@ object AppContainer {
         com.bioacupunt.crm.presentation.CrmViewModelFactory(
             saveCrmPatient = com.bioacupunt.crm.domain.usecase.SaveCrmPatient(crmPatientRepository),
             updateCrmStage = com.bioacupunt.crm.domain.usecase.UpdateCrmStage(crmPatientRepository),
-            searchCrmPatients = com.bioacupunt.crm.domain.usecase.SearchCrmPatients(crmPatientRepository),
+            getCrmPatients = com.bioacupunt.crm.domain.usecase.GetCrmPatients(crmPatientRepository),
             repository = crmPatientRepository,
             tenantManager = tenantManager
+        )
+    }
+    val dashboardViewModelFactory: com.bioacupunt.dashboard.presentation.DashboardViewModelFactory by lazy {
+        com.bioacupunt.dashboard.presentation.DashboardViewModelFactory(
+            authRepository = authRepository,
+            appointmentRepository = appointmentRepository,
+            crmPatientRepository = crmPatientRepository,
+            transacaoRepository = transacaoRepository,
         )
     }
     val agendaViewModelFactory: com.bioacupunt.agenda.presentation.AgendaViewModelFactory by lazy {
         com.bioacupunt.agenda.presentation.AgendaViewModelFactory(
             getAppointmentsByDate = com.bioacupunt.agenda.domain.usecase.GetAppointmentsByDate(appointmentRepository),
+            getAppointmentsInRange = com.bioacupunt.agenda.domain.usecase.GetAppointmentsInRange(appointmentRepository),
             saveAppointment = com.bioacupunt.agenda.domain.usecase.SaveAppointment(appointmentRepository),
             updateStatus = com.bioacupunt.agenda.domain.usecase.UpdateAppointmentStatus(appointmentRepository),
             calculateDayStats = com.bioacupunt.agenda.domain.usecase.CalculateDayStats(appointmentRepository)
         )
     }
+    fun atendimentoViewModelFactory(appointmentId: Long) =
+        com.bioacupunt.agenda.presentation.AtendimentoViewModelFactory(
+            appointmentRepository = appointmentRepository,
+            updateAppointmentStatus = com.bioacupunt.agenda.domain.usecase.UpdateAppointmentStatus(appointmentRepository),
+            addEntry = com.bioacupunt.prontuario.domain.usecase.AddEntry(
+                com.bioacupunt.prontuario.data.repository.ProntuarioRepositoryImpl(prontuarioDao)
+            ),
+            appointmentId = appointmentId,
+        )
     val bibliotecaViewModelFactory: com.bioacupunt.biblioteca.presentation.BibliotecaViewModelFactory by lazy {
         com.bioacupunt.biblioteca.presentation.BibliotecaViewModelFactory(
-            observe = com.bioacupunt.biblioteca.domain.usecase.ObserveBiblioteca(
-                com.bioacupunt.biblioteca.data.repository.BibliotecaRepositoryImpl(bibliotecaDao)
-            ),
-            search = com.bioacupunt.biblioteca.domain.usecase.SearchBiblioteca(
-                com.bioacupunt.biblioteca.data.repository.BibliotecaRepositoryImpl(bibliotecaDao)
-            )
+            askLibrary = askLibrary,
+            toggleFavoriteArticle = com.bioacupunt.biblioteca.domain.usecase.ToggleFavoriteArticle(favoriteArticleDao),
+            observeFavorites = favoriteArticleDao.observeAll().map { list -> list.map { fav -> fav.articleId }.toSet() },
         )
     }
     val reportDao: com.bioacupunt.relatorios.data.local.ReportDao by lazy { database.reportDao() }
@@ -251,6 +303,11 @@ object AppContainer {
     }
     val relatoriosViewModelFactory: com.bioacupunt.relatorios.presentation.RelatoriosViewModelFactory by lazy {
         com.bioacupunt.relatorios.presentation.RelatoriosViewModelFactory(relatoriosUseCases)
+    }
+    val financeiroViewModelFactory: com.bioacupunt.financeiro.presentation.FinanceiroViewModelFactory by lazy {
+        com.bioacupunt.financeiro.presentation.FinanceiroViewModelFactory(
+            com.bioacupunt.financeiro.domain.usecase.ObserveTransactions(transacaoRepository)
+        )
     }
 
     // ── AI ─────────────────────────────────────────────────
@@ -295,6 +352,10 @@ object AppContainer {
      */
     val askLibrary: com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase by lazy {
         com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase(mtcRetriever, aiRepository)
+    }
+
+    val aiAssistantViewModelFactory: com.bioacupunt.biblioteca.presentation.AiAssistantViewModelFactory by lazy {
+        com.bioacupunt.biblioteca.presentation.AiAssistantViewModelFactory(askLibrary)
     }
 
     val aiHealthRegistry: com.bioacupunt.ai.health.HealthRegistry by lazy {

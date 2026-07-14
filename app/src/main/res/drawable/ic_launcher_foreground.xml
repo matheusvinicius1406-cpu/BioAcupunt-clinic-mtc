@@ -1,8 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:width="66dp"
-        android:height="66dp"
-        android:drawable="@drawable/bioacupunt_icon_1782235148606"
-        android:gravity="center" />
-</layer-list>
+<!-- Primeiro plano: duas agulhas de acupuntura + Yin-Yang central, na paleta
+     oliva/dourado do app. Última variante do Canvas-2.dc.html ("1024×1024 ·
+     agulhas + Yin-Yang") — sem DNA, sem cobra, só o motivo pedido. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="66dp"
+    android:height="66dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Agulha esquerda -->
+    <path
+        android:pathData="M62,10 L62,60"
+        android:strokeColor="#F8F0E0"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M53,10 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0"
+        android:strokeColor="#F8F0E0"
+        android:strokeWidth="6"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M62,150 L62,190"
+        android:strokeColor="#F8F0E0"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M53,190 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0"
+        android:strokeColor="#F8F0E0"
+        android:strokeWidth="6"
+        android:fillColor="#00000000" />
+
+    <!-- Agulha direita -->
+    <path
+        android:pathData="M138,10 L138,60"
+        android:strokeColor="#F8F0E0"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M129,10 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0"
+        android:strokeColor="#F8F0E0"
+        android:strokeWidth="6"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M138,150 L138,190"
+        android:strokeColor="#F8F0E0"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M129,190 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0"
+        android:strokeColor="#F8F0E0"
+        android:strokeWidth="6"
+        android:fillColor="#00000000" />
+
+    <!-- Yin-Yang central -->
+    <path
+        android:pathData="M100,55 A45,45 0 0,1 100,145 A22.5,22.5 0 0,1 100,100 A22.5,22.5 0 0,0 100,55 Z"
+        android:fillColor="#C9A96E" />
+    <path
+        android:pathData="M100,55 A45,45 0 0,0 100,145 A22.5,22.5 0 0,0 100,100 A22.5,22.5 0 0,1 100,55 Z"
+        android:fillColor="#F8F0E0" />
+    <path
+        android:pathData="M93,77.5 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0"
+        android:fillColor="#F8F0E0" />
+    <path
+        android:pathData="M93,122.5 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0"
+        android:fillColor="#C9A96E" />
+</vector>

@@ -1,11 +1,16 @@
 package com.bioacupunt.ui.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +19,9 @@ import androidx.navigation.compose.rememberNavController
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.screens.*
 import com.bioacupunt.ui.lock.BiometricLockScreen
+import com.bioacupunt.ui.theme.Accent
+import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.TextMuted
 
 private data class BottomNavItem(
     val screen: Screen,
@@ -55,7 +63,7 @@ fun BioAcupuntNavHost(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
                     bottomItems.forEach { item ->
                         val selected = currentRoute == item.screen.route
                         NavigationBarItem(
@@ -74,12 +82,38 @@ fun BioAcupuntNavHost(
                                 )
                             },
                             label = { Text(item.screen.label) },
-                            alwaysShowLabel = false
+                            alwaysShowLabel = false,
+                            // No filled pill behind the icon — the mockup's active
+                            // indicator is a thin bar above the icon, closer to
+                            // "icon/label change color" than a Material default pill.
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Primary,
+                                selectedTextColor = Primary,
+                                unselectedIconColor = TextMuted,
+                                unselectedTextColor = TextMuted,
+                                indicatorColor = Color.Transparent,
+                            ),
                         )
                     }
                 }
             }
-        }
+        },
+        floatingActionButton = {
+            // Quick access to the one AI surface in the app — same gated RAG chat as
+            // the Inteligência tab, just reachable from anywhere in the bottom nav.
+            if (showBottomBar && currentRoute != Screen.AiAssistant.route) {
+                FloatingActionButton(
+                    onClick = { navController.navigate(Screen.AiAssistant.route) },
+                    containerColor = Color.Transparent,
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
+                    modifier = androidx.compose.ui.Modifier
+                        .size(56.dp)
+                        .background(Brush.linearGradient(listOf(Primary, Accent)), androidx.compose.foundation.shape.CircleShape),
+                ) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = "Consultar IA", tint = Color.White)
+                }
+            }
+        },
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -125,7 +159,7 @@ fun BioAcupuntNavHost(
                 // Same reasoning as CRM above: let AgendaScreen's own default
                 // resolve AppContainer.agendaViewModelFactory instead of
                 // duplicating its construction here.
-                AgendaScreen()
+                AgendaScreen(onOpenAtendimento = { apptId -> navController.navigate(Screen.Atendimento.routeFor(apptId)) })
             }
             composable(Screen.Biblioteca.route) {
                 BibliotecaScreen(
@@ -156,24 +190,32 @@ fun BioAcupuntNavHost(
                 val pid = entry.arguments?.getLong("patientId") ?: 0L
                 ProntuarioScreen(
                     onBack = { navController.popBackStack() },
-                    onOpenSupremo = { openPid -> navController.navigate(Screen.ProntuarioSupremo.routeFor(openPid)) },
+                    onOpenEvolucao = { openPid -> navController.navigate(Screen.Evolucao.routeFor(openPid)) },
                     patientId = pid
                 )
             }
             composable(
-                route = Screen.ProntuarioSupremo.route,
+                route = Screen.Evolucao.route,
                 arguments = listOf(androidx.navigation.navArgument("patientId") { type = androidx.navigation.NavType.LongType })
             ) { entry ->
                 val pid = entry.arguments?.getLong("patientId") ?: 0L
-                val vm: com.bioacupunt.prontuario.presentation.SupremoViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                    factory = AppContainer.supremoViewModelFactory(pid)
+                EvolucaoScreen(patientId = pid, onBack = { navController.popBackStack() })
+            }
+            composable(
+                route = Screen.Atendimento.route,
+                arguments = listOf(androidx.navigation.navArgument("appointmentId") { type = androidx.navigation.NavType.LongType })
+            ) { entry ->
+                val apptId = entry.arguments?.getLong("appointmentId") ?: 0L
+                AtendimentoScreen(
+                    appointmentId = apptId,
+                    onBack = { navController.popBackStack() },
+                    onFinalized = { navController.popBackStack() },
                 )
-                ProntuarioSupremoScreen(viewModel = vm)
             }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Simulador.route)   { SimuladorScreen() }
-            composable(Screen.AiAssistant.route) { AiAssistantScreen() }
+            composable(Screen.AiAssistant.route) { AiAssistantScreen(onNavigateToCRM = { navController.navigate(Screen.CRM.route) }) }
             composable(Screen.Relatorios.route)  { RelatoriosScreen() }
         }
     }

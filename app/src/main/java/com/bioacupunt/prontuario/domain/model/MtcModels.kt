@@ -223,6 +223,13 @@ data class BodyMark(
     /** 0..10 visual analogue scale. */
     val intensity: Int = 0,
     val notes: String = "",
+    /**
+     * Named region (Atendimento's flat "mapa corporal" chip list), as an alternative
+     * to the x/y diagram coordinates above. Nullable so existing diagram-based marks
+     * (x/y set, region null) keep working — this is an additive second way to record
+     * a mark, not a replacement.
+     */
+    val region: com.bioacupunt.prontuario.domain.safety.BodyRegion? = null,
 )
 
 // ---------------------------------------------------------------------------
@@ -274,6 +281,14 @@ data class MtcAssessment(
     /** Gestational week, when [ClinicalFlag.PREGNANCY] is set. Drives trimester rules. */
     val gestationalWeeks: Int? = null,
     val clinicalImpression: String = "",
+    /** Atendimento step 1: what the patient reports makes symptoms better/worse. */
+    val relievingFactors: Set<String> = emptySet(),
+    val aggravatingFactors: Set<String> = emptySet(),
+    /** Atendimento step 2: review-of-systems checklist, free-form category:item tags. */
+    val reviewOfSystems: Set<String> = emptySet(),
+    val interrogationNotes: String = "",
+    /** Atendimento step 5: patient guidance (diet, activity) for this session. */
+    val orientations: String = "",
     val syncedAt: String? = null,
     val createdAt: String = "",
     val updatedAt: String = "",

@@ -38,22 +38,31 @@ fun CrmScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val tabs = listOf("Pipeline", "Pacientes", "Relatórios")
+    val tabs = listOf("Pacientes", "Pipeline", "Relatórios")
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Ações rápidas
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(
-                onClick = { showNewPatient = true },
-                modifier = Modifier.weight(1f)
-            ) { Text("Novo Paciente") }
-            OutlinedButton(
-                onClick = { vm.onStageSelected(null) },
-                modifier = Modifier.weight(1f)
-            ) { Text("Limpar filtro") }
+            Text(
+                "Pacientes",
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Box(
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(Primary)
+                    .clickable { showNewPatient = true }
+                    .padding(horizontal = 14.dp, vertical = 8.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Icon(Icons.Default.Add, null, tint = Color.White, modifier = Modifier.size(16.dp))
+                    Text("Novo", color = Color.White, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold))
+                }
+            }
         }
 
         TabRow(
@@ -71,21 +80,23 @@ fun CrmScreen(
         }
 
         when (selectedTab) {
-            0 -> PipelineTab(
-                patients = state.filteredPatients,
-                stages = state.stages,
-                viewModel = vm
-            )
-            1 -> PatientsListTab(
+            0 -> PatientsListTab(
                 patients = state.filteredPatients,
                 searchQuery = searchQuery,
+                selectedStage = state.selectedStageName,
                 onSearch = { query ->
                     searchQuery = query
                     vm.onQueryChanged(query)
                 },
+                onStageFilter = { stageName -> vm.onStageSelected(stageName) },
                 onOpenProntuario = onNavigateToProntuario,
                 onDelete = { id -> vm.deletePatient(id) },
                 onStatusChange = { id, stage -> vm.updateStage(id, stage) }
+            )
+            1 -> PipelineTab(
+                patients = state.filteredPatients,
+                stages = state.stages,
+                viewModel = vm
             )
             2 -> CrmReportsTab(summary = state.reportSummary)
         }

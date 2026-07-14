@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.bioacupunt.agenda.domain.model.AppointmentStatus
 import com.bioacupunt.agenda.domain.usecase.CalculateDayStats
 import com.bioacupunt.agenda.domain.usecase.GetAppointmentsByDate
+import com.bioacupunt.agenda.domain.usecase.GetAppointmentsInRange
 import com.bioacupunt.agenda.domain.usecase.SaveAppointment
 import com.bioacupunt.agenda.domain.usecase.UpdateAppointmentStatus
 import com.bioacupunt.core.util.AppError
@@ -15,10 +16,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.YearMonth
 
 data class AgendaUiState(
     val selectedDate: String = todayIso(),
+    val visibleMonth: String = YearMonth.now().toString(),
     val appointments: List<com.bioacupunt.agenda.domain.model.Appointment> = emptyList(),
+    val monthAppointments: List<com.bioacupunt.agenda.domain.model.Appointment> = emptyList(),
+    val showFreeSlots: Boolean = false,
     val stats: Map<String, Any> = emptyMap(),
     val isLoading: Boolean = false,
     val error: String? = null
@@ -26,18 +31,20 @@ data class AgendaUiState(
 
 class AgendaViewModelFactory(
     private val getAppointmentsByDate: GetAppointmentsByDate,
+    private val getAppointmentsInRange: GetAppointmentsInRange,
     private val saveAppointment: SaveAppointment,
     private val updateStatus: UpdateAppointmentStatus,
     private val calculateDayStats: CalculateDayStats
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return AgendaViewModel(getAppointmentsByDate, saveAppointment, updateStatus, calculateDayStats) as T
+        return AgendaViewModel(getAppointmentsByDate, getAppointmentsInRange, saveAppointment, updateStatus, calculateDayStats) as T
     }
 }
 
 class AgendaViewModel(
     private val getAppointmentsByDate: GetAppointmentsByDate,
+    private val getAppointmentsInRange: GetAppointmentsInRange,
     private val saveAppointment: SaveAppointment,
     private val updateStatus: UpdateAppointmentStatus,
     private val calculateDayStats: CalculateDayStats
@@ -48,11 +55,23 @@ class AgendaViewModel(
 
     init {
         observeDate(state.value.selectedDate)
+        observeMonth(YearMonth.parse(state.value.visibleMonth))
     }
 
     fun onDateSelected(date: String) {
         _state.update { it.copy(selectedDate = date) }
         observeDate(date)
+        val month = YearMonth.from(java.time.LocalDate.parse(date))
+        if (month.toString() != _state.value.visibleMonth) onMonthChanged(month)
+    }
+
+    fun onMonthChanged(month: YearMonth) {
+        _state.update { it.copy(visibleMonth = month.toString()) }
+        observeMonth(month)
+    }
+
+    fun toggleFreeSlots() {
+        _state.update { it.copy(showFreeSlots = !it.showFreeSlots) }
     }
 
     fun onStatusChange(appointmentId: Long, status: AppointmentStatus) {
@@ -109,6 +128,16 @@ class AgendaViewModel(
                     val stats = if (list.isEmpty()) emptyMap() else calculateDayStats(date)
                     _state.update { it.copy(appointments = list, stats = stats, isLoading = false, error = null) }
                 }
+        }
+    }
+
+    private fun observeMonth(month: YearMonth) {
+        viewModelScope.launch {
+            val start = month.atDay(1).toString()
+            val end = month.atEndOfMonth().toString()
+            getAppointmentsInRange(start, end)
+                .catch { emit(emptyList()) }
+                .collect { list -> _state.update { it.copy(monthAppointments = list) } }
         }
     }
 }

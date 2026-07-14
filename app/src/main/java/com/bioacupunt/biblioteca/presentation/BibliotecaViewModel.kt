@@ -3,9 +3,10 @@ package com.bioacupunt.biblioteca.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.bioacupunt.biblioteca.domain.model.BibliotecaNode
-import com.bioacupunt.biblioteca.domain.usecase.ObserveBiblioteca
-import com.bioacupunt.biblioteca.domain.usecase.SearchBiblioteca
+import com.bioacupunt.biblioteca.data.MtcKnowledgeBase
+import com.bioacupunt.biblioteca.domain.model.MtcArticle
+import com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase
+import com.bioacupunt.biblioteca.domain.usecase.ToggleFavoriteArticle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,69 +16,94 @@ import kotlinx.coroutines.launch
 
 data class BibliotecaUiState(
     val query: String = "",
-    val results: List<BibliotecaNode> = emptyList(),
-    val loading: Boolean = false,
-    val error: String? = null
+    val category: String? = null,
+    val articles: List<MtcArticle> = MtcKnowledgeBase.articles,
+    val favoriteIds: Set<String> = emptySet(),
+    val askQuestion: String = "",
+    val askAnswer: AskLibraryUseCase.Answer? = null,
+    val asking: Boolean = false,
 )
 
-class BibliotecaViewModelFactory(
-    private val observe: ObserveBiblioteca,
-    private val search: SearchBiblioteca
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        @Suppress("UNCHECKED_CAST")
-        return BibliotecaViewModel(observe, search) as T
-    }
-}
-
+/**
+ * Backs the Biblioteca screen. Two content sources, kept deliberately separate:
+ *
+ *  - Browsing/filtering [MtcKnowledgeBase.articles] is a plain, deterministic list
+ *    operation — no model involved, ever.
+ *  - [ask] is the *only* place this screen touches the model, and it goes through
+ *    [AskLibraryUseCase], which refuses to call the model when the library has no
+ *    evidence for the question (R2). This ViewModel does not — and must not —
+ *    add a second, ungated path to the AI.
+ */
 class BibliotecaViewModel(
-    private val observe: ObserveBiblioteca,
-    private val search: SearchBiblioteca
+    private val askLibrary: AskLibraryUseCase,
+    private val toggleFavoriteArticle: ToggleFavoriteArticle,
+    observeFavorites: kotlinx.coroutines.flow.Flow<Set<String>>,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BibliotecaUiState())
     val state: StateFlow<BibliotecaUiState> = _state.asStateFlow()
 
     init {
-        observeAll()
+        viewModelScope.launch {
+            observeFavorites
+                .catch { emit(emptySet()) }
+                .collect { ids -> _state.update { it.copy(favoriteIds = ids) } }
+        }
     }
 
     fun onQueryChanged(query: String) {
-        _state.update { it.copy(query = query) }
-        if (query.isBlank()) {
-            observeAll()
-        } else {
-            performSearch(query)
-        }
+        _state.update { it.copy(query = query, articles = filtered(query, it.category)) }
     }
 
-    private fun observeAll() {
+    fun onCategorySelected(category: String?) {
+        _state.update { it.copy(category = category, articles = filtered(it.query, category)) }
+    }
+
+    private fun filtered(query: String, category: String?): List<MtcArticle> {
+        var base = MtcKnowledgeBase.articles
+        if (!category.isNullOrBlank()) base = base.filter { it.category == category }
+        if (query.isNotBlank()) {
+            val q = query.trim().lowercase()
+            base = base.filter {
+                it.title.lowercase().contains(q) || it.summary.lowercase().contains(q) ||
+                    it.tags.any { t -> t.lowercase().contains(q) }
+            }
+        }
+        return base
+    }
+
+    fun toggleFavorite(articleId: String) {
+        val isFav = articleId in _state.value.favoriteIds
+        viewModelScope.launch { toggleFavoriteArticle(articleId, makeFavorite = !isFav) }
+    }
+
+    fun onAskQuestionChanged(text: String) {
+        _state.update { it.copy(askQuestion = text) }
+    }
+
+    /** The only sanctioned "ask the AI" path — see [AskLibraryUseCase]. */
+    fun ask() {
+        val question = _state.value.askQuestion
+        if (question.isBlank()) return
         viewModelScope.launch {
-            _state.update { it.copy(loading = true, error = null) }
-            observe()
-                .catch { e -> _state.update { it.copy(loading = false, error = it.error ?: e.localizedMessage.orEmpty()) } }
-                .collect { list ->
-                    val current = _state.value
-                    val filtered = if (current.query.isBlank()) list else filterQuery(list, current.query)
-                    _state.update { it.copy(results = filtered, loading = false, error = null) }
-                }
+            _state.update { it.copy(asking = true) }
+            val answer = askLibrary(question)
+            _state.update { it.copy(asking = false, askAnswer = answer) }
         }
     }
 
-    private fun performSearch(query: String) {
-        viewModelScope.launch {
-            _state.update { it.copy(loading = true, error = null) }
-            search(query)
-                .catch { e -> _state.update { it.copy(loading = false, error = it.error ?: e.localizedMessage.orEmpty()) } }
-                .collect { list ->
-                    _state.update { it.copy(results = list, loading = false, error = null) }
-                }
-        }
+    fun clearAnswer() {
+        _state.update { it.copy(askAnswer = null, askQuestion = "") }
     }
+}
 
-    private fun filterQuery(items: List<BibliotecaNode>, query: String): List<BibliotecaNode> {
-        val q = query.trim().lowercase()
-        if (q.isBlank()) return items
-        return items.filter { it.title.lowercase().contains(q) || it.content.lowercase().contains(q) || it.tags.any { t -> t.lowercase().contains(q) } }
+class BibliotecaViewModelFactory(
+    private val askLibrary: AskLibraryUseCase,
+    private val toggleFavoriteArticle: ToggleFavoriteArticle,
+    private val observeFavorites: kotlinx.coroutines.flow.Flow<Set<String>>,
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        @Suppress("UNCHECKED_CAST")
+        return BibliotecaViewModel(askLibrary, toggleFavoriteArticle, observeFavorites) as T
     }
 }

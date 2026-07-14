@@ -1,160 +1,22 @@
 package com.bioacupunt.ui.theme
 
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
-import kotlin.math.PI
-import kotlin.math.sin
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
-@Composable
-fun Modifier.gradientLiquid(
-    colors: List<Color>,
-    shape: Shape = MaterialTheme.shapes.large
-): Modifier = this
-    .clip(shape)
-    .background(Brush.verticalGradient(colors))
-
+// Soft card/button elevation shadow — matches the HTML mockups' box-shadow on
+// cards (0 8px 32px rgba(30,27,22,.08)). The dark-theme glassmorphism helpers
+// (glassSurface/GlassButton/LiquidGlassCard — translucent white over near-black)
+// were removed: they read as nearly invisible on the cream/white "Supremo" look
+// the HTML mockups define, since there's no dark surface for the glass to sit on.
 @Composable
 fun Modifier.premiumShadow(
     shape: Shape = MaterialTheme.shapes.large,
     color: Color = Color.Black.copy(alpha = 0.10f),
     elevationDp: Dp = 16.dp
 ): Modifier = this.shadow(elevationDp, shape = shape, spotColor = color)
-
-@Composable
-fun Modifier.glassSurface(
-    shape: Shape = MaterialTheme.shapes.large,
-    surface: Color = Color.White.copy(alpha = 0.10f),
-    stroke: Color = Color.White.copy(alpha = 0.18f),
-    elevationDp: Dp = 16.dp
-): Modifier = this
-    .shadow(elevationDp, shape = shape, spotColor = Color.Black.copy(alpha = 0.10f))
-    .clip(shape)
-    .background(surface)
-    .border(1.dp, stroke, shape)
-
-@Composable
-fun Modifier.animateEntrance(initialAlpha: Float = 0f, initialOffsetY: Dp = 10.dp): Modifier {
-    val alpha = remember { Animatable(initialAlpha) }
-    val offsetY = remember { Animatable(initialOffsetY.value) }
-    LaunchedEffect(Unit) {
-        alpha.animateTo(1f, animationSpec = tween(480, easing = LinearOutSlowInEasing))
-        offsetY.animateTo(0f, animationSpec = spring(stiffness = 360f, dampingRatio = 0.78f))
-    }
-    return this.alpha(alpha.value).offset(y = offsetY.value.dp)
-}
-
-@Composable
-fun GlassButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.large,
-    containerColor: Color = Primary.copy(alpha = 0.80f),
-    contentColor: Color = Color.White,
-    disabledContainerColor: Color = containerColor.copy(alpha = 0.35f),
-    enabled: Boolean = true,
-    content: @Composable RowScope.() -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val pressed by interactionSource.collectIsPressedAsState()
-    val scale = if (pressed) 0.97f else 1f
-    val elevation = (if (pressed) 10f else 20f).dp
-
-    Box(
-        modifier = modifier
-            .clip(shape)
-            .background(if (enabled) containerColor else disabledContainerColor)
-            .border(1.dp, Color.White.copy(alpha = 0.22f), shape)
-            .shadow(elevation, shape = shape, spotColor = if (enabled) Primary.copy(alpha = 0.32f) else Color.Transparent)
-            .scale(scale)
-            .clickable(
-                onClick = onClick,
-                enabled = enabled,
-                interactionSource = interactionSource,
-                indication = null
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 14.dp, horizontal = 18.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            content = content
-        )
-    }
-}
-
-@Composable
-fun LiquidGlassCard(
-    modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.large,
-    surface: Color = Color.White.copy(alpha = 0.10f),
-    stroke: Color = Color.White.copy(alpha = 0.18f),
-    waveColor: Color = Primary.copy(alpha = 0.18f),
-    content: @Composable BoxScope.() -> Unit
-) {
-    Box(
-        modifier = modifier
-            .shadow(16.dp, shape = shape, spotColor = Color.Black.copy(alpha = 0.08f))
-            .clip(shape)
-            .background(surface)
-            .border(1.dp, stroke, shape),
-        contentAlignment = Alignment.Center
-    ) {
-        LiquidWave(shape = shape, waveColor = waveColor)
-        Box(modifier = Modifier.fillMaxSize().padding(16.dp), content = content)
-    }
-}
-
-@Composable
-private fun LiquidWave(shape: Shape, waveColor: Color) {
-    val phase = rememberInfiniteTransition(label = "wave")
-    val angle by phase.animateFloat(
-        initialValue = 0f,
-        targetValue = (2f * PI).toFloat(),
-        animationSpec = infiniteRepeatable(tween(7000), RepeatMode.Restart),
-        label = "phase"
-    )
-    Canvas(modifier = Modifier
-        .fillMaxSize()
-        .clip(shape)
-    ) {
-        val w = size.width
-        val h = size.height
-        val path = Path().apply {
-            moveTo(0f, h)
-            val k = 60f
-            for (x in 0..(w.toInt())) {
-                val y = h * 0.55f + (h * 0.18f) * sin(x / k + angle)
-                lineTo(x.toFloat(), y)
-            }
-            lineTo(w, h)
-            close()
-        }
-        drawPath(path = path, color = waveColor, style = Fill)
-    }
-}

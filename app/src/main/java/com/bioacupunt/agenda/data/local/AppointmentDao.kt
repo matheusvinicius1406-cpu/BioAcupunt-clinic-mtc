@@ -30,6 +30,18 @@ interface AppointmentDao {
     )
     fun observeBetween(start: String, end: String, tenantId: Long): Flow<List<AppointmentEntity>>
 
+    @Query(
+        """
+        SELECT * FROM appointments
+        WHERE tenantId = :tenantId AND deleted = 0
+        AND status NOT IN ('CANCELLED', 'NO_SHOW', 'COMPLETED')
+        AND (date > :fromDate OR (date = :fromDate AND time >= :fromTime))
+        ORDER BY date ASC, time ASC
+        LIMIT 1
+        """
+    )
+    fun observeNextUpcoming(fromDate: String, fromTime: String, tenantId: Long): Flow<AppointmentEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(entity: AppointmentEntity): Long
 

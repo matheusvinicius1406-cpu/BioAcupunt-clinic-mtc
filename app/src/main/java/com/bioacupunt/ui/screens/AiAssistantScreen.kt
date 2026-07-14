@@ -1,10 +1,12 @@
 package com.bioacupunt.ui.screens
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -13,312 +15,174 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bioacupunt.biblioteca.presentation.ChatRole
+import com.bioacupunt.biblioteca.presentation.ChatTurn
+import com.bioacupunt.di.AppContainer
+import com.bioacupunt.ui.theme.Accent
 import com.bioacupunt.ui.theme.Primary
-import com.bioacupunt.ui.theme.premiumShadow
-import kotlinx.coroutines.delay
+import com.bioacupunt.ui.theme.TextMuted
 import kotlinx.coroutines.launch
 
-private data class ChatMessage(
-    val id: Long = System.currentTimeMillis(),
-    val content: String,
-    val isUser: Boolean,
-    val agentName: String = "BioAcupunt AI"
+private val quickSuggestions = listOf(
+    "Diferença entre Qi e Xue",
+    "Quando usar moxibustão?",
+    "Pontos Yuan-Fonte",
 )
 
-private enum class AiMode(val label: String, val emoji: String, val hint: String) {
-    CLINICAL("Clínico", "🩺", "Descreva queixas, língua, pulso..."),
-    KNOWLEDGE("Conhecimento", "📚", "Pergunte sobre MTC, pontos, meridianos..."),
-    FLASHCARD("Flashcard", "🃏", "Peça para criar flashcards sobre um tema"),
-    REPORT("Relatório", "📄", "Peça para gerar nota de evolução ou laudo"),
-    CRM("CRM", "👥", "Peça insights sobre pacientes e agenda")
-}
-
+/**
+ * INTELIGÊNCIA — "Consultar IA". A única IA clínica no app: RAG ancorado nos 16
+ * artigos revisados via [com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase].
+ * Sem modo "CRM"/"Relatório"/"Flashcard" com chamada solta ao modelo, e sem
+ * resposta fabricada quando a IA falha — essa era exatamente a versão anterior
+ * desta tela, e foi removida.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AiAssistantScreen() {
-    val scope = rememberCoroutineScope()
+fun AiAssistantScreen(onNavigateToCRM: () -> Unit = {}) {
+    val vm = viewModel<com.bioacupunt.biblioteca.presentation.AiAssistantViewModel>(factory = AppContainer.aiAssistantViewModelFactory)
+    val state by vm.state.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
-    var messages by remember {
-        mutableStateOf(
-            listOf(
-                ChatMessage(
-                    content = "Olá, Dra. Camila! 👋\n\nSou o Assistente IA do BioAcupunt, powered by **Gemini 2.0 Flash**.\n\nPosso ajudar com:\n• 🩺 Diagnóstico energético MTC\n• 📚 Dúvidas sobre pontos e meridianos\n• 📄 Notas de evolução e laudos\n• 🃏 Criar flashcards de estudo\n• 👥 Insights de CRM e pacientes\n\nComo posso ajudar hoje?",
-                    isUser = false,
-                    agentName = "BioAcupunt AI"
-                )
-            )
-        )
+    LaunchedEffect(state.messages.size) {
+        if (state.messages.isNotEmpty()) scope.launch { listState.animateScrollToItem(state.messages.size - 1) }
     }
 
-    var inputText by remember { mutableStateOf("") }
-    var isTyping by remember { mutableStateOf(false) }
-    var selectedMode by remember { mutableStateOf(AiMode.CLINICAL) }
-    var showModeSelector by remember { mutableStateOf(false) }
-
-    val quickPrompts = remember(selectedMode) {
-        when (selectedMode) {
-            AiMode.CLINICAL -> listOf(
-                "Paciente com cefaleia, irritabilidade, pulso tenso",
-                "Insônia com suor noturno e boca seca",
-                "Fadiga crônica com fezes moles e apetite baixo"
-            )
-            AiMode.KNOWLEDGE -> listOf(
-                "Explique os pontos Yuan-Fonte",
-                "Diferença entre Qi e Sangue",
-                "Quando usar moxibustão?"
-            )
-            AiMode.FLASHCARD -> listOf(
-                "Crie 5 flashcards sobre Cinco Elementos",
-                "Flashcards de semiologia de língua",
-                "Cards sobre pontos do meridiano do Rim"
-            )
-            AiMode.REPORT -> listOf(
-                "Nota de evolução para sessão de acupuntura",
-                "Laudo de avaliação inicial MTC",
-                "Relatório de alta terapêutica"
-            )
-            AiMode.CRM -> listOf(
-                "Dicas para fidelizar pacientes",
-                "Como agendar retornos de forma eficaz",
-                "Estratégias de comunicação com pacientes"
-            )
+    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        item {
+            Text("Inteligência", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold))
         }
-    }
 
-    fun sendMessage(text: String) {
-        if (text.isBlank()) return
-        val userMsg = ChatMessage(content = text.trim(), isUser = true)
-        messages = messages + userMsg
-        inputText = ""
-        isTyping = true
-
-        scope.launch {
-            listState.animateScrollToItem(messages.size)
-
-            val request = com.bioacupunt.ai.core.AiRequest(
-                prompt = text.trim(),
-                systemPrompt = "",
-                temperature = 0.7,
-                maxTokens = 2048
-            )
-
-            val response: String = try {
-                val result = com.bioacupunt.di.AppContainer.generateAiResponse(request)
-                result.getOrNull()?.text.orEmpty().ifBlank { generateMockResponse(text.trim(), selectedMode) }
-            } catch (e: Exception) {
-                generateMockResponse(text.trim(), selectedMode)
-            }
-
-            messages = messages + ChatMessage(
-                content = response,
-                isUser = false,
-                agentName = selectedMode.label + " AI"
-            )
-            isTyping = false
-            listState.animateScrollToItem(messages.size)
-        }
-    }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        Card(
-            modifier = Modifier.fillMaxWidth().premiumShadow(MaterialTheme.shapes.extraLarge, Primary.copy(alpha = 0.18f), 12.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
-        ) {
-            Row(
+        item {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.extraLarge)
+                    .padding(16.dp),
             ) {
-                Text(
-                    "${selectedMode.emoji} ${selectedMode.label}",
-                    style = MaterialTheme.typography.labelMedium.copy(color = Primary, fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier.weight(1f)
-                )
-                TextButton(onClick = { showModeSelector = true }) {
-                    Text("Trocar agente", style = MaterialTheme.typography.labelSmall)
-                    Icon(Icons.Default.SwapHoriz, null, modifier = Modifier.size(16.dp))
-                }
-            }
-        }
-
-        LazyColumn(
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-            state = listState,
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(messages, key = { it.id }) { msg -> ChatBubble(msg) }
-
-            if (isTyping) {
-                item {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                        TypingIndicator()
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                ) {
+                    Box(
+                        modifier = Modifier.size(34.dp).clip(RoundedCornerShape(11.dp)).background(Brush.linearGradient(listOf(Primary, Accent))),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Default.SmartToy, null, tint = Color.White, modifier = Modifier.size(19.dp))
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Column {
+                        Text("Consultar IA", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text("motor MTC · RAG com referências", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-            }
-        }
+                HorizontalDivider()
+                Spacer(Modifier.height(10.dp))
 
-        if (messages.size <= 1) {
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(vertical = 4.dp)
-            ) {
-                items(quickPrompts) { prompt ->
-                    SuggestionChip(
-                        onClick = { sendMessage(prompt) },
-                        label = { Text(prompt, style = MaterialTheme.typography.labelSmall) }
-                    )
-                }
-            }
-        }
-
-        Surface(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f), tonalElevation = 2.dp) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedTextField(
-                    value = inputText,
-                    onValueChange = { inputText = it },
-                    placeholder = { Text(selectedMode.hint, style = MaterialTheme.typography.bodySmall) },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(24.dp),
-                    maxLines = 3,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                    keyboardActions = KeyboardActions(onSend = { sendMessage(inputText) }),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White.copy(alpha = 0.10f),
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.10f),
-                        cursorColor = Primary,
-                        focusedBorderColor = Primary.copy(alpha = 0.6f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.25f)
-                    )
-                )
-                IconButton(
-                    onClick = { sendMessage(inputText) },
-                    enabled = inputText.isNotBlank() && !isTyping,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(
-                                    Primary,
-                                    Primary.copy(alpha = 0.75f)
-                                )
-                            )
-                        )
-                        .border(1.dp, Color.White.copy(alpha = 0.20f), CircleShape)
-                        .shadow(8.dp, shape = CircleShape, spotColor = Primary.copy(alpha = 0.25f))
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxWidth().heightIn(max = 320.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Icon(
-                        Icons.Default.Send, null,
-                        tint = Color.White
-                    )
-                }
-            }
-        }
-    }
-
-    if (showModeSelector) {
-        AlertDialog(
-            onDismissRequest = { showModeSelector = false },
-            title = { Text("Escolher Agente de IA") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    AiMode.entries.forEach { mode ->
-                        Card(
-                            onClick = { selectedMode = mode; showModeSelector = false },
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (mode == selectedMode) Primary.copy(alpha = 0.1f)
-                                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                            ),
-                            border = if (mode == selectedMode) BorderStroke(1.dp, Primary.copy(alpha = 0.4f)) else null,
-                            modifier = Modifier.fillMaxWidth().premiumShadow(MaterialTheme.shapes.large, Color.Black.copy(alpha = 0.06f), 10.dp)
-                        ) {
-                            Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Text(mode.emoji, style = MaterialTheme.typography.titleMedium)
-                                Spacer(Modifier.width(10.dp))
-                                Column(Modifier.weight(1f)) {
-                                    Text(mode.label, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                                    Text(mode.hint, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                                if (mode == selectedMode) Icon(Icons.Default.CheckCircle, null, tint = Primary, modifier = Modifier.size(20.dp))
+                    items(state.messages) { turn -> ChatBubble(turn) }
+                    if (state.thinking) {
+                        item {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
+                                Text("consultando a biblioteca...", style = MaterialTheme.typography.labelSmall, color = TextMuted)
                             }
                         }
                     }
                 }
-            },
-            confirmButton = { TextButton(onClick = { showModeSelector = false }) { Text("Fechar") } }
-        )
-    }
-}
 
-@Composable
-private fun ChatBubble(msg: ChatMessage) {
-    val alphaInfinite = rememberInfiniteTransition(label = "bubble")
-    val pulse by alphaInfinite.animateFloat(1f, 1.35f, animationSpec = infiniteRepeatable(tween(1400), RepeatMode.Reverse), label = "pulse")
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (msg.isUser) Arrangement.End else Arrangement.Start
-    ) {
-        if (!msg.isUser) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(Brush.linearGradient(listOf(Primary, Color(0xFF2D4E2C))))
-                    .padding(2.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.SmartToy, null, tint = Color.White, modifier = Modifier.size(18.dp))
-            }
-            Spacer(Modifier.width(6.dp))
-        }
-
-        Column(
-            modifier = Modifier.widthIn(max = 280.dp),
-            horizontalAlignment = if (msg.isUser) Alignment.End else Alignment.Start
-        ) {
-            if (!msg.isUser) {
-                Text(
-                    msg.agentName,
-                    style = MaterialTheme.typography.labelSmall.copy(color = Primary),
-                    modifier = Modifier.padding(bottom = 2.dp)
-                )
-            }
-            Surface(
-                shape = RoundedCornerShape(
-                    topStart = if (msg.isUser) 16.dp else 4.dp,
-                    topEnd = if (msg.isUser) 4.dp else 16.dp,
-                    bottomStart = 16.dp, bottomEnd = 16.dp
-                ),
-                color = if (msg.isUser) Primary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f),
-                shadowElevation = 2.dp
-            ) {
-                Text(
-                    msg.content,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = if (msg.isUser) Color.White else MaterialTheme.colorScheme.onSurface
+                Spacer(Modifier.height(10.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                    quickSuggestions.forEach { s ->
+                        Box(
+                            modifier = Modifier
+                                .clip(MaterialTheme.shapes.extraLarge)
+                                .background(MaterialTheme.colorScheme.background)
+                                .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.extraLarge)
+                                .clickable(enabled = !state.thinking) { vm.send(s) }
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Text(s, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(10.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = state.input,
+                        onValueChange = vm::onInputChanged,
+                        placeholder = { Text("Pergunte à IA...") },
+                        modifier = Modifier.weight(1f),
+                        shape = MaterialTheme.shapes.extraLarge,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                        keyboardActions = KeyboardActions(onSend = { vm.send() }),
                     )
+                    IconButton(
+                        onClick = { vm.send() },
+                        enabled = state.input.isNotBlank() && !state.thinking,
+                        modifier = Modifier.size(44.dp).clip(CircleShape).background(Primary),
+                    ) {
+                        Icon(Icons.Default.Send, null, tint = Color.White)
+                    }
+                }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.large)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
+                    .padding(18.dp),
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text("Análise de prontuário", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
+                        TextButton(onClick = onNavigateToCRM, contentPadding = PaddingValues(0.dp)) { Text("Abrir →", style = MaterialTheme.typography.labelSmall) }
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        "Abra o prontuário de um paciente para ver Ba Gang, língua, pulso e evolução — e perguntar sobre o caso aqui.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.large)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(14.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Icon(Icons.Default.VerifiedUser, null, tint = Primary, modifier = Modifier.size(20.dp))
+                Text(
+                    buildAnnotatedStringCompat("Auditoria da IA: ", "toda resposta vem só de artigos da biblioteca revisados — sem evidência, sem resposta. Você pode conferir a fonte de cada trecho."),
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }
@@ -326,41 +190,43 @@ private fun ChatBubble(msg: ChatMessage) {
 }
 
 @Composable
-private fun TypingIndicator() {
-    val dots = listOf(0, 200, 400)
-    val phase = rememberInfiniteTransition(label = "typing")
-    val t by phase.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(1200), RepeatMode.Reverse),
-        label = "typingPhase"
-    )
-
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f), shadowElevation = 1.dp) {
-            Text("🩺", modifier = Modifier.padding(4.dp))
-        }
-        repeat(3) { index ->
-            val progress = ((t * 3f - index).coerceIn(0f, 1f))
-            val d = 4.dp + (6.dp * progress)
+private fun ChatBubble(turn: ChatTurn) {
+    val isUser = turn.role == ChatRole.USER
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start) {
+        Column(horizontalAlignment = if (isUser) Alignment.End else Alignment.Start, modifier = Modifier.widthIn(max = 280.dp)) {
             Box(
                 modifier = Modifier
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(Primary.copy(alpha = 0.4f + 0.6f * progress)),
-                contentAlignment = Alignment.Center
-            ) {}
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = if (isUser) 16.dp else 4.dp,
+                            topEnd = if (isUser) 4.dp else 16.dp,
+                            bottomStart = 16.dp, bottomEnd = 16.dp,
+                        )
+                    )
+                    .background(if (isUser) Primary else MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+            ) {
+                Text(
+                    turn.text,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            if (turn.sources.isNotEmpty()) {
+                Spacer(Modifier.height(4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    turn.sources.take(3).forEach { source ->
+                        Box(modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 8.dp, vertical = 2.dp)) {
+                            Text("[${source.ordinal}] ${source.articleTitle}", style = MaterialTheme.typography.labelSmall, color = Primary, maxLines = 1)
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-private fun generateMockResponse(question: String, mode: AiMode): String {
-    val q = question.lowercase()
-    return when (mode) {
-        AiMode.CLINICAL -> "Pelo padrão descrito, pode indicar Desequilíbrio de Fígado + Deficiência de Yin. Sugiro pontos: LV3, KI6, PC6 e follow-up em 7 dias."
-        AiMode.KNOWLEDGE -> "Os pontos Yuan-Fonte são pontos de origem do Jing nos meridianos, abertos apenas em deficiência orgânica. São usados para tonificar o elemento raiz."
-        AiMode.FLASHCARD -> "Flashcards criados para revisão rápida, com reiteração espaçada e ícones visuais por elemento."
-        AiMode.REPORT -> "Relatório gerado com base na sessão atual. Inclui pontos, sinais e plano terapêutico."
-        AiMode.CRM -> "Sugestão: para fidelizar, use lembretes automáticos e follow-up pós-sessão em até 48h."
-    }
+private fun buildAnnotatedStringCompat(bold: String, rest: String) = androidx.compose.ui.text.buildAnnotatedString {
+    withStyle(androidx.compose.ui.text.SpanStyle(fontWeight = FontWeight.Bold)) { append(bold) }
+    append(rest)
 }

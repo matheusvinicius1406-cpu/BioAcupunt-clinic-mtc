@@ -4,13 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.prontuario.domain.model.BaGang
+import com.bioacupunt.prontuario.domain.model.BodyMark
+import com.bioacupunt.prontuario.domain.model.BodySide
 import com.bioacupunt.prontuario.domain.model.ClinicalFlag
 import com.bioacupunt.prontuario.domain.model.MtcAssessment
+import com.bioacupunt.prontuario.domain.model.Organ
+import com.bioacupunt.prontuario.domain.model.PatternFactor
 import com.bioacupunt.prontuario.domain.model.PulseFinding
 import com.bioacupunt.prontuario.domain.model.PulseReading
 import com.bioacupunt.prontuario.domain.model.TongueFinding
 import com.bioacupunt.prontuario.domain.model.ZangFuPattern
+import com.bioacupunt.prontuario.domain.safety.BodyRegion
 import com.bioacupunt.prontuario.domain.safety.SafetyVerdict
+import com.bioacupunt.prontuario.domain.safety.Technique
 import com.bioacupunt.prontuario.domain.safety.TreatmentProposal
 import com.bioacupunt.prontuario.domain.usecase.MtcAssessmentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -101,6 +107,12 @@ class SupremoViewModel(
 
     fun updatePulseRate(bpm: Int?) = edit { it.copy(pulse = it.pulse.copy(rateBpm = bpm)) }
 
+    fun updatePulseNotes(text: String) = edit { it.copy(pulse = it.pulse.copy(notes = text)) }
+
+    fun updateTongueNotes(text: String) = edit { it.copy(tongue = it.tongue.copy(notes = text)) }
+
+    fun updateTonguePhoto(uri: String?) = edit { it.copy(tongue = it.tongue.copy(photoUri = uri)) }
+
     fun toggleFlag(flag: ClinicalFlag) = edit { draft ->
         val flags = if (flag in draft.flags) draft.flags - flag else draft.flags + flag
         draft.copy(flags = flags)
@@ -110,6 +122,75 @@ class SupremoViewModel(
         _state.update { it.copy(proposal = proposal) }
         rescreenAsync()
     }
+
+    fun toggleTechnique(technique: Technique) {
+        val current = _state.value.proposal
+        val techniques = if (technique in current.techniques) current.techniques - technique else current.techniques + technique
+        updateProposal(current.copy(techniques = techniques))
+    }
+
+    // -- Atendimento wizard: step 1 (mapa corporal, melhora/piora) --------
+
+    fun toggleRelieving(factor: String) = edit { draft ->
+        val set = if (factor in draft.relievingFactors) draft.relievingFactors - factor else draft.relievingFactors + factor
+        draft.copy(relievingFactors = set)
+    }
+
+    fun toggleAggravating(factor: String) = edit { draft ->
+        val set = if (factor in draft.aggravatingFactors) draft.aggravatingFactors - factor else draft.aggravatingFactors + factor
+        draft.copy(aggravatingFactors = set)
+    }
+
+    /** Sets (or clears, at eva=0) the pain level for a body region — one mark per region. */
+    fun setRegionEva(region: BodyRegion, eva: Int) = edit { draft ->
+        val others = draft.bodyMarks.filterNot { it.region == region }
+        val marks = if (eva <= 0) others else others + BodyMark(
+            id = region.name,
+            side = BodySide.ANTERIOR,
+            x = 0f, y = 0f,
+            intensity = eva.coerceIn(0, 10),
+            region = region,
+        )
+        draft.copy(bodyMarks = marks)
+    }
+
+    // -- Atendimento wizard: step 2 (interrogatório) -----------------------
+
+    fun toggleReviewOfSystems(item: String) = edit { draft ->
+        val set = if (item in draft.reviewOfSystems) draft.reviewOfSystems - item else draft.reviewOfSystems + item
+        draft.copy(reviewOfSystems = set)
+    }
+
+    fun updateInterrogationNotes(text: String) = edit { it.copy(interrogationNotes = text) }
+
+    // -- Atendimento wizard: step 3 (Zang Fu cycling) ----------------------
+
+    /** Cycles an organ through Normal -> Deficiência -> Estagnação -> Normal. */
+    fun cycleOrganState(organ: Organ) = edit { draft ->
+        val existing = draft.patterns.firstOrNull { it.organ == organ }
+        val next = when {
+            existing == null -> ZangFuPattern(organ = organ, factors = setOf(PatternFactor.QI_DEFICIENCY))
+            PatternFactor.QI_DEFICIENCY in existing.factors -> existing.copy(factors = setOf(PatternFactor.QI_STAGNATION))
+            PatternFactor.QI_STAGNATION in existing.factors -> null
+            else -> ZangFuPattern(organ = organ, factors = setOf(PatternFactor.QI_DEFICIENCY))
+        }
+        val patterns = draft.patterns.filterNot { it.organ == organ } + listOfNotNull(next)
+        draft.copy(patterns = patterns)
+    }
+
+    /** Normal / Deficiência / Estagnação label for the current organ state — UI-facing. */
+    fun organStateLabel(organ: Organ): String {
+        val existing = _state.value.draft.patterns.firstOrNull { it.organ == organ } ?: return "Normal"
+        return when {
+            PatternFactor.QI_DEFICIENCY in existing.factors -> "Deficiência"
+            PatternFactor.QI_STAGNATION in existing.factors -> "Estagnação"
+            else -> "Normal"
+        }
+    }
+
+    // -- Atendimento wizard: step 5 (orientações) --------------------------
+
+    fun updateOrientations(text: String) = edit { it.copy(orientations = text) }
 
     private fun edit(transform: (MtcAssessment) -> MtcAssessment) {
         _state.update { it.copy(draft = transform(it.draft), savedAt = null) }

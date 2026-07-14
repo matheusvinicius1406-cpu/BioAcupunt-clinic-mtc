@@ -1,18 +1,19 @@
 package com.bioacupunt.ui.theme
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-// The reference clinical platform is a single, dark "Supremo" look. The app
-// commits to it too (dark-only) — this avoids a washed-out light mode and keeps
-// the emerald/gold-on-near-black identity consistent across every screen.
-private val BioAcupuntColors = darkColorScheme(
+// The reference clinical platform is a single, warm-light "Supremo" look: olive
+// green + gold over cream. The app commits to it too (light-only) — matches the
+// design mockups (dashboard/patients/prontuario/.../ajustes) screen for screen.
+private val BioAcupuntColors = lightColorScheme(
     primary = Primary,
     onPrimary = OnPrimary,
     primaryContainer = PrimaryContainer,
     secondary = Accent,
     onSecondary = OnAccent,
+    secondaryContainer = AccentContainer,
     tertiary = Accent,
     background = Background,
     onBackground = OnSurface,
@@ -20,13 +21,14 @@ private val BioAcupuntColors = darkColorScheme(
     onSurface = OnSurface,
     surfaceVariant = SurfaceVariant,
     onSurfaceVariant = OnSurfaceVariant,
-    outline = OnSurfaceVariant,
+    outline = Outline,
     error = SemanticError,
+    errorContainer = SemanticErrorBg,
 )
 
 @Composable
 fun BioAcupuntTheme(
-    darkTheme: Boolean = true,
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
     MaterialTheme(

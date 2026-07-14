@@ -6,12 +6,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Reference look: elegant serif for headings, clean sans for body, monospace for
-// small caps labels/dates. FontFamily.Serif/Monospace map to the device fonts —
-// no bundled font files (which previously crashed via a missing R.font.*).
-val HeadingFont = FontFamily.Serif
+// Reference look: Inter (humanist sans) throughout — headings, body and labels
+// alike, no serif/monospace mixed in. FontFamily.Default maps to the device's
+// sans font — no bundled font files (which previously crashed via a missing
+// R.font.*).
+val HeadingFont = FontFamily.Default
 val BodyFont = FontFamily.Default
-val LabelFont = FontFamily.Monospace
+val LabelFont = FontFamily.Default
 
 val Typography = Typography(
     displayLarge = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.Bold, fontSize = 40.sp, lineHeight = 48.sp),

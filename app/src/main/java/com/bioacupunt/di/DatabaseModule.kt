@@ -18,7 +18,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 9
+    private const val DB_VERSION = 12
 
     private var initialized = false
     private lateinit var instance: AppDatabase
@@ -107,6 +107,9 @@ object DatabaseModule {
         if (current >= 7) migrations.add(MIGRATION_6_7)
         if (current >= 8) migrations.add(MIGRATION_7_8)
         if (current >= 9) migrations.add(MIGRATION_8_9)
+        if (current >= 10) migrations.add(MIGRATION_9_10)
+        if (current >= 11) migrations.add(MIGRATION_10_11)
+        if (current >= 12) migrations.add(MIGRATION_11_12)
         return migrations
     }
 
@@ -201,6 +204,131 @@ object DatabaseModule {
             database.execSQL(
                 "CREATE INDEX IF NOT EXISTS `index_mtc_assessments_updatedAt` ON `mtc_assessments` (`updatedAt`)",
             )
+        }
+    }
+
+    /**
+     * Adds the "Exames" (vitals/labs/medications/allergies) and "Documentos" tables.
+     * Additive only, same paranoia as MIGRATION_8_9: column types and index names must
+     * match exactly what Room derives from the corresponding entities.
+     */
+    private val MIGRATION_9_10 = object : androidx.room.migration.Migration(9, 10) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `vital_signs` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `patientId` INTEGER NOT NULL,
+                    `label` TEXT NOT NULL,
+                    `value` TEXT NOT NULL,
+                    `recordedAt` TEXT NOT NULL DEFAULT '',
+                    `createdAt` TEXT NOT NULL DEFAULT '',
+                    `updatedAt` TEXT NOT NULL DEFAULT '',
+                    FOREIGN KEY(`patientId`) REFERENCES `patients`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent(),
+            )
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_vital_signs_patientId` ON `vital_signs` (`patientId`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_vital_signs_recordedAt` ON `vital_signs` (`recordedAt`)")
+
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `lab_exams` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `patientId` INTEGER NOT NULL,
+                    `name` TEXT NOT NULL,
+                    `date` TEXT NOT NULL DEFAULT '',
+                    `resultTag` TEXT NOT NULL DEFAULT 'PENDING',
+                    `notes` TEXT NOT NULL DEFAULT '',
+                    `createdAt` TEXT NOT NULL DEFAULT '',
+                    `updatedAt` TEXT NOT NULL DEFAULT '',
+                    FOREIGN KEY(`patientId`) REFERENCES `patients`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent(),
+            )
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_lab_exams_patientId` ON `lab_exams` (`patientId`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_lab_exams_date` ON `lab_exams` (`date`)")
+
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `medications` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `patientId` INTEGER NOT NULL,
+                    `name` TEXT NOT NULL,
+                    `info` TEXT NOT NULL DEFAULT '',
+                    `active` INTEGER NOT NULL DEFAULT 1,
+                    `createdAt` TEXT NOT NULL DEFAULT '',
+                    `updatedAt` TEXT NOT NULL DEFAULT '',
+                    FOREIGN KEY(`patientId`) REFERENCES `patients`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent(),
+            )
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_medications_patientId` ON `medications` (`patientId`)")
+
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `allergies` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `patientId` INTEGER NOT NULL,
+                    `description` TEXT NOT NULL,
+                    `createdAt` TEXT NOT NULL DEFAULT '',
+                    `updatedAt` TEXT NOT NULL DEFAULT '',
+                    FOREIGN KEY(`patientId`) REFERENCES `patients`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent(),
+            )
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_allergies_patientId` ON `allergies` (`patientId`)")
+
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `prontuario_documents` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `patientId` INTEGER NOT NULL,
+                    `name` TEXT NOT NULL,
+                    `uri` TEXT NOT NULL,
+                    `mimeType` TEXT NOT NULL DEFAULT '',
+                    `sizeBytes` INTEGER NOT NULL DEFAULT 0,
+                    `addedAt` TEXT NOT NULL DEFAULT '',
+                    `createdAt` TEXT NOT NULL DEFAULT '',
+                    `updatedAt` TEXT NOT NULL DEFAULT '',
+                    FOREIGN KEY(`patientId`) REFERENCES `patients`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent(),
+            )
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_prontuario_documents_patientId` ON `prontuario_documents` (`patientId`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_prontuario_documents_addedAt` ON `prontuario_documents` (`addedAt`)")
+        }
+    }
+
+    /** Adds article bookmarking ("favoritos" in the Biblioteca screen). */
+    private val MIGRATION_10_11 = object : androidx.room.migration.Migration(10, 11) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `favorite_articles` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `articleId` TEXT NOT NULL,
+                    `createdAt` TEXT NOT NULL DEFAULT ''
+                )
+                """.trimIndent(),
+            )
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_favorite_articles_articleId` ON `favorite_articles` (`articleId`)")
+        }
+    }
+
+    /** Adds the Atendimento wizard's extra MTC-assessment fields (additive columns only). */
+    private val MIGRATION_11_12 = object : androidx.room.migration.Migration(11, 12) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE mtc_assessments ADD COLUMN relievingJson TEXT NOT NULL DEFAULT '[]'")
+            database.execSQL("ALTER TABLE mtc_assessments ADD COLUMN aggravatingJson TEXT NOT NULL DEFAULT '[]'")
+            database.execSQL("ALTER TABLE mtc_assessments ADD COLUMN reviewOfSystemsJson TEXT NOT NULL DEFAULT '[]'")
+            database.execSQL("ALTER TABLE mtc_assessments ADD COLUMN interrogationNotes TEXT NOT NULL DEFAULT ''")
+            database.execSQL("ALTER TABLE mtc_assessments ADD COLUMN orientations TEXT NOT NULL DEFAULT ''")
         }
     }
 }

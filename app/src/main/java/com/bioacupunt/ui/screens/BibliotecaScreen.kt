@@ -1,26 +1,37 @@
 package com.bioacupunt.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bioacupunt.biblioteca.domain.model.BibliotecaNode
+import com.bioacupunt.biblioteca.domain.model.MtcArticle
+import com.bioacupunt.biblioteca.domain.model.MtcCategory
+import com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase
 import com.bioacupunt.di.AppContainer
-import kotlinx.coroutines.flow.collectLatest
+import com.bioacupunt.ui.theme.Accent
+import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.SemanticError
+import com.bioacupunt.ui.theme.SemanticSuccess
+import com.bioacupunt.ui.theme.TextMuted
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BibliotecaScreen(
     onNavigateToFlashcards: () -> Unit = {},
@@ -29,114 +40,260 @@ fun BibliotecaScreen(
 ) {
     val vm = viewModel<com.bioacupunt.biblioteca.presentation.BibliotecaViewModel>(factory = AppContainer.bibliotecaViewModelFactory)
     val state by vm.state.collectAsStateWithLifecycle()
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    var openArticle by remember { mutableStateOf<MtcArticle?>(null) }
 
-    LaunchedEffect(vm) {
-        vm.state.collectLatest { /* ensure loading/routing */ }
-    }
-
-    val filtered = remember(state.results, selectedCategory) {
-        val base = state.results
-        if (selectedCategory == null) base else base.filter { it.type == selectedCategory }
-    }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AssistChip(onClick = onNavigateToFlashcards, label = { Text("🃏 Flashcards", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
-            AssistChip(onClick = onNavigateToSimulador, label = { Text("🧪 Simulador", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
-            AssistChip(onClick = onNavigateToAnalytics, label = { Text("📊 Analytics", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
+    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        item {
+            Text("Biblioteca", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold))
+            Text(
+                "Conhecimento Ativo · ${MtcKnowledgeCount.totalArticles} artigos revisados",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
 
-        OutlinedTextField(
-            value = state.query,
-            onValueChange = { vm.onQueryChanged(it) },
-            placeholder = { Text("Buscar na biblioteca…") },
-            leadingIcon = { Icon(Icons.Default.Search, null) },
-            trailingIcon = {
-                if (state.query.isNotBlank()) {
-                    IconButton(onClick = { vm.onQueryChanged("") }) { Icon(Icons.Default.Clear, null) }
-                }
-            },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp)
-        )
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                AssistChip(onClick = onNavigateToFlashcards, label = { Text("🃏 Flashcards", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
+                AssistChip(onClick = onNavigateToSimulador, label = { Text("🧪 Simulador", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
+                AssistChip(onClick = onNavigateToAnalytics, label = { Text("📊 Analytics", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
+            }
+        }
 
-        if (state.query.isBlank() && filtered.isNotEmpty()) {
-            val types = state.results.map { it.type }.distinct()
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(horizontal = 16.dp), modifier = Modifier.padding(bottom = 8.dp)) {
-                item {
-                    FilterChip(
-                        selected = selectedCategory == null,
-                        onClick = { selectedCategory = null },
-                        label = { Text("Todos", style = MaterialTheme.typography.labelSmall) },
-                        leadingIcon = if (selectedCategory == null) { { Icon(Icons.Default.Check, null, Modifier.size(16.dp)) } } else null
+        // ── Ask the library — the one sanctioned AI path, gated by AskLibraryUseCase ──
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(2.dp, Primary, MaterialTheme.shapes.extraLarge)
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Icon(Icons.Default.Psychology, null, tint = Primary, modifier = Modifier.size(20.dp))
+                    androidx.compose.foundation.text.BasicTextField(
+                        value = state.askQuestion,
+                        onValueChange = vm::onAskQuestionChanged,
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+                        modifier = Modifier.weight(1f).padding(vertical = 12.dp),
+                        singleLine = true,
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
+                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = { vm.ask() }),
+                        decorationBox = { inner ->
+                            if (state.askQuestion.isBlank()) Text("Busca semântica · pergunte à IA...", style = MaterialTheme.typography.bodyMedium, color = TextMuted)
+                            inner()
+                        },
                     )
+                    if (state.asking) {
+                        CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                    } else {
+                        IconButton(onClick = vm::ask) { Icon(Icons.Default.Search, null, tint = Primary) }
+                    }
                 }
-                items(types) { type ->
-                    FilterChip(
-                        selected = selectedCategory == type,
-                        onClick = { selectedCategory = if (selectedCategory == type) null else type },
-                        label = { Text(type, style = MaterialTheme.typography.labelSmall) },
-                        leadingIcon = if (selectedCategory == type) { { Icon(Icons.Default.Check, null, Modifier.size(16.dp)) } } else null
-                    )
+                state.askAnswer?.let { answer ->
+                    HorizontalDivider()
+                    Box(modifier = Modifier.padding(vertical = 10.dp)) {
+                        AskAnswerView(answer, onDismiss = vm::clearAnswer)
+                    }
                 }
             }
         }
 
-        Text(
-            text = "${filtered.size} ${if (filtered.size == 1) "artigo" else "artigos"}",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-        )
-
-        if (state.loading) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-        } else if (filtered.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Nenhum resultado.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("A biblioteca está vazia.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        item {
+            val favCount = state.favoriteIds.size
+            val categoryCount = MtcKnowledgeBaseCategories.usedCategories.size
+            val stats = listOf(
+                "${MtcKnowledgeCount.totalArticles}" to "Artigos",
+                "$categoryCount" to "Categorias",
+                "$favCount" to "Favoritos",
+                "${MtcKnowledgeCount.totalTags}" to "Tags",
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                stats.forEach { (value, label) ->
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(MaterialTheme.shapes.medium)
+                            .background(MaterialTheme.colorScheme.surface)
+                            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
+                            .padding(vertical = 10.dp, horizontal = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = Primary)
+                        Text(label.uppercase(), style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                    }
                 }
+            }
+        }
+
+        item {
+            Text("ACERVO", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+            Spacer(Modifier.height(8.dp))
+            MtcCategory.entries.chunked(3).forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    row.forEach { cat ->
+                        val count = MtcKnowledgeBaseCategories.countFor(cat)
+                        val selected = state.category == cat.name
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(MaterialTheme.shapes.large)
+                                .background(if (selected) Primary.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surface)
+                                .border(1.dp, if (selected) Primary else MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
+                                .clickable { vm.onCategorySelected(if (selected) null else cat.name) }
+                                .padding(vertical = 14.dp, horizontal = 4.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(cat.emoji, style = MaterialTheme.typography.titleMedium)
+                            Spacer(Modifier.height(4.dp))
+                            Text(cat.label, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), textAlign = androidx.compose.ui.text.style.TextAlign.Center, maxLines = 2, color = MaterialTheme.colorScheme.onSurface)
+                            Text("$count artigo${if (count == 1) "" else "s"}", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                        }
+                    }
+                    repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                }
+            }
+        }
+
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.weight(1f).clip(MaterialTheme.shapes.medium).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 12.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Icon(Icons.Default.Bookmark, null, tint = Primary, modifier = Modifier.size(18.dp))
+                    Text("${state.favoriteIds.size} favoritos", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = Primary)
+                }
+                Row(
+                    modifier = Modifier.weight(1f).clip(MaterialTheme.shapes.medium).background(MaterialTheme.colorScheme.surface).border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium).padding(horizontal = 12.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Icon(Icons.Default.DownloadForOffline, null, tint = Primary, modifier = Modifier.size(18.dp))
+                    Text("Todo o conteúdo já é offline", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+        }
+
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text("ARTIGOS", style = MaterialTheme.typography.labelMedium, color = TextMuted, modifier = Modifier.weight(1f))
+                Text("${state.articles.size}", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+            }
+        }
+
+        if (state.articles.isEmpty()) {
+            item {
+                Text("Nenhum resultado para sua busca", color = TextMuted, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 20.dp))
             }
         } else {
-            LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(filtered, key = { it.id }) { node ->
-                    BibliotecaCard(node)
-                }
+            items(state.articles, key = { it.id }) { article ->
+                ArticleCard(
+                    article = article,
+                    isFavorite = article.id in state.favoriteIds,
+                    onOpen = { openArticle = article },
+                    onToggleFavorite = { vm.toggleFavorite(article.id) },
+                )
+            }
+        }
+    }
+
+    openArticle?.let { article ->
+        ArticleDetailDialog(article, onDismiss = { openArticle = null })
+    }
+}
+
+@Composable
+private fun AskAnswerView(answer: AskLibraryUseCase.Answer, onDismiss: () -> Unit) {
+    when (answer) {
+        is AskLibraryUseCase.Answer.Grounded -> Column {
+            Text(answer.text, style = MaterialTheme.typography.bodySmall)
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Fontes: " + answer.sources.joinToString(", ") { "[${it.ordinal}] ${it.articleTitle}" },
+                style = MaterialTheme.typography.labelSmall,
+                color = TextMuted,
+            )
+        }
+        AskLibraryUseCase.Answer.NoEvidence -> Text(
+            "A biblioteca não tem evidência sobre isso. Nenhuma resposta foi gerada.",
+            style = MaterialTheme.typography.bodySmall,
+            color = TextMuted,
+        )
+        is AskLibraryUseCase.Answer.Failed -> Text(answer.message, style = MaterialTheme.typography.bodySmall, color = SemanticError)
+    }
+    TextButton(onClick = onDismiss, contentPadding = PaddingValues(0.dp)) { Text("Fechar", style = MaterialTheme.typography.labelSmall) }
+}
+
+@Composable
+private fun ArticleCard(article: MtcArticle, isFavorite: Boolean, onOpen: () -> Unit, onToggleFavorite: () -> Unit) {
+    val category = runCatching { MtcCategory.valueOf(article.category) }.getOrNull()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
+            .clickable(onClick = onOpen)
+            .padding(16.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(category?.emoji ?: "📄", style = MaterialTheme.typography.titleMedium)
+            Text(article.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
+            IconButton(onClick = onToggleFavorite, modifier = Modifier.size(28.dp)) {
+                Icon(
+                    if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                    null,
+                    tint = if (isFavorite) Accent else TextMuted,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(article.summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        if (article.tags.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            FlowRowCompat(article.tags.take(4))
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FlowRowCompat(tags: List<String>) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        tags.forEach { tag ->
+            Box(modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 10.dp, vertical = 2.dp)) {
+                Text(tag, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Primary)
             }
         }
     }
 }
 
 @Composable
-private fun BibliotecaCard(node: BibliotecaNode) {
-    Card(modifier = Modifier.fillMaxWidth(), onClick = {}, elevation = CardDefaults.cardElevation(2.dp)) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.size(28.dp).clip(RoundedCornerShape(6.dp)).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-                    Text(node.type.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onPrimaryContainer))
-                }
-                Spacer(Modifier.width(8.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(node.title, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
-                    Text(node.summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
-                }
+private fun ArticleDetailDialog(article: MtcArticle, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(article.title, fontWeight = FontWeight.Bold) },
+        text = {
+            LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
+                item { Text(article.content, style = MaterialTheme.typography.bodySmall) }
             }
-            if (node.tags.isNotEmpty()) {
-                Spacer(Modifier.height(6.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    node.tags.take(3).forEach { tag ->
-                        Text(
-                            text = "#$tag",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                            modifier = Modifier.clip(RoundedCornerShape(4.dp)).background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)).padding(horizontal = 4.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Fechar") } },
+    )
+}
+
+/** Small real-data helpers over the 16 reviewed articles — no fabricated numbers. */
+private object MtcKnowledgeCount {
+    val totalArticles: Int get() = com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.size
+    val totalTags: Int get() = com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.flatMap { it.tags }.distinct().size
+}
+
+private object MtcKnowledgeBaseCategories {
+    val usedCategories: Set<String> get() = com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.map { it.category }.toSet()
+    fun countFor(category: MtcCategory): Int = com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.count { it.category == category.name }
 }

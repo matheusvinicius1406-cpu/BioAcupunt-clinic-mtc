@@ -49,9 +49,10 @@ fun AjustesScreen(onLogout: () -> Unit = {}) {
 @Composable
 private fun ProfileTab() {
     val context = LocalContext.current
-    var name by remember { mutableStateOf("Dra. Camila") }
-    var specialty by remember { mutableStateOf("Acupunturista · MTC") }
-    var crmNumber by remember { mutableStateOf("CFMTC-12345") }
+    val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
+    var name by remember { mutableStateOf(securePrefs.professionalName.ifBlank { "Dra. Camila" }) }
+    var specialty by remember { mutableStateOf(securePrefs.professionalSpecialty.ifBlank { "Acupunturista · MTC" }) }
+    var crmNumber by remember { mutableStateOf(securePrefs.professionalRegistration.ifBlank { "CFMTC-12345" }) }
     var phone by remember { mutableStateOf("+55 91 99999-0000") }
     var email by remember { mutableStateOf("camila@bioacupunt.com.br") }
     var bio by remember { mutableStateOf("Especialista em Medicina Tradicional Chinesa com mais de 10 anos de experiência em acupuntura, fitoterapia e moxibustão.") }
@@ -162,7 +163,12 @@ private fun ProfileTab() {
 
         item {
             Button(
-                onClick = { saved = true },
+                onClick = {
+                    securePrefs.professionalName = name.trim()
+                    securePrefs.professionalSpecialty = specialty.trim()
+                    securePrefs.professionalRegistration = crmNumber.trim()
+                    saved = true
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Primary)
             ) {
@@ -180,12 +186,26 @@ private fun ClinicTab() {
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     var clinicName by remember { mutableStateOf("Clínica BioAcupunt") }
     var address by remember { mutableStateOf("") }
-    var sessionPrice by remember { mutableStateOf("150") }
-    var firstPrice by remember { mutableStateOf("250") }
+    var sessionPrice by remember { mutableStateOf(securePrefs.sessionPriceBrl.ifBlank { "150" }) }
+    var firstPrice by remember { mutableStateOf(securePrefs.firstConsultPriceBrl.ifBlank { "250" }) }
     var workStart by remember { mutableStateOf("08:00") }
     var workEnd by remember { mutableStateOf("18:00") }
     var workDays by remember { mutableStateOf(setOf("SEG", "TER", "QUA", "QUI", "SEX")) }
     var gdriveLinked by remember { mutableStateOf(securePrefs.googleDriveLinked) }
+    var tcleText by remember {
+        mutableStateOf(
+            securePrefs.tcleText.ifBlank {
+                "Declaro estar ciente das indicações, contraindicações e da natureza dos procedimentos de MTC propostos."
+            }
+        )
+    }
+    val allTechniques = remember { com.bioacupunt.prontuario.domain.safety.Technique.entries }
+    var enabledTechniques by remember {
+        mutableStateOf(
+            securePrefs.enabledTechniquesCsv.split(",").filter { it.isNotBlank() }.toSet()
+                .ifEmpty { allTechniques.map { it.name }.toSet() }
+        )
+    }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { SectionHeader("Dados da Clínica") }
@@ -215,6 +235,47 @@ private fun ClinicTab() {
                             onClick = { workDays = if (day in workDays) workDays - day else workDays + day },
                             label = { Text(day, style = MaterialTheme.typography.labelSmall) }
                         )
+                    }
+                }
+            }
+        }
+
+        item { SectionHeader("Termo de Consentimento (TCLE)") }
+        item {
+            OutlinedTextField(
+                value = tcleText, onValueChange = { tcleText = it },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3, maxLines = 6,
+            )
+        }
+
+        item { SectionHeader("Técnicas complementares") }
+        item {
+            Text(
+                "Ao desativar, a técnica não aparece como opção no Atendimento.",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+                    allTechniques.forEach { tech ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 9.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(tech.label, style = MaterialTheme.typography.bodyMedium)
+                            Switch(
+                                checked = tech.name in enabledTechniques,
+                                onCheckedChange = { checked ->
+                                    enabledTechniques = if (checked) enabledTechniques + tech.name else enabledTechniques - tech.name
+                                },
+                                colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Primary),
+                            )
+                        }
+                        if (tech != allTechniques.last()) HorizontalDivider()
                     }
                 }
             }
@@ -251,7 +312,16 @@ private fun ClinicTab() {
         }
 
         item {
-            Button(onClick = {}, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Primary)) {
+            Button(
+                onClick = {
+                    securePrefs.sessionPriceBrl = sessionPrice.trim()
+                    securePrefs.firstConsultPriceBrl = firstPrice.trim()
+                    securePrefs.tcleText = tcleText.trim()
+                    securePrefs.enabledTechniquesCsv = enabledTechniques.joinToString(",")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Primary),
+            ) {
                 Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar Configurações")
             }
         }
@@ -498,7 +568,13 @@ private fun SystemTab() {
         }
 
         item { SectionHeader("Aparência") }
-        item { SettingsSwitchRow(Icons.Default.DarkMode, "Modo Escuro", "Tema escuro do aplicativo", darkMode, { darkMode = it }) }
+        item {
+            SettingsSwitchRow(
+                Icons.Default.DarkMode, "Modo Escuro",
+                "Em breve — o app usa o tema claro \"Supremo\" por enquanto",
+                darkMode, { }, enabled = false,
+            )
+        }
 
         item { SectionHeader("Notificações") }
         item { SettingsSwitchRow(Icons.Default.Notifications, "Notificações de Consultas", "Alertas sobre consultas do dia", notificationsEnabled, { notificationsEnabled = it }) }
@@ -540,8 +616,8 @@ private fun SystemTab() {
         item {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    AboutRow("Versão", "1.0.0")
-                    AboutRow("Build", "2026.06.29")
+                    AboutRow("Versão", com.bioacupunt.BuildConfig.VERSION_NAME)
+                    AboutRow("Build", "${com.bioacupunt.BuildConfig.VERSION_CODE}")
                     AboutRow("IA", "Gemini 2.0 Flash")
                     AboutRow("Segurança", "AES-256 + TLS 1.3")
                     AboutRow("Conformidade", "LGPD · CFM · CFMTC")

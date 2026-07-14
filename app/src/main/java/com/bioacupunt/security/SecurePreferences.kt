@@ -78,6 +78,37 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("server_url", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("server_url") } else edit { it.putString("server_url", value) }
 
+    // ── Ajustes: identidade profissional, TCLE, preços, técnicas ──────────
+    var professionalName: String
+        get() = prefs.getString("professional_name", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("professional_name") } else edit { it.putString("professional_name", value) }
+
+    var professionalSpecialty: String
+        get() = prefs.getString("professional_specialty", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("professional_specialty") } else edit { it.putString("professional_specialty", value) }
+
+    var professionalRegistration: String
+        get() = prefs.getString("professional_registration", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("professional_registration") } else edit { it.putString("professional_registration", value) }
+
+    var tcleText: String
+        get() = prefs.getString("tcle_text", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("tcle_text") } else edit { it.putString("tcle_text", value) }
+
+    var sessionPriceBrl: String
+        get() = prefs.getString("session_price_brl", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("session_price_brl") } else edit { it.putString("session_price_brl", value) }
+
+    var firstConsultPriceBrl: String
+        get() = prefs.getString("first_consult_price_brl", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("first_consult_price_brl") } else edit { it.putString("first_consult_price_brl", value) }
+
+    /** CSV of [com.bioacupunt.prontuario.domain.safety.Technique] names the practitioner
+     * has enabled. Blank means "all enabled" (the default, before she's touched this). */
+    var enabledTechniquesCsv: String
+        get() = prefs.getString("enabled_techniques", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("enabled_techniques") } else edit { it.putString("enabled_techniques", value) }
+
     fun clearAll() {
         edit { it.clear() }
     }

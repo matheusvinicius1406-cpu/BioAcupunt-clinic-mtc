@@ -20,9 +20,15 @@ import com.bioacupunt.sync.data.local.SyncQueueEntity
         com.bioacupunt.prontuario.data.local.ProntuarioEntryEntity::class,
         com.bioacupunt.biblioteca.data.local.BibliotecaNodeEntity::class,
         com.bioacupunt.relatorios.data.local.ReportEntity::class,
-        com.bioacupunt.prontuario.data.local.MtcAssessmentEntity::class
+        com.bioacupunt.prontuario.data.local.MtcAssessmentEntity::class,
+        com.bioacupunt.prontuario.data.local.VitalSignEntity::class,
+        com.bioacupunt.prontuario.data.local.LabExamEntity::class,
+        com.bioacupunt.prontuario.data.local.MedicationEntity::class,
+        com.bioacupunt.prontuario.data.local.AllergyEntity::class,
+        com.bioacupunt.prontuario.data.local.ProntuarioDocumentEntity::class,
+        com.bioacupunt.biblioteca.data.local.FavoriteArticleEntity::class
     ],
-    version = 9,
+    version = 12,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -36,4 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun bibliotecaDao(): com.bioacupunt.biblioteca.data.local.BibliotecaDao
     abstract fun reportDao(): com.bioacupunt.relatorios.data.local.ReportDao
     abstract fun mtcAssessmentDao(): com.bioacupunt.prontuario.data.local.MtcAssessmentDao
+    abstract fun exameDao(): com.bioacupunt.prontuario.data.local.ExameDao
+    abstract fun prontuarioDocumentDao(): com.bioacupunt.prontuario.data.local.ProntuarioDocumentDao
+    abstract fun favoriteArticleDao(): com.bioacupunt.biblioteca.data.local.FavoriteArticleDao
 }

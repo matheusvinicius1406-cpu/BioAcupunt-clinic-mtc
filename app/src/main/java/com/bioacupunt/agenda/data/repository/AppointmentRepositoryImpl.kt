@@ -44,6 +44,12 @@ class AppointmentRepositoryImpl(
             .catch { emit(emptyList()) }
     }
 
+    override fun observeNextUpcoming(fromDate: String, fromTime: String): Flow<Appointment?> {
+        return dao.observeNextUpcoming(fromDate, fromTime, tenantId)
+            .map { it?.toDomain() }
+            .catch { emit(null) }
+    }
+
     override suspend fun getById(id: Long): Result<Appointment> {
         return try {
             val entity = dao.getById(id, tenantId)

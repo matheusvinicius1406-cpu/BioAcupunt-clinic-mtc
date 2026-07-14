@@ -67,6 +67,16 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
+    // The Gradle daemon may run on a newer JDK (e.g. 21, pinned by
+    // gradle/gradle-daemon-jvm.properties). Kotlin/KSP would then default to
+    // that JVM's bytecode target and mismatch Java's 17 above, failing the
+    // build with "Inconsistent JVM-target compatibility". Pin Kotlin to 17.
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        }
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true

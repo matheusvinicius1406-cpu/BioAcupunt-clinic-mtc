@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.crm.domain.model.PatientStage
 import com.bioacupunt.crm.domain.repository.CrmPatientRepository
-import com.bioacupunt.crm.domain.usecase.SearchCrmPatients
+import com.bioacupunt.crm.domain.usecase.GetCrmPatients
 import com.bioacupunt.crm.domain.usecase.SaveCrmPatient
 import com.bioacupunt.crm.domain.usecase.UpdateCrmStage
 import com.bioacupunt.core.multitenancy.TenantManager
@@ -33,20 +33,20 @@ data class CrmUiState(
 class CrmViewModelFactory(
     private val saveCrmPatient: SaveCrmPatient,
     private val updateCrmStage: UpdateCrmStage,
-    private val searchCrmPatients: SearchCrmPatients,
+    private val getCrmPatients: GetCrmPatients,
     private val repository: CrmPatientRepository? = null,
     private val tenantManager: TenantManager? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return CrmViewModel(saveCrmPatient, updateCrmStage, searchCrmPatients, repository, tenantManager) as T
+        return CrmViewModel(saveCrmPatient, updateCrmStage, getCrmPatients, repository, tenantManager) as T
     }
 }
 
 class CrmViewModel(
     private val saveCrmPatient: SaveCrmPatient,
     private val updateCrmStage: UpdateCrmStage,
-    private val searchCrmPatients: SearchCrmPatients,
+    private val getCrmPatients: GetCrmPatients,
     private val repository: CrmPatientRepository? = null,
     private val tenantManager: TenantManager? = null
 ) : ViewModel() {
@@ -148,11 +148,11 @@ class CrmViewModel(
     private fun observePatients() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            val baseFlow = if (_state.value.selectedStageName.isNullOrBlank()) {
-                searchCrmPatients("")
-            } else {
-                searchCrmPatients(_state.value.selectedStageName!!)
-            }
+            // Stage selection must group by the real `stage` column (getCrmPatients ->
+            // observeByStage), not run the stage name through the name/phone LIKE
+            // search — that query almost never matches a stage like "ACTIVE" against
+            // a person's name, so the "select stage" chips silently returned nothing.
+            val baseFlow = getCrmPatients(_state.value.selectedStageName)
             baseFlow
                 .catch { e -> _state.update { it.copy(isLoading = false, error = e.localizedMessage) } }
                 .collect { list ->

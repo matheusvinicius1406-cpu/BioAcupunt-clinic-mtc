@@ -7,7 +7,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -219,49 +222,76 @@ private fun GeneratedReportsTab(reports: List<com.bioacupunt.relatorios.domain.m
 }
 
 @Composable
-private fun FinancialReportTab() {
+private fun FinancialReportTab(
+    vm: com.bioacupunt.financeiro.presentation.FinanceiroViewModel = viewModel(factory = AppContainer.financeiroViewModelFactory),
+) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val brl = { v: Double -> java.text.NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(v) }
+
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
-            Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Resumo — Junho 2026", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
-                    Spacer(Modifier.height(12.dp))
-                    FinRow("Total de consultas", "42")
-                    FinRow("Valor total gerado", "R$ 6.480,00", Color(0xFF4CAF50))
-                    FinRow("Valores recebidos", "R$ 4.800,00", Color(0xFF64B5F6))
-                    FinRow("Valores pendentes", "R$ 1.680,00", Color(0xFFFF8A65))
-                    FinRow("Ticket médio", "R$ 154,28", Primary)
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    FinRow("Taxa de inadimplência", "25,9%", Color(0xFFFF8A65))
-                }
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                FinStatCard(Modifier.weight(1f), "Recebido no mês", brl(state.monthReceivedBrl))
+                FinStatCard(Modifier.weight(1f), "Pendente no mês", brl(state.monthPendingBrl))
+            }
+        }
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                FinStatCard(Modifier.weight(1f), "Consultas pagas", "${state.paidCount}")
+                FinStatCard(Modifier.weight(1f), "Ticket médio", brl(state.ticketMedioBrl))
             }
         }
         item {
             Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Por Tipo de Atendimento", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+                    Text("Lançamentos recentes", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
                     Spacer(Modifier.height(8.dp))
-                    listOf(
-                        "Acupuntura" to "R$ 2.850,00",
-                        "1ª Consulta" to "R$ 1.750,00",
-                        "Retornos" to "R$ 1.200,00",
-                        "Moxibustão" to "R$ 480,00",
-                        "Outros" to "R$ 200,00"
-                    ).forEach { (t, v) -> FinRow(t, v) }
+                    if (state.recentTransactions.isEmpty()) {
+                        Text("Sem lançamentos ainda.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    } else {
+                        state.recentTransactions.forEach { t ->
+                            val isPaid = t.status == com.bioacupunt.financeiro.domain.model.TransactionStatus.PAID.name
+                            val color = if (isPaid) Color(0xFF4CAF50) else Color(0xFFFF8A65)
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    Icon(if (isPaid) Icons.Default.CheckCircle else Icons.Default.Schedule, null, tint = color, modifier = Modifier.size(18.dp))
+                                    Column {
+                                        Text(t.category, style = MaterialTheme.typography.bodySmall)
+                                        Text(t.method, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                                Text(brl(t.amountBrl), style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, color = color))
+                            }
+                        }
+                    }
                 }
             }
         }
         item {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedButton(onClick = {}, modifier = Modifier.weight(1f)) {
-                    Icon(Icons.Default.Download, null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Exportar PDF")
-                }
-                Button(onClick = {}, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = Primary)) {
-                    Icon(Icons.Default.Share, null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Compartilhar")
+            Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Receita por procedimento", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+                    Spacer(Modifier.height(10.dp))
+                    if (state.revenueByCategory.isEmpty()) {
+                        Text("Sem receita registrada neste mês.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    } else {
+                        state.revenueByCategory.forEach { r ->
+                            Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text(r.category, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(brl(r.amountBrl), style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
+                                }
+                                Spacer(Modifier.height(4.dp))
+                                Box(modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surfaceVariant)) {
+                                    Box(modifier = Modifier.fillMaxWidth(r.fraction.coerceIn(0f, 1f)).height(6.dp).clip(RoundedCornerShape(20.dp)).background(Brush.horizontalGradient(listOf(Primary, Color(0xFFC9A96E)))))
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -269,9 +299,12 @@ private fun FinancialReportTab() {
 }
 
 @Composable
-private fun FinRow(label: String, value: String, color: Color = MaterialTheme.colorScheme.onSurface) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, style = MaterialTheme.typography.bodySmall)
-        Text(value, style = MaterialTheme.typography.bodySmall.copy(color = color, fontWeight = FontWeight.SemiBold))
+private fun FinStatCard(modifier: Modifier, label: String, value: String) {
+    Card(modifier = modifier, elevation = CardDefaults.cardElevation(2.dp)) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Text(label.uppercase(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(4.dp))
+            Text(value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+        }
     }
 }
