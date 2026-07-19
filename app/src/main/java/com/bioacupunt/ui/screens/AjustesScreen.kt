@@ -193,7 +193,6 @@ private fun ClinicTab() {
     var workStart by remember { mutableStateOf("08:00") }
     var workEnd by remember { mutableStateOf("18:00") }
     var workDays by remember { mutableStateOf(setOf("SEG", "TER", "QUA", "QUI", "SEX")) }
-    var gdriveLinked by remember { mutableStateOf(securePrefs.googleDriveLinked) }
     var tcleText by remember {
         mutableStateOf(
             securePrefs.tcleText.ifBlank {
@@ -283,35 +282,8 @@ private fun ClinicTab() {
             }
         }
 
-        item { SectionHeader("Integrações") }
-        item {
-            SettingsSwitchRow(
-                icon = Icons.Default.Cloud,
-                title = "Google Drive",
-                subtitle = if (gdriveLinked) "Conectado — backup automático ativo" else "Não conectado. Ative para backup automático",
-                checked = gdriveLinked,
-                onCheck = { gdriveLinked = it; securePrefs.googleDriveLinked = it },
-                iconColor = Color(0xFF4285F4)
-            )
-        }
-        if (gdriveLinked) {
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4285F4).copy(alpha = 0.08f))
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text("☁️ Google Drive conectado", style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFF4285F4)))
-                        Text("Prontuários · Laudos · Fotos de evolução — sincronizados automaticamente", style = MaterialTheme.typography.bodySmall)
-                        Spacer(Modifier.height(8.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = {}, modifier = Modifier.weight(1f)) { Text("Fazer backup agora") }
-                            OutlinedButton(onClick = { gdriveLinked = false; securePrefs.googleDriveLinked = false }, modifier = Modifier.weight(1f)) { Text("Desconectar") }
-                        }
-                    }
-                }
-            }
-        }
+        item { SectionHeader("Backup e restauração") }
+        item { BackupSection() }
 
         item {
             Button(
@@ -718,6 +690,113 @@ private fun SectionHeader(title: String) {
         style = MaterialTheme.typography.labelLarge.copy(color = Primary, fontWeight = FontWeight.SemiBold),
         modifier = Modifier.padding(top = 4.dp)
     )
+}
+
+/**
+ * Backup e restauração reais. O destino é o **seletor do sistema** — o Google Drive
+ * aparece ali como local para salvar/abrir, então "backup no Drive" funciona sem login
+ * nem configuração. (O login Google dedicado é opcional e mora em outra seção.)
+ */
+@Composable
+private fun BackupSection() {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val backup = remember { com.bioacupunt.di.AppContainer.backupManager }
+    var status by remember { mutableStateOf<String?>(null) }
+    var working by remember { mutableStateOf(false) }
+    var showRestoreConfirm by remember { mutableStateOf<Uri?>(null) }
+
+    val createLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(com.bioacupunt.backup.BackupManager.MIME_TYPE)
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        working = true; status = "Gerando backup…"
+        scope.launch {
+            val result = runCatching {
+                context.contentResolver.openOutputStream(uri)?.use { out ->
+                    backup.createBackup(out).getOrThrow()
+                } ?: error("Não foi possível abrir o destino.")
+            }
+            working = false
+            status = result.fold(
+                onSuccess = { "✅ Backup salvo. Guarde este arquivo no seu Google Drive." },
+                onFailure = { "Falha no backup: ${it.message}" },
+            )
+        }
+    }
+
+    val openLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri -> if (uri != null) showRestoreConfirm = uri }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Primary.copy(alpha = 0.06f)),
+        border = BorderStroke(1.dp, Primary.copy(alpha = 0.2f)),
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            Text(
+                "Backup completo do banco (pacientes, prontuários, agenda). Salve no Google Drive " +
+                    "escolhendo-o no seletor. Restaurar substitui os dados atuais.",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = { createLauncher.launch(com.bioacupunt.backup.BackupManager.suggestedFileName()) },
+                    enabled = !working,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                ) {
+                    Icon(Icons.Default.CloudUpload, null, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Fazer backup")
+                }
+                OutlinedButton(
+                    onClick = { openLauncher.launch(arrayOf(com.bioacupunt.backup.BackupManager.MIME_TYPE, "application/octet-stream")) },
+                    enabled = !working,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Icon(Icons.Default.CloudDownload, null, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Restaurar")
+                }
+            }
+            if (working) { Spacer(Modifier.height(8.dp)); LinearProgressIndicator(Modifier.fillMaxWidth()) }
+            status?.let { Spacer(Modifier.height(8.dp)); Text(it, style = MaterialTheme.typography.labelMedium) }
+        }
+    }
+
+    showRestoreConfirm?.let { uri ->
+        AlertDialog(
+            onDismissRequest = { showRestoreConfirm = null },
+            icon = { Icon(Icons.Default.Warning, null, tint = Color(0xFFB00020)) },
+            title = { Text("Restaurar backup?") },
+            text = { Text("Isto substitui TODOS os dados atuais pelos do backup e reinicia o app. Não dá para desfazer.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showRestoreConfirm = null
+                        working = true; status = "Restaurando…"
+                        scope.launch {
+                            val result = runCatching {
+                                context.contentResolver.openInputStream(uri)?.use { input ->
+                                    backup.restoreBackup(input).getOrThrow()
+                                } ?: error("Não foi possível abrir o arquivo.")
+                            }
+                            working = false
+                            result.fold(
+                                onSuccess = {
+                                    status = "✅ Restaurado. Reiniciando…"
+                                    com.bioacupunt.backup.AppRestarter.restart(context)
+                                },
+                                onFailure = { status = "Falha ao restaurar: ${it.message}" },
+                            )
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB00020)),
+                ) { Text("Restaurar") }
+            },
+            dismissButton = { TextButton(onClick = { showRestoreConfirm = null }) { Text("Cancelar") } },
+        )
+    }
 }
 
 @Composable

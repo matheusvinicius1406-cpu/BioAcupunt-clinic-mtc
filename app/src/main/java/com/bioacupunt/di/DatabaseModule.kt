@@ -8,7 +8,10 @@ import java.io.File
 
 object DatabaseModule {
 
-    private const val DB_NAME = "bioacupunt_db"
+    const val DB_NAME = "bioacupunt_db"
+
+    /** Arquivo principal do banco. O backup empacota este + os sidecars -wal/-shm. */
+    fun databaseFile(context: Context): File = context.getDatabasePath(DB_NAME)
     private const val BACKUP_DIR_NAME = "db_backups"
 
     // MUST match @Database(version = …) on AppDatabase. Kept as a plain

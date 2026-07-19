@@ -47,21 +47,16 @@ fun BioAcupuntNavHost(
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
 
-    val showBottomBar = currentRoute != null && currentRoute != Screen.Login.route && currentRoute != Screen.BiometricLock.route
+    val showBottomBar = currentRoute != null &&
+        currentRoute != Screen.Login.route &&
+        currentRoute != Screen.BiometricLock.route &&
+        currentRoute != Screen.PinLock.route
 
-    // Biometric lock is opt-in: only gate startup with it when the user has
-    // actually enabled it in Settings AND the device supports it AND there is a
-    // logged-in session to protect. A fresh/logged-out launch always goes to
-    // Login, and a logged-in user who never turned biometrics on goes straight
-    // to the Dashboard — the fingerprint prompt is never forced on hardware
-    // presence alone.
-    val startDestination = remember {
-        when {
-            !AppContainer.authRepository.isLoggedIn() -> Screen.Login.route
-            AppContainer.securePreferences.biometricEnabled && AppContainer.isBiometricAvailable() -> Screen.BiometricLock.route
-            else -> Screen.Dashboard.route
-        }
-    }
+    // Gate de entrada OFFLINE: o PIN local é a porta do app, sem depender de backend
+    // nem de internet. A própria PinLockScreen decide entre criar o PIN (1º uso) e
+    // desbloquear (PIN/biometria). O login por e-mail/senha do backend continua
+    // existindo como rota, mas não é mais o portão de abertura.
+    val startDestination = remember { Screen.PinLock.route }
 
     Scaffold(
         bottomBar = {
@@ -141,6 +136,13 @@ fun BioAcupuntNavHost(
                 BiometricLockScreen(onUnlocked = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(Screen.BiometricLock.route) { inclusive = true }
+                    }
+                })
+            }
+            composable(Screen.PinLock.route) {
+                com.bioacupunt.ui.lock.PinLockScreen(onUnlocked = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.PinLock.route) { inclusive = true }
                     }
                 })
             }

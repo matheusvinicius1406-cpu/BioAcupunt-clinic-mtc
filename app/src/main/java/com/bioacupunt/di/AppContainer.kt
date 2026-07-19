@@ -127,6 +127,7 @@ object AppContainer {
     val securePreferences: SecurePreferences by lazy { SecurePreferences(appContext) }
     val authThrottle: AuthThrottle by lazy { AuthThrottle(appContext) }
     val tenantManager: TenantManager by lazy { TenantManager(securePreferences) }
+    val localAuthManager: com.bioacupunt.security.LocalAuthManager by lazy { com.bioacupunt.security.LocalAuthManager(securePreferences) }
     val connectivityObserver: ConnectivityObserver by lazy { ConnectivityObserver(appContext) }
     val connectivityObserverHandler: ConnectivityObserverHandler by lazy { ConnectivityObserverHandler(connectivityObserver) }
     val syncStatusManager: com.bioacupunt.observability.SyncStatusManager by lazy { com.bioacupunt.observability.SyncStatusManager() }
@@ -160,6 +161,11 @@ object AppContainer {
 
     // ── Database ───────────────────────────────────────────
     val database: AppDatabase by lazy { DatabaseModule.provideAppDatabase(appContext) }
+
+    // ── Backup / restauração (Google Drive via seletor do sistema) ──
+    val backupManager: com.bioacupunt.backup.BackupManager by lazy {
+        com.bioacupunt.backup.BackupManager(appContext, database)
+    }
 
     // ── DAOs ───────────────────────────────────────────────
     val patientDao: PatientDao by lazy { database.patientDao() }

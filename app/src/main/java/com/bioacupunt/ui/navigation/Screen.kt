@@ -4,6 +4,7 @@ sealed class Screen(val route: String, val label: String, val emoji: String = ""
     // Auth
     data object Login       : Screen("login",       "Login",       "🔐")
     data object BiometricLock: Screen("biometric_lock","Biometria","🔒")
+    data object PinLock     : Screen("pin_lock",      "Bloqueio",    "🔒")
 
     // Main navigation (bottom bar)
     data object Dashboard   : Screen("dashboard",   "Início",      "🏠")
