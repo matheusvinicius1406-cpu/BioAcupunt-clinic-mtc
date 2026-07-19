@@ -10,7 +10,8 @@ import com.bioacupunt.patient.domain.model.Patient
 import com.bioacupunt.sync.data.local.SyncQueueDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
+import com.bioacupunt.core.util.AppJson
+import kotlinx.serialization.decodeFromString
 import java.io.IOException
 
 /**
@@ -75,7 +76,7 @@ class SyncWorker(
     private suspend fun syncPatient(operation: String, payloadJson: String) {
         when (operation) {
             "CREATE" -> {
-                val patient = Json.decodeFromString<Patient>(payloadJson)
+                val patient = AppJson.decodeFromString<Patient>(payloadJson)
                 api.create(PatientCreateRequest(name = patient.name, document = patient.document))
             }
         }

@@ -24,7 +24,7 @@ class BioAcupuntApp : Application(), Configuration.Provider {
 
         runCatching {
             RetrofitInstance.init(
-                tokenProvider = { AppContainer.tokenManager.getToken() },
+                tokenProvider = { AppContainer.securePreferences.authToken },
                 serverUrlProvider = { AppContainer.securePreferences.serverUrl }
             )
         }.onFailure { AppLogger.e("BioAcupuntApp", "RetrofitInstance.init failed", it) }

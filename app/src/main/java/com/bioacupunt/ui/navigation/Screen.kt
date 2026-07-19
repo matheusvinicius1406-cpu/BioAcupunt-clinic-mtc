@@ -32,6 +32,7 @@ sealed class Screen(val route: String, val label: String, val emoji: String = ""
     data object Simulador   : Screen("simulador",   "Simulador",   "🧪")
     data object AiAssistant : Screen("ai_assistant","Assistente IA","🤖")
     data object Relatorios  : Screen("relatorios",  "Relatórios",  "📄")
+    data object Curadoria   : Screen("curadoria",   "Curadoria",   "🧾")
 
     companion object {
         // Bottom navigation items

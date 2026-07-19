@@ -15,6 +15,12 @@ interface BibliotecaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(nodes: List<BibliotecaNodeEntity>)
 
+    @Query("SELECT * FROM biblioteca_nodes")
+    suspend fun getAllOnce(): List<BibliotecaNodeEntity>
+
+    @Query("SELECT * FROM biblioteca_nodes WHERE id = :id")
+    suspend fun getById(id: String): BibliotecaNodeEntity?
+
     @Query("SELECT * FROM biblioteca_nodes WHERE title LIKE '%' || :query || '%' OR content LIKE '%' || :query || '%'")
     fun search(query: String): Flow<List<BibliotecaNodeEntity>>
 }

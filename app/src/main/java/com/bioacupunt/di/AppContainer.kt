@@ -60,11 +60,25 @@ object AppContainer {
         // Must run *after* _context is set — `tokenManager` and `securePreferences`
         // both resolve through `appContext`.
         RetrofitInstance.init(
-            tokenProvider = { tokenManager.getToken() },
+            tokenProvider = { securePreferences.authToken },
             serverUrlProvider = { securePreferences.serverUrl },
         )
 
         ensureNetworkObserverStarted()
+        warmLibraryCorpus()
+    }
+
+    /**
+     * Carrega o conteúdo APROVADO no [approvedLibrarySnapshot] antes de o retriever ser
+     * tocado (o que só acontece quando a médica abre a Biblioteca/Assistente, bem depois
+     * do launch). Fire-and-forget: se falhar, a busca cai para a base curada fixa — nunca
+     * crasha o launch por causa da biblioteca.
+     */
+    private fun warmLibraryCorpus() {
+        _seederScope.launch {
+            runCatching { approvedLibrarySnapshot = libraryStagingRepository.approvedArticles() }
+                .onFailure { e -> com.bioacupunt.observability.AppLogger.e("AppContainer", "warmLibraryCorpus falhou", e) }
+        }
     }
 
     @Volatile private var networkObserverStarted = false
@@ -219,6 +233,11 @@ object AppContainer {
     val bibliotecaDao: com.bioacupunt.biblioteca.data.local.BibliotecaDao by lazy { database.bibliotecaDao() }
     val favoriteArticleDao: com.bioacupunt.biblioteca.data.local.FavoriteArticleDao by lazy { database.favoriteArticleDao() }
 
+    /** Pipeline de ingestão revisado (R4): encena pacotes curados numa fila de revisão. */
+    val libraryStagingRepository: com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository by lazy {
+        com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository(bibliotecaDao)
+    }
+
     // ── Financeiro ─────────────────────────────────────────
     val transacaoRepository: com.bioacupunt.financeiro.domain.repository.TransacaoRepository by lazy {
         com.bioacupunt.financeiro.data.repository.TransacaoRepositoryImpl(transacaoDao)
@@ -334,9 +353,19 @@ object AppContainer {
         com.bioacupunt.ai.data.repository.AiRepositoryImpl(aiOrchestrator)
     }
     // ── Biblioteca: busca BM25 + RAG ancorado ──────────────
+    /**
+     * Snapshot dos artigos APROVADOS pela médica no pipeline de ingestão, carregado no
+     * início do app ([warmLibraryCorpus]). O corpus de busca é a base curada fixa +
+     * este snapshot. Conteúdo recém-aprovado entra na busca no próximo início do app —
+     * o retriever é um singleton com índice construído uma vez.
+     */
+    @Volatile
+    var approvedLibrarySnapshot: List<com.bioacupunt.biblioteca.domain.model.MtcArticle> = emptyList()
+        private set
+
     val mtcRetriever: com.bioacupunt.biblioteca.domain.search.MtcRetriever by lazy {
         com.bioacupunt.biblioteca.domain.search.MtcRetriever(
-            com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles,
+            com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles + approvedLibrarySnapshot,
         )
     }
 
@@ -350,6 +379,10 @@ object AppContainer {
 
     val aiAssistantViewModelFactory: com.bioacupunt.biblioteca.presentation.AiAssistantViewModelFactory by lazy {
         com.bioacupunt.biblioteca.presentation.AiAssistantViewModelFactory(askLibrary)
+    }
+
+    val libraryReviewViewModelFactory: com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory by lazy {
+        com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory(libraryStagingRepository)
     }
 
     // ── Seeder ──────────────────────────────────────────────

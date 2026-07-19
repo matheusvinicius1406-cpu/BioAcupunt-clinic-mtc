@@ -6,20 +6,18 @@ import com.bioacupunt.patient.data.local.PatientEntity
 import com.bioacupunt.patient.data.local.toDomain
 import com.bioacupunt.patient.domain.model.Patient
 import com.bioacupunt.patient.domain.repository.PatientRepository
+import com.bioacupunt.core.util.AppJson
 import com.bioacupunt.sync.SyncScheduler
 import com.bioacupunt.sync.data.local.SyncQueueEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class PatientRepositoryImpl(
     private val api: PatientApi,
     private val db: AppDatabase,
     private val scheduler: SyncScheduler
 ) : PatientRepository {
-
-    private val json = Json { encodeDefaults = true }
 
     override fun list(): Flow<List<Patient>> =
         db.patientDao().getAllPatients().map { entities -> entities.map { it.toDomain() } }
@@ -38,7 +36,7 @@ class PatientRepositoryImpl(
         val generatedId = db.patientDao().save(entity)
         val saved = entity.copy(id = generatedId)
 
-        val payload = json.encodeToString(saved.toDomain())
+        val payload = AppJson.encodeToString(saved.toDomain())
 
         db.syncQueueDao().enqueue(
             SyncQueueEntity(

@@ -27,8 +27,15 @@ import com.bioacupunt.biblioteca.domain.model.MtcArticle
  */
 class MtcRetriever(
     private val articles: List<MtcArticle>,
-    private val index: MtcSearchEngine.Index = MtcSearchEngine.index(articles),
+    indexProvider: () -> MtcSearchEngine.Index = { MtcSearchEngine.index(articles) },
 ) {
+
+    // Construído sob demanda, no primeiro search — que roda sempre dentro de uma
+    // coroutine (viewModelScope). Antes era um default param avaliado no construtor,
+    // e o construtor era tocado durante a composição ao abrir a Biblioteca/Assistente,
+    // travando a 1ª navegação enquanto o índice BM25 de toda a base era montado na
+    // thread de UI. Lazy move esse custo para fora dela sem mudar o comportamento.
+    private val index: MtcSearchEngine.Index by lazy(indexProvider)
 
     data class Passage(
         val ordinal: Int,

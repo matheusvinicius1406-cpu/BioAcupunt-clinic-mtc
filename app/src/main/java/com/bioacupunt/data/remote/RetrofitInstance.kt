@@ -39,7 +39,7 @@ object RetrofitInstance {
     // talks to DEFAULT_SERVER_URL unauthenticated. `init()` becomes *configuration*
     // rather than a fragile precondition. Providers are read per-request, so
     // switching servers at runtime keeps working.
-    @Volatile private var tokenProvider: (suspend () -> String)? = null
+    @Volatile private var tokenProvider: (() -> String)? = null
     @Volatile private var serverUrlProvider: (() -> String)? = null
 
     private val authInterceptor = AuthInterceptor { tokenProvider?.invoke().orEmpty() }
@@ -56,7 +56,7 @@ object RetrofitInstance {
      *   HTTPS URL) chosen by the user; blank falls back to [DEFAULT_SERVER_URL].
      */
     fun init(
-        tokenProvider: suspend () -> String,
+        tokenProvider: () -> String,
         serverUrlProvider: () -> String
     ) {
         this.tokenProvider = tokenProvider

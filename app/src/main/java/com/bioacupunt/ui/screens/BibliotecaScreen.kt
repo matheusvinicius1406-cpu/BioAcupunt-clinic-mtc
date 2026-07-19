@@ -36,7 +36,8 @@ import com.bioacupunt.ui.theme.TextMuted
 fun BibliotecaScreen(
     onNavigateToFlashcards: () -> Unit = {},
     onNavigateToSimulador: () -> Unit = {},
-    onNavigateToAnalytics: () -> Unit = {}
+    onNavigateToAnalytics: () -> Unit = {},
+    onNavigateToCuradoria: () -> Unit = {},
 ) {
     val vm = viewModel<com.bioacupunt.biblioteca.presentation.BibliotecaViewModel>(factory = AppContainer.bibliotecaViewModelFactory)
     val state by vm.state.collectAsStateWithLifecycle()
@@ -61,6 +62,14 @@ fun BibliotecaScreen(
                 AssistChip(onClick = onNavigateToSimulador, label = { Text("🧪 Simulador", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
                 AssistChip(onClick = onNavigateToAnalytics, label = { Text("📊 Analytics", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
             }
+        }
+
+        item {
+            AssistChip(
+                onClick = onNavigateToCuradoria,
+                label = { Text("🧾 Curadoria — revisar conteúdo novo", style = MaterialTheme.typography.labelSmall) },
+                leadingIcon = { Icon(androidx.compose.material.icons.Icons.Default.FactCheck, null, modifier = Modifier.size(16.dp)) },
+            )
         }
 
         // ── Ask the library — the one sanctioned AI path, gated by AskLibraryUseCase ──
@@ -280,7 +289,7 @@ private fun ArticleDetailDialog(article: MtcArticle, onDismiss: () -> Unit) {
         title = { Text(article.title, fontWeight = FontWeight.Bold) },
         text = {
             LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
-                item { Text(article.content, style = MaterialTheme.typography.bodySmall) }
+                item { com.bioacupunt.ui.components.MarkdownText(article.content) }
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text("Fechar") } },

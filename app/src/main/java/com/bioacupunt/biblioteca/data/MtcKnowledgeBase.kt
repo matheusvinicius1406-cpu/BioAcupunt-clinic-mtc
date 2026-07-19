@@ -597,7 +597,7 @@ Técnica terapêutica que utiliza a queima de artemísia (Artemisia argyi - Ai Y
 - Deficiência de Yang
 - Deficiência crônica de Qi e Sangue
 - Dor por Frio
-- Prolapse de órgãos
+- Prolapso de órgãos
 - Fortalecimento imunológico preventivo (R1, E36, VB39)
 
 ## Contraindicações
@@ -656,7 +656,7 @@ Técnica terapêutica que utiliza a queima de artemísia (Artemisia argyi - Ai Y
 **Sinais:** Sensação de peso corporal, distensão abdominal, náuseas, língua inchada com saburra espessa e gordurosa, pulso escorregadio (Hua).
 **Princípio:** Fortalecer o Baço, resolver Umidade, transformar Fleuma
 **Pontos:** BP9 (Yinlingquan), E40 (Fenglong), E36, RM9 (Shuifen)
-**Fitoterapia:** Er Chen Tang (Decocção das Duas Antigas)
+**Fitoterapia:** Er Chen Tang (Decocção das Duas Ervas Maturadas)
 
 ## Síndrome 5: Umidade-Calor Invadindo o Baço/Estômago (脾胃湿热)
 **Sinais:** Sensação de peso e calor, náuseas, boca pegajosa e amarga, icterícia possível, língua vermelha com saburra amarela gordurosa.
@@ -852,7 +852,7 @@ Pepino, melancia, pera, tofu, algas marinhas, espinafre, banana, chá verde
 ## Receituário Simples — Exemplos Terapêuticos
 **Congee de gengibre e jujuba** (para Frio no Baço/Estômago): arroz, gengibre fatiado, 3-5 jujubas, cozinhar até consistência cremosa.
 
-**Sopa de barbatana de melão amargo** (para Calor de Verão): melão amargo, tofu, um pouco de gengibre para equilibrar o frio extremo.
+**Sopa de melão amargo** (para Calor de Verão): melão amargo, tofu, um pouco de gengibre para equilibrar o frio extremo.
 
 **Chá de hortelã e crisântemo** (para Vento-Calor / Fígado): infusão simples, refrescante, bom para olhos vermelhos e cefaleia por calor.
             """.trimIndent(),

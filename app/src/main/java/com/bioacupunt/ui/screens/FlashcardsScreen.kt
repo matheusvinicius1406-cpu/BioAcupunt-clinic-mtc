@@ -288,36 +288,51 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
     }
 }
 
+/**
+ * Gera flashcards **a partir do acervo revisado** da biblioteca — não dos pesos de um
+ * modelo. Cada card é frente = título do artigo revisado, verso = o resumo revisado.
+ * Determinístico, offline e ancorado: se o tópico não casa com nenhum artigo, não há
+ * card (o mesmo princípio do RAG — sem evidência, sem invenção). Nada de IA escrevendo
+ * conteúdo clínico de estudo do nada (R4).
+ */
 @Composable
 private fun AiFlashcardDialog(onDismiss: () -> Unit, onGenerated: (List<Flashcard>) -> Unit) {
     var topic by remember { mutableStateOf("") }
-    var count by remember { mutableIntStateOf(5) }
+
+    val matches = remember(topic) {
+        val q = topic.trim().lowercase()
+        if (q.isBlank()) emptyList()
+        else com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.filter { a ->
+            a.title.lowercase().contains(q) ||
+                a.category.lowercase().contains(q) ||
+                a.tags.any { it.lowercase().contains(q) } ||
+                a.summary.lowercase().contains(q)
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Default.AutoAwesome, null, tint = Primary) },
-        title = { Text("Gerar Flashcards com IA") },
+        icon = { Icon(Icons.Default.School, null, tint = Primary) },
+        title = { Text("Gerar do acervo revisado") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("A IA criará flashcards didáticos de MTC automaticamente.", style = MaterialTheme.typography.bodySmall)
+                Text(
+                    "Cria cards a partir dos artigos revisados da biblioteca. Sem IA inventando " +
+                        "conteúdo — frente e verso vêm do acervo.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
                 OutlinedTextField(
                     value = topic, onValueChange = { topic = it },
                     label = { Text("Tópico (ex: Meridianos, Pulso, Ba Gang)") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Default.School, null) }
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Quantidade: $count", modifier = Modifier.weight(1f))
-                    Slider(
-                        value = count.toFloat(),
-                        onValueChange = { count = it.toInt() },
-                        valueRange = 3f..15f, steps = 11,
-                        modifier = Modifier.weight(2f),
-                        colors = SliderDefaults.colors(thumbColor = Primary, activeTrackColor = Primary)
-                    )
-                }
                 Text(
-                    "⚠️ Requer chave de API Gemini configurada em Ajustes.",
+                    when {
+                        topic.isBlank() -> "Digite um tópico para buscar no acervo."
+                        matches.isEmpty() -> "Nenhum artigo revisado casa com \"$topic\"."
+                        else -> "${matches.size} artigo(s) encontrado(s) — vira(m) ${matches.size} card(s)."
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -326,15 +341,20 @@ private fun AiFlashcardDialog(onDismiss: () -> Unit, onGenerated: (List<Flashcar
         confirmButton = {
             Button(
                 onClick = {
-                    // Demo: generate placeholder cards
-                    val demo = List(minOf(count, 3)) { i ->
-                        Flashcard("Card IA sobre $topic #${i+1}", "Resposta gerada pela IA para '$topic'", topic.ifBlank { "Geral" })
+                    val cards = matches.map { a ->
+                        Flashcard(
+                            frente = a.title,
+                            verso = a.summary.ifBlank { a.content.take(240) },
+                            categoria = runCatching {
+                                com.bioacupunt.biblioteca.domain.model.MtcCategory.valueOf(a.category).label
+                            }.getOrDefault(a.category),
+                        )
                     }
-                    onGenerated(demo)
+                    onGenerated(cards)
                 },
-                enabled = topic.isNotBlank(),
+                enabled = matches.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(containerColor = Primary)
-            ) { Icon(Icons.Default.AutoAwesome, null); Spacer(Modifier.width(4.dp)); Text("Gerar") }
+            ) { Icon(Icons.Default.School, null); Spacer(Modifier.width(4.dp)); Text("Gerar") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
