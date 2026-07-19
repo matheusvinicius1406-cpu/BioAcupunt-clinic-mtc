@@ -57,7 +57,7 @@ class LocalLlmProvider(
 ) : AiProvider {
 
     override val id: String = PROVIDER_ID
-    override val displayName: String = "Gemma (no dispositivo)"
+    override val displayName: String = "IA local (no dispositivo)"
 
     override val capabilities = AiProviderCapabilities(
         capabilities = setOf(AiCapability.Chat),
@@ -82,37 +82,50 @@ class LocalLlmProvider(
         hardwareAcceleration = "CPU/GPU (LiteRT)",
     )
 
-    override val models: List<AiModelDescriptor> = listOf(
-        AiModelDescriptor(
-            id = MODEL_ID,
-            providerId = PROVIDER_ID,
-            displayName = "Gemma 3 1B (int4)",
-            capabilities = setOf(AiCapability.Chat),
-            contextTokens = MAX_CONTEXT_TOKENS,
-            isLocal = true,
-            // Preferred over cloud whenever it can serve the request: free, offline,
-            // and the only option that keeps patient data on the device.
-            fallbackOrder = 0,
-            metadata = metadata,
-        ),
-    )
+    override val models: List<AiModelDescriptor> =
+        com.bioacupunt.ai.local.LocalModelCatalog.verifiable
+            // Só anuncia o que este runtime consegue de fato executar. Um modelo pinado
+            // cujo formato o engine não abre (ex.: .litertlm enquanto estamos no MediaPipe)
+            // seria oferecido, baixado e então falharia ao carregar — pior que não oferecer.
+            .filter { it.runtime in com.bioacupunt.ai.local.LocalModelCatalog.SUPPORTED_RUNTIMES }
+            .map { m ->
+            AiModelDescriptor(
+                id = m.id,
+                providerId = PROVIDER_ID,
+                displayName = m.displayName,
+                capabilities = setOf(AiCapability.Chat),
+                contextTokens = m.contextTokens,
+                isLocal = true,
+                // Preferred over cloud whenever it can serve the request: free, offline,
+                // and the only option that keeps patient data on the device.
+                fallbackOrder = 0,
+                metadata = metadata,
+            )
+        }
 
     /** Engine creation is expensive (seconds) and not thread-safe: build once, guard it. */
     @Volatile
     private var engine: LlmInference? = null
+
+    /** Qual modelo o engine carregado representa — trocar de modelo recria o engine. */
+    @Volatile
+    private var engineModelId: String? = null
     private val engineLock = Mutex()
 
-    override suspend fun isAvailable(): Boolean = modelManager.isModelReady()
+    override suspend fun isAvailable(): Boolean = modelManager.activeModel() != null
 
     override suspend fun generate(request: AiRequest): Result<AiResult> =
         withContext(Dispatchers.Default) {
             runCatching {
-                val modelFile = modelManager.modelFile()
+                val model = checkNotNull(modelManager.activeModel()) {
+                    "Nenhum modelo local instalado. Baixe um em Ajustes > IA."
+                }
+                val modelFile = modelManager.fileFor(model)
                 check(modelFile.exists()) {
                     "Modelo local ausente. Baixe o modelo em Ajustes > IA."
                 }
 
-                val llm = obtainEngine(modelFile)
+                val llm = obtainEngine(modelFile, model)
                 val startedAt = System.currentTimeMillis()
 
                 val prompt = buildPrompt(request)
@@ -121,7 +134,7 @@ class LocalLlmProvider(
                 AiResult(
                     text = text,
                     providerId = PROVIDER_ID,
-                    modelId = MODEL_ID,
+                    modelId = model.id,
                     capabilitiesUsed = setOf(AiCapability.Chat),
                     latencyMs = System.currentTimeMillis() - startedAt,
                     decisionReason = "Executado no dispositivo: dado clínico não saiu do aparelho.",
@@ -133,17 +146,28 @@ class LocalLlmProvider(
             }
         }
 
-    private suspend fun obtainEngine(modelFile: File): LlmInference {
-        engine?.let { return it }
+    private suspend fun obtainEngine(
+        modelFile: File,
+        model: com.bioacupunt.ai.local.LocalModel,
+    ): LlmInference {
+        engine?.takeIf { engineModelId == model.id }?.let { return it }
         return engineLock.withLock {
-            engine ?: createEngine(modelFile).also { engine = it }
+            val cached = engine
+            if (cached != null && engineModelId == model.id) return@withLock cached
+            // A médica trocou de modelo em Ajustes: solta a memória nativa do antigo
+            // antes de carregar o novo — dois engines de GBs juntos derrubam o app.
+            runCatching { cached?.close() }
+            createEngine(modelFile, model).also {
+                engine = it
+                engineModelId = model.id
+            }
         }
     }
 
-    private fun createEngine(modelFile: File): LlmInference {
+    private fun createEngine(modelFile: File, model: com.bioacupunt.ai.local.LocalModel): LlmInference {
         val options = LlmInferenceOptions.builder()
             .setModelPath(modelFile.absolutePath)
-            .setMaxTokens(MAX_CONTEXT_TOKENS)
+            .setMaxTokens(model.contextTokens)
             .build()
         return LlmInference.createFromOptions(context, options)
     }

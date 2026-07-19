@@ -320,19 +320,13 @@ object AppContainer {
     }
 
     private val aiOrchestrator: com.bioacupunt.ai.orchestrator.AiOrchestrator by lazy {
+        // Um único provedor: o modelo no dispositivo. Sem nuvem, sem Gemini, sem Mock.
+        // O dado clínico nunca sai do aparelho (LGPD Art. 5º, II). Enquanto nenhum modelo
+        // local estiver instalado, o provider reporta isAvailable() == false e a IA se
+        // declara indisponível honestamente — nunca cai num Mock que responde de mentira.
+        // Registro pré-populado (sem runBlocking): montar o registro não pode travar a UI.
         com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
-            providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
-                kotlinx.coroutines.runBlocking {
-                    // Registered first, and with fallbackOrder 0, so the orchestrator
-                    // prefers it whenever it can serve the request: patient data stays
-                    // on the device. It reports isAvailable() == false until the model
-                    // is downloaded, so the cloud providers below remain the graceful
-                    // fallback rather than a hard dependency.
-                    registry.register(localLlmProvider)
-                    registry.register(com.bioacupunt.ai.data.provider.GeminiProvider(cacheManager, aiSecretsProvider))
-                    registry.register(com.bioacupunt.ai.data.provider.MockProvider())
-                }
-            },
+            providers = com.bioacupunt.ai.registry.SimpleProviderRegistry(listOf(localLlmProvider)),
             healthRegistry = com.bioacupunt.ai.health.DefaultHealthRegistry()
         )
     }
@@ -356,19 +350,6 @@ object AppContainer {
 
     val aiAssistantViewModelFactory: com.bioacupunt.biblioteca.presentation.AiAssistantViewModelFactory by lazy {
         com.bioacupunt.biblioteca.presentation.AiAssistantViewModelFactory(askLibrary)
-    }
-
-    val aiHealthRegistry: com.bioacupunt.ai.health.HealthRegistry by lazy {
-        com.bioacupunt.ai.health.DefaultHealthRegistry()
-    }
-    val generateAiResponse: com.bioacupunt.ai.domain.usecase.GenerateAiResponseUseCase by lazy {
-        com.bioacupunt.ai.domain.usecase.GenerateAiResponseUseCase(aiRepository)
-    }
-    val aiConfigManager: com.bioacupunt.ai.config.AiConfigManager by lazy {
-        com.bioacupunt.ai.config.AndroidAiConfigManager(appContext)
-    }
-    val aiSecretsProvider: com.bioacupunt.ai.config.AiSecretsProvider by lazy {
-        com.bioacupunt.ai.config.AndroidAiSecretsProvider(appContext)
     }
 
     // ── Seeder ──────────────────────────────────────────────

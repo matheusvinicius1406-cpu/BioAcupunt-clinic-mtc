@@ -6,6 +6,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,7 +29,7 @@ import com.bioacupunt.ui.theme.Primary
 @Composable
 fun AjustesScreen(onLogout: () -> Unit = {}) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Perfil", "Clínica", "IA & APIs", "Segurança", "Sistema")
+    val tabs = listOf("Perfil", "Clínica", "IA local", "Segurança", "Sistema")
 
     Column(modifier = Modifier.fillMaxSize()) {
         ScrollableTabRow(selectedTabIndex = selectedTab, edgePadding = 16.dp) {
@@ -331,22 +333,20 @@ private fun ClinicTab() {
 // ── AI APIS TAB ─────────────────────────────────────────────
 @Composable
 private fun AiApisTab() {
-    val context = LocalContext.current
-    val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
-    val cacheManager = remember { com.bioacupunt.di.AppContainer.cacheManager }
+    val mgr = remember { com.bioacupunt.di.AppContainer.localModelManager }
+    val scope = rememberCoroutineScope()
 
-    var geminiKey by remember { mutableStateOf(securePrefs.geminiApiKey ?: "") }
-    var geminiVisible by remember { mutableStateOf(false) }
-    var enableClinical by remember { mutableStateOf(true) }
-    var enableFlashcards by remember { mutableStateOf(true) }
-    var enableReports by remember { mutableStateOf(true) }
-    var enableCrm by remember { mutableStateOf(true) }
-    var enableImagePrompts by remember { mutableStateOf(false) }
-    var maxTokens by remember { mutableIntStateOf(2048) }
-    var savedFeedback by remember { mutableStateOf(false) }
+    val ramMb = remember { mgr.deviceTotalRamMb() }
+    val downloadable = remember { mgr.downloadableModels() }
+    val downloadState by mgr.state.collectAsState(initial = com.bioacupunt.ai.data.provider.LocalModelManager.State.Idle)
+
+    // isInstalled()/activeModel() leem o disco; um contador força recomposição após
+    // baixar/apagar sem observar o filesystem inteiro.
+    var refresh by remember { mutableIntStateOf(0) }
+    val activeId = remember(refresh) { mgr.activeModel()?.id }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { SectionHeader("🤖 Chave de API") }
+        item { SectionHeader("🧠 IA no dispositivo") }
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -354,81 +354,163 @@ private fun AiApisTab() {
                 border = BorderStroke(1.dp, Primary.copy(alpha = 0.2f))
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text("Google Gemini 2.0 Flash", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
-                    Text("Obtida gratuitamente em aistudio.google.com", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = geminiKey, onValueChange = { geminiKey = it; savedFeedback = false },
-                        label = { Text("Chave API Gemini") },
-                        modifier = Modifier.fillMaxWidth(),
-                        visualTransformation = if (geminiVisible) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(onClick = { geminiVisible = !geminiVisible }) {
-                                Icon(if (geminiVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility, null)
-                            }
-                        },
-                        leadingIcon = { Icon(Icons.Default.Key, null) }
+                    Text("Tudo roda no seu aparelho", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "Sem nuvem e sem chave de API. O dado da paciente nunca sai do celular. " +
+                            "Baixe um modelo uma vez (Wi-Fi recomendado); depois funciona offline.",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    if (geminiKey.isNotBlank()) {
-                        Spacer(Modifier.height(6.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.CheckCircle, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(14.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text("Chave configurada · armazenada com AES-256", style = MaterialTheme.typography.labelSmall, color = Color(0xFF4CAF50))
-                        }
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        "Memória do aparelho: ${if (ramMb > 0) "$ramMb MB" else "desconhecida"}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        if (downloadable.isEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFB00020).copy(alpha = 0.08f)),
+                    border = BorderStroke(1.dp, Color(0xFFB00020).copy(alpha = 0.25f))
+                ) {
+                    Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Info, null, tint = Color(0xFFB00020), modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Este aparelho não tem memória suficiente para rodar um modelo local com " +
+                                "segurança. A IA fica indisponível — melhor isso do que travar no meio de um atendimento.",
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                 }
             }
         }
 
-        item { SectionHeader("⚙️ Agentes de IA") }
-
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                SettingsSwitchRow(Icons.Default.MedicalServices, "Assistente Clínico", "Análise de padrões MTC, diagnóstico energético", enableClinical, { enableClinical = it })
-                SettingsSwitchRow(Icons.Default.School, "Gerador de Flashcards", "Cria cards de estudo com IA", enableFlashcards, { enableFlashcards = it })
-                SettingsSwitchRow(Icons.Default.Description, "Redator de Relatórios", "Laudos, evoluções e documentos clínicos", enableReports, { enableReports = it })
-                SettingsSwitchRow(Icons.Default.People, "Consultor CRM", "Insights de retenção e relacionamento", enableCrm, { enableCrm = it })
-                SettingsSwitchRow(Icons.Default.Image, "Gerador de Prompts Visuais", "Cria prompts para imagens médicas", enableImagePrompts, { enableImagePrompts = it })
+        items(downloadable, key = { it.id }) { model ->
+            val installed = remember(refresh) { mgr.isInstalled(model) }
+            val isActive = activeId == model.id
+            val busy = downloadState.let {
+                it is com.bioacupunt.ai.data.provider.LocalModelManager.State.Downloading && it.modelId == model.id ||
+                    it is com.bioacupunt.ai.data.provider.LocalModelManager.State.Verifying && it.modelId == model.id
             }
-        }
-
-        item { SectionHeader("⚡ Performance") }
-        item {
-            Column {
-                Text("Máximo de tokens por resposta: $maxTokens", style = MaterialTheme.typography.bodySmall)
-                Slider(
-                    value = maxTokens.toFloat(), onValueChange = { maxTokens = it.toInt() },
-                    valueRange = 256f..4096f, steps = 15,
-                    colors = SliderDefaults.colors(thumbColor = Primary, activeTrackColor = Primary)
-                )
-                Text(
-                    "Cache de IA: ${cacheManager.memoryUsageKb()} KB em memória · ${cacheManager.diskUsageKb()} KB em disco",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        item {
-            Button(
-                onClick = {
-                    securePrefs.geminiApiKey = geminiKey.trim().ifBlank { null }
-                    savedFeedback = true
+            LocalModelCard(
+                name = model.displayName,
+                subtitle = "${model.sizeMb} MB · ${model.license.label} · ${model.notes}",
+                installed = installed,
+                isActive = isActive,
+                busy = busy,
+                downloadState = downloadState,
+                modelId = model.id,
+                onDownload = {
+                    scope.launch {
+                        mgr.download(model)
+                        refresh++
+                    }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Primary)
-            ) {
-                Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar Configurações de IA")
-            }
+                onSelect = {
+                    mgr.selectModel(model)
+                    refresh++
+                },
+                onDelete = {
+                    scope.launch {
+                        mgr.delete(model)
+                        refresh++
+                    }
+                }
+            )
         }
-        if (savedFeedback) {
+
+        (downloadState as? com.bioacupunt.ai.data.provider.LocalModelManager.State.Failed)?.let { failed ->
             item {
-                Text("✅ Configurações de IA salvas com segurança!", style = MaterialTheme.typography.labelMedium, color = Color(0xFF4CAF50))
+                Text(
+                    "Falha ao baixar/verificar: ${failed.message}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color(0xFFB00020)
+                )
             }
         }
     }
+}
 
+@Composable
+private fun LocalModelCard(
+    name: String,
+    subtitle: String,
+    installed: Boolean,
+    isActive: Boolean,
+    busy: Boolean,
+    downloadState: com.bioacupunt.ai.data.provider.LocalModelManager.State,
+    modelId: String,
+    onDownload: () -> Unit,
+    onSelect: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isActive) Primary.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, if (isActive) Primary.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Memory, null, tint = Primary, modifier = Modifier.size(22.dp))
+                Spacer(Modifier.width(8.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(name, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+                    Text(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                if (isActive) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, null, tint = Primary, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Em uso", style = MaterialTheme.typography.labelSmall, color = Primary)
+                    }
+                }
+            }
+
+            if (busy) {
+                Spacer(Modifier.height(10.dp))
+                val progress = (downloadState as? com.bioacupunt.ai.data.provider.LocalModelManager.State.Downloading)
+                    ?.takeIf { it.modelId == modelId }?.progress
+                if (progress != null) {
+                    LinearProgressIndicator(progress = { progress.coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth())
+                    Text("Baixando… ${(progress * 100).toInt()}%", style = MaterialTheme.typography.labelSmall)
+                } else {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    Text("Verificando integridade…", style = MaterialTheme.typography.labelSmall)
+                }
+            } else {
+                Spacer(Modifier.height(10.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    when {
+                        !installed -> Button(
+                            onClick = onDownload,
+                            colors = ButtonDefaults.buttonColors(containerColor = Primary)
+                        ) {
+                            Icon(Icons.Default.Download, null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(6.dp)); Text("Baixar")
+                        }
+                        !isActive -> {
+                            OutlinedButton(onClick = onSelect) { Text("Usar este") }
+                            OutlinedButton(onClick = onDelete) {
+                                Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Apagar")
+                            }
+                        }
+                        else -> OutlinedButton(onClick = onDelete) {
+                            Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Apagar")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // ── SECURITY TAB ────────────────────────────────────────────
@@ -618,7 +700,7 @@ private fun SystemTab() {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     AboutRow("Versão", com.bioacupunt.BuildConfig.VERSION_NAME)
                     AboutRow("Build", "${com.bioacupunt.BuildConfig.VERSION_CODE}")
-                    AboutRow("IA", "Gemini 2.0 Flash")
+                    AboutRow("IA", "Local (no dispositivo)")
                     AboutRow("Segurança", "AES-256 + TLS 1.3")
                     AboutRow("Conformidade", "LGPD · CFM · CFMTC")
                     AboutRow("Suporte", "suporte@bioacupunt.com.br")

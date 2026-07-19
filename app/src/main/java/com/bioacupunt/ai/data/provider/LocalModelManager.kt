@@ -1,6 +1,10 @@
 package com.bioacupunt.ai.data.provider
 
+import android.app.ActivityManager
 import android.content.Context
+import com.bioacupunt.ai.local.LocalModel
+import com.bioacupunt.ai.local.LocalModelCatalog
+import com.bioacupunt.ai.local.ModelIntegrity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,113 +13,203 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 /**
- * Downloads and manages the on-device model file.
+ * Baixa e gerencia os arquivos de modelo no aparelho — dirigido pelo
+ * [LocalModelCatalog], nunca por uma URL solta.
  *
- * The model cannot ship inside the APK (hundreds of MB to GB, past Play limits), so
- * it is fetched once into app-private storage — `filesDir`, which is sandboxed to
- * this app and, on modern Android, encrypted at rest with the device credentials.
- * A clinical model file has no business sitting in shared external storage.
+ * ## Integridade não é opcional aqui
+ *
+ * Uma versão anterior desta classe baixava o modelo e só conferia um tamanho
+ * mínimo — [ModelIntegrity] existia, mas ninguém o chamava. Isso é exatamente o
+ * fail-open que a R3 proíbe: um `.task` é *executado* por runtime nativo C++.
+ * Hoje o contrato é: **nenhum byte baixado vira modelo utilizável sem passar por
+ * [ModelIntegrity.verify] contra o hash fixado no código.** A verificação acontece
+ * no arquivo temporário, ANTES do rename atômico; um hash errado apaga o download,
+ * nunca o promove.
+ *
+ * ## Onde os arquivos moram
+ *
+ * `filesDir/models/` — storage privado do app, criptografado em repouso nos
+ * Androids modernos. Modelo clínico não tem o que fazer em storage compartilhado.
+ *
+ * ## De onde vêm os bytes
+ *
+ * Direto do Hugging Face ([LocalModel.downloadUrl]). Sem backend próprio a clínica
+ * não redistribui pesos (questão de licença), e a fonte não precisa ser confiada:
+ * o hash pinado decide, não o servidor.
  */
 class LocalModelManager(
     private val context: Context,
-    private val client: OkHttpClient = OkHttpClient(),
+    private val client: OkHttpClient = OkHttpClient.Builder()
+        // Um modelo tem gigabytes: timeout de corpo curto mataria todo download
+        // em rede de clínica. Conexão/handshake continuam com timeout normal.
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .build(),
 ) {
 
     sealed interface State {
-        data object Absent : State
-        data class Downloading(val progress: Float) : State
-        data object Ready : State
-        data class Failed(val message: String) : State
+        data object Idle : State
+        data class Downloading(val modelId: String, val progress: Float) : State
+        /** Hash de GBs leva segundos — a UI precisa dizer "verificando", não congelar. */
+        data class Verifying(val modelId: String) : State
+        data class Ready(val modelId: String) : State
+        data class Failed(val modelId: String, val message: String) : State
     }
 
-    private val _state = MutableStateFlow<State>(
-        if (modelFile().exists()) State.Ready else State.Absent,
-    )
+    private val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+    private val _state = MutableStateFlow<State>(State.Idle)
     val state: Flow<State> = _state.asStateFlow()
 
-    fun modelFile(): File = File(context.filesDir, MODEL_FILE_NAME)
+    private fun modelsDir(): File = File(context.filesDir, MODELS_DIR).apply { mkdirs() }
 
-    fun isModelReady(): Boolean = modelFile().let { it.exists() && it.length() > MIN_VALID_BYTES }
+    fun fileFor(model: LocalModel): File = File(modelsDir(), model.fileName)
+
+    private fun sidecarFor(model: LocalModel): File = File(modelsDir(), model.fileName + ".verified")
 
     /**
-     * Downloads to a temp file and only then renames into place.
+     * Instalado = arquivo presente, com o tamanho exato do catálogo, e com o sidecar
+     * `.verified` gravado por um [ModelIntegrity.verify] que passou no download.
      *
-     * This matters more than it looks: a download interrupted at 90% — the user walked
-     * out of wifi, the OS killed the app — would otherwise leave a truncated file that
-     * *exists*, so [isModelReady] would say yes and the inference engine would crash
-     * on a corrupt model. Atomic rename means the real filename only ever appears when
-     * the bytes behind it are complete.
+     * O sidecar evita re-hashear gigabytes a cada launch. Ele só é gravado após uma
+     * verificação completa, e o conteúdo precisa bater com o hash *pinado* — trocar
+     * o catálogo de versão invalida instalações antigas automaticamente.
      */
-    suspend fun download(url: String = DEFAULT_MODEL_URL): Result<File> =
-        withContext(Dispatchers.IO) {
-            runCatching {
-                val target = modelFile()
-                if (isModelReady()) {
-                    _state.value = State.Ready
-                    return@runCatching target
-                }
+    fun isInstalled(model: LocalModel): Boolean {
+        if (!model.isVerifiable) return false
+        val file = fileFor(model)
+        if (!file.exists() || file.length() != model.sizeBytes) return false
+        val recorded = runCatching { sidecarFor(model).readText().trim() }.getOrNull()
+        return recorded.equals(model.sha256, ignoreCase = true)
+    }
 
-                val temp = File(context.filesDir, "$MODEL_FILE_NAME.part")
-                temp.delete()
+    fun installedModels(): List<LocalModel> = LocalModelCatalog.verifiable.filter { isInstalled(it) }
 
-                _state.value = State.Downloading(0f)
+    /**
+     * O modelo que o provider deve usar agora: o escolhido pela médica, se instalado;
+     * senão o melhor instalado que este aparelho roda. Null = IA local indisponível,
+     * e o app diz isso com todas as letras — nunca finge.
+     */
+    fun activeModel(): LocalModel? {
+        val chosen = prefs.getString(KEY_SELECTED, null)
+            ?.let { id -> LocalModelCatalog.byId(id) }
+            ?.takeIf { isInstalled(it) }
+        if (chosen != null) return chosen
+        return LocalModelCatalog.runnableOn(deviceTotalRamMb()).firstOrNull { isInstalled(it) }
+    }
 
-                val response = client.newCall(Request.Builder().url(url).build()).execute()
-                response.use { res ->
-                    check(res.isSuccessful) { "Falha ao baixar o modelo: HTTP ${res.code}" }
-                    val body = res.body ?: error("Resposta vazia ao baixar o modelo")
-                    val total = body.contentLength().takeIf { it > 0 }
+    fun selectModel(model: LocalModel) {
+        prefs.edit().putString(KEY_SELECTED, model.id).apply()
+    }
 
-                    body.byteStream().use { input ->
-                        temp.outputStream().use { output ->
-                            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                            var downloaded = 0L
-                            while (true) {
-                                val read = input.read(buffer)
-                                if (read == -1) break
-                                output.write(buffer, 0, read)
-                                downloaded += read
-                                if (total != null) {
-                                    _state.value = State.Downloading(downloaded.toFloat() / total)
-                                }
+    fun deviceTotalRamMb(): Int = runCatching {
+        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val info = ActivityManager.MemoryInfo()
+        am.getMemoryInfo(info)
+        (info.totalMem / (1024 * 1024)).toInt()
+    }.getOrDefault(0)
+
+    /** Modelos que ESTE aparelho pode baixar e rodar, melhor primeiro. */
+    fun downloadableModels(): List<LocalModel> = LocalModelCatalog.runnableOn(deviceTotalRamMb())
+
+    /**
+     * Baixa para um `.part`, verifica integridade no `.part`, e só então renomeia.
+     *
+     * A ordem importa: o rename atômico garante que o nome real só existe com bytes
+     * completos, e a verificação ANTES do rename garante que ele só existe com bytes
+     * *provados*. Download interrompido, página de erro salva como modelo, mirror
+     * adulterado — tudo morre no `.part` e é apagado.
+     */
+    suspend fun download(model: LocalModel): Result<File> = withContext(Dispatchers.IO) {
+        runCatching {
+            require(model.isVerifiable) {
+                // R3: sem hash pinado não há o que verificar — então não há download.
+                "Modelo ${model.id} não tem SHA-256 fixado; não será baixado."
+            }
+
+            val target = fileFor(model)
+            if (isInstalled(model)) {
+                _state.value = State.Ready(model.id)
+                return@runCatching target
+            }
+
+            val temp = File(modelsDir(), model.fileName + ".part")
+            temp.delete()
+            sidecarFor(model).delete()
+
+            _state.value = State.Downloading(model.id, 0f)
+
+            val response = client.newCall(Request.Builder().url(model.downloadUrl()).build()).execute()
+            response.use { res ->
+                check(res.isSuccessful) { "Falha ao baixar o modelo: HTTP ${res.code}" }
+                val body = res.body ?: error("Resposta vazia ao baixar o modelo")
+                val total = body.contentLength().takeIf { it > 0 } ?: model.sizeBytes
+
+                body.byteStream().use { input ->
+                    temp.outputStream().use { output ->
+                        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                        var downloaded = 0L
+                        while (true) {
+                            val read = input.read(buffer)
+                            if (read == -1) break
+                            output.write(buffer, 0, read)
+                            downloaded += read
+                            if (total > 0) {
+                                _state.value = State.Downloading(model.id, downloaded.toFloat() / total)
                             }
                         }
                     }
                 }
-
-                check(temp.length() > MIN_VALID_BYTES) {
-                    "Arquivo baixado é pequeno demais para ser um modelo válido"
-                }
-                check(temp.renameTo(target)) { "Não foi possível finalizar o modelo baixado" }
-
-                _state.value = State.Ready
-                target
-            }.onFailure { error ->
-                _state.value = State.Failed(error.message ?: "Erro desconhecido")
             }
+
+            _state.value = State.Verifying(model.id)
+            when (val verdict = ModelIntegrity.verify(temp, model)) {
+                is ModelIntegrity.Result.Valid -> Unit
+                is ModelIntegrity.Result.SizeMismatch -> {
+                    temp.delete()
+                    error("Download incompleto ou arquivo errado (${verdict.actual} bytes; esperado ${verdict.expected}).")
+                }
+                is ModelIntegrity.Result.HashMismatch -> {
+                    temp.delete()
+                    error("Integridade falhou: o arquivo baixado não corresponde ao hash fixado. Download descartado.")
+                }
+                is ModelIntegrity.Result.Missing -> error("Arquivo temporário sumiu durante a verificação.")
+                is ModelIntegrity.Result.NotPinned -> {
+                    temp.delete()
+                    error("Modelo sem hash fixado não pode ser instalado.")
+                }
+            }
+
+            target.delete()
+            check(temp.renameTo(target)) { "Não foi possível finalizar o modelo baixado" }
+            // Gravado por último: o sidecar só existe se TUDO acima aconteceu.
+            sidecarFor(model).writeText(model.sha256)
+
+            _state.value = State.Ready(model.id)
+            target
+        }.onFailure { error ->
+            _state.value = State.Failed(model.id, error.message ?: "Erro desconhecido")
         }
+    }
 
     /** Frees the storage. The doctor should be able to reclaim GBs without reinstalling. */
-    suspend fun delete(): Boolean = withContext(Dispatchers.IO) {
-        val deleted = modelFile().delete()
-        _state.value = State.Absent
+    suspend fun delete(model: LocalModel): Boolean = withContext(Dispatchers.IO) {
+        sidecarFor(model).delete()
+        File(modelsDir(), model.fileName + ".part").delete()
+        val deleted = fileFor(model).delete()
+        if (prefs.getString(KEY_SELECTED, null) == model.id) {
+            prefs.edit().remove(KEY_SELECTED).apply()
+        }
+        _state.value = State.Idle
         deleted
     }
 
     companion object {
-        const val MODEL_FILE_NAME = "gemma-3-1b-it-int4.task"
-
-        /**
-         * Host the weights yourself (S3/R2/your backend) rather than hot-linking a
-         * third party: you control availability, and you keep the licence acceptance
-         * flow in your own hands. Gemma is openly available but licence-bound —
-         * shipping it means accepting those terms.
-         */
-        const val DEFAULT_MODEL_URL = "https://bioacupunt-api.onrender.com/models/gemma-3-1b-it-int4.task"
-
-        /** Anything under this is a truncated download or an error page, not a model. */
-        private const val MIN_VALID_BYTES = 50L * 1024 * 1024
+        private const val MODELS_DIR = "models"
+        private const val PREFS = "local_ai"
+        private const val KEY_SELECTED = "selected_model_id"
     }
 }

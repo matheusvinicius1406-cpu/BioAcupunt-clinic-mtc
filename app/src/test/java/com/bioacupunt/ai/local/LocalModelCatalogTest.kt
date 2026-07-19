@@ -15,11 +15,14 @@ class LocalModelCatalogTest {
         quality: Int,
         sha: String = "a".repeat(64),
         size: Long = 1024,
+        // MEDIAPIPE é o runtime suportado hoje; usar um não-suportado aqui faria
+        // runnableOn() filtrar tudo e mascarar o que estes testes querem exercer.
+        runtime: LocalRuntime = LocalRuntime.MEDIAPIPE,
     ) = LocalModel(
         id = id,
         displayName = id,
-        fileName = "$id.litertlm",
-        runtime = LocalRuntime.LITERT_LM,
+        fileName = "$id.task",
+        runtime = runtime,
         license = ModelLicense.APACHE_2_0,
         huggingFaceRepo = "litert-community/$id",
         sizeBytes = size,
@@ -80,20 +83,41 @@ class LocalModelCatalogTest {
     }
 
     @Test
-    fun shippedCatalogIsCurrentlyUnpinned_soNothingIsOffered() {
-        // Documents present reality honestly: the real hashes are not filled in yet,
-        // so the app offers no local model. It must degrade to cloud, not to garbage.
-        assertTrue(
-            "Catálogo real ainda não tem SHA-256 fixado — rode scripts/pin_models.sh",
-            LocalModelCatalog.verifiable.isEmpty(),
-        )
+    fun modelWithUnsupportedRuntimeIsNotRunnable() {
+        // Hash correto não basta: se o runtime não abre o formato, oferecer o modelo só
+        // levaria a um download que falha ao carregar. runnableOn() filtra por runtime.
+        val litert = model("litert-only", ram = 1024, quality = 99, runtime = LocalRuntime.LITERT_LM)
+        assertTrue("pré-condição: LITERT_LM não está entre os suportados hoje",
+            LocalRuntime.LITERT_LM !in LocalModelCatalog.SUPPORTED_RUNTIMES)
+        val offered = LocalModelCatalog.runnableOn(16384, listOf(litert) + all)
+        assertFalse(offered.contains(litert))
+    }
+
+    // -- Catálogo real: hashes pinados de forma honesta (R3) ----------------
+
+    @Test
+    fun shippedCatalogPinsApacheAndMitModels() {
+        // Qwen (Apache) e Phi (MIT) têm SHA-256 reais do registro LFS do Hugging Face.
+        val ids = LocalModelCatalog.verifiable.map { it.id }
+        assertTrue("Qwen deve estar pinado", ids.any { it.startsWith("qwen2.5-1.5b") })
+        assertTrue("Phi-4 deve estar pinado", ids.any { it.startsWith("phi-4-mini") })
     }
 
     @Test
-    fun downloadUrlPointsAtOurBackend_notHuggingFace() {
-        val url = mid.downloadUrl("https://api.exemplo.com/")
-        assertEquals("https://api.exemplo.com/models/mid.litertlm", url)
-        assertFalse(url.contains("huggingface"))
+    fun gatedGemma3StaysUnpinned_soItIsNotOffered() {
+        // Gemma 3 é gated (exige aceite dos Gemma Terms); sem token não há registro LFS
+        // legível, então fica sem hash e fora de verifiable — fail-closed, como manda R3.
+        val gemma3 = LocalModelCatalog.byId("gemma-3-1b-it-int4")
+        assertTrue("gemma-3 deve existir no catálogo", gemma3 != null)
+        assertFalse("gemma-3 gated não pode estar pinado com hash inventado", gemma3!!.isVerifiable)
+    }
+
+    @Test
+    fun downloadUrlResolvesFromHuggingFace() {
+        val url = mid.downloadUrl()
+        assertTrue("baixa direto do HF, sem backend redistribuidor", url.contains("huggingface.co"))
+        assertTrue(url.contains(mid.huggingFaceRepo))
+        assertTrue(url.endsWith("${mid.fileName}?download=true"))
     }
 }
 

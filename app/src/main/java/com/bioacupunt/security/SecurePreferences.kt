@@ -65,10 +65,6 @@ class SecurePreferences(context: Context) {
         get() = prefs.getBoolean("google_drive_linked", false)
         set(value) = edit { it.putBoolean("google_drive_linked", value) }
 
-    var geminiApiKey: String?
-        get() = prefs.getString("gemini_api_key", null)
-        set(value) = if (value.isNullOrBlank()) edit { it.remove("gemini_api_key") } else edit { it.putString("gemini_api_key", value) }
-
     var currentTenantId: Long?
         get() = prefs.getLong("current_tenant_id", -1L).takeIf { it != -1L }
         set(value) = if (value == null || value <= 0) edit { it.remove("current_tenant_id") } else edit { it.putLong("current_tenant_id", value) }

@@ -1,5 +1,8 @@
 package com.bioacupunt.ui.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -118,7 +121,14 @@ fun BioAcupuntNavHost(
         NavHost(
             navController = navController,
             startDestination = startDestination,
-            modifier = androidx.compose.ui.Modifier.padding(innerPadding)
+            modifier = androidx.compose.ui.Modifier.padding(innerPadding),
+            // Sem isto, navigation-compose aplica um cross-fade padrão de 700 ms em TODA
+            // troca de tela/aba — a "lentidão entre páginas" que a médica sentia. Um fade
+            // curto de 150 ms deixa a navegação instantânea sem cortar a suavidade.
+            enterTransition = { fadeIn(animationSpec = tween(150)) },
+            exitTransition = { fadeOut(animationSpec = tween(150)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(150)) },
+            popExitTransition = { fadeOut(animationSpec = tween(150)) },
         ) {
             composable(Screen.Login.route) {
                 LoginScreen(onLoginSuccess = {

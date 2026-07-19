@@ -260,8 +260,11 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Column(
+            // A contra-rotação da face de trás já é feita uma vez no Box acima (linha
+            // do segundo graphicsLayer). Repeti-la aqui somava 180°+180° = texto
+            // espelhado ao virar — o bug que a médica via. Uma compensação, não duas.
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(24.dp).graphicsLayer { if (rotation > 90f) rotationY = 180f }
+            modifier = Modifier.padding(24.dp)
         ) {
             Icon(
                 if (!isFlipped || rotation < 90f) Icons.Default.Help else Icons.Default.Lightbulb,
