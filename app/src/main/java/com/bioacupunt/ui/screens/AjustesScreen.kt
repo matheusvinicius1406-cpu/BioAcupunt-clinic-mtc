@@ -284,6 +284,8 @@ private fun ClinicTab() {
 
         item { SectionHeader("Backup e restauração") }
         item { BackupSection() }
+        item { SectionHeader("Conta Google (Drive)") }
+        item { GoogleDriveSection() }
 
         item {
             Button(
@@ -690,6 +692,108 @@ private fun SectionHeader(title: String) {
         style = MaterialTheme.typography.labelLarge.copy(color = Primary, fontWeight = FontWeight.SemiBold),
         modifier = Modifier.padding(top = 4.dp)
     )
+}
+
+/**
+ * LOGIN GOOGLE + Drive da conta. Faz backup/restauração direto na conta Google da médica
+ * (escopo mínimo drive.file — só os arquivos do app). Só funciona quando existir o cliente
+ * OAuth Android no Google Cloud Console (pacote + SHA-1) — ver docs/backup-google-drive.md.
+ * Sem isso, "Entrar com Google" retorna erro de configuração; o backup por seletor (acima)
+ * continua funcionando sem nada disso.
+ */
+@Composable
+private fun GoogleDriveSection() {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val drive = remember { com.bioacupunt.di.AppContainer.googleDriveClient }
+    val backup = remember { com.bioacupunt.di.AppContainer.backupManager }
+    var account by remember { mutableStateOf(drive.lastAccount()) }
+    var status by remember { mutableStateOf<String?>(null) }
+    var working by remember { mutableStateOf(false) }
+    var confirmRestore by remember { mutableStateOf(false) }
+
+    val signInLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        drive.accountFromResult(result.data).fold(
+            onSuccess = { account = it; status = "Conectado como ${it.email}" },
+            onFailure = { status = "Falha no login Google: ${it.message}" },
+        )
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF4285F4).copy(alpha = 0.06f)),
+        border = BorderStroke(1.dp, Color(0xFF4285F4).copy(alpha = 0.2f)),
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            val acc = account
+            if (acc == null) {
+                Text("Entre com sua conta Google para enviar o backup direto ao seu Drive.", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.height(10.dp))
+                Button(
+                    onClick = { signInLauncher.launch(drive.signInIntent()) },
+                    enabled = !working,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4285F4)),
+                ) { Icon(Icons.Default.AccountCircle, null, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Entrar com Google") }
+            } else {
+                Text("Conectado: ${acc.email ?: "conta Google"}", style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFF4285F4)))
+                Spacer(Modifier.height(10.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = {
+                            working = true; status = "Enviando ao Drive…"
+                            scope.launch {
+                                val r = backup.createBackupBytes().mapCatching { bytes ->
+                                    drive.uploadBackup(acc, com.bioacupunt.backup.BackupManager.suggestedFileName(), bytes).getOrThrow()
+                                }
+                                working = false
+                                status = r.fold({ "✅ Backup enviado ao seu Google Drive." }, { "Falha: ${it.message}" })
+                            }
+                        },
+                        enabled = !working, modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4285F4)),
+                    ) { Text("Backup no Drive") }
+                    OutlinedButton(onClick = { confirmRestore = true }, enabled = !working, modifier = Modifier.weight(1f)) { Text("Restaurar") }
+                }
+                Spacer(Modifier.height(6.dp))
+                TextButton(onClick = { scope.launch { drive.signOut(); account = null; status = "Desconectado." } }) { Text("Sair da conta Google") }
+            }
+            if (working) { Spacer(Modifier.height(8.dp)); LinearProgressIndicator(Modifier.fillMaxWidth()) }
+            status?.let { Spacer(Modifier.height(8.dp)); Text(it, style = MaterialTheme.typography.labelMedium) }
+        }
+    }
+
+    if (confirmRestore) {
+        val acc = account
+        AlertDialog(
+            onDismissRequest = { confirmRestore = false },
+            icon = { Icon(Icons.Default.Warning, null, tint = Color(0xFFB00020)) },
+            title = { Text("Restaurar do Drive?") },
+            text = { Text("Baixa o backup mais recente do seu Drive e substitui TODOS os dados atuais, depois reinicia o app.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        confirmRestore = false
+                        if (acc == null) return@Button
+                        working = true; status = "Baixando do Drive…"
+                        scope.launch {
+                            val r = drive.listBackups(acc).mapCatching { files ->
+                                val latest = files.firstOrNull() ?: error("Nenhum backup encontrado no Drive.")
+                                val bytes = drive.downloadFile(acc, latest.id).getOrThrow()
+                                backup.restoreBackupBytes(bytes).getOrThrow()
+                            }
+                            working = false
+                            r.fold(
+                                onSuccess = { status = "✅ Restaurado. Reiniciando…"; com.bioacupunt.backup.AppRestarter.restart(context) },
+                                onFailure = { status = "Falha ao restaurar: ${it.message}" },
+                            )
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB00020)),
+                ) { Text("Restaurar") }
+            },
+            dismissButton = { TextButton(onClick = { confirmRestore = false }) { Text("Cancelar") } },
+        )
+    }
 }
 
 /**

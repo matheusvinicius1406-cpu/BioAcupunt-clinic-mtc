@@ -16,6 +16,7 @@ navigationCompose = "2.8.7"
 roomRuntime = "2.7.1"
 workRuntimeKtx = "2.10.0"
 kotlinxSerializationJson = "1.8.0"
+playServicesAuth = "21.2.0"
 kotlinxCoroutinesTest = "1.10.2"
 core = "1.6.1"
 runner = "1.6.2"
@@ -39,6 +40,7 @@ activityKtx = "1.9.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

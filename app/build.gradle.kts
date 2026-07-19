@@ -153,6 +153,9 @@ dependencies {
     implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)
 
+    // Google Sign-In (login com conta Google) + acesso ao Drive via REST
+    implementation(libs.play.services.auth)
+
     // Retrofit / OkHttp
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)

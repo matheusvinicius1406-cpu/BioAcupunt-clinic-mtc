@@ -73,6 +73,16 @@ class BackupManager(
         }.onFailure { AppLogger.e("BackupManager", "createBackup falhou", it) }
     }
 
+    /** Igual ao [createBackup], mas devolve os bytes (para enviar via API do Drive). */
+    suspend fun createBackupBytes(): Result<ByteArray> = withContext(Dispatchers.IO) {
+        val buffer = java.io.ByteArrayOutputStream()
+        createBackup(buffer).map { buffer.toByteArray() }
+    }
+
+    /** Restaura a partir de bytes de um backup baixado (ex.: do Drive). */
+    suspend fun restoreBackupBytes(bytes: ByteArray): Result<Manifest> =
+        restoreBackup(java.io.ByteArrayInputStream(bytes))
+
     /**
      * Restaura de um backup. Sobrescreve os arquivos do banco e sinaliza que o app
      * precisa reiniciar — a conexão Room aberta aponta para os bytes antigos; só um
