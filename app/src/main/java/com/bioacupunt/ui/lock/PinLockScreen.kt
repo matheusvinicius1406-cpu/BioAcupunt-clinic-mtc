@@ -24,6 +24,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.security.LocalPinAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Gate de entrada OFFLINE. Dois modos, decididos pelo estado local:
@@ -38,6 +41,7 @@ import com.bioacupunt.security.LocalPinAuth
 @Composable
 fun PinLockScreen(onUnlocked: () -> Unit) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val auth = remember { AppContainer.localAuthManager }
     val isSetup = remember { !auth.hasPin() }
 
@@ -45,6 +49,9 @@ fun PinLockScreen(onUnlocked: () -> Unit) {
     var confirm by remember { mutableStateOf("") }
     var enableBiometric by remember { mutableStateOf(auth.biometricEnabled) }
     var error by remember { mutableStateOf<String?>(null) }
+    // O PBKDF2 (120k iterações, de propósito) não pode rodar na thread de UI: é o gate
+    // de abertura do app e travaria/ANR num aparelho fraco. Roda em Default.
+    var verifying by remember { mutableStateOf(false) }
 
     val biometricAvailable = remember {
         runCatching {
@@ -129,23 +136,34 @@ fun PinLockScreen(onUnlocked: () -> Unit) {
 
                 Button(
                     onClick = {
+                        if (verifying) return@Button
                         if (isSetup) {
                             when {
                                 !LocalPinAuth.isValidPin(pin) -> error = "PIN inválido (mín. ${LocalPinAuth.MIN_PIN_LENGTH} dígitos)."
                                 pin != confirm -> error = "Os PINs não conferem."
                                 else -> {
-                                    auth.setPin(pin)
-                                    auth.biometricEnabled = enableBiometric && biometricAvailable
-                                    onUnlocked()
+                                    verifying = true; error = null
+                                    scope.launch {
+                                        withContext(Dispatchers.Default) { auth.setPin(pin) }
+                                        auth.biometricEnabled = enableBiometric && biometricAvailable
+                                        verifying = false
+                                        onUnlocked()
+                                    }
                                 }
                             }
                         } else {
-                            if (auth.verifyPin(pin)) onUnlocked() else error = "PIN incorreto."
+                            verifying = true; error = null
+                            scope.launch {
+                                val ok = withContext(Dispatchers.Default) { auth.verifyPin(pin) }
+                                verifying = false
+                                if (ok) onUnlocked() else error = "PIN incorreto."
+                            }
                         }
                     },
+                    enabled = !verifying,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF87B344)),
-                ) { Text(if (isSetup) "Definir PIN e entrar" else "Entrar") }
+                ) { Text(if (verifying) "Verificando…" else if (isSetup) "Definir PIN e entrar" else "Entrar") }
 
                 if (!isSetup && auth.biometricEnabled && biometricAvailable) {
                     TextButton(onClick = { promptBiometric() }) {

@@ -73,10 +73,6 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("biometric_password", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("biometric_password") } else edit { it.putString("biometric_password", value) }
 
-    var googleDriveLinked: Boolean
-        get() = prefs.getBoolean("google_drive_linked", false)
-        set(value) = edit { it.putBoolean("google_drive_linked", value) }
-
     var currentTenantId: Long?
         get() = prefs.getLong("current_tenant_id", -1L).takeIf { it != -1L }
         set(value) = if (value == null || value <= 0) edit { it.remove("current_tenant_id") } else edit { it.putLong("current_tenant_id", value) }
