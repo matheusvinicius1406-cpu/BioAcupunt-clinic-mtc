@@ -57,8 +57,7 @@ object AppContainer {
 
         // Wire the network layer. This call was missing, which is why the app
         // crashed on launch: RetrofitInstance's interceptors were never configured.
-        // Must run *after* _context is set — `tokenManager` and `securePreferences`
-        // both resolve through `appContext`.
+        // Must run *after* _context is set — `securePreferences` resolves through `appContext`.
         RetrofitInstance.init(
             tokenProvider = { securePreferences.authToken },
             serverUrlProvider = { securePreferences.serverUrl },
@@ -148,9 +147,6 @@ object AppContainer {
     // ── Auth ───────────────────────────────────────────────
     val authRepository: AuthRepository by lazy {
         AuthRepositoryImpl(securePreferences, authThrottle, RetrofitInstance.authApi, tenantManager)
-    }
-    val tokenManager: com.bioacupunt.auth.data.local.TokenManager by lazy {
-        com.bioacupunt.auth.data.local.TokenManager(securePreferences)
     }
 
     // ── Sync ───────────────────────────────────────────────

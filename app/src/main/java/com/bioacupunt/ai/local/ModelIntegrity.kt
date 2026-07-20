@@ -1,5 +1,6 @@
 package com.bioacupunt.ai.local
 
+import com.bioacupunt.core.util.toHex
 import java.io.File
 import java.security.MessageDigest
 
@@ -45,7 +46,7 @@ object ModelIntegrity {
                 digest.update(buffer, 0, read)
             }
         }
-        return digest.digest().joinToString("") { "%02x".format(it) }
+        return digest.digest().toHex()
     }
 
     fun verify(file: File, model: LocalModel): Result {

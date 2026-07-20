@@ -1,5 +1,7 @@
 package com.bioacupunt.security
 
+import com.bioacupunt.core.util.hexToBytes
+import com.bioacupunt.core.util.toHex
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -24,7 +26,7 @@ object LocalPinAuth {
     fun newSaltHex(): String = ByteArray(16).also { SecureRandom().nextBytes(it) }.toHex()
 
     fun hash(pin: String, saltHex: String, iterations: Int = ITERATIONS): String {
-        val spec = PBEKeySpec(pin.toCharArray(), saltHex.fromHex(), iterations, KEY_LENGTH_BITS)
+        val spec = PBEKeySpec(pin.toCharArray(), saltHex.hexToBytes(), iterations, KEY_LENGTH_BITS)
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         return factory.generateSecret(spec).encoded.toHex()
     }
@@ -45,8 +47,3 @@ object LocalPinAuth {
         return diff == 0
     }
 }
-
-internal fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }
-
-internal fun String.fromHex(): ByteArray =
-    chunked(2).map { it.toInt(16).toByte() }.toByteArray()

@@ -7,11 +7,11 @@ import com.bioacupunt.biblioteca.domain.ingestion.LibraryIngestion
 import com.bioacupunt.biblioteca.domain.ingestion.ReviewMeta
 import com.bioacupunt.biblioteca.domain.ingestion.ReviewStatus
 import com.bioacupunt.biblioteca.domain.model.MtcArticle
+import com.bioacupunt.core.util.AppJson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 /**
  * Persistência do pipeline de ingestão sobre a tabela `biblioteca_nodes` que já existe.
@@ -23,12 +23,10 @@ import kotlinx.serialization.json.Json
 class LibraryStagingRepository(
     private val dao: BibliotecaDao,
 ) {
-    // Json próprio e tolerante: metadata legado (nós sem ReviewMeta) não pode derrubar a
-    // leitura — degrada para "sem revisão" e segue, no espírito do resto do app clínico.
-    private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
-
+    // metadata legado (nós sem ReviewMeta) não pode derrubar a leitura — o runCatching
+    // degrada para "sem revisão" e segue, no espírito do resto do app clínico.
     private fun metaOf(entity: BibliotecaNodeEntity): ReviewMeta? =
-        runCatching { json.decodeFromString<ReviewMeta>(entity.metadata) }.getOrNull()
+        runCatching { AppJson.decodeFromString<ReviewMeta>(entity.metadata) }.getOrNull()
 
     private fun toEntity(node: LibraryIngestion.StagedNode): BibliotecaNodeEntity =
         BibliotecaNodeEntity(
@@ -40,7 +38,7 @@ class LibraryStagingRepository(
             summary = node.article.summary,
             tags = node.article.tags.joinToString(","),
             version = 1,
-            metadata = json.encodeToString(node.meta),
+            metadata = AppJson.encodeToString(node.meta),
         )
 
     // A categoria do artigo encenado é guardada no campo `type` da entity (ver stagePack),
@@ -95,7 +93,7 @@ class LibraryStagingRepository(
     private suspend fun transition(id: String, status: ReviewStatus, now: Long) {
         val entity = dao.getById(id) ?: return
         val meta = metaOf(entity) ?: return
-        val updated = entity.copy(metadata = json.encodeToString(meta.copy(status = status, reviewedAt = now)))
+        val updated = entity.copy(metadata = AppJson.encodeToString(meta.copy(status = status, reviewedAt = now)))
         dao.insertAll(listOf(updated))
     }
 

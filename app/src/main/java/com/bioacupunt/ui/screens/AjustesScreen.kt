@@ -694,6 +694,28 @@ private fun SectionHeader(title: String) {
     )
 }
 
+/** Rodapé compartilhado das seções de backup: barra de progresso + linha de status. */
+@Composable
+private fun StatusProgress(working: Boolean, status: String?) {
+    if (working) { Spacer(Modifier.height(8.dp)); LinearProgressIndicator(Modifier.fillMaxWidth()) }
+    status?.let { Spacer(Modifier.height(8.dp)); Text(it, style = MaterialTheme.typography.labelMedium) }
+}
+
+/** Confirmação de uma restauração destrutiva (apaga tudo + reinicia) — usada nos dois caminhos. */
+@Composable
+private fun RestoreConfirmDialog(text: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Default.Warning, null, tint = Color(0xFFB00020)) },
+        title = { Text("Restaurar backup?") },
+        text = { Text(text) },
+        confirmButton = {
+            Button(onClick = onConfirm, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB00020))) { Text("Restaurar") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } },
+    )
+}
+
 /**
  * LOGIN GOOGLE + Drive da conta. Faz backup/restauração direto na conta Google da médica
  * (escopo mínimo drive.file — só os arquivos do app). Só funciona quando existir o cliente
@@ -757,41 +779,33 @@ private fun GoogleDriveSection() {
                 Spacer(Modifier.height(6.dp))
                 TextButton(onClick = { scope.launch { drive.signOut(); account = null; status = "Desconectado." } }) { Text("Sair da conta Google") }
             }
-            if (working) { Spacer(Modifier.height(8.dp)); LinearProgressIndicator(Modifier.fillMaxWidth()) }
-            status?.let { Spacer(Modifier.height(8.dp)); Text(it, style = MaterialTheme.typography.labelMedium) }
+            StatusProgress(working, status)
         }
     }
 
     if (confirmRestore) {
         val acc = account
-        AlertDialog(
-            onDismissRequest = { confirmRestore = false },
-            icon = { Icon(Icons.Default.Warning, null, tint = Color(0xFFB00020)) },
-            title = { Text("Restaurar do Drive?") },
-            text = { Text("Baixa o backup mais recente do seu Drive e substitui TODOS os dados atuais, depois reinicia o app.") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        confirmRestore = false
-                        if (acc == null) return@Button
-                        working = true; status = "Baixando do Drive…"
-                        scope.launch {
-                            val r = drive.listBackups(acc).mapCatching { files ->
-                                val latest = files.firstOrNull() ?: error("Nenhum backup encontrado no Drive.")
-                                val bytes = drive.downloadFile(acc, latest.id).getOrThrow()
-                                backup.restoreBackupBytes(bytes).getOrThrow()
-                            }
-                            working = false
-                            r.fold(
-                                onSuccess = { status = "✅ Restaurado. Reiniciando…"; com.bioacupunt.backup.AppRestarter.restart(context) },
-                                onFailure = { status = "Falha ao restaurar: ${it.message}" },
-                            )
+        RestoreConfirmDialog(
+            text = "Baixa o backup mais recente do seu Drive e substitui TODOS os dados atuais, depois reinicia o app.",
+            onDismiss = { confirmRestore = false },
+            onConfirm = {
+                confirmRestore = false
+                if (acc != null) {
+                    working = true; status = "Baixando do Drive…"
+                    scope.launch {
+                        val r = drive.listBackups(acc).mapCatching { files ->
+                            val latest = files.firstOrNull() ?: error("Nenhum backup encontrado no Drive.")
+                            val bytes = drive.downloadFile(acc, latest.id).getOrThrow()
+                            backup.restoreBackupBytes(bytes).getOrThrow()
                         }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB00020)),
-                ) { Text("Restaurar") }
+                        working = false
+                        r.fold(
+                            onSuccess = { status = "✅ Restaurado. Reiniciando…"; com.bioacupunt.backup.AppRestarter.restart(context) },
+                            onFailure = { status = "Falha ao restaurar: ${it.message}" },
+                        )
+                    }
+                }
             },
-            dismissButton = { TextButton(onClick = { confirmRestore = false }) { Text("Cancelar") } },
         )
     }
 }
@@ -863,42 +877,33 @@ private fun BackupSection() {
                     Icon(Icons.Default.CloudDownload, null, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Restaurar")
                 }
             }
-            if (working) { Spacer(Modifier.height(8.dp)); LinearProgressIndicator(Modifier.fillMaxWidth()) }
-            status?.let { Spacer(Modifier.height(8.dp)); Text(it, style = MaterialTheme.typography.labelMedium) }
+            StatusProgress(working, status)
         }
     }
 
     showRestoreConfirm?.let { uri ->
-        AlertDialog(
-            onDismissRequest = { showRestoreConfirm = null },
-            icon = { Icon(Icons.Default.Warning, null, tint = Color(0xFFB00020)) },
-            title = { Text("Restaurar backup?") },
-            text = { Text("Isto substitui TODOS os dados atuais pelos do backup e reinicia o app. Não dá para desfazer.") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showRestoreConfirm = null
-                        working = true; status = "Restaurando…"
-                        scope.launch {
-                            val result = runCatching {
-                                context.contentResolver.openInputStream(uri)?.use { input ->
-                                    backup.restoreBackup(input).getOrThrow()
-                                } ?: error("Não foi possível abrir o arquivo.")
-                            }
-                            working = false
-                            result.fold(
-                                onSuccess = {
-                                    status = "✅ Restaurado. Reiniciando…"
-                                    com.bioacupunt.backup.AppRestarter.restart(context)
-                                },
-                                onFailure = { status = "Falha ao restaurar: ${it.message}" },
-                            )
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB00020)),
-                ) { Text("Restaurar") }
+        RestoreConfirmDialog(
+            text = "Isto substitui TODOS os dados atuais pelos do backup e reinicia o app. Não dá para desfazer.",
+            onDismiss = { showRestoreConfirm = null },
+            onConfirm = {
+                showRestoreConfirm = null
+                working = true; status = "Restaurando…"
+                scope.launch {
+                    val result = runCatching {
+                        context.contentResolver.openInputStream(uri)?.use { input ->
+                            backup.restoreBackup(input).getOrThrow()
+                        } ?: error("Não foi possível abrir o arquivo.")
+                    }
+                    working = false
+                    result.fold(
+                        onSuccess = {
+                            status = "✅ Restaurado. Reiniciando…"
+                            com.bioacupunt.backup.AppRestarter.restart(context)
+                        },
+                        onFailure = { status = "Falha ao restaurar: ${it.message}" },
+                    )
+                }
             },
-            dismissButton = { TextButton(onClick = { showRestoreConfirm = null }) { Text("Cancelar") } },
         )
     }
 }

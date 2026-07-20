@@ -55,7 +55,7 @@ internal sealed interface MdBlock {
     data class Bullet(val items: List<String>) : MdBlock
     data class Numbered(val items: List<String>) : MdBlock
     data class Code(val text: String) : MdBlock
-    data class Table(val rows: List<List<String>>, val hasHeader: Boolean) : MdBlock
+    data class Table(val rows: List<List<String>>) : MdBlock
 }
 
 // ── Parsing (linha a linha, agrupando) ──────────────────────────────────────
@@ -108,7 +108,7 @@ internal fun parseMarkdown(md: String): List<MdBlock> {
                     rows.add(splitTableRow(lines[i].trim())); i++
                 }
                 i-- // compensa o i++ do fim do while externo
-                blocks.add(MdBlock.Table(rows, hasHeader = true))
+                blocks.add(MdBlock.Table(rows))
             }
 
             // Lista com marcador - ou *
@@ -242,14 +242,12 @@ private fun MarkdownBlock(block: MdBlock) {
         ) {
             Column {
                 block.rows.forEachIndexed { rIdx, row ->
-                    val header = block.hasHeader && rIdx == 0
+                    val header = rIdx == 0 // a 1ª linha da tabela é sempre o cabeçalho
                     Row {
                         row.forEach { cell ->
                             Text(
                                 parseInline(cell),
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                                    .widthCell(),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = if (header) FontWeight.Bold else FontWeight.Normal,
                                 ),
@@ -262,6 +260,3 @@ private fun MarkdownBlock(block: MdBlock) {
         }
     }
 }
-
-/** Largura mínima por célula para a tabela não colapsar; rola horizontal se estourar. */
-private fun Modifier.widthCell(): Modifier = this.then(Modifier.padding(end = 4.dp))

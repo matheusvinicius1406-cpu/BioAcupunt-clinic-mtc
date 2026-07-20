@@ -21,7 +21,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.screens.*
-import com.bioacupunt.ui.lock.BiometricLockScreen
 import com.bioacupunt.ui.theme.Accent
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.TextMuted
@@ -49,7 +48,6 @@ fun BioAcupuntNavHost(
 
     val showBottomBar = currentRoute != null &&
         currentRoute != Screen.Login.route &&
-        currentRoute != Screen.BiometricLock.route &&
         currentRoute != Screen.PinLock.route
 
     // Gate de entrada OFFLINE: o PIN local é a porta do app, sem depender de backend
@@ -129,13 +127,6 @@ fun BioAcupuntNavHost(
                 LoginScreen(onLoginSuccess = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
-                    }
-                })
-            }
-            composable(Screen.BiometricLock.route) {
-                BiometricLockScreen(onUnlocked = {
-                    navController.navigate(Screen.Dashboard.route) {
-                        popUpTo(Screen.BiometricLock.route) { inclusive = true }
                     }
                 })
             }
