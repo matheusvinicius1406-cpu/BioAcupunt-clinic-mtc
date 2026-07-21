@@ -177,6 +177,14 @@ object AppContainer {
     // ── Database ───────────────────────────────────────────
     val database: AppDatabase by lazy { DatabaseModule.provideAppDatabase(appContext) }
 
+    // ── Backup / Google Drive ──────────────────────────────
+    val googleDriveClient: com.bioacupunt.backup.GoogleDriveClient by lazy {
+        com.bioacupunt.backup.GoogleDriveClient(appContext)
+    }
+    val backupManager: com.bioacupunt.backup.BackupManager by lazy {
+        com.bioacupunt.backup.BackupManager(appContext, database)
+    }
+
     // ── DAOs ───────────────────────────────────────────────
     val patientDao: PatientDao by lazy { database.patientDao() }
     val syncQueueDao: SyncQueueDao by lazy { database.syncQueueDao() }

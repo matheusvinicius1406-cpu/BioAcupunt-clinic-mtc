@@ -491,6 +491,9 @@ private fun SecurityTab(onLogout: () -> Unit) {
             }
         }
 
+        item { SectionHeader("Backup") }
+        item { BackupCard() }
+
         item { Spacer(Modifier.height(8.dp)) }
         item {
             OutlinedButton(
