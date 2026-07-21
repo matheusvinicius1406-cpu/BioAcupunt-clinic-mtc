@@ -14,6 +14,10 @@ interface ProntuarioDao {
     @Query("SELECT * FROM prontuarios WHERE patientId = :pid LIMIT 1")
     fun observe(pid: Long): Flow<ProntuarioEntity?>
 
+    /** Id da linha de prontuário já existente para esta paciente (para upsert real). */
+    @Query("SELECT id FROM prontuarios WHERE patientId = :pid LIMIT 1")
+    suspend fun findId(pid: Long): Long?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(entity: ProntuarioEntity): Long
 

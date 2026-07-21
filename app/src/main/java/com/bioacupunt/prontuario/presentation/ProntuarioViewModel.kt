@@ -9,6 +9,7 @@ import com.bioacupunt.prontuario.domain.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -51,6 +52,8 @@ class ProntuarioViewModel(
         )
     }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), ProntuarioUiState())
 
+    private var headerSaveJob: kotlinx.coroutines.Job? = null
+
     fun load(patientId: Long) {
         _patientId.value = patientId
         _prontuario.value = Prontuario(patientId = patientId)
@@ -60,29 +63,34 @@ class ProntuarioViewModel(
             _entries.value = list
         }.launchIn(viewModelScope)
 
+        // Semeia o header UMA vez com o que está no banco. Depois disso, updateHeader é
+        // a única fonte de verdade dos campos — não re-observamos o banco, senão uma
+        // emissão atrasada do observe sobrescreveria o texto sendo digitado.
         viewModelScope.launch {
-            getProntuario(patientId).collect { pront ->
-                _prontuario.value = pront ?: Prontuario(patientId = patientId)
-            }
+            val stored = getProntuario(patientId).firstOrNull()
+            if (stored != null) _prontuario.value = stored
         }
     }
 
     fun updateHeader(summary: String? = null, mainComplaint: String? = null, diagnosis: String? = null, treatmentPlan: String? = null) {
         val current = _prontuario.value ?: return
+        // Atualiza o estado na hora: digitação responsiva, sem esperar o banco.
         _prontuario.value = current.copy(
             summary = summary ?: current.summary,
             mainComplaint = mainComplaint ?: current.mainComplaint,
             diagnosis = diagnosis ?: current.diagnosis,
             treatmentPlan = treatmentPlan ?: current.treatmentPlan
         )
-        viewModelScope.launch {
-            _loading.value = true
+        // Persiste com debounce: grava 500ms depois que a médica para de digitar, não a
+        // cada tecla. Cancela o save anterior a cada mudança.
+        headerSaveJob?.cancel()
+        headerSaveJob = viewModelScope.launch {
+            kotlinx.coroutines.delay(500)
             _error.value = null
             val result = saveProntuario(_prontuario.value!!)
             if (result is com.bioacupunt.core.util.Result.Error) {
                 _error.value = result.kind.userMessage
             }
-            _loading.value = false
         }
     }
 

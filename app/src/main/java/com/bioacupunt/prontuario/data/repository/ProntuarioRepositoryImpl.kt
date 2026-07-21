@@ -20,8 +20,13 @@ class ProntuarioRepositoryImpl(private val dao: ProntuarioDao) : ProntuarioRepos
 
     override suspend fun save(prontuario: Prontuario): Result<Prontuario> = runCatching {
         val now = Instant.now().toString()
+        // Upsert real: reutiliza a linha existente da paciente. Sem isso, cada save
+        // (uma por tecla, na tela de prontuário) inseria uma linha NOVA com id=0, e o
+        // observe (LIMIT 1, sem ORDER BY) podia devolver uma linha velha/vazia — o que
+        // brigava com o que a médica digitava e "travava" o campo.
+        val existingId = dao.findId(prontuario.patientId) ?: 0L
         val entity = ProntuarioEntity(
-            id = 0,
+            id = existingId,
             patientId = prontuario.patientId,
             summary = prontuario.summary,
             mainComplaint = prontuario.mainComplaint,
