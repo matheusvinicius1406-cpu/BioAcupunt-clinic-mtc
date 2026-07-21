@@ -81,6 +81,11 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("gemini_api_key", null)
         set(value) = if (value.isNullOrBlank()) edit { it.remove("gemini_api_key") } else edit { it.putString("gemini_api_key", value) }
 
+    /** URL de onde baixar o modelo local (.task do Gemma). Vazio = usa o padrão do código. */
+    var localModelUrl: String
+        get() = prefs.getString("local_model_url", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("local_model_url") } else edit { it.putString("local_model_url", value) }
+
     var currentTenantId: Long?
         get() = prefs.getLong("current_tenant_id", -1L).takeIf { it != -1L }
         set(value) = if (value == null || value <= 0) edit { it.remove("current_tenant_id") } else edit { it.putLong("current_tenant_id", value) }

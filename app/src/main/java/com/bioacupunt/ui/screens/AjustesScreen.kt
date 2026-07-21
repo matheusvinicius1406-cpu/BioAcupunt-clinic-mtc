@@ -381,6 +381,9 @@ private fun AiApisTab() {
             }
         }
 
+        item { SectionHeader("📱 IA local (offline)") }
+        item { LocalModelCard() }
+
         item { SectionHeader("⚙️ Agentes de IA") }
 
         item {
