@@ -112,6 +112,10 @@ object AppContainer {
     // ── Security ───────────────────────────────────────────
     val securePreferences: SecurePreferences by lazy { SecurePreferences(appContext) }
     val authThrottle: AuthThrottle by lazy { AuthThrottle(appContext) }
+    /** Gate de login 100% offline (PIN local + biometria). Não fala com backend. */
+    val localAuthManager: com.bioacupunt.security.LocalAuthManager by lazy {
+        com.bioacupunt.security.LocalAuthManager(securePreferences)
+    }
     val tenantManager: TenantManager by lazy { TenantManager(securePreferences) }
     val connectivityObserver: ConnectivityObserver by lazy { ConnectivityObserver(appContext) }
     val connectivityObserverHandler: ConnectivityObserverHandler by lazy { ConnectivityObserverHandler(connectivityObserver) }

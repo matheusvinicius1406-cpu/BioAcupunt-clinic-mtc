@@ -3,9 +3,7 @@ package com.bioacupunt.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,59 +23,118 @@ import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.bioacupunt.di.AppContainer
-import com.bioacupunt.ui.theme.Accent
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.PrimaryDark
 import com.bioacupunt.ui.theme.SemanticError
 import com.bioacupunt.ui.theme.TextMuted
 import kotlinx.coroutines.launch
 
-/** LOGIN — cartão claro sobre creme, seguindo Canvas.dc.html. A aba "Criar conta"
- * cadastra de verdade contra POST /api/v1/auth/register: cria a clínica + usuária admin
- * e já entra. Ver AuthRepository.register. */
+/**
+ * LOGIN 100% LOCAL — sem servidor, sem Render, funciona offline.
+ *
+ * Primeiro uso: a médica cria a conta local (nome + PIN). O PIN vive só como hash
+ * PBKDF2 (ver LocalPinAuth), nunca em texto puro. Depois, o app trava a cada abertura
+ * e ela destrava com PIN ou biometria. Nada disso depende de internet.
+ */
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var tab by remember { mutableIntStateOf(0) }
-    val isSignup = tab == 1
-    var fullName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var keepSignedIn by remember { mutableStateOf(true) }
+    val focusManager = LocalFocusManager.current
+    val localAuth = remember { AppContainer.localAuthManager }
+    val throttle = remember { AppContainer.authThrottle }
+    val securePrefs = remember { AppContainer.securePreferences }
+
+    val isFirstRun = remember { !localAuth.hasPin() }
+    var fullName by remember { mutableStateOf(securePrefs.professionalName) }
+    var pin by remember { mutableStateOf("") }
+    var pinConfirm by remember { mutableStateOf("") }
+    var pinVisible by remember { mutableStateOf(false) }
+    var enableBiometric by remember { mutableStateOf(false) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
     var loading by remember { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
+
     val biometricAvailable = remember { AppContainer.isBiometricAvailable() }
+    val biometricEnabled = remember { securePrefs.biometricEnabled }
 
-    fun doLogin() {
-        if (email.isBlank() || password.isBlank()) return
-        focusManager.clearFocus()
-        errorMsg = null
-        loading = true
-        scope.launch {
-            val result = AppContainer.authRepository.login(email.trim(), password)
-            loading = false
-            result.onSuccess { onLoginSuccess() }
-                .onFailure { errorMsg = it.localizedMessage ?: "Erro ao entrar. Tente novamente." }
+    // ── Biometria (destrava sem digitar o PIN) ─────────────────────────────
+    val activity = context as? androidx.fragment.app.FragmentActivity
+    val executor = remember { androidx.core.content.ContextCompat.getMainExecutor(context) }
+    val biometricPrompt = remember(activity, executor) {
+        activity?.let {
+            androidx.biometric.BiometricPrompt(it, executor,
+                object : androidx.biometric.BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) {
+                        securePrefs.isLoggedIn = true
+                        throttle.recordSuccess()
+                        onLoginSuccess()
+                    }
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        if (errorCode != androidx.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON &&
+                            errorCode != androidx.biometric.BiometricPrompt.ERROR_USER_CANCELED
+                        ) errorMsg = errString.toString()
+                    }
+                })
         }
     }
 
-    fun doRegister() {
-        if (fullName.isBlank() || email.isBlank() || password.isBlank()) return
-        focusManager.clearFocus()
+    fun promptBiometric() {
+        val p = biometricPrompt ?: return
         errorMsg = null
+        p.authenticate(
+            androidx.biometric.BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Desbloquear BioAcupunt")
+                .setSubtitle("Use a biometria cadastrada no aparelho")
+                .setNegativeButtonText("Usar PIN")
+                .build()
+        )
+    }
+
+    fun doCreate() {
+        errorMsg = null
+        if (fullName.isBlank()) { errorMsg = "Informe seu nome."; return }
+        if (!com.bioacupunt.security.LocalPinAuth.isValidPin(pin)) {
+            errorMsg = "O PIN deve ter ao menos 4 dígitos."; return
+        }
+        if (pin != pinConfirm) { errorMsg = "Os PINs não coincidem."; return }
+        focusManager.clearFocus()
+        loading = true
+        if (!localAuth.setPin(pin)) { loading = false; errorMsg = "PIN inválido."; return }
+        securePrefs.professionalName = fullName.trim()
+        securePrefs.biometricEnabled = enableBiometric && biometricAvailable
+        securePrefs.hasOnboarded = true
+        securePrefs.isLoggedIn = true
+        loading = false
+        onLoginSuccess()
+    }
+
+    fun doUnlock() {
+        errorMsg = null
+        if (!throttle.blockOrAllow()) {
+            errorMsg = throttle.status.value.message ?: "Muitas tentativas. Aguarde."
+            return
+        }
+        focusManager.clearFocus()
         loading = true
         scope.launch {
-            val result = AppContainer.authRepository.register(email.trim(), password, fullName.trim())
+            val ok = localAuth.verifyPin(pin)
             loading = false
-            result.onSuccess { onLoginSuccess() }
-                .onFailure { errorMsg = it.localizedMessage ?: "Não foi possível criar a conta." }
+            if (ok) {
+                securePrefs.isLoggedIn = true
+                throttle.recordSuccess()
+                onLoginSuccess()
+            } else {
+                pin = ""
+                val status = throttle.recordFailure()
+                errorMsg = status.message ?: "PIN incorreto."
+            }
         }
     }
 
-    fun submit() = if (isSignup) doRegister() else doLogin()
+    // Ao abrir a tela de destravar com biometria já habilitada, oferece o prompt na hora.
+    LaunchedEffect(Unit) {
+        if (!isFirstRun && biometricEnabled && biometricAvailable) promptBiometric()
+    }
 
     Box(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
@@ -103,120 +160,94 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             }
             Spacer(Modifier.height(12.dp))
             Text(
-                buildString { append("Bio"); append("Acupunt") },
+                "BioAcupunt",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             )
             Text(
-                "Clinical OS · centro de comando do terapeuta MTC",
+                if (isFirstRun) "Crie sua conta — funciona offline, sem servidor"
+                else "Bem-vinda de volta${securePrefs.professionalName.takeIf { it.isNotBlank() }?.let { ", ${it.substringBefore(' ')}" } ?: ""}",
                 style = MaterialTheme.typography.labelSmall,
                 color = TextMuted,
                 textAlign = TextAlign.Center,
             )
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.large)
-                    .background(MaterialTheme.colorScheme.background)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
-                    .padding(4.dp),
-            ) {
-                listOf("Entrar", "Criar conta").forEachIndexed { i, label ->
-                    val selected = tab == i
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(MaterialTheme.shapes.medium)
-                            .background(if (selected) Primary else Color.Transparent)
-                            .clickable { tab = i; errorMsg = null }
-                            .padding(vertical = 10.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            label,
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                            color = if (selected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-            Spacer(Modifier.height(16.dp))
-
-            AnimatedVisibility(visible = isSignup) {
-                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("NOME PROFISSIONAL", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = TextMuted)
+            if (isFirstRun) {
+                LabeledField("NOME PROFISSIONAL") {
                     OutlinedTextField(
                         value = fullName,
                         onValueChange = { fullName = it; errorMsg = null },
                         placeholder = { Text("Dra. Camila Souza") },
                         leadingIcon = { Icon(Icons.Default.Person, null, tint = TextMuted) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium,
                     )
                 }
+                Spacer(Modifier.height(10.dp))
             }
-            Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("E-MAIL PROFISSIONAL", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = TextMuted)
+
+            LabeledField(if (isFirstRun) "CRIE UM PIN (mín. 4 dígitos)" else "PIN") {
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it; errorMsg = null },
-                    placeholder = { Text("dra.camila@bioacupunt.com") },
-                    leadingIcon = { Icon(Icons.Default.Email, null, tint = TextMuted) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                )
-            }
-            Spacer(Modifier.height(10.dp))
-            Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("SENHA", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = TextMuted)
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it; errorMsg = null },
-                    placeholder = { Text("••••••••••") },
+                    value = pin,
+                    onValueChange = { new -> pin = new.filter { it.isDigit() }; errorMsg = null },
+                    placeholder = { Text("••••") },
                     leadingIcon = { Icon(Icons.Default.Lock, null, tint = Primary) },
                     trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility, null, tint = TextMuted)
+                        IconButton(onClick = { pinVisible = !pinVisible }) {
+                            Icon(if (pinVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility, null, tint = TextMuted)
                         }
                     },
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { submit() }),
-                    supportingText = if (isSignup) {
-                        { Text("Mínimo de 8 caracteres.", style = MaterialTheme.typography.labelSmall, color = TextMuted) }
-                    } else null,
+                    visualTransformation = if (pinVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword, imeAction = if (isFirstRun) ImeAction.Next else ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                        onDone = { doUnlock() },
+                    ),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                 )
+            }
+
+            if (isFirstRun) {
+                Spacer(Modifier.height(10.dp))
+                LabeledField("CONFIRME O PIN") {
+                    OutlinedTextField(
+                        value = pinConfirm,
+                        onValueChange = { new -> pinConfirm = new.filter { it.isDigit() }; errorMsg = null },
+                        placeholder = { Text("••••") },
+                        leadingIcon = { Icon(Icons.Default.LockReset, null, tint = Primary) },
+                        visualTransformation = if (pinVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword, imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { doCreate() }),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                    )
+                }
+                if (biometricAvailable) {
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(checked = enableBiometric, onCheckedChange = { enableBiometric = it }, colors = CheckboxDefaults.colors(checkedColor = Primary))
+                        Text("Ativar biometria para destravar", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
             }
 
             AnimatedVisibility(visible = errorMsg != null) {
                 Text(errorMsg ?: "", color = SemanticError, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp))
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { keepSignedIn = !keepSignedIn }) {
-                    Checkbox(checked = keepSignedIn, onCheckedChange = { keepSignedIn = it }, colors = CheckboxDefaults.colors(checkedColor = Primary))
-                    Text("Manter conectado", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Text("Esqueceu a senha?", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = Primary)
-            }
-
+            Spacer(Modifier.height(20.dp))
             Button(
-                onClick = ::submit,
-                enabled = email.isNotBlank() && password.isNotBlank() && (!isSignup || fullName.isNotBlank()) && !loading,
+                onClick = { if (isFirstRun) doCreate() else doUnlock() },
+                enabled = !loading && pin.isNotBlank() && (!isFirstRun || (fullName.isNotBlank() && pinConfirm.isNotBlank())),
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = MaterialTheme.shapes.large,
                 colors = ButtonDefaults.buttonColors(containerColor = Primary),
@@ -224,61 +255,43 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 if (loading) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
                 } else {
-                    Text(if (isSignup) "Criar conta e entrar" else "Entrar na clínica", fontWeight = FontWeight.Bold)
+                    Text(if (isFirstRun) "Criar conta e entrar" else "Entrar", fontWeight = FontWeight.Bold)
                     Spacer(Modifier.width(8.dp))
                     Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(18.dp))
                 }
             }
 
-            Spacer(Modifier.height(18.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                HorizontalDivider(modifier = Modifier.weight(1f))
-                Text("ou acesse com", style = MaterialTheme.typography.labelSmall, color = TextMuted, modifier = Modifier.padding(horizontal = 10.dp))
-                HorizontalDivider(modifier = Modifier.weight(1f))
+            if (!isFirstRun && biometricEnabled && biometricAvailable) {
+                Spacer(Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = { promptBiometric() },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium,
+                ) {
+                    Icon(Icons.Default.Fingerprint, null, tint = Primary, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text("Entrar com biometria")
+                }
             }
-            Spacer(Modifier.height(14.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedButton(
-                    onClick = {
-                        scope.launch {
-                            loading = true
-                            val result = AppContainer.authRepository.biometricLogin()
-                            loading = false
-                            result.onSuccess { onLoginSuccess() }
-                                .onFailure { errorMsg = it.localizedMessage ?: "Biometria não reconhecida." }
-                        }
-                    },
-                    enabled = biometricAvailable && !loading,
-                    modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Icon(Icons.Default.Fingerprint, null, tint = if (biometricAvailable) Primary else TextMuted, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text("Biometria", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold))
-                }
-                OutlinedButton(
-                    onClick = {},
-                    enabled = false,
-                    modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Icon(Icons.Default.Badge, null, tint = TextMuted, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text("Google Drive", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold))
-                }
-            }
             Spacer(Modifier.height(20.dp))
-
             Box(modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 12.dp, vertical = 4.dp)) {
-                Text("✓ Selo de Excelência Clínica", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = Primary)
+                Text("🔒 Dados criptografados no aparelho", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = Primary)
             }
             Spacer(Modifier.height(8.dp))
             Text(
-                "v${com.bioacupunt.BuildConfig.VERSION_NAME} · Sincronizado com Supabase",
+                "v${com.bioacupunt.BuildConfig.VERSION_NAME} · offline-first",
                 style = MaterialTheme.typography.labelSmall,
                 color = TextMuted,
             )
         }
+    }
+}
+
+@Composable
+private fun LabeledField(label: String, field: @Composable () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(label, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = TextMuted)
+        field()
     }
 }

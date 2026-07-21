@@ -66,19 +66,11 @@ fun BioAcupuntNavHost(
     val showShell = currentRoute != null && currentRoute != Screen.Login.route && currentRoute != Screen.BiometricLock.route
     var moreOpen by remember { mutableStateOf(false) }
 
-    // Biometric lock is opt-in: only gate startup with it when the user has
-    // actually enabled it in Settings AND the device supports it AND there is a
-    // logged-in session to protect. A fresh/logged-out launch always goes to
-    // Login, and a logged-in user who never turned biometrics on goes straight
-    // to the Dashboard — the fingerprint prompt is never forced on hardware
-    // presence alone.
-    val startDestination = remember {
-        when {
-            !AppContainer.authRepository.isLoggedIn() -> Screen.Login.route
-            AppContainer.securePreferences.biometricEnabled && AppContainer.isBiometricAvailable() -> Screen.BiometricLock.route
-            else -> Screen.Dashboard.route
-        }
-    }
+    // Auth é 100% local (sem servidor): o app trava a cada abertura fria e a
+    // LoginScreen resolve os dois casos — criar a conta local no primeiro uso ou
+    // destravar com PIN/biometria depois. Sempre começar no Login é o próprio gate:
+    // dado clínico não pode ficar acessível só porque uma sessão antiga existia.
+    val startDestination = Screen.Login.route
 
     fun navigateTab(route: String) {
         navController.navigate(route) {

@@ -61,6 +61,18 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("biometric_password", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("biometric_password") } else edit { it.putString("biometric_password", value) }
 
+    // ── Login offline (PIN local) ────────────────────────────────────────
+    // Só o sal e o hash PBKDF2 são guardados; o PIN em si nunca toca o disco.
+    var pinSalt: String
+        get() = prefs.getString("pin_salt", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("pin_salt") } else edit { it.putString("pin_salt", value) }
+
+    var pinHash: String
+        get() = prefs.getString("pin_hash", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("pin_hash") } else edit { it.putString("pin_hash", value) }
+
+    val hasLocalPin: Boolean get() = pinSalt.isNotBlank() && pinHash.isNotBlank()
+
     var googleDriveLinked: Boolean
         get() = prefs.getBoolean("google_drive_linked", false)
         set(value) = edit { it.putBoolean("google_drive_linked", value) }

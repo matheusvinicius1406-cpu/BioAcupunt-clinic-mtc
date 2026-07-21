@@ -511,17 +511,19 @@ private fun SecurityTab(onLogout: () -> Unit) {
         AlertDialog(
             onDismissRequest = { showLogoutConfirm = false },
             icon = { Icon(Icons.Default.Logout, null, tint = Color(0xFFEF5350)) },
-            title = { Text("Sair da conta?") },
-            text = { Text("Você precisará fazer login novamente para acessar o BioAcupunt.") },
+            title = { Text("Bloquear o app?") },
+            text = { Text("Você voltará à tela de PIN. Sua conta e seus dados continuam salvos no aparelho.") },
             confirmButton = {
                 Button(
                     onClick = {
-                        securePrefs.clearAll()
+                        // Auth local: apenas re-travar. NUNCA clearAll() aqui — isso
+                        // apagaria o PIN e o perfil, exigindo recriar a conta.
+                        securePrefs.isLoggedIn = false
                         showLogoutConfirm = false
                         onLogout()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF5350))
-                ) { Text("Sair") }
+                ) { Text("Bloquear") }
             },
             dismissButton = { TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancelar") } }
         )
