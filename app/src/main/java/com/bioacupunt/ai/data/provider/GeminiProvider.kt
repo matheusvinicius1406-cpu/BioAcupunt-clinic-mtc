@@ -79,7 +79,8 @@ class GeminiProvider(
                     temperature = request.temperature,
                     maxTokens = request.maxTokens,
                     cacheKey = null,
-                    cache = cache
+                    cache = cache,
+                    model = effectiveModel
                 ).getOrThrow()
             }
         }.mapCatching { text ->
