@@ -6,6 +6,7 @@ import com.bioacupunt.core.multitenancy.TenantManager
 import com.bioacupunt.data.remote.AuthApi
 import com.bioacupunt.data.remote.LoginRequest
 import com.bioacupunt.data.remote.RefreshRequest
+import com.bioacupunt.data.remote.RegisterRequest
 import com.bioacupunt.data.remote.TokenPairResponse
 import com.bioacupunt.security.AuthThrottle
 import com.bioacupunt.security.SecurePreferences
@@ -16,6 +17,36 @@ class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val tenantManager: TenantManager
 ) : AuthRepository {
+
+    override suspend fun register(
+        email: String,
+        password: String,
+        fullName: String,
+        clinicName: String?
+    ): Result<AuthUser> {
+        return try {
+            if (email.isBlank() || password.isBlank() || fullName.isBlank()) {
+                throw IllegalArgumentException("Informe nome, e-mail e senha.")
+            }
+            if (password.length < 8) {
+                throw IllegalArgumentException("A senha precisa de ao menos 8 caracteres.")
+            }
+            val tokens = authApi.register(
+                RegisterRequest(
+                    email = email.trim(),
+                    password = password,
+                    fullName = fullName.trim(),
+                    clinicName = clinicName?.trim()?.takeIf { it.isNotBlank() }
+                )
+            )
+            val user = persistSession(tokens)
+            securePrefs.isLoggedIn = true
+            throttle.recordSuccess()
+            Result.success(user)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     override suspend fun login(email: String, password: String): Result<AuthUser> {
         return try {

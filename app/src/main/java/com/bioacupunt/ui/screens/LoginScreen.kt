@@ -32,21 +32,22 @@ import com.bioacupunt.ui.theme.SemanticError
 import com.bioacupunt.ui.theme.TextMuted
 import kotlinx.coroutines.launch
 
-/** LOGIN — cartão claro sobre creme, seguindo Canvas.dc.html. Sem "Criar conta" real
- * (o backend só tem login/biometria — ver AuthRepository), então essa aba mostra um
- * aviso honesto em vez de fingir cadastrar. */
+/** LOGIN — cartão claro sobre creme, seguindo Canvas.dc.html. A aba "Criar conta"
+ * cadastra de verdade contra POST /api/v1/auth/register: cria a clínica + usuária admin
+ * e já entra. Ver AuthRepository.register. */
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var tab by remember { mutableIntStateOf(0) }
+    val isSignup = tab == 1
+    var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var keepSignedIn by remember { mutableStateOf(true) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
     var loading by remember { mutableStateOf(false) }
-    var showSignupInfo by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val biometricAvailable = remember { AppContainer.isBiometricAvailable() }
 
@@ -62,6 +63,21 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 .onFailure { errorMsg = it.localizedMessage ?: "Erro ao entrar. Tente novamente." }
         }
     }
+
+    fun doRegister() {
+        if (fullName.isBlank() || email.isBlank() || password.isBlank()) return
+        focusManager.clearFocus()
+        errorMsg = null
+        loading = true
+        scope.launch {
+            val result = AppContainer.authRepository.register(email.trim(), password, fullName.trim())
+            loading = false
+            result.onSuccess { onLoginSuccess() }
+                .onFailure { errorMsg = it.localizedMessage ?: "Não foi possível criar a conta." }
+        }
+    }
+
+    fun submit() = if (isSignup) doRegister() else doLogin()
 
     Box(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
@@ -113,7 +129,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                             .weight(1f)
                             .clip(MaterialTheme.shapes.medium)
                             .background(if (selected) Primary else Color.Transparent)
-                            .clickable { tab = i; if (i == 1) showSignupInfo = true }
+                            .clickable { tab = i; errorMsg = null }
                             .padding(vertical = 10.dp),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -127,6 +143,22 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             }
             Spacer(Modifier.height(16.dp))
 
+            AnimatedVisibility(visible = isSignup) {
+                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("NOME PROFISSIONAL", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = TextMuted)
+                    OutlinedTextField(
+                        value = fullName,
+                        onValueChange = { fullName = it; errorMsg = null },
+                        placeholder = { Text("Dra. Camila Souza") },
+                        leadingIcon = { Icon(Icons.Default.Person, null, tint = TextMuted) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                        shape = MaterialTheme.shapes.medium,
+                    )
+                }
+            }
             Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("E-MAIL PROFISSIONAL", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = TextMuted)
                 OutlinedTextField(
@@ -156,7 +188,10 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                     },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { doLogin() }),
+                    keyboardActions = KeyboardActions(onDone = { submit() }),
+                    supportingText = if (isSignup) {
+                        { Text("Mínimo de 8 caracteres.", style = MaterialTheme.typography.labelSmall, color = TextMuted) }
+                    } else null,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
@@ -180,8 +215,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             }
 
             Button(
-                onClick = ::doLogin,
-                enabled = email.isNotBlank() && password.isNotBlank() && !loading,
+                onClick = ::submit,
+                enabled = email.isNotBlank() && password.isNotBlank() && (!isSignup || fullName.isNotBlank()) && !loading,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = MaterialTheme.shapes.large,
                 colors = ButtonDefaults.buttonColors(containerColor = Primary),
@@ -189,7 +224,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 if (loading) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
                 } else {
-                    Text("Entrar na clínica", fontWeight = FontWeight.Bold)
+                    Text(if (isSignup) "Criar conta e entrar" else "Entrar na clínica", fontWeight = FontWeight.Bold)
                     Spacer(Modifier.width(8.dp))
                     Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(18.dp))
                 }
@@ -245,15 +280,5 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 color = TextMuted,
             )
         }
-    }
-
-    if (showSignupInfo) {
-        AlertDialog(
-            onDismissRequest = { showSignupInfo = false; tab = 0 },
-            icon = { Icon(Icons.Default.Info, null, tint = Primary) },
-            title = { Text("Criar conta") },
-            text = { Text("O cadastro de novas profissionais é feito pela equipe BioAcupunt. Entre em contato para receber suas credenciais.") },
-            confirmButton = { TextButton(onClick = { showSignupInfo = false; tab = 0 }) { Text("Entendi", color = Primary) } },
-        )
     }
 }

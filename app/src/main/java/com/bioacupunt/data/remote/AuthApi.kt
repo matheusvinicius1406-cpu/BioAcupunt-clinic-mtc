@@ -10,6 +10,14 @@ import retrofit2.http.POST
 data class LoginRequest(val email: String, val password: String)
 
 @JsonClass(generateAdapter = true)
+data class RegisterRequest(
+    val email: String,
+    val password: String,
+    @Json(name = "full_name") val fullName: String,
+    @Json(name = "clinic_name") val clinicName: String? = null
+)
+
+@JsonClass(generateAdapter = true)
 data class RefreshRequest(@Json(name = "refresh_token") val refreshToken: String)
 
 @JsonClass(generateAdapter = true)
@@ -29,6 +37,9 @@ data class AuthUserResponse(
 )
 
 interface AuthApi {
+    @POST("/api/v1/auth/register")
+    suspend fun register(@Body request: RegisterRequest): TokenPairResponse
+
     @POST("/api/v1/auth/login")
     suspend fun login(@Body request: LoginRequest): TokenPairResponse
 
