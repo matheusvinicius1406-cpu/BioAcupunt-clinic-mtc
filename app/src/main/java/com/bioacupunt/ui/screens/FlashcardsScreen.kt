@@ -314,7 +314,7 @@ private fun AiFlashcardDialog(onDismiss: () -> Unit, onGenerated: (List<Flashcar
                     )
                 }
                 Text(
-                    "⚠️ Requer chave de API Gemini configurada em Ajustes.",
+                    "⚠️ Requer o modelo local baixado em Ajustes > IA.",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

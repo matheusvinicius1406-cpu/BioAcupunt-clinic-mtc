@@ -382,13 +382,11 @@ object AppContainer {
         com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
             providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
                 kotlinx.coroutines.runBlocking {
-                    // Registered first, and with fallbackOrder 0, so the orchestrator
-                    // prefers it whenever it can serve the request: patient data stays
-                    // on the device. It reports isAvailable() == false until the model
-                    // is downloaded, so the cloud providers below remain the graceful
-                    // fallback rather than a hard dependency.
+                    // IA 100% local: o único provider é o Gemma no dispositivo. Sem
+                    // nuvem, sem Gemini — dado clínico nunca sai do aparelho. Reporta
+                    // isAvailable() == false até o modelo ser baixado; nesse meio-tempo o
+                    // orquestrador devolve "IA não configurada" (degrada, não quebra).
                     registry.register(localLlmProvider)
-                    registry.register(com.bioacupunt.ai.data.provider.GeminiProvider(cacheManager, aiSecretsProvider))
                     // MockProvider is deliberately NOT registered.
                     //
                     // It answers every prompt with "Mock resposta para: <prompt>"

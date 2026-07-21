@@ -27,7 +27,7 @@ import com.bioacupunt.ui.theme.Primary
 @Composable
 fun AjustesScreen(onLogout: () -> Unit = {}) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Perfil", "Clínica", "IA & APIs", "Segurança", "Sistema")
+    val tabs = listOf("Perfil", "Clínica", "IA", "Segurança", "Sistema")
 
     Column(modifier = Modifier.fillMaxSize()) {
         ScrollableTabRow(selectedTabIndex = selectedTab, edgePadding = 16.dp) {
@@ -331,56 +331,16 @@ private fun ClinicTab() {
 // ── AI APIS TAB ─────────────────────────────────────────────
 @Composable
 private fun AiApisTab() {
-    val context = LocalContext.current
-    val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     val cacheManager = remember { com.bioacupunt.di.AppContainer.cacheManager }
 
-    var geminiKey by remember { mutableStateOf(securePrefs.geminiApiKey ?: "") }
-    var geminiVisible by remember { mutableStateOf(false) }
     var enableClinical by remember { mutableStateOf(true) }
     var enableFlashcards by remember { mutableStateOf(true) }
     var enableReports by remember { mutableStateOf(true) }
     var enableCrm by remember { mutableStateOf(true) }
     var enableImagePrompts by remember { mutableStateOf(false) }
     var maxTokens by remember { mutableIntStateOf(2048) }
-    var savedFeedback by remember { mutableStateOf(false) }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { SectionHeader("🤖 Chave de API") }
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Primary.copy(alpha = 0.06f)),
-                border = BorderStroke(1.dp, Primary.copy(alpha = 0.2f))
-            ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Text("Google Gemini 2.0 Flash", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
-                    Text("Obtida gratuitamente em aistudio.google.com", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = geminiKey, onValueChange = { geminiKey = it; savedFeedback = false },
-                        label = { Text("Chave API Gemini") },
-                        modifier = Modifier.fillMaxWidth(),
-                        visualTransformation = if (geminiVisible) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(onClick = { geminiVisible = !geminiVisible }) {
-                                Icon(if (geminiVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility, null)
-                            }
-                        },
-                        leadingIcon = { Icon(Icons.Default.Key, null) }
-                    )
-                    if (geminiKey.isNotBlank()) {
-                        Spacer(Modifier.height(6.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.CheckCircle, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(14.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text("Chave configurada · armazenada com AES-256", style = MaterialTheme.typography.labelSmall, color = Color(0xFF4CAF50))
-                        }
-                    }
-                }
-            }
-        }
-
         item { SectionHeader("📱 IA local (offline)") }
         item { LocalModelCard() }
 
@@ -413,23 +373,6 @@ private fun AiApisTab() {
             }
         }
 
-        item {
-            Button(
-                onClick = {
-                    securePrefs.geminiApiKey = geminiKey.trim().ifBlank { null }
-                    savedFeedback = true
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Primary)
-            ) {
-                Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar Configurações de IA")
-            }
-        }
-        if (savedFeedback) {
-            item {
-                Text("✅ Configurações de IA salvas com segurança!", style = MaterialTheme.typography.labelMedium, color = Color(0xFF4CAF50))
-            }
-        }
     }
 
 }
@@ -628,7 +571,7 @@ private fun SystemTab() {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     AboutRow("Versão", com.bioacupunt.BuildConfig.VERSION_NAME)
                     AboutRow("Build", "${com.bioacupunt.BuildConfig.VERSION_CODE}")
-                    AboutRow("IA", "Gemini 2.0 Flash")
+                    AboutRow("IA", "Gemma 3 1B · local (offline)")
                     AboutRow("Segurança", "AES-256 + TLS 1.3")
                     AboutRow("Conformidade", "LGPD · CFM · CFMTC")
                     AboutRow("Suporte", "suporte@bioacupunt.com.br")

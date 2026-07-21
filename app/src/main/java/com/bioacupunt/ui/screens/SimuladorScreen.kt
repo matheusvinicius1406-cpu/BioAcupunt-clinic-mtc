@@ -163,7 +163,7 @@ private fun SimuladorMenu(onStartQuiz: () -> Unit, onStartCase: () -> Unit) {
         SimModeCard(
             icon = Icons.Default.AutoAwesome,
             title = "Caso Gerado por IA",
-            description = "A IA cria um caso clínico personalizado para você praticar. Requer chave Gemini.",
+            description = "A IA cria um caso clínico personalizado para você praticar. Requer o modelo local (Ajustes > IA).",
             color = Color(0xFF9575CD),
             onClick = {}
         )

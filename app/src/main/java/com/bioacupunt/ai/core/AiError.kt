@@ -14,11 +14,9 @@ sealed interface AiError {
 /** Shown to the practitioner: says what to do, not just what broke. */
 fun AiError.userMessage(): String = when (this) {
     is AiError.NoProviderAvailable ->
-        "Nenhum modelo de IA configurado. Abra Ajustes > IA e informe uma chave do Gemini, " +
-            "ou baixe o modelo local para usar offline."
+        "IA não disponível. Abra Ajustes > IA e baixe o modelo local para usar offline no aparelho."
     is AiError.LocalModelNotFound ->
-        "Modelo local ainda não baixado. Abra Ajustes > IA para baixá-lo, " +
-            "ou informe uma chave do Gemini para usar a nuvem."
+        "Modelo local ainda não baixado. Abra Ajustes > IA para baixá-lo (roda offline no aparelho)."
     is AiError.QuotaExceeded ->
         "A cota da API ($providerType) acabou. Verifique o plano da sua chave em Ajustes > IA."
     is AiError.Network -> "Sem conexão com o serviço de IA. Verifique a internet e tente de novo."

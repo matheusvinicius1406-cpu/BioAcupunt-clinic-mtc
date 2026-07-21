@@ -50,6 +50,6 @@ data class UserState(
 
 data class AIState(
     val isEnabled: Boolean = true,
-    val primaryModel: String = "gemini-default",
+    val primaryModel: String = "local-gemma",
     val lastUsedAt: String? = null
 )
