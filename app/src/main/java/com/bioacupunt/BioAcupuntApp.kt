@@ -31,7 +31,15 @@ class BioAcupuntApp : Application(), Configuration.Provider {
 
         runCatching {
             WorkManager.initialize(applicationContext, workManagerConfiguration)
-            AppContainer.syncScheduler.schedulePeriodicSync()
+            // Auth é local e o app é offline-first: só agenda sync se houver um
+            // servidor configurado. Sem serverUrl (modo 100% local, sem Render), o
+            // sync fica desligado — nada de bater numa nuvem que não existe. Configure
+            // um serverUrl em Ajustes e o sync volta a ser agendado no próximo launch.
+            if (AppContainer.securePreferences.serverUrl.isNotBlank()) {
+                AppContainer.syncScheduler.schedulePeriodicSync()
+            } else {
+                AppContainer.syncScheduler.cancelAll()
+            }
         }.onFailure { AppLogger.e("BioAcupuntApp", "WorkManager init failed", it) }
     }
 
