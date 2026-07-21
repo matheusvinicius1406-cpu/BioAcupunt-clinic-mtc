@@ -1,6 +1,5 @@
 package com.bioacupunt.prontuario.presentation
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.prontuario.domain.model.Prontuario
@@ -27,21 +26,26 @@ class ProntuarioViewModel(
 
     private val _patientId = MutableStateFlow<Long>(0L)
     private val _prontuario = MutableStateFlow<Prontuario?>(null)
-    private val _entries = mutableStateListOf<ProntuarioEntry>()
+    // Fonte única de verdade das sessões. Antes era um mutableStateListOf enfiado num
+    // flowOf(...) que só emitia UMA vez: quando o observeEntries atualizava a lista após
+    // uma inserção, o combine não re-disparava e o registro novo não aparecia de forma
+    // confiável (só quando _loading/_error alternavam por acaso). Como StateFlow, cada
+    // atualização propaga para o state.
+    private val _entries = MutableStateFlow<List<ProntuarioEntry>>(emptyList())
     private val _loading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
     val state: StateFlow<ProntuarioUiState> = combine(
         _patientId,
         _prontuario,
-        kotlinx.coroutines.flow.flowOf(_entries),
+        _entries,
         _loading,
         _error
-    ) { patientId, prontuario, _, loading, error ->
+    ) { patientId, prontuario, entries, loading, error ->
         ProntuarioUiState(
             patientId = patientId,
             prontuario = prontuario,
-            entries = _entries.toList(),
+            entries = entries,
             loading = loading,
             error = error
         )
@@ -50,11 +54,10 @@ class ProntuarioViewModel(
     fun load(patientId: Long) {
         _patientId.value = patientId
         _prontuario.value = Prontuario(patientId = patientId)
-        _entries.clear()
+        _entries.value = emptyList()
 
         observeEntries(patientId).onEach { list ->
-            _entries.clear()
-            _entries.addAll(list)
+            _entries.value = list
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {
@@ -110,7 +113,7 @@ class ProntuarioViewModel(
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
-            val current = _entries.firstOrNull { it.id == id } ?: run {
+            val current = _entries.value.firstOrNull { it.id == id } ?: run {
                 _error.value = "Registro não encontrado"
                 _loading.value = false
                 return@launch
