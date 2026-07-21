@@ -90,6 +90,7 @@ fun BioAcupuntNavHost(
             MoreItem("Relatórios", Icons.Default.Description, Screen.Relatorios.route),
             MoreItem("Ajustes", Icons.Default.Settings, Screen.Ajustes.route),
             MoreItem("Conflitos", Icons.Default.SyncProblem, Screen.Conflitos.route),
+            MoreItem("Curadoria", Icons.Default.Inbox, Screen.Curadoria.route),
         )
     }
 
@@ -242,6 +243,7 @@ fun BioAcupuntNavHost(
             }
             composable(Screen.Financeiro.route)  { FinanceiroScreen() }
             composable(Screen.Conflitos.route)   { ConflitosScreen(onBack = { navController.popBackStack() }) }
+            composable(Screen.Curadoria.route)   { CuradoriaScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Simulador.route)   { SimuladorScreen() }

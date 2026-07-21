@@ -263,6 +263,14 @@ object AppContainer {
     val bibliotecaDao: com.bioacupunt.biblioteca.data.local.BibliotecaDao by lazy { database.bibliotecaDao() }
     val favoriteArticleDao: com.bioacupunt.biblioteca.data.local.FavoriteArticleDao by lazy { database.favoriteArticleDao() }
 
+    // ── Biblioteca: pipeline de ingestão + curadoria ───────
+    val libraryStagingRepository: com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository by lazy {
+        com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository(bibliotecaDao)
+    }
+    val libraryReviewViewModelFactory: com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory by lazy {
+        com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory(libraryStagingRepository)
+    }
+
     // ── Financeiro ─────────────────────────────────────────
     val transacaoRepository: com.bioacupunt.financeiro.domain.repository.TransacaoRepository by lazy {
         com.bioacupunt.financeiro.data.repository.TransacaoRepositoryImpl(transacaoDao)
