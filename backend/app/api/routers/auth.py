@@ -5,10 +5,28 @@ from app.api.deps import get_current_user
 from app.core.limiter import limiter, login_rate_limit
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.auth import LoginRequest, RefreshRequest, TokenPairResponse, UserResponse
+from app.schemas.auth import (
+    LoginRequest,
+    RefreshRequest,
+    RegisterRequest,
+    TokenPairResponse,
+    UserResponse,
+)
 from app.services import auth_service
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+
+
+@router.post("/register", response_model=TokenPairResponse, status_code=201)
+@limiter.limit(login_rate_limit)
+async def register(request: Request, payload: RegisterRequest, db: AsyncSession = Depends(get_db)) -> TokenPairResponse:
+    return await auth_service.register(
+        db,
+        email=payload.email,
+        password=payload.password,
+        full_name=payload.full_name,
+        clinic_name=payload.clinic_name,
+    )
 
 
 @router.post("/login", response_model=TokenPairResponse)

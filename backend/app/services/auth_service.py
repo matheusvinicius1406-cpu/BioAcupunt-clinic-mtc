@@ -15,7 +15,8 @@ from app.core.security import (
     verify_password,
 )
 from app.models.auth import RefreshSession
-from app.models.user import User
+from app.models.clinic import Clinic
+from app.models.user import User, UserRole
 from app.schemas.auth import TokenPairResponse
 
 
@@ -54,6 +55,42 @@ async def register_user(db: AsyncSession, *, clinic_id: int, email: str, passwor
     await db.commit()
     await db.refresh(user)
     return user
+
+
+async def register(
+    db: AsyncSession,
+    *,
+    email: str,
+    password: str,
+    full_name: str,
+    clinic_name: str | None = None,
+) -> TokenPairResponse:
+    """Self-signup: create the practitioner's own clinic + admin user, then log
+    her in. Fails closed (409) if the e-mail is already taken — the DB has a
+    unique index on it, but checking first gives a clean error instead of an
+    integrity crash, and never leaks which existing account it collided with."""
+    normalized_email = email.lower().strip()
+
+    existing = await db.execute(select(User).where(User.email == normalized_email))
+    if existing.scalar_one_or_none() is not None:
+        raise AppError("Este e-mail já está cadastrado.", status_code=409, code="email_taken")
+
+    clinic = Clinic(name=(clinic_name or full_name).strip() or "Consultório")
+    db.add(clinic)
+    await db.commit()
+    await db.refresh(clinic)
+
+    user = await register_user(
+        db,
+        clinic_id=clinic.id,
+        email=normalized_email,
+        password=password,
+        full_name=full_name.strip(),
+        role=UserRole.ADMIN,
+    )
+
+    pair, _session_id = await _issue_new_session(db, user)
+    return pair
 
 
 async def login(db: AsyncSession, *, email: str, password: str) -> TokenPairResponse:
