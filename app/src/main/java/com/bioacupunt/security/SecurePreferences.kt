@@ -103,6 +103,10 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("first_consult_price_brl", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("first_consult_price_brl") } else edit { it.putString("first_consult_price_brl", value) }
 
+    var darkModeEnabled: Boolean
+        get() = prefs.getBoolean("dark_mode_enabled", false)
+        set(value) = edit { it.putBoolean("dark_mode_enabled", value) }
+
     /** CSV of [com.bioacupunt.prontuario.domain.safety.Technique] names the practitioner
      * has enabled. Blank means "all enabled" (the default, before she's touched this). */
     var enabledTechniquesCsv: String

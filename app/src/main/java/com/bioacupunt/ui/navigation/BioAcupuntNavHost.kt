@@ -1,42 +1,61 @@
 package com.bioacupunt.ui.navigation
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bioacupunt.di.AppContainer
-import com.bioacupunt.ui.screens.*
 import com.bioacupunt.ui.lock.BiometricLockScreen
-import com.bioacupunt.ui.theme.Accent
-import com.bioacupunt.ui.theme.Primary
-import com.bioacupunt.ui.theme.TextMuted
+import com.bioacupunt.ui.screens.*
+import com.bioacupunt.ui.theme.ThemeController
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
-private data class BottomNavItem(
-    val screen: Screen,
-    val icon: ImageVector,
-    val iconSelected: ImageVector = icon
-)
+private data class BottomNavItem(val screen: Screen, val icon: ImageVector, val label: String)
 
 private val bottomItems = listOf(
-    BottomNavItem(Screen.Dashboard,  Icons.Default.Home,          Icons.Default.Home),
-    BottomNavItem(Screen.Agenda,     Icons.Default.CalendarMonth, Icons.Default.CalendarMonth),
-    BottomNavItem(Screen.CRM,        Icons.Default.Group,         Icons.Default.Group),
-    BottomNavItem(Screen.Biblioteca, Icons.Default.AutoStories,   Icons.Default.AutoStories),
-    BottomNavItem(Screen.Ajustes,    Icons.Default.Settings,      Icons.Default.Settings)
+    BottomNavItem(Screen.Dashboard, Icons.Default.Home, "Início"),
+    BottomNavItem(Screen.CRM, Icons.Default.Group, "Pacientes"),
+    BottomNavItem(Screen.Prontuario, Icons.Default.Assignment, "Prontuário"),
+    BottomNavItem(Screen.Biblioteca, Icons.Default.AutoStories, "Biblioteca"),
 )
 
+private data class MoreItem(val label: String, val icon: ImageVector, val route: String)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BioAcupuntNavHost(
     navController: NavHostController = rememberNavController()
@@ -44,7 +63,8 @@ fun BioAcupuntNavHost(
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
 
-    val showBottomBar = currentRoute != null && currentRoute != Screen.Login.route && currentRoute != Screen.BiometricLock.route
+    val showShell = currentRoute != null && currentRoute != Screen.Login.route && currentRoute != Screen.BiometricLock.route
+    var moreOpen by remember { mutableStateOf(false) }
 
     // Biometric lock is opt-in: only gate startup with it when the user has
     // actually enabled it in Settings AND the device supports it AND there is a
@@ -60,57 +80,52 @@ fun BioAcupuntNavHost(
         }
     }
 
+    fun navigateTab(route: String) {
+        navController.navigate(route) {
+            popUpTo(Screen.Dashboard.route) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    val moreItems = remember {
+        listOf(
+            MoreItem("Agenda", Icons.Default.CalendarMonth, Screen.Agenda.route),
+            MoreItem("Atendimento", Icons.Default.Healing, Screen.Agenda.route),
+            MoreItem("Evolução", Icons.Default.TrendingUp, Screen.Evolucao.routeFor(0)),
+            MoreItem("Inteligência", Icons.Default.SmartToy, Screen.AiAssistant.route),
+            MoreItem("Financeiro", Icons.Default.AccountBalance, Screen.Financeiro.route),
+            MoreItem("Relatórios", Icons.Default.Description, Screen.Relatorios.route),
+            MoreItem("Ajustes", Icons.Default.Settings, Screen.Ajustes.route),
+            MoreItem("Conflitos", Icons.Default.SyncProblem, Screen.Conflitos.route),
+        )
+    }
+
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = { if (showShell) SupremoHeader(onAvatarClick = { navigateTab(Screen.CRM.route) }) },
         bottomBar = {
-            if (showBottomBar) {
-                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                    bottomItems.forEach { item ->
-                        val selected = currentRoute == item.screen.route
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                navController.navigate(item.screen.route) {
-                                    popUpTo(Screen.Dashboard.route) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    if (selected) item.iconSelected else item.icon,
-                                    contentDescription = item.screen.label
-                                )
-                            },
-                            label = { Text(item.screen.label) },
-                            alwaysShowLabel = false,
-                            // No filled pill behind the icon — the mockup's active
-                            // indicator is a thin bar above the icon, closer to
-                            // "icon/label change color" than a Material default pill.
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Primary,
-                                selectedTextColor = Primary,
-                                unselectedIconColor = TextMuted,
-                                unselectedTextColor = TextMuted,
-                                indicatorColor = Color.Transparent,
-                            ),
-                        )
-                    }
-                }
+            if (showShell) {
+                SupremoBottomNav(
+                    currentRoute = currentRoute,
+                    onNavigate = ::navigateTab,
+                    onMore = { moreOpen = true },
+                )
             }
         },
         floatingActionButton = {
-            // Quick access to the one AI surface in the app — same gated RAG chat as
-            // the Inteligência tab, just reachable from anywhere in the bottom nav.
-            if (showBottomBar && currentRoute != Screen.AiAssistant.route) {
-                FloatingActionButton(
-                    onClick = { navController.navigate(Screen.AiAssistant.route) },
-                    containerColor = Color.Transparent,
-                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
-                    modifier = androidx.compose.ui.Modifier
+            // Quick access to the one AI surface in the app — the same gated RAG chat
+            // as the Inteligência screen, reachable from anywhere (mockup's AI FAB).
+            if (showShell && currentRoute != Screen.AiAssistant.route) {
+                Box(
+                    modifier = Modifier
                         .size(56.dp)
-                        .background(Brush.linearGradient(listOf(Primary, Accent)), androidx.compose.foundation.shape.CircleShape),
+                        .clip(CircleShape)
+                        .background(Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)))
+                        .clickable { navController.navigate(Screen.AiAssistant.route) },
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = "Consultar IA", tint = Color.White)
+                    Icon(Icons.Default.AutoAwesome, contentDescription = "Consultar IA", tint = Color.White, modifier = Modifier.size(28.dp))
                 }
             }
         },
@@ -118,7 +133,35 @@ fun BioAcupuntNavHost(
         NavHost(
             navController = navController,
             startDestination = startDestination,
-            modifier = androidx.compose.ui.Modifier.padding(innerPadding)
+            // imePadding: with enableEdgeToEdge() the window does not resize for
+            // the keyboard, so without this the field being typed into sits
+            // underneath it and buttons below become untappable.
+            modifier = Modifier.padding(innerPadding).imePadding(),
+            // Screens cross-fade with a short lateral drift rather than cutting.
+            // Deliberately quick (200ms in, 180ms out): motion here is a spatial
+            // cue about where the new screen came from, not a performance. A
+            // doctor navigating between a chart and the agenda mid-consultation
+            // must never wait on an animation to read what is on screen.
+            enterTransition = {
+                fadeIn(animationSpec = tween(200, easing = FastOutSlowInEasing)) +
+                    slideInHorizontally(
+                        animationSpec = tween(200, easing = FastOutSlowInEasing),
+                        initialOffsetX = { it / 12 },
+                    )
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(180, easing = FastOutSlowInEasing))
+            },
+            popEnterTransition = {
+                fadeIn(animationSpec = tween(200, easing = FastOutSlowInEasing)) +
+                    slideInHorizontally(
+                        animationSpec = tween(200, easing = FastOutSlowInEasing),
+                        initialOffsetX = { -it / 12 },
+                    )
+            },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(180, easing = FastOutSlowInEasing))
+            },
         ) {
             composable(Screen.Login.route) {
                 LoginScreen(onLoginSuccess = {
@@ -137,7 +180,7 @@ fun BioAcupuntNavHost(
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     onNavigateToAgenda     = { navController.navigate(Screen.Agenda.route) },
-                    onNavigateToCRM        = { navController.navigate(Screen.CRM.route) },
+                    onNavigateToCRM        = { navigateTab(Screen.CRM.route) },
                     onNavigateToRelatorios = { navController.navigate(Screen.Relatorios.route) },
                     onNavigateToAI         = { navController.navigate(Screen.AiAssistant.route) }
                 )
@@ -146,19 +189,11 @@ fun BioAcupuntNavHost(
                 // No explicit viewModel passed: CrmScreen's own default wires
                 // AppContainer.crmViewModelFactory, which (unlike a manual
                 // construction here) actually supplies repository/tenantManager.
-                // A previous inline factory here omitted both, so every created
-                // CrmPatient got tenantId=0 while the repository validated
-                // against the real tenant (1) — every patient save silently
-                // threw "Tenant mismatch" and the new-patient dialog just closed
-                // with nothing saved.
                 CrmScreen(
                     onNavigateToProntuario = { pid -> navController.navigate(Screen.Prontuario.routeFor(pid)) }
                 )
             }
             composable(Screen.Agenda.route) {
-                // Same reasoning as CRM above: let AgendaScreen's own default
-                // resolve AppContainer.agendaViewModelFactory instead of
-                // duplicating its construction here.
                 AgendaScreen(onOpenAtendimento = { apptId -> navController.navigate(Screen.Atendimento.routeFor(apptId)) })
             }
             composable(Screen.Biblioteca.route) {
@@ -191,6 +226,7 @@ fun BioAcupuntNavHost(
                 ProntuarioScreen(
                     onBack = { navController.popBackStack() },
                     onOpenEvolucao = { openPid -> navController.navigate(Screen.Evolucao.routeFor(openPid)) },
+                    onOpenAtendimento = { navController.navigate(Screen.Agenda.route) },
                     patientId = pid
                 )
             }
@@ -212,11 +248,212 @@ fun BioAcupuntNavHost(
                     onFinalized = { navController.popBackStack() },
                 )
             }
+            composable(Screen.Financeiro.route)  { FinanceiroScreen() }
+            composable(Screen.Conflitos.route)   { ConflitosScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Simulador.route)   { SimuladorScreen() }
-            composable(Screen.AiAssistant.route) { AiAssistantScreen(onNavigateToCRM = { navController.navigate(Screen.CRM.route) }) }
+            composable(Screen.AiAssistant.route) { AiAssistantScreen(onNavigateToCRM = { navigateTab(Screen.CRM.route) }) }
             composable(Screen.Relatorios.route)  { RelatoriosScreen() }
         }
+    }
+
+    if (moreOpen) {
+        ModalBottomSheet(
+            onDismissRequest = { moreOpen = false },
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 22.dp).padding(bottom = 30.dp)) {
+                moreItems.chunked(2).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
+                        row.forEach { item ->
+                            Row(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(18.dp))
+                                    .clickable {
+                                        moreOpen = false
+                                        navController.navigate(item.route) { launchSingleTop = true }
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+                                Icon(item.icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+                                Text(item.label, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            }
+                        }
+                        if (row.size == 1) Spacer(Modifier.weight(1f))
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Mockup header: ☯ logo, "Olá, Dra. …", date · Supremo badge, sync chip, theme toggle, avatar. */
+@Composable
+private fun SupremoHeader(onAvatarClick: () -> Unit) {
+    val cs = MaterialTheme.colorScheme
+    val userName = remember { AppContainer.authRepository.getCurrentUser()?.name.orEmpty() }
+    val today = remember {
+        LocalDate.now().format(DateTimeFormatter.ofPattern("EEE., d 'de' MMMM", Locale("pt", "BR")))
+    }
+    val dark by ThemeController.dark
+
+    Column(modifier = Modifier.fillMaxWidth().background(cs.surface)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(11.dp))
+                    .background(Brush.linearGradient(listOf(cs.primary, cs.secondary))),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text("☯", color = Color.White, fontSize = 18.sp)
+            }
+            Spacer(Modifier.width(9.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    if (userName.isBlank()) "Olá" else "Olá, $userName",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Row {
+                    Text(today, style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant)
+                    Text(" · ", style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant)
+                    Text("Supremo", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = cs.secondary)
+                }
+            }
+            SyncChip()
+            Spacer(Modifier.width(8.dp))
+            IconButton(onClick = { ThemeController.toggle(AppContainer.securePreferences) }, modifier = Modifier.size(34.dp)) {
+                Icon(
+                    if (dark) Icons.Default.LightMode else Icons.Default.DarkMode,
+                    contentDescription = "Tema",
+                    tint = cs.onSurfaceVariant,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            Box {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(CircleShape)
+                        .background(cs.primaryContainer)
+                        .border(2.dp, cs.secondary, CircleShape)
+                        .clickable(onClick = onAvatarClick),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        initialsOf(userName),
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = cs.primary,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(cs.error)
+                        .border(2.dp, cs.surface, CircleShape)
+                )
+            }
+        }
+        HorizontalDivider(color = cs.outline)
+    }
+}
+
+@Composable
+private fun SyncChip() {
+    val cs = MaterialTheme.colorScheme
+    val pulse = rememberInfiniteTransition(label = "sync")
+    val a by pulse.animateFloat(0.4f, 1f, infiniteRepeatable(tween(800), RepeatMode.Reverse), label = "dot")
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(cs.primaryContainer)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Box(modifier = Modifier.size(6.dp).clip(CircleShape).alpha(a).background(cs.primary))
+        Text("sync", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = cs.primary)
+    }
+}
+
+/** Mockup bottom nav: 5 slots, labels always visible, 3dp indicator bar above the active icon. */
+@Composable
+private fun SupremoBottomNav(
+    currentRoute: String?,
+    onNavigate: (String) -> Unit,
+    onMore: () -> Unit,
+) {
+    val cs = MaterialTheme.colorScheme
+    Column(modifier = Modifier.fillMaxWidth().background(cs.surface)) {
+        HorizontalDivider(color = cs.outline)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(top = 8.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+        ) {
+            bottomItems.forEach { item ->
+                val selected = currentRoute == item.screen.route
+                NavSlot(item.icon, item.label, selected) { onNavigate(navRouteFor(item.screen)) }
+            }
+            NavSlot(Icons.Default.MoreHoriz, "Mais", selected = false, onClick = onMore)
+        }
+    }
+}
+
+/** Tab items whose route pattern carries an argument need a concrete path to navigate to. */
+private fun navRouteFor(screen: Screen): String =
+    if (screen == Screen.Prontuario) Screen.Prontuario.routeFor(0) else screen.route
+
+@Composable
+private fun NavSlot(icon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit) {
+    val cs = MaterialTheme.colorScheme
+    val tint = if (selected) cs.primary else cs.onSurfaceVariant
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 4.dp)
+            .widthIn(min = 56.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .width(24.dp)
+                .height(3.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(if (selected) cs.primary else Color.Transparent)
+        )
+        Icon(icon, contentDescription = label, tint = tint, modifier = Modifier.size(25.dp))
+        Text(label, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium), color = tint)
+    }
+}
+
+private fun initialsOf(name: String): String {
+    val parts = name.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+    return when {
+        parts.isEmpty() -> "☯"
+        parts.size == 1 -> parts[0].take(2).uppercase()
+        else -> (parts.first().take(1) + parts.last().take(1)).uppercase()
     }
 }

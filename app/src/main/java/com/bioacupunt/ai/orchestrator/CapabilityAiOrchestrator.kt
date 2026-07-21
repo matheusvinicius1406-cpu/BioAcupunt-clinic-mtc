@@ -65,24 +65,46 @@ class ScoredAiOrchestrator(
             )
         )
 
-        val fallback = providers.allProviders().firstOrNull { it.id != provider.id } ?: return primaryResult
-        val fbStarted = System.currentTimeMillis()
-        val fbResult = fallback.generate(request)
-        val fbSuccess = fbResult.getOrNull()
-        if (fbSuccess != null) {
-            telemetry?.invoke(
-                AiTelemetryEvent(
-                    providerId = fallback.id,
-                    modelId = fbSuccess.modelId,
-                    capabilitiesUsed = fbSuccess.capabilitiesUsed,
-                    latencyMs = System.currentTimeMillis() - fbStarted,
-                    success = true,
-                    fallbackUsed = true,
-                    decisionReason = "primary_failed"
+        // Walk the remaining candidates in scored order, not just the single
+        // next provider in registration order.
+        //
+        // The previous version took `firstOrNull { it.id != provider.id }` and
+        // stopped there. With three providers registered, a failure of the first
+        // two meant the third was never tried at all — and the error the doctor
+        // saw came from whichever one happened to be second, which tells her
+        // nothing about why the assistant is unavailable.
+        //
+        // Only providers that passed `resolveCandidates` are eligible here: a
+        // provider excluded on privacy or availability grounds must not be
+        // reachable through the failure path either.
+        val remaining = providersScores
+            .map { it.providerId }
+            .distinct()
+            .filter { it != provider.id }
+            .mapNotNull { providers.providerById(it) }
+
+        var lastResult = primaryResult
+        for (candidate in remaining) {
+            val fbStarted = System.currentTimeMillis()
+            val fbResult = candidate.generate(request)
+            val fbSuccess = fbResult.getOrNull()
+            if (fbSuccess != null) {
+                telemetry?.invoke(
+                    AiTelemetryEvent(
+                        providerId = candidate.id,
+                        modelId = fbSuccess.modelId,
+                        capabilitiesUsed = fbSuccess.capabilitiesUsed,
+                        latencyMs = System.currentTimeMillis() - fbStarted,
+                        success = true,
+                        fallbackUsed = true,
+                        decisionReason = "primary_failed"
+                    )
                 )
-            )
+                return fbResult
+            }
+            lastResult = fbResult
         }
-        return fbResult
+        return lastResult
     }
 
     private suspend fun resolveCandidates(request: AiRequest): List<AiModelDescriptor> {
@@ -90,12 +112,31 @@ class ScoredAiOrchestrator(
         val required = request.requiredCapabilities
         val rules = ruleProvider?.invoke(request) ?: AiRoutingRules()
         val health = healthRegistry
+
+        // Ask each provider whether it can actually serve a request right now.
+        //
+        // This check was missing entirely, and it is why the assistant was dead
+        // on every device: the on-device model declares fallbackOrder = 0 so it
+        // always won the scoring below, and it was routed to even though its
+        // model file had never been downloaded. It failed with "Modelo local
+        // ausente", and the doctor saw that instead of an answer.
+        //
+        // `isAvailable()` has existed on AiProvider all along and is correctly
+        // implemented by LocalLlmProvider — nothing in the routing path had ever
+        // called it. Evaluated once per provider rather than once per model,
+        // since it can do real work (a file-existence check today, potentially a
+        // network probe later).
+        val availability = providers.allProviders().associate { provider ->
+            provider.id to runCatching { provider.isAvailable() }.getOrDefault(false)
+        }
+
         val matches = candidates.filter { model ->
             val provider = providers.providerById(model.providerId)
             val metadata = provider?.metadata
             val healthModel = health?.get(model.providerId, model.id)
             val meetsCapabilities = required.isEmpty() || model.capabilities.containsAll(required)
             val meetsConstraints = meetsCapabilities &&
+                availability[model.providerId] == true &&
                 !rules.blockedProviders.contains(model.providerId) &&
                 !rules.blockedModels.contains(model.id) &&
                 meetsHealthStatus(healthModel) &&
@@ -105,7 +146,19 @@ class ScoredAiOrchestrator(
                 meetsContext(model, rules.maxContextTokens)
             meetsConstraints
         }
-        return matches.ifEmpty { candidates }
+
+        // No `ifEmpty { candidates }` fallback any more.
+        //
+        // That fallback is what made the availability check pointless in the
+        // first place: filter everything out, then hand back the unfiltered list
+        // anyway. It also silently defeats *every* constraint above — a request
+        // marked as privacy-restricted would be routed to a cloud provider the
+        // moment no local option qualified, sending patient data off the device
+        // precisely because the rules said it must not go.
+        //
+        // An empty list is answered with NoProviderAvailable by the caller,
+        // which is the honest outcome: nothing here can serve this request.
+        return matches
     }
 
     private fun meetsHealthStatus(healthModel: com.bioacupunt.ai.health.ProviderHealth?): Boolean {

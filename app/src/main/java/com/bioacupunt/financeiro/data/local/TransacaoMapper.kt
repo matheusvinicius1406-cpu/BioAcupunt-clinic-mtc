@@ -14,7 +14,12 @@ fun TransacaoEntity.toDomain() = com.bioacupunt.financeiro.domain.model.Transaca
     createdAt = createdAt
 )
 
-fun com.bioacupunt.financeiro.domain.model.Transacao.toEntity(now: String = ""): TransacaoEntity {
+/** See CrmPatientMapper.toEntity for what [identity] and [pendingSync] mean. */
+fun com.bioacupunt.financeiro.domain.model.Transacao.toEntity(
+    now: String = "",
+    identity: com.bioacupunt.sync.SyncIdentity = com.bioacupunt.sync.SyncIdentity.new(),
+    pendingSync: Boolean = true,
+): TransacaoEntity {
     val ts = now.ifBlank { java.time.Instant.now().toString() }
     return TransacaoEntity(
         id = id,
@@ -28,6 +33,11 @@ fun com.bioacupunt.financeiro.domain.model.Transacao.toEntity(now: String = ""):
         status = status,
         notes = notes,
         createdAt = createdAt,
-        updatedAt = ts
+        updatedAt = ts,
+        lastModified = ts,
+        pendingSync = pendingSync,
+        clientId = identity.clientId,
+        serverId = identity.serverId,
+        baseRev = identity.baseRev
     )
 }

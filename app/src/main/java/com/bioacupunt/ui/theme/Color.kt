@@ -33,3 +33,18 @@ val SemanticErrorBg = Color(0xFFFEF2F2)
 val SemanticError = Color(0xFFDC2626)
 val SemanticInfoBg = Color(0xFFEFF6FF)
 val SemanticInfo = Color(0xFF2563EB)
+
+// ── Dark palette — the mockup's darkVars, verbatim ───────────
+val DarkPrimary = Color(0xFF7DA355)          // --olive
+val DarkPrimaryLight = Color(0xFF96BC6E)     // --olive-light
+val DarkPrimaryContainer = Color(0xFF2A3A1E) // --olive-soft
+val DarkAccent = Color(0xFFD4B87A)           // --gold
+val DarkAccentContainer = Color(0xFF3D3528)  // --gold-soft
+val DarkBackground = Color(0xFF14110E)       // --bg-primary
+val DarkSurface = Color(0xFF26221C)          // --bg-card
+val DarkSurfaceVariant = Color(0xFF3D3830)   // --border-color
+val DarkOnSurface = Color(0xFFF0EDE8)        // --text-primary
+val DarkOnSurfaceVariant = Color(0xFFBFB8AA) // --text-secondary
+val DarkOutline = Color(0xFF3D3830)
+val DarkError = Color(0xFFF87171)            // --danger-fg
+val DarkErrorBg = Color(0xFF3D1A1A)          // --danger-bg

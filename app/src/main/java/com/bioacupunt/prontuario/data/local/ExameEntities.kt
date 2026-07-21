@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "vital_signs",
     foreignKeys = [
-        ForeignKey(entity = com.bioacupunt.patient.data.local.PatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(entity = com.bioacupunt.crm.data.local.CrmPatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [Index("patientId"), Index("recordedAt")]
 )
@@ -25,7 +25,7 @@ data class VitalSignEntity(
 @Entity(
     tableName = "lab_exams",
     foreignKeys = [
-        ForeignKey(entity = com.bioacupunt.patient.data.local.PatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(entity = com.bioacupunt.crm.data.local.CrmPatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [Index("patientId"), Index("date")]
 )
@@ -43,7 +43,7 @@ data class LabExamEntity(
 @Entity(
     tableName = "medications",
     foreignKeys = [
-        ForeignKey(entity = com.bioacupunt.patient.data.local.PatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(entity = com.bioacupunt.crm.data.local.CrmPatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [Index("patientId")]
 )
@@ -60,7 +60,7 @@ data class MedicationEntity(
 @Entity(
     tableName = "allergies",
     foreignKeys = [
-        ForeignKey(entity = com.bioacupunt.patient.data.local.PatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(entity = com.bioacupunt.crm.data.local.CrmPatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [Index("patientId")]
 )

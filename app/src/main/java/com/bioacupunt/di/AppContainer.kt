@@ -141,7 +141,37 @@ object AppContainer {
     // ── Sync ───────────────────────────────────────────────
     val syncScheduler: SyncScheduler by lazy { SyncScheduler(appContext) }
     val syncWorkerFactory: SyncWorkerFactory by lazy {
-        SyncWorkerFactory(daoProvider = { syncQueueDao }, apiProvider = { RetrofitInstance.api })
+        SyncWorkerFactory(engineProvider = { syncEngine }, stateDaoProvider = { syncStateDao })
+    }
+
+    /**
+     * The writer registry defines what is syncable. Clinical records
+     * (prontuário, avaliação MTC, língua/pulso, flags de contraindicação) are
+     * deliberately absent — they stay on the device. Adding one here is a
+     * decision about sensitive health data leaving the phone, not a wiring
+     * detail; see backend/app/api/routers/sync.py.
+     */
+    val syncEngine: com.bioacupunt.sync.SyncEngine by lazy {
+        com.bioacupunt.sync.SyncEngine(
+            api = RetrofitInstance.syncApi,
+            stateDao = syncStateDao,
+            conflictDao = syncConflictDao,
+            writers = mapOf(
+                "patient" to com.bioacupunt.sync.CrmPatientSyncWriter(
+                    dao = crmPatientDao,
+                    tenantId = { tenantManager.requireTenantId() },
+                ),
+                "appointment" to com.bioacupunt.sync.AppointmentSyncWriter(
+                    dao = appointmentDao,
+                    patientDao = crmPatientDao,
+                    tenantId = { tenantManager.requireTenantId() },
+                ),
+                "transaction" to com.bioacupunt.sync.TransacaoSyncWriter(
+                    dao = transacaoDao,
+                    patientDao = crmPatientDao,
+                ),
+            ),
+        )
     }
 
     // ── Database ───────────────────────────────────────────
@@ -150,6 +180,8 @@ object AppContainer {
     // ── DAOs ───────────────────────────────────────────────
     val patientDao: PatientDao by lazy { database.patientDao() }
     val syncQueueDao: SyncQueueDao by lazy { database.syncQueueDao() }
+    val syncStateDao: com.bioacupunt.sync.data.local.SyncStateDao by lazy { database.syncStateDao() }
+    val syncConflictDao: com.bioacupunt.sync.data.local.SyncConflictDao by lazy { database.syncConflictDao() }
     val knowledgeNodeDao: KnowledgeNodeDao by lazy { database.knowledgeNodeDao() }
     val crmPatientDao: com.bioacupunt.crm.data.local.CrmPatientDao by lazy { database.crmPatientDao() }
     val appointmentDao: com.bioacupunt.agenda.data.local.AppointmentDao by lazy { database.appointmentDao() }
@@ -261,6 +293,12 @@ object AppContainer {
             tenantManager = tenantManager
         )
     }
+    val conflictViewModelFactory: com.bioacupunt.sync.presentation.ConflictViewModelFactory by lazy {
+        com.bioacupunt.sync.presentation.ConflictViewModelFactory(
+            conflictDao = syncConflictDao,
+            engine = syncEngine,
+        )
+    }
     val dashboardViewModelFactory: com.bioacupunt.dashboard.presentation.DashboardViewModelFactory by lazy {
         com.bioacupunt.dashboard.presentation.DashboardViewModelFactory(
             authRepository = authRepository,
@@ -275,7 +313,8 @@ object AppContainer {
             getAppointmentsInRange = com.bioacupunt.agenda.domain.usecase.GetAppointmentsInRange(appointmentRepository),
             saveAppointment = com.bioacupunt.agenda.domain.usecase.SaveAppointment(appointmentRepository),
             updateStatus = com.bioacupunt.agenda.domain.usecase.UpdateAppointmentStatus(appointmentRepository),
-            calculateDayStats = com.bioacupunt.agenda.domain.usecase.CalculateDayStats(appointmentRepository)
+            calculateDayStats = com.bioacupunt.agenda.domain.usecase.CalculateDayStats(appointmentRepository),
+            crmPatientRepository = crmPatientRepository
         )
     }
     fun atendimentoViewModelFactory(appointmentId: Long) =
@@ -330,7 +369,21 @@ object AppContainer {
                     // fallback rather than a hard dependency.
                     registry.register(localLlmProvider)
                     registry.register(com.bioacupunt.ai.data.provider.GeminiProvider(cacheManager, aiSecretsProvider))
-                    registry.register(com.bioacupunt.ai.data.provider.MockProvider())
+                    // MockProvider is deliberately NOT registered.
+                    //
+                    // It answers every prompt with "Mock resposta para: <prompt>"
+                    // and reports isAvailable() == true unconditionally, so once
+                    // the orchestrator started honouring availability it became
+                    // the *selected* provider on any device without a downloaded
+                    // model and without a Gemini key — which is every device
+                    // today. The doctor would have been shown placeholder text
+                    // in the clinical assistant.
+                    //
+                    // With no provider available the orchestrator now returns
+                    // NoProviderAvailable and the UI says the assistant is not
+                    // configured. "I cannot answer" is a safe answer; a fake one
+                    // dressed as an answer is not. Tests construct MockProvider
+                    // directly — it does not need to be in the app's graph.
                 }
             },
             healthRegistry = com.bioacupunt.ai.health.DefaultHealthRegistry()
@@ -386,29 +439,33 @@ object AppContainer {
         }
     }
 
+    /**
+     * Seeds demo data, CRM-first.
+     *
+     * `crm_patients` is the patient registry — every clinical, financial and
+     * scheduling row references it — so the CRM row must be created first and
+     * its *generated* id used for everything that follows.
+     *
+     * The previous version wrote the legacy `patients` row first and then
+     * assumed the id: `if (p.id == 0L) 1L else p.id`. Since every demo patient
+     * was declared with `id = 0L`, all three were written to CRM id 1, each
+     * overwriting the last (the DAO uses REPLACE). Three patients went in and
+     * one came out, wearing the last one's name.
+     */
     private suspend fun seedDemoData() {
-            val hasPatients = patientDao.count() > 0
-            if (hasPatients) return
+            if (crmPatientDao.count(tenantManager.requireTenantId()) > 0) return
             val now = java.time.Instant.now().toString()
             val demoPatients = listOf(
-                com.bioacupunt.patient.domain.model.Patient(
-                    id = 0L, tenantId = 1L, name = "Ana Lima", document = "123", status = "ACTIVE", createdAt = now, updatedAt = now
-                ),
-                com.bioacupunt.patient.domain.model.Patient(
-                    id = 0L, tenantId = 1L, name = "Carlos Souza", document = "456", status = "ACTIVE", createdAt = now, updatedAt = now
-                ),
-                com.bioacupunt.patient.domain.model.Patient(
-                    id = 0L, tenantId = 1L, name = "Maria Santos", document = "789", status = "ACTIVE", createdAt = now, updatedAt = now
-                )
+                "Ana Lima" to "123",
+                "Carlos Souza" to "456",
+                "Maria Santos" to "789",
             )
-            demoPatients.forEach { p ->
-                val saved = createPatient(p)
-                val patientId = if (p.id == 0L) 1L else p.id
-                crmPatientRepository.save(
+            demoPatients.forEach { (patientName, document) ->
+                val savedCrm = crmPatientRepository.save(
                     com.bioacupunt.crm.domain.model.CrmPatient(
-                        id = patientId,
+                        id = 0L,
                         tenantId = 1L,
-                        name = p.name,
+                        name = patientName,
                         phone = "",
                         email = "",
                         birthDate = "",
@@ -425,6 +482,18 @@ object AppContainer {
                         mainComplaint = "",
                         createdAt = now
                     )
+                )
+                val patientId = (savedCrm as? com.bioacupunt.core.util.Result.Success)?.data?.id
+                    ?: return@forEach
+                createPatient(
+                    com.bioacupunt.patient.domain.model.Patient(
+                        id = 0L, tenantId = 1L, name = patientName, document = document,
+                        status = "ACTIVE", createdAt = now, updatedAt = now
+                    )
+                )
+                val p = com.bioacupunt.patient.domain.model.Patient(
+                    id = patientId, tenantId = 1L, name = patientName, document = document,
+                    status = "ACTIVE", createdAt = now, updatedAt = now
                 )
                 val apptEntity = com.bioacupunt.agenda.data.local.AppointmentEntity(
                     tenantId = 1L,

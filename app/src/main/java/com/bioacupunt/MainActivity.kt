@@ -30,6 +30,7 @@ class MainActivity : FragmentActivity() {
         val bootFailure = runCatching {
             AppContainer.init(applicationContext)
             AppContainer.seedDemoDataIfNeeded()
+            com.bioacupunt.ui.theme.ThemeController.load(AppContainer.securePreferences)
         }.exceptionOrNull()?.stackTraceToString()
 
         val crashReport = bootFailure ?: CrashReporter.consumeLastCrash(this)

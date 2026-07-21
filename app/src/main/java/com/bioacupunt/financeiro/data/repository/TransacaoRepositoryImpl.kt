@@ -30,19 +30,30 @@ class TransacaoRepositoryImpl(
             if (entity == null) Result.Error(AppError.DatabaseError())
             else Result.Success(entity.toDomain())
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
     }
 
     override suspend fun save(transacao: Transacao): Result<Transacao> {
         return try {
             val now = java.time.Instant.now().toString()
-            val savedId = dao.save(transacao.toEntity(now))
+            val savedId = dao.save(transacao.toEntity(now, identity = identityFor(transacao.id)))
             val saved = transacao.copy(id = if (transacao.id == 0L) savedId else transacao.id)
             Result.Success(saved)
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
+    }
+
+    /** See CrmPatientRepositoryImpl.identityFor — same reasoning. */
+    private suspend fun identityFor(id: Long): com.bioacupunt.sync.SyncIdentity {
+        if (id == 0L) return com.bioacupunt.sync.SyncIdentity.new()
+        val existing = dao.getById(id) ?: return com.bioacupunt.sync.SyncIdentity.new()
+        return com.bioacupunt.sync.SyncIdentity.carryForward(
+            clientId = existing.clientId,
+            serverId = existing.serverId,
+            baseRev = existing.baseRev,
+        )
     }
 
     override suspend fun sumRevenue(start: String, end: String): Result<Double> {
@@ -51,15 +62,15 @@ class TransacaoRepositoryImpl(
             val refunds = dao.sumByStatusAndRange("REEMBOLSADO", start, end, "REEMBOLSO")
             Result.Success(paid - refunds)
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
     }
 
     override suspend fun sumPayments(start: String, end: String): Result<Double> {
-        return try { Result.Success(dao.sumByStatusAndRange("PAGO", start, end, "PAGAMENTO")) } catch (e: Exception) { Result.Error(AppError.DatabaseError(e)) }
+        return try { Result.Success(dao.sumByStatusAndRange("PAGO", start, end, "PAGAMENTO")) } catch (e: Exception) { Result.Error(AppError.from(e)) }
     }
 
     override suspend fun sumPending(start: String, end: String): Result<Double> {
-        return try { Result.Success(dao.sumPending(start, end)) } catch (e: Exception) { Result.Error(AppError.DatabaseError(e)) }
+        return try { Result.Success(dao.sumPending(start, end)) } catch (e: Exception) { Result.Error(AppError.from(e)) }
     }
 }

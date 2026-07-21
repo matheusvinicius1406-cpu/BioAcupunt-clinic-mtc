@@ -85,6 +85,7 @@ object RetrofitInstance {
 
     val authApi: AuthApi by lazy { retrofit.create(AuthApi::class.java) }
     val api: PatientApi by lazy { retrofit.create(PatientApi::class.java) }
+    val syncApi: SyncApi by lazy { retrofit.create(SyncApi::class.java) }
 }
 
 /**

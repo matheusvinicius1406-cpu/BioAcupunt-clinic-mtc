@@ -42,4 +42,37 @@ interface TransacaoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(entity: TransacaoEntity): Long
+
+    // ── Sync ─────────────────────────────────────────────────────────────
+    // Everything below is used only by SyncEngine.
+
+    /** Every locally-changed row awaiting upload, oldest change first. */
+    @Query("SELECT * FROM transacoes WHERE pendingSync = 1 ORDER BY lastModified ASC")
+    suspend fun getPendingSync(): List<TransacaoEntity>
+
+    @Query("SELECT * FROM transacoes WHERE clientId = :clientId LIMIT 1")
+    suspend fun getByClientId(clientId: String): TransacaoEntity?
+
+    @Query("SELECT * FROM transacoes WHERE serverId = :serverId LIMIT 1")
+    suspend fun getByServerId(serverId: Long): TransacaoEntity?
+
+    /**
+     * Records that the server accepted this row at revision [rev].
+     *
+     * Clears pendingSync in the *same statement* that stores the revision.
+     * Splitting them would leave a window where a crash marks the row synced
+     * without recording what it synced to — and the next push would then send a
+     * stale base revision and be refused as a conflict the doctor never caused.
+     */
+    @Query("UPDATE transacoes SET pendingSync = 0, serverId = :serverId, baseRev = :rev WHERE clientId = :clientId")
+    suspend fun markSynced(clientId: String, serverId: Long?, rev: Long)
+
+    /**
+     * Adopts the server's revision while keeping the local field values, so a
+     * conflict resolved in favour of this device can be pushed again without
+     * being refused as stale. pendingSync stays 1 on purpose: the row still has
+     * to go up.
+     */
+    @Query("UPDATE transacoes SET serverId = :serverId, baseRev = :rev, pendingSync = 1 WHERE clientId = :clientId")
+    suspend fun rebaseOnServer(clientId: String, serverId: Long?, rev: Long)
 }

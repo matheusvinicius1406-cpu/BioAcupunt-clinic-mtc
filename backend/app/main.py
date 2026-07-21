@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from app.api.routers import appointments, auth, clinics, health, patients
+from app.api.routers import appointments, auth, clinics, health, patients, sync
 from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.limiter import limiter
@@ -51,6 +51,7 @@ app.include_router(auth.router)
 app.include_router(clinics.router)
 app.include_router(patients.router)
 app.include_router(appointments.router)
+app.include_router(sync.router)
 
 
 def _rate_limit_handler(request, exc):

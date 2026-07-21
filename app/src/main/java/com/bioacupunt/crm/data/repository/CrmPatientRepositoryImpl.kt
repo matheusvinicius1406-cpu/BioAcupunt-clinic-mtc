@@ -10,6 +10,7 @@ import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.crm.domain.repository.CrmPatientRepository
 import com.bioacupunt.core.util.AppError
 import com.bioacupunt.core.util.Result
+import com.bioacupunt.observability.AppLogger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -53,32 +54,34 @@ class CrmPatientRepositoryImpl(
                 Result.Success(entity.toDomain())
             }
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
     }
 
     override suspend fun save(entity: CrmPatient): Result<CrmPatient> {
         return try {
-            validateTenant(entity.tenantId)
+            val owned = entity.copy(tenantId = resolveTenant(entity.tenantId))
             val now = java.time.Instant.now().toString()
-            val savedId = dao.save(entity.toEntity(now))
-            val saved = entity.copy(id = if (entity.id == 0L) savedId else entity.id)
+            val savedId = dao.save(owned.toEntity(now, identity = identityFor(owned.id)))
+            val saved = owned.copy(id = if (owned.id == 0L) savedId else owned.id)
             cache.remove(cacheKeyAll)
             Result.Success(saved)
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            AppLogger.e("CrmPatientRepository", "save failed", e)
+            Result.Error(AppError.from(e))
         }
     }
 
     override suspend fun saveAll(entities: List<CrmPatient>): Result<Int> {
         return try {
-            entities.forEach { validateTenant(it.tenantId) }
             val now = java.time.Instant.now().toString()
-            dao.saveAll(entities.map { it.toEntity(now) })
+            val owned = entities.map { it.copy(tenantId = resolveTenant(it.tenantId)) }
+            dao.saveAll(owned.map { it.toEntity(now, identity = identityFor(it.id)) })
             cache.remove(cacheKeyAll)
-            Result.Success(entities.size)
+            Result.Success(owned.size)
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            AppLogger.e("CrmPatientRepository", "saveAll failed", e)
+            Result.Error(AppError.from(e))
         }
     }
 
@@ -87,7 +90,7 @@ class CrmPatientRepositoryImpl(
             val count = dao.countByStage(tenantId, stage)
             Result.Success(count)
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
     }
 
@@ -106,14 +109,42 @@ class CrmPatientRepositoryImpl(
             cache.remove(cacheKeyAll)
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
     }
 
-    private fun validateTenant(entityTenantId: Long) {
-        val current = tenantManager.currentTenantId()
-        if (entityTenantId != current) {
-            throw IllegalArgumentException("Tenant mismatch on CRM patient operation")
+    /**
+     * Returns the tenant this row belongs to, stamping the current one when the
+     * caller left it unset. See the equivalent note in AppointmentRepositoryImpl:
+     * a UI has no business knowing tenant ids, so "unset" is a normal thing to
+     * receive, not an error. Only a non-zero id belonging to a *different*
+     * tenant is a real violation.
+     */
+    /**
+     * The sync identity to write with: the existing row's when this is an edit,
+     * a fresh one when it is a new record.
+     *
+     * Minting a new identity on every save instead would give the same patient a
+     * different client id each time she is edited, and the server — which keys
+     * on client id — would accumulate a new duplicate patient per edit.
+     */
+    private suspend fun identityFor(id: Long): com.bioacupunt.sync.SyncIdentity {
+        if (id == 0L) return com.bioacupunt.sync.SyncIdentity.new()
+        val existing = dao.getById(id, tenantId) ?: return com.bioacupunt.sync.SyncIdentity.new()
+        return com.bioacupunt.sync.SyncIdentity.carryForward(
+            clientId = existing.clientId,
+            serverId = existing.serverId,
+            baseRev = existing.baseRev,
+        )
+    }
+
+    private fun resolveTenant(entityTenantId: Long): Long {
+        val current = tenantManager.requireTenantId()
+        if (entityTenantId != 0L && entityTenantId != current) {
+            throw IllegalArgumentException(
+                "Tenant mismatch on CRM patient operation: $entityTenantId != $current"
+            )
         }
+        return current
     }
 }

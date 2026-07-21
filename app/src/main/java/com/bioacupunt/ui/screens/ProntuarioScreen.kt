@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.di.AppContainer
-import com.bioacupunt.patient.domain.model.Patient
+import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.prontuario.domain.model.*
 import com.bioacupunt.prontuario.presentation.ExameViewModel
 import com.bioacupunt.prontuario.presentation.ProntuarioViewModel
@@ -64,6 +64,7 @@ private enum class ProntTab(val label: String) {
 fun ProntuarioScreen(
     onBack: (() -> Unit)? = null,
     onOpenEvolucao: (Long) -> Unit = {},
+    onOpenAtendimento: () -> Unit = {},
     vm: ProntuarioViewModel = viewModel(factory = AppContainer.prontuarioViewModelFactory),
     patientId: Long = 0L
 ) {
@@ -76,9 +77,18 @@ fun ProntuarioScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var allPatients by remember { mutableStateOf<List<Patient>>(emptyList()) }
+    // Reads `crm_patients` — the patient registry every clinical foreign key
+    // points at — NOT the legacy `patients` table.
+    //
+    // This screen used to list the legacy table while the chart it saves is keyed
+    // on the CRM one. The two tables both autoincrement from 1, so the ids
+    // *collide without matching*: picking the legacy patient #1 saved a chart
+    // under CRM patient #1, a different person. The foreign key was satisfied, so
+    // nothing failed and nothing warned — the chart simply filed itself under the
+    // wrong patient's name. Silent, and the worst possible outcome here.
+    var allPatients by remember { mutableStateOf<List<CrmPatient>>(emptyList()) }
     LaunchedEffect(Unit) {
-        scope.launch { AppContainer.getPatients().collect { allPatients = it } }
+        scope.launch { AppContainer.crmPatientRepository.observeAll().collect { allPatients = it } }
     }
 
     LaunchedEffect(patientId) {
@@ -118,7 +128,7 @@ fun ProntuarioScreen(
                                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(p.name, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                                        if (p.document.orEmpty().isNotBlank()) Text(p.document.orEmpty(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        if (p.phone.isNotBlank()) Text(p.phone, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                     Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
@@ -165,6 +175,19 @@ fun ProntuarioScreen(
                         "Prontuário estruturado · ${(supremoState.completeness * 100).toInt()}% completo",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.extraLarge)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable(onClick = onOpenAtendimento)
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        "Atender",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = Color.White,
                     )
                 }
             }

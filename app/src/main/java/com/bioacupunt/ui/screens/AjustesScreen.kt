@@ -569,10 +569,12 @@ private fun SystemTab() {
 
         item { SectionHeader("Aparência") }
         item {
+            val dark by com.bioacupunt.ui.theme.ThemeController.dark
             SettingsSwitchRow(
                 Icons.Default.DarkMode, "Modo Escuro",
-                "Em breve — o app usa o tema claro \"Supremo\" por enquanto",
-                darkMode, { }, enabled = false,
+                "Paleta escura do design Supremo",
+                dark,
+                { com.bioacupunt.ui.theme.ThemeController.toggle(securePrefs) },
             )
         }
 

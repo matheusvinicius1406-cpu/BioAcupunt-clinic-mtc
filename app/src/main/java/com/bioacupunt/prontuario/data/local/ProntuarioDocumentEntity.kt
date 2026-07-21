@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Entity(
     tableName = "prontuario_documents",
     foreignKeys = [
-        ForeignKey(entity = com.bioacupunt.patient.data.local.PatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(entity = com.bioacupunt.crm.data.local.CrmPatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [Index("patientId"), Index("addedAt")]
 )

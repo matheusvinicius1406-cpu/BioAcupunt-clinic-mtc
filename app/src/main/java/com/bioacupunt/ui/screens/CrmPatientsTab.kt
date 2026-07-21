@@ -1,8 +1,10 @@
 package com.bioacupunt.ui.screens
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
@@ -23,6 +25,7 @@ import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.crm.domain.model.PatientStage
 import com.bioacupunt.crm.presentation.uiColor
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.interactiveCard
 import com.bioacupunt.ui.theme.TextMuted
 
 @Composable
@@ -139,13 +142,22 @@ private fun PatientCrmCard(
     var pickerStage by remember { mutableStateOf<PatientStage?>(null) }
     val stage = remember(p.stage) { PatientStage.entries.find { it.name == p.stage } ?: PatientStage.ACTIVE }
 
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            // Lifts under the finger and settles back — the row acknowledges the
+            // tap before the next screen has loaded, so a slow open never reads
+            // as a tap that missed.
+            .interactiveCard(interactionSource, shape = MaterialTheme.shapes.large)
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
-            .clickable(onClick = onOpen)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                onClick = onOpen,
+            )
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp)

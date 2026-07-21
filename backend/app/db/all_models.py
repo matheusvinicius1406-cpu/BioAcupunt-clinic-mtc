@@ -12,6 +12,17 @@ from app.models.audit import DataAccessLog
 from app.models.auth import RefreshSession
 from app.models.clinic import Clinic
 from app.models.patient import Patient
+from app.models.sync import ClinicRevision
+from app.models.transaction import Transaction
 from app.models.user import User
 
-__all__ = ["Appointment", "DataAccessLog", "RefreshSession", "Clinic", "Patient", "User"]
+__all__ = [
+    "Appointment",
+    "ClinicRevision",
+    "DataAccessLog",
+    "RefreshSession",
+    "Clinic",
+    "Patient",
+    "Transaction",
+    "User",
+]

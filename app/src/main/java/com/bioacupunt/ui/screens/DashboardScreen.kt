@@ -2,9 +2,13 @@ package com.bioacupunt.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -28,35 +32,25 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.ui.theme.Accent
-import com.bioacupunt.ui.theme.PrimaryDark
 import com.bioacupunt.ui.theme.SemanticError
 import com.bioacupunt.ui.theme.SemanticInfo
 import com.bioacupunt.ui.theme.SemanticSuccess
 import com.bioacupunt.ui.theme.SemanticWarning
 import com.bioacupunt.ui.theme.SemanticWarningBg
+import com.bioacupunt.ui.theme.Elevation
+import com.bioacupunt.ui.theme.Motion
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.PrimaryDark
 import com.bioacupunt.ui.theme.TextMuted
+import com.bioacupunt.ui.theme.pressable
+import com.bioacupunt.ui.theme.supremeShadow
 import com.bioacupunt.agenda.domain.model.AppointmentType
-import com.bioacupunt.core.network.NetworkStatus
 import com.bioacupunt.crm.presentation.uiColor
-import com.bioacupunt.dashboard.presentation.DashInsightLevel
 import com.bioacupunt.dashboard.presentation.DashboardViewModel
 import com.bioacupunt.dashboard.presentation.KanbanColumn
 import com.bioacupunt.dashboard.presentation.ReengagePatient
 import com.bioacupunt.di.AppContainer
-import com.bioacupunt.observability.SyncStatus
-import com.bioacupunt.observability.SyncStatusMonitor
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-private data class DashInsight(
-    val icon: ImageVector,
-    val title: String,
-    val desc: String,
-    val color: Color
-)
 
 private data class DashMetric(
     val icon: ImageVector,
@@ -77,53 +71,11 @@ fun DashboardScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    val today = remember { LocalDate.now() }
-    val hour  = remember { LocalTime.now().hour }
-    val greeting = when (hour) {
-        in 5..11  -> "Bom dia"
-        in 12..17 -> "Boa tarde"
-        else      -> "Boa noite"
-    }
-
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // ── Header banner ──────────────────────────────────
-        item {
-            val connectivityStatus by AppContainer.connectivityObserverHandler.status.collectAsState(NetworkStatus.UNKNOWN)
-            val syncStatus by AppContainer.syncStatusManager.status.collectAsState(initial = SyncStatus.Idle)
-            val statusText = SyncStatusMonitor.describe(syncStatus, connectivityStatus)
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.large)
-                    .background(Brush.verticalGradient(listOf(Primary, PrimaryDark)))
-                    .padding(20.dp)
-            ) {
-                val greetingText = if (state.greetingName.isBlank()) {
-                    "$greeting 👋"
-                } else {
-                    "$greeting, ${state.greetingName} 👋"
-                }
-                Text(
-                    greetingText,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = Color.White, fontWeight = FontWeight.ExtraBold
-                    )
-                )
-                Text(
-                    today.format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", Locale("pt","BR"))),
-                    style = MaterialTheme.typography.bodySmall.copy(color = Color.White.copy(alpha = 0.85f))
-                )
-                if (statusText.isNotBlank()) {
-                    Spacer(Modifier.height(6.dp))
-                    Text(statusText, style = MaterialTheme.typography.labelMedium.copy(color = Color.White.copy(alpha = 0.85f)))
-                }
-            }
-        }
-
         // ── Metrics grid (2 cols) ───────────────────────────
         item {
             val metrics = listOf(
@@ -138,16 +90,15 @@ fun DashboardScreen(
             MetricsGrid(metrics)
         }
 
-        // ── Reengajamento ───────────────────────────────────
-        if (state.reengage.isNotEmpty()) {
-            item {
-                ReengagementCard(
-                    patients = state.reengage,
-                    overdueCount = state.overdueCount,
-                    onWhats = { phone -> openWhatsApp(context, phone) },
-                    onCall = { phone -> dialPhone(context, phone) },
-                )
-            }
+        // ── Reengajamento — always shown, per the mockup; "empty" is stated,
+        //    never implied by absence ("silêncio é ambíguo").
+        item {
+            ReengagementCard(
+                patients = state.reengage,
+                overdueCount = state.overdueCount,
+                onWhats = { phone -> openWhatsApp(context, phone) },
+                onCall = { phone -> dialPhone(context, phone) },
+            )
         }
 
         // ── Kanban Clínico ──────────────────────────────────
@@ -178,47 +129,6 @@ fun DashboardScreen(
             }
         }
 
-        // ── Alertas & Sugestões (determinístico, sem IA) ───
-        item { DashSectionTitle("Alertas & Sugestões", Icons.Default.NotificationImportant) }
-        items(state.insights) { insight -> DashInsightCard(insight.toUi()) }
-
-        // ── Agenda de Hoje ─────────────────────────────────
-        item { DashSectionTitle("Agenda de Hoje", Icons.Default.Schedule) }
-
-        if (state.todayAppointments.isEmpty()) {
-            item {
-                Text(
-                    "Nenhuma consulta agendada para hoje.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        } else {
-            items(state.todayAppointments) { appt ->
-                DashApptRow(
-                    appt.time,
-                    appt.patientName,
-                    apptSubtitle(appt.type, appt.sessionNumber),
-                    onClick = onNavigateToAgenda,
-                )
-            }
-        }
-
-        // ── Financeiro Resumo ──────────────────────────────
-        item { DashSectionTitle("Financeiro do Mês", Icons.Default.BarChart) }
-        item {
-            DashCard {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    val received = state.monthReceivedBrl
-                    val pending = state.monthPendingBrl
-                    DashFinanceRow("Recebido no mês", brl(received), SemanticSuccess)
-                    DashFinanceRow("Pendente", brl(pending), SemanticWarning)
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    DashFinanceRow("Total previsto", brl(received + pending), Primary, bold = true)
-                }
-            }
-        }
-
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -232,17 +142,26 @@ fun DashboardScreen(
     }
 }
 
-/** Card chrome shared by every Dashboard section: white surface, soft shadow, 1px border. */
+/**
+ * Card chrome shared by every Dashboard section: white surface, layered warm
+ * shadow, 1px border.
+ *
+ * Depth comes from [supremeShadow] rather than a local `Modifier.shadow` so
+ * every card on every screen sits at the same height. Elevation that drifts
+ * per-screen is the difference between an interface that feels designed and one
+ * that feels assembled.
+ */
 @Composable
 private fun DashCard(
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.large,
+    elevation: Dp = Elevation.Card,
     content: @Composable () -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(8.dp, shape = shape, spotColor = Color.Black.copy(alpha = 0.08f))
+            .supremeShadow(shape = shape, elevation = elevation)
             .clip(shape)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.outline, shape)
@@ -314,6 +233,13 @@ private fun ReengagementCard(
                 }
             }
             Spacer(Modifier.height(12.dp))
+            if (patients.isEmpty()) {
+                Text(
+                    "Nenhuma paciente ausente há 30+ dias. Tudo em dia.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 patients.forEach { r ->
                     Row(
@@ -385,7 +311,7 @@ private fun KanbanColumnCard(col: KanbanColumn, onCardClick: (Long) -> Unit) {
     Box(
         modifier = Modifier
             .width(200.dp)
-            .shadow(8.dp, shape = MaterialTheme.shapes.large, spotColor = Color.Black.copy(alpha = 0.06f))
+            .supremeShadow(shape = MaterialTheme.shapes.large)
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
@@ -404,13 +330,24 @@ private fun KanbanColumnCard(col: KanbanColumn, onCardClick: (Long) -> Unit) {
             }
             Spacer(Modifier.height(10.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                col.cards.forEach { c ->
+                col.cards.forEachIndexed { index, c ->
+                    val interactionSource = remember { MutableInteractionSource() }
+                    AnimatedVisibility(
+                        visibleState = remember { MutableTransitionState(false).apply { targetState = true } },
+                        enter = Motion.listItemEnter(index),
+                    ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .pressable(interactionSource)
                             .clip(MaterialTheme.shapes.medium)
                             .background(MaterialTheme.colorScheme.background)
-                            .clickable { onCardClick(c.patientId) }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = LocalIndication.current,
+                            ) { onCardClick(c.patientId) }
+                            // ≥44dp target: the kanban is tapped one-handed, standing.
+                            .heightIn(min = 48.dp)
                             .padding(start = 8.dp, top = 9.dp, bottom = 9.dp, end = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(9.dp)
@@ -425,6 +362,7 @@ private fun KanbanColumnCard(col: KanbanColumn, onCardClick: (Long) -> Unit) {
                             Text(c.name, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium), maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Text(c.note, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
+                    }
                     }
                 }
             }
@@ -529,67 +467,6 @@ private fun NextAppointmentCard(
 }
 
 @Composable
-private fun DashSectionTitle(title: String, icon: ImageVector) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Icon(icon, null, tint = Primary, modifier = Modifier.size(18.dp))
-        Text(title, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
-    }
-}
-
-@Composable
-private fun DashInsightCard(insight: DashInsight) {
-    DashCard {
-        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Icon(insight.icon, null, tint = insight.color, modifier = Modifier.size(18.dp).padding(top = 2.dp))
-            Column {
-                Text(insight.title, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
-                Text(insight.desc, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
-    }
-}
-
-@Composable
-private fun DashApptRow(time: String, name: String, type: String, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(6.dp, shape = MaterialTheme.shapes.medium, spotColor = Color.Black.copy(alpha = 0.05f))
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick)
-    ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                time,
-                style = MaterialTheme.typography.labelLarge.copy(color = Primary, fontWeight = FontWeight.Bold),
-                modifier = Modifier.width(44.dp)
-            )
-            Column(Modifier.weight(1f)) {
-                Text(name, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium))
-                Text(type, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Icon(Icons.Default.ChevronRight, null, tint = TextMuted)
-        }
-    }
-}
-
-@Composable
-private fun DashFinanceRow(label: String, value: String, color: Color, bold: Boolean = false) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodySmall.copy(
-            color = color,
-            fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal
-        ))
-    }
-}
-
-@Composable
 private fun FooterBadge(text: String, solid: Boolean) {
     Box(
         modifier = Modifier
@@ -604,16 +481,6 @@ private fun FooterBadge(text: String, solid: Boolean) {
             color = if (solid) Primary else TextMuted,
         )
     }
-}
-
-/** Maps a domain insight (level + text) to the UI card struct (icon + colour). */
-private fun com.bioacupunt.dashboard.presentation.DashInsight.toUi(): DashInsight {
-    val (icon, color) = when (level) {
-        DashInsightLevel.ALERT -> Icons.Default.NotificationImportant to SemanticError
-        DashInsightLevel.INFO -> Icons.Default.EventAvailable to Primary
-        DashInsightLevel.POSITIVE -> Icons.Default.CheckCircle to SemanticSuccess
-    }
-    return DashInsight(icon, title, desc, color)
 }
 
 private fun apptSubtitle(type: String, sessionNumber: Int): String {

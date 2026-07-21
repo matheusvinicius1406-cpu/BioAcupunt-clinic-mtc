@@ -12,7 +12,8 @@ import androidx.room.PrimaryKey
         Index("date"),
         Index("type"),
         Index("patientId", "date"),
-        Index("pendingSync")
+        Index("pendingSync"),
+        Index("clientId", unique = true)
     ],
     foreignKeys = [
         ForeignKey(
@@ -38,5 +39,10 @@ data class TransacaoEntity(
     val deleted: Boolean = false,
     val createdAt: String = "",
     val updatedAt: String = "",
-    val lastModified: String = ""
+    val lastModified: String = "",
+
+    /** See CrmPatientEntity.clientId — same contract. */
+    val clientId: String = "",
+    val serverId: Long? = null,
+    val baseRev: Long = 0
 )

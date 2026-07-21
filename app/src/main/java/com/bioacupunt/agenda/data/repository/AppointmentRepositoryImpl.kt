@@ -56,7 +56,7 @@ class AppointmentRepositoryImpl(
             if (entity == null) Result.Error(AppError.DatabaseError())
             else Result.Success(entity.toDomain())
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
     }
 
@@ -70,13 +70,14 @@ class AppointmentRepositoryImpl(
 
     override suspend fun save(appointment: Appointment): Result<Appointment> {
         return try {
-            validateTenant(appointment.tenantId)
+            val owned = appointment.copy(tenantId = resolveTenant(appointment.tenantId))
             val now = java.time.Instant.now().toString()
-            val savedId = dao.save(appointment.toEntity(now))
-            val saved = appointment.copy(id = if (appointment.id == 0L) savedId else appointment.id)
+            val savedId = dao.save(owned.toEntity(now, identity = identityFor(owned.id)))
+            val saved = owned.copy(id = if (owned.id == 0L) savedId else owned.id)
             Result.Success(saved)
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            com.bioacupunt.observability.AppLogger.e("AppointmentRepository", "save failed", e)
+            Result.Error(AppError.from(e))
         }
     }
 
@@ -84,7 +85,7 @@ class AppointmentRepositoryImpl(
         return try {
             Result.Success(dao.countByDate(date, tenantId))
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
     }
 
@@ -92,14 +93,42 @@ class AppointmentRepositoryImpl(
         return try {
             Result.Success(dao.countByStatus(status, tenantId))
         } catch (e: Exception) {
-            Result.Error(AppError.DatabaseError(e))
+            Result.Error(AppError.from(e))
         }
     }
 
-    private fun validateTenant(entityTenantId: Long) {
-        val current = tenantManager.currentTenantId()
-        if (entityTenantId != current) {
-            throw IllegalArgumentException("Tenant mismatch on appointment operation")
+    /**
+     * Returns the tenant this row belongs to, stamping the current one when the
+     * caller did not set it.
+     *
+     * The previous version rejected any mismatch, including the unset default of
+     * 0 — which is what every screen sends, because a UI has no business knowing
+     * tenant ids. The result was that *no appointment could ever be saved*: the
+     * mismatch threw, the catch below turned it into "Falha ao acessar dados
+     * locais", and the failure looked like broken storage rather than a
+     * misplaced check.
+     *
+     * A genuine cross-tenant write — a non-zero id belonging to someone else —
+     * is still refused. That is the case this guard was actually for.
+     */
+    /** See CrmPatientRepositoryImpl.identityFor — same reasoning. */
+    private suspend fun identityFor(id: Long): com.bioacupunt.sync.SyncIdentity {
+        if (id == 0L) return com.bioacupunt.sync.SyncIdentity.new()
+        val existing = dao.getById(id, tenantId) ?: return com.bioacupunt.sync.SyncIdentity.new()
+        return com.bioacupunt.sync.SyncIdentity.carryForward(
+            clientId = existing.clientId,
+            serverId = existing.serverId,
+            baseRev = existing.baseRev,
+        )
+    }
+
+    private fun resolveTenant(entityTenantId: Long): Long {
+        val current = tenantManager.requireTenantId()
+        if (entityTenantId != 0L && entityTenantId != current) {
+            throw IllegalArgumentException(
+                "Tenant mismatch on appointment operation: $entityTenantId != $current"
+            )
         }
+        return current
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.*
@@ -34,9 +35,48 @@ import com.bioacupunt.ui.theme.TextMuted
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EvolucaoScreen(patientId: Long, onBack: () -> Unit = {}) {
+    // Opened from the "Mais" menu there is no patient yet — show a picker first,
+    // same pattern as ProntuarioScreen.
+    var selectedPatientId by remember { mutableStateOf(patientId) }
+    if (selectedPatientId <= 0L) {
+        // crm_patients, not the legacy `patients` table — see the note in
+        // ProntuarioScreen. Listing the wrong table here would open one
+        // patient's evolution under another patient's name.
+        var patients by remember { mutableStateOf<List<com.bioacupunt.crm.domain.model.CrmPatient>>(emptyList()) }
+        LaunchedEffect(Unit) { AppContainer.crmPatientRepository.observeAll().collect { patients = it } }
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Evolução Clínica") },
+                    navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Voltar") } },
+                )
+            }
+        ) { padding ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentPadding = PaddingValues(20.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                item { Text("Selecione o paciente", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)) }
+                if (patients.isEmpty()) {
+                    item { Text("Nenhum paciente disponível.", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall) }
+                }
+                items(patients, key = { it.id }) { p ->
+                    Card(modifier = Modifier.fillMaxWidth().clickable { selectedPatientId = p.id }) {
+                        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(p.name, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier.weight(1f))
+                            Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+            }
+        }
+        return
+    }
+
     val vm: EvolucaoViewModel = viewModel(
-        key = "evolucao-$patientId",
-        factory = AppContainer.evolucaoViewModelFactory(patientId),
+        key = "evolucao-$selectedPatientId",
+        factory = AppContainer.evolucaoViewModelFactory(selectedPatientId),
     )
     val state by vm.state.collectAsStateWithLifecycle()
     val comparison = remember(state.history) { vm.comparison() }

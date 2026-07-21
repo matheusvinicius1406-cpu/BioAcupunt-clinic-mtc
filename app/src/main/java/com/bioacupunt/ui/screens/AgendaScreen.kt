@@ -1,6 +1,8 @@
 package com.bioacupunt.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -162,6 +164,7 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null, onOpenAtendimento: (Long) -
 
     if (showNewAppointment) {
         NewAppointmentDialog(
+            patients = state.patients,
             onDismiss = { showNewAppointment = false },
             onSave = { patientId, patientName, time, value, type ->
                 showNewAppointment = false
@@ -406,36 +409,157 @@ private fun AppointmentCard(appt: Appointment, onStatusChange: (AppointmentStatu
     }
 }
 
+/**
+ * "Nova Consulta".
+ *
+ * The patient is *chosen*, never typed. This dialog used to ask for an
+ * "ID Paciente" in a free-text field — a raw database row id, which the doctor
+ * has no way of knowing and no way of verifying. Anything she typed that did not
+ * happen to match an existing row was rejected by the foreign key and came back
+ * as "Falha ao acessar dados locais", with no hint that the number was the
+ * problem. Picking from the real list makes the invalid case unrepresentable.
+ */
 @Composable
-private fun NewAppointmentDialog(onDismiss: () -> Unit, onSave: (Long, String, String, Double, AppointmentType) -> Unit) {
-    var patientIdText by remember { mutableStateOf("") }
-    var patientName by remember { mutableStateOf("") }
+private fun NewAppointmentDialog(
+    patients: List<com.bioacupunt.crm.domain.model.CrmPatient>,
+    onDismiss: () -> Unit,
+    onSave: (Long, String, String, Double, AppointmentType) -> Unit,
+) {
+    var selectedPatient by remember { mutableStateOf<com.bioacupunt.crm.domain.model.CrmPatient?>(null) }
+    var patientQuery by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(AppointmentType.ACUPUNCTURE) }
     var time by remember { mutableStateOf("09:00") }
     var value by remember { mutableStateOf("150") }
+
+    val matches = remember(patients, patientQuery) {
+        val q = patientQuery.trim().lowercase()
+        if (q.isBlank()) patients else patients.filter {
+            it.name.lowercase().contains(q) || it.phone.contains(q)
+        }
+    }
+    // A malformed time is a booking that lands in the wrong place in the day, so
+    // it is checked here rather than being silently accepted.
+    val timeIsValid = remember(time) { Regex("^([01]\\d|2[0-3]):[0-5]\\d$").matches(time.trim()) }
+    val canSave = selectedPatient != null && timeIsValid
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Nova Consulta", fontWeight = FontWeight.Bold) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(value = patientIdText, onValueChange = { patientIdText = it.filter { ch -> ch.isDigit() } }, label = { Text("ID Paciente") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                OutlinedTextField(value = patientName, onValueChange = { patientName = it }, label = { Text("Paciente") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                OutlinedTextField(value = time, onValueChange = { time = it }, label = { Text("Horário (HH:mm)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                OutlinedTextField(value = value, onValueChange = { value = it.filter { ch -> ch.isDigit() || ch == '.' } }, label = { Text("Valor (R$)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+            ) {
+                val chosen = selectedPatient
+                if (chosen != null) {
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        color = Primary.copy(alpha = 0.10f),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Column {
+                                Text(chosen.name, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold))
+                                if (chosen.phone.isNotBlank()) {
+                                    Text(chosen.phone, style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                                }
+                            }
+                            TextButton(onClick = { selectedPatient = null; patientQuery = "" }) { Text("Trocar") }
+                        }
+                    }
+                } else {
+                    OutlinedTextField(
+                        value = patientQuery,
+                        onValueChange = { patientQuery = it },
+                        label = { Text("Buscar paciente") },
+                        leadingIcon = { Icon(Icons.Default.Search, null) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                    when {
+                        // "No patients registered" and "no match for this search"
+                        // are different problems with different fixes, so they are
+                        // never shown as the same empty list.
+                        patients.isEmpty() -> Text(
+                            "Nenhum paciente cadastrado ainda. Cadastre no CRM antes de agendar.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextMuted,
+                        )
+                        matches.isEmpty() -> Text(
+                            "Nenhum paciente encontrado para \"${patientQuery.trim()}\".",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextMuted,
+                        )
+                        else -> LazyColumn(
+                            modifier = Modifier.heightIn(max = 200.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            items(matches, key = { it.id }) { patient ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .clickable { selectedPatient = patient }
+                                        // ≥44dp: the agenda gets filled in standing up, one-handed.
+                                        .heightIn(min = 48.dp)
+                                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Column {
+                                        Text(patient.name, style = MaterialTheme.typography.bodyMedium)
+                                        if (patient.phone.isNotBlank()) {
+                                            Text(patient.phone, style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = time,
+                    onValueChange = { time = it },
+                    label = { Text("Horário (HH:mm)") },
+                    isError = time.isNotBlank() && !timeIsValid,
+                    supportingText = if (time.isNotBlank() && !timeIsValid) {
+                        { Text("Use o formato HH:mm, por exemplo 09:30.") }
+                    } else null,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = { value = it.filter { ch -> ch.isDigit() || ch == '.' } },
+                    label = { Text("Valor (R$)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
                 Text("Tipo:", style = MaterialTheme.typography.labelMedium)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(AppointmentType.entries) { type ->
-                        FilterChip(selected = selectedType == type, onClick = { selectedType = type }, label = { Text(type.label, style = MaterialTheme.typography.labelSmall) })
+                        FilterChip(
+                            selected = selectedType == type,
+                            onClick = { selectedType = type },
+                            label = { Text(type.label, style = MaterialTheme.typography.labelSmall) },
+                        )
                     }
                 }
             }
         },
         confirmButton = {
-            Button(onClick = {
-                val pid = patientIdText.toLongOrNull() ?: 0L
-                val valueBrl = value.toDoubleOrNull() ?: 0.0
-                onSave(pid, patientName, time, valueBrl, selectedType)
-            }, colors = ButtonDefaults.buttonColors(containerColor = Primary)) { Text("Salvar") }
+            Button(
+                onClick = {
+                    val patient = selectedPatient ?: return@Button
+                    onSave(patient.id, patient.name, time.trim(), value.toDoubleOrNull() ?: 0.0, selectedType)
+                },
+                enabled = canSave,
+                colors = ButtonDefaults.buttonColors(containerColor = Primary),
+            ) { Text("Salvar") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )

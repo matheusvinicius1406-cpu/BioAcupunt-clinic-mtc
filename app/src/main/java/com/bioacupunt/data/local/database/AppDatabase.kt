@@ -26,9 +26,11 @@ import com.bioacupunt.sync.data.local.SyncQueueEntity
         com.bioacupunt.prontuario.data.local.MedicationEntity::class,
         com.bioacupunt.prontuario.data.local.AllergyEntity::class,
         com.bioacupunt.prontuario.data.local.ProntuarioDocumentEntity::class,
-        com.bioacupunt.biblioteca.data.local.FavoriteArticleEntity::class
+        com.bioacupunt.biblioteca.data.local.FavoriteArticleEntity::class,
+        com.bioacupunt.sync.data.local.SyncStateEntity::class,
+        com.bioacupunt.sync.data.local.SyncConflictEntity::class
     ],
-    version = 12,
+    version = 14,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -45,4 +47,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun exameDao(): com.bioacupunt.prontuario.data.local.ExameDao
     abstract fun prontuarioDocumentDao(): com.bioacupunt.prontuario.data.local.ProntuarioDocumentDao
     abstract fun favoriteArticleDao(): com.bioacupunt.biblioteca.data.local.FavoriteArticleDao
+    abstract fun syncStateDao(): com.bioacupunt.sync.data.local.SyncStateDao
+    abstract fun syncConflictDao(): com.bioacupunt.sync.data.local.SyncConflictDao
 }

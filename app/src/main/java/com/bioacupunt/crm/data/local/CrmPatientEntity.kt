@@ -12,7 +12,8 @@ import androidx.room.PrimaryKey
         Index("name"),
         Index("phone"),
         Index("stage"),
-        Index("updatedAt")
+        Index("updatedAt"),
+        Index("clientId", unique = true)
     ]
 )
 data class CrmPatientEntity(
@@ -37,5 +38,21 @@ data class CrmPatientEntity(
     val updatedAt: String = "",
     val pendingSync: Boolean = false,
     val deleted: Boolean = false,
-    val lastModified: String = ""
+    val lastModified: String = "",
+
+    // ── Sync identity ────────────────────────────────────────────────────
+    /**
+     * Stable id generated on *this* device before the row ever reaches the
+     * server. It is what makes a retried upload idempotent: if the push
+     * succeeded but the reply was lost, the retry is recognised as the same
+     * record instead of creating a second patient.
+     */
+    val clientId: String = "",
+    /** The server's id, once known. Null means this row has never synced. */
+    val serverId: Long? = null,
+    /**
+     * The server revision this row was last in agreement with. Sent on push so
+     * the server can tell whether anyone else changed the record in between.
+     */
+    val baseRev: Long = 0
 )

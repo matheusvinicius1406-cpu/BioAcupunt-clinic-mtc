@@ -26,7 +26,7 @@ import androidx.room.PrimaryKey
     tableName = "mtc_assessments",
     foreignKeys = [
         ForeignKey(
-            entity = com.bioacupunt.patient.data.local.PatientEntity::class,
+            entity = com.bioacupunt.crm.data.local.CrmPatientEntity::class,
             parentColumns = ["id"],
             childColumns = ["patientId"],
             onDelete = ForeignKey.CASCADE,

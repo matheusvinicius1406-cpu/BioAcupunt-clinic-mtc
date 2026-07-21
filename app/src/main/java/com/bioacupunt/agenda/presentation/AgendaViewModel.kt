@@ -25,6 +25,8 @@ data class AgendaUiState(
     val monthAppointments: List<com.bioacupunt.agenda.domain.model.Appointment> = emptyList(),
     val showFreeSlots: Boolean = false,
     val stats: Map<String, Any> = emptyMap(),
+    /** The patients an appointment can be booked for. Empty until the CRM loads. */
+    val patients: List<com.bioacupunt.crm.domain.model.CrmPatient> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -34,11 +36,15 @@ class AgendaViewModelFactory(
     private val getAppointmentsInRange: GetAppointmentsInRange,
     private val saveAppointment: SaveAppointment,
     private val updateStatus: UpdateAppointmentStatus,
-    private val calculateDayStats: CalculateDayStats
+    private val calculateDayStats: CalculateDayStats,
+    private val crmPatientRepository: com.bioacupunt.crm.domain.repository.CrmPatientRepository? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return AgendaViewModel(getAppointmentsByDate, getAppointmentsInRange, saveAppointment, updateStatus, calculateDayStats) as T
+        return AgendaViewModel(
+            getAppointmentsByDate, getAppointmentsInRange, saveAppointment,
+            updateStatus, calculateDayStats, crmPatientRepository
+        ) as T
     }
 }
 
@@ -47,7 +53,8 @@ class AgendaViewModel(
     private val getAppointmentsInRange: GetAppointmentsInRange,
     private val saveAppointment: SaveAppointment,
     private val updateStatus: UpdateAppointmentStatus,
-    private val calculateDayStats: CalculateDayStats
+    private val calculateDayStats: CalculateDayStats,
+    private val crmPatientRepository: com.bioacupunt.crm.domain.repository.CrmPatientRepository? = null
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AgendaUiState())
@@ -56,6 +63,16 @@ class AgendaViewModel(
     init {
         observeDate(state.value.selectedDate)
         observeMonth(YearMonth.parse(state.value.visibleMonth))
+        observePatients()
+    }
+
+    private fun observePatients() {
+        val repository = crmPatientRepository ?: return
+        viewModelScope.launch {
+            repository.observeAll()
+                .catch { /* the picker simply stays empty; booking is blocked, not crashed */ }
+                .collect { list -> _state.update { it.copy(patients = list) } }
+        }
     }
 
     fun onDateSelected(date: String) {

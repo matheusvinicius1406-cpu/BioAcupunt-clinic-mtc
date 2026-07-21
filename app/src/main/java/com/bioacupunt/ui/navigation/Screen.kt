@@ -30,13 +30,16 @@ sealed class Screen(val route: String, val label: String, val emoji: String = ""
     data object Flashcards  : Screen("flashcards",  "Flashcards",  "🃏")
     data object Analytics   : Screen("analytics",   "Analytics",   "📊")
     data object Simulador   : Screen("simulador",   "Simulador",   "🧪")
-    data object AiAssistant : Screen("ai_assistant","Assistente IA","🤖")
+    data object AiAssistant : Screen("ai_assistant","Inteligência","🤖")
     data object Relatorios  : Screen("relatorios",  "Relatórios",  "📄")
+    data object Financeiro  : Screen("financeiro",  "Financeiro",  "💰")
+    data object Conflitos   : Screen("conflitos",   "Conflitos",   "🔀")
 
     companion object {
-        // Bottom navigation items
+        // Bottom navigation items — mockup order: Início, Pacientes, Prontuário,
+        // Biblioteca, Mais (the "Mais" entry is synthesized by the nav shell).
         val bottomNavItems: List<Screen> = listOf(
-            Dashboard, Agenda, CRM, Biblioteca, Ajustes
+            Dashboard, CRM, Prontuario, Biblioteca
         )
     }
 }

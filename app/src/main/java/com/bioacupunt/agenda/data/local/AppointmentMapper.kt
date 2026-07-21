@@ -24,7 +24,12 @@ fun AppointmentEntity.toDomain(): Appointment {
     )
 }
 
-fun Appointment.toEntity(now: String = ""): AppointmentEntity {
+/** See CrmPatientMapper.toEntity for what [identity] and [pendingSync] mean. */
+fun Appointment.toEntity(
+    now: String = "",
+    identity: com.bioacupunt.sync.SyncIdentity = com.bioacupunt.sync.SyncIdentity.new(),
+    pendingSync: Boolean = true,
+): AppointmentEntity {
     val ts = now.ifBlank { java.time.Instant.now().toString() }
     return AppointmentEntity(
         id = id,
@@ -43,6 +48,10 @@ fun Appointment.toEntity(now: String = ""): AppointmentEntity {
         paid = paid,
         createdAt = createdAt,
         updatedAt = ts,
-        lastModified = ts
+        lastModified = ts,
+        pendingSync = pendingSync,
+        clientId = identity.clientId,
+        serverId = identity.serverId,
+        baseRev = identity.baseRev
     )
 }

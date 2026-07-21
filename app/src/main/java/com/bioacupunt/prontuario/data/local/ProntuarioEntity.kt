@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "prontuarios",
     foreignKeys = [
-        ForeignKey(entity = com.bioacupunt.patient.data.local.PatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(entity = com.bioacupunt.crm.data.local.CrmPatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [Index("patientId"), Index("updatedAt")]
 )
@@ -27,7 +27,7 @@ data class ProntuarioEntity(
 @Entity(
     tableName = "prontuario_entries",
     foreignKeys = [
-        ForeignKey(entity = com.bioacupunt.patient.data.local.PatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(entity = com.bioacupunt.crm.data.local.CrmPatientEntity::class, parentColumns = ["id"], childColumns = ["patientId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [Index("patientId"), Index("date"), Index("type")]
 )
