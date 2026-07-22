@@ -437,6 +437,111 @@ object LocalContraindicationRule : SafetyRule {
     }
 }
 
+/**
+ * General clinical cautions for flags that are not block-level contraindications
+ * but still warrant a visible alert.
+ *
+ * These rules produce only [Severity.CAUTION] findings — they inform the
+ * practitioner without blocking the protocol. The licensed professional remains
+ * responsible for the final decision.
+ */
+object GeneralCautionRule : SafetyRule {
+    override fun evaluate(
+        proposal: TreatmentProposal,
+        assessment: MtcAssessment,
+    ): List<SafetyFinding> {
+        val findings = mutableListOf<SafetyFinding>()
+
+        if (ClinicalFlag.BREASTFEEDING in assessment.flags) {
+            findings += SafetyFinding(
+                severity = Severity.CAUTION,
+                flag = ClinicalFlag.BREASTFEEDING,
+                title = "Amamentação",
+                rationale = "Evitar acupuntura em pontos que estimulam descida do leite " +
+                    "(ex.: ST18, SI1, GB21, LI4, Bl67) se o objetivo não for " +
+                    "lactação. Preferir pontos de fortalecimento geral.",
+                subject = "Protocolo de tratamento",
+            )
+        }
+
+        if (ClinicalFlag.SEVERE_CARDIOPATHY in assessment.flags) {
+            findings += SafetyFinding(
+                severity = Severity.CAUTION,
+                flag = ClinicalFlag.SEVERE_CARDIOPATHY,
+                title = "Cardiopatia grave",
+                rationale = "Evitar eletroacupuntura e estímulo forte em pontos do tórax " +
+                    "(CV14–CV18, ST12–ST18, pontos do Pericárdio). Paciente deve " +
+                    "estar compensado antes da sessão. Monitorar sinais vitais.",
+                subject = "Eletroacupuntura/pontos torácicos",
+            )
+        }
+
+        if (ClinicalFlag.UNCONTROLLED_HYPERTENSION in assessment.flags) {
+            findings += SafetyFinding(
+                severity = Severity.CAUTION,
+                flag = ClinicalFlag.UNCONTROLLED_HYPERTENSION,
+                title = "Hipertensão não controlada",
+                rationale = "Evitar estímulo forte ou eletroacupuntura em pontos " +
+                    "hipertensivos (LI4, LR3, GB20, BL60, ST9). Preferir " +
+                    "técnicas suaves e monitorar PA antes e depois.",
+                subject = "Técnica de estímulo",
+            )
+        }
+
+        if (ClinicalFlag.RECENT_SURGERY in assessment.flags) {
+            findings += SafetyFinding(
+                severity = Severity.CAUTION,
+                flag = ClinicalFlag.RECENT_SURGERY,
+                title = "Cirurgia recente",
+                rationale = "Evitar puncionar sobre a cicatriz cirúrgica nos primeiros " +
+                    "30 dias. Aguardar consolidação tecidual antes de aplicar " +
+                    "técnicas invasivas próximas ao sítio operatório.",
+                subject = "Sítio cirúrgico",
+            )
+        }
+
+        if (ClinicalFlag.SEVERE_ANEMIA in assessment.flags) {
+            findings += SafetyFinding(
+                severity = Severity.CAUTION,
+                flag = ClinicalFlag.SEVERE_ANEMIA,
+                title = "Anemia grave",
+                rationale = "Evitar sangria, ventosa sangrenta e moxabustão intensa " +
+                    "(que pode aumentar consumo de Qi/Xue). Usar agulhas finas " +
+                    "e manipulação suave.",
+                subject = "Sangria/ventosa/moxa",
+            )
+        }
+
+        if (ClinicalFlag.ELDERLY_FRAIL in assessment.flags) {
+            findings += SafetyFinding(
+                severity = Severity.CAUTION,
+                flag = ClinicalFlag.ELDERLY_FRAIL,
+                title = "Idoso frágil",
+                rationale = "Tolerância reduzida a estímulos intensos. Preferir sessões " +
+                    "mais curtas (≤30 min), agulhas mais finas, manipulação " +
+                    "suave, evitar sangria/ventosa e moxa indireta controlada.",
+                subject = "Protocolo de tratamento",
+            )
+        }
+
+        if (ClinicalFlag.PEDIATRIC in assessment.flags) {
+            findings += SafetyFinding(
+                severity = Severity.CAUTION,
+                flag = ClinicalFlag.PEDIATRIC,
+                title = "Paciente pediátrico",
+                rationale = "Técnicas como moxabustão indireta, tuiná e laserterapia " +
+                    "são preferíveis. Agulhamento exige técnica pediátrica " +
+                    "específica (agulhas mais finas, inserção mais superficial, " +
+                    "tempo reduzido). Ventosa e eletroacupuntura requerem " +
+                    "cuidado redobrado.",
+                subject = "Técnica escolhida",
+            )
+        }
+
+        return findings
+    }
+}
+
 // ---------------------------------------------------------------------------
 // The engine
 // ---------------------------------------------------------------------------
@@ -465,6 +570,7 @@ class ClinicalSafetyEngine(
             PacemakerRule,
             OncologyRule,
             LocalContraindicationRule,
+            GeneralCautionRule,
         )
     }
 }

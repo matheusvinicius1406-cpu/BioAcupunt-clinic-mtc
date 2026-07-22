@@ -85,6 +85,29 @@ class SupremoViewModel(
 
     fun updateGestationalWeeks(weeks: Int?) = edit { it.copy(gestationalWeeks = weeks) }
 
+    /**
+     * Records a clinical override: the practitioner chose to proceed despite a
+     * FORBIDDEN safety verdict. The reason, user identity and timestamp are
+     * stored in the assessment for audit (LGPD/CFM-compatible).
+     *
+     * [userId] is passed from the UI layer (AuthRepository or SecurePreferences);
+     * it is intentionally not stored in the ViewModel so the practitioner's
+     * identity is explicit at the call site rather than hidden in DI.
+     */
+    fun overrideVeto(reason: String, userId: String) {
+        if (reason.trim().length < 10) return
+        val now = java.time.Instant.now().toString()
+        _state.update {
+            it.copy(
+                draft = it.draft.copy(
+                    overrideReason = reason.trim(),
+                    overrideBy = userId,
+                    overrideAt = now,
+                ),
+            )
+        }
+    }
+
     fun togglePattern(pattern: ZangFuPattern) = edit { draft ->
         val existing = draft.patterns.firstOrNull { it.organ == pattern.organ }
         val patterns = if (existing != null) {

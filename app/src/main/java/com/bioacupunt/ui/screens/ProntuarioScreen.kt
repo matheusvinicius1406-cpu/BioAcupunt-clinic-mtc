@@ -229,10 +229,17 @@ fun ProntuarioScreen(
                 }
             }
 
+            val onOverride = { reason: String ->
+                val userId = runCatching {
+                    com.bioacupunt.di.AppContainer.authRepository.getCurrentUser()?.id?.toString()
+                        ?: com.bioacupunt.di.AppContainer.securePreferences.pinHash?.take(8) ?: "unknown"
+                }.getOrDefault("unknown")
+                supremoVm.overrideVeto(reason, userId)
+            }
             when (ProntTab.entries[tab]) {
                 ProntTab.RESUMO -> ResumoTab(state, onUpdate = vm::updateHeader, onOpenAnamnese = { tab = ProntTab.ANAMNESE.ordinal }, onOpenEvolucao = { onOpenEvolucao(state.patientId) })
                 ProntTab.ANAMNESE -> AnamneseTab(supremoVm)
-                ProntTab.PLANO -> PlanoTab(state, supremoState, onUpdate = vm::updateHeader)
+                ProntTab.PLANO -> PlanoTab(state, supremoState, onUpdate = vm::updateHeader, onOverride = onOverride)
                 ProntTab.EXAMES -> ExamesTab(exameVm)
                 ProntTab.EVOLUCAO -> EvolucaoTab(
                     entries = state.entries,
@@ -512,6 +519,7 @@ private fun PlanoTab(
     state: com.bioacupunt.prontuario.presentation.ProntuarioUiState,
     supremoState: com.bioacupunt.prontuario.presentation.SupremoUiState,
     onUpdate: (String?, String?, String?, String?) -> Unit,
+    onOverride: ((String) -> Unit)? = null,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -523,7 +531,7 @@ private fun PlanoTab(
                 Spacer(Modifier.height(14.dp))
                 ClinicalSafetyPanel(
                     verdict = supremoState.verdict,
-                    onOverride = { /* auditado no ViewModel: próxima iteração — ver SupremoViewModel */ },
+                    onOverride = onOverride,
                 )
             }
         }

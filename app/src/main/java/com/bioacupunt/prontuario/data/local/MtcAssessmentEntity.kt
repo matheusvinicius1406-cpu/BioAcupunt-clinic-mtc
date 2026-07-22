@@ -57,6 +57,9 @@ data class MtcAssessmentEntity(
     val gestationalWeeks: Int? = null,
 
     val clinicalImpression: String = "",
+    val overrideReason: String = "",
+    val overrideBy: String = "",
+    val overrideAt: String = "",
 
     // Atendimento wizard fields — same "owned value object, serialised as a unit"
     // reasoning as patterns/tongue/pulse above.

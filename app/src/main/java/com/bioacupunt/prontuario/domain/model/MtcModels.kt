@@ -281,6 +281,14 @@ data class MtcAssessment(
     /** Gestational week, when [ClinicalFlag.PREGNANCY] is set. Drives trimester rules. */
     val gestationalWeeks: Int? = null,
     val clinicalImpression: String = "",
+    /**
+     * Clinical override: the practitioner chose to proceed despite a FORBIDDEN
+     * safety verdict. The reason, user identity and timestamp are recorded for
+     * audit (LGPD/CFM-compatible decision support, not authority).
+     */
+    val overrideReason: String = "",
+    val overrideBy: String = "",
+    val overrideAt: String = "",
     /** Atendimento step 1: what the patient reports makes symptoms better/worse. */
     val relievingFactors: Set<String> = emptySet(),
     val aggravatingFactors: Set<String> = emptySet(),
