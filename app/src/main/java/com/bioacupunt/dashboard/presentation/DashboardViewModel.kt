@@ -120,12 +120,12 @@ class DashboardViewModel(
     }
 
     /** Reload month totals (they are point-in-time sums, not observable streams). */
-    fun refreshFinance() {
+    fun refreshFinance(tenantId: Long = 1L) {
         viewModelScope.launch {
             val start = today.withDayOfMonth(1).toString()
             val end = today.toString()
-            val received = (transacaoRepository.sumPayments(start, end) as? Result.Success)?.data ?: 0.0
-            val pending = (transacaoRepository.sumPending(start, end) as? Result.Success)?.data ?: 0.0
+            val received = (transacaoRepository.sumPayments(tenantId, start, end) as? Result.Success)?.data ?: 0.0
+            val pending = (transacaoRepository.sumPending(tenantId, start, end) as? Result.Success)?.data ?: 0.0
             _state.update { it.copy(monthReceivedBrl = received, monthPendingBrl = pending) }
         }
     }

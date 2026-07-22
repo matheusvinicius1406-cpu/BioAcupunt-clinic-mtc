@@ -2,17 +2,43 @@ package com.bioacupunt.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.bioacupunt.data.local.model.KnowledgeNode
-import com.bioacupunt.patient.data.local.PatientDao
-import com.bioacupunt.patient.data.local.PatientEntity
-import com.bioacupunt.sync.data.local.SyncQueueDao
-import com.bioacupunt.sync.data.local.SyncQueueEntity
+import com.bioacupunt.data.local.model.KnowledgeNodeEntity
+import com.bioacupunt.data.local.model.IngestionJobEntity
+import com.bioacupunt.data.local.model.PurgeCertificateEntity
+import com.bioacupunt.data.local.model.AuditTrailEntity
+import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
 
+/**
+ * BIOACUPUNT SUPREMO — DATABASE (v18)
+ *
+ * v18 adiciona as tabelas do MKIS on-device:
+ * - knowledge_nodes expandido (enums canônicos, scores, governança)
+ * - ingestion_jobs (pipeline state machine)
+ * - purge_certificates (LGPD deep delete)
+ * - audit_trail (append-only audit log)
+ * - vec_knowledge_nodes (sqlite-vec virtual table, criada via migration)
+ * - knowledge_fts (FTS5 virtual table, criada via migration)
+ *
+ * ## Migrações
+ * As migrações são gerenciadas centralizadamente em [DatabaseModule].
+ * Cada migração é ADDITIVE: nunca remove colunas ou tabelas existentes.
+ *
+ * ## Histórico de Versões
+ * v1-16: Migrações anteriores (ver DatabaseModule)
+ * v17: tenantId em transacoes + override do veto clínico
+ * v18: MKIS on-device (knowledge_nodes expandido + ingestion_jobs + purge_certificates + audit_trail + sqlite-vec + FTS5)
+ */
 @Database(
     entities = [
-        KnowledgeNode::class,
-        PatientEntity::class,
-        SyncQueueEntity::class,
+        // === MKIS Core ===
+        KnowledgeNodeEntity::class,
+        IngestionJobEntity::class,
+        PurgeCertificateEntity::class,
+        AuditTrailEntity::class,
+
+        // === Bounded Contexts Existentes ===
+        com.bioacupunt.patient.data.local.PatientEntity::class,
+        com.bioacupunt.sync.data.local.SyncQueueEntity::class,
         com.bioacupunt.crm.data.local.CrmPatientEntity::class,
         com.bioacupunt.agenda.data.local.AppointmentEntity::class,
         com.bioacupunt.financeiro.data.local.TransacaoEntity::class,
@@ -29,15 +55,22 @@ import com.bioacupunt.sync.data.local.SyncQueueEntity
         com.bioacupunt.biblioteca.data.local.FavoriteArticleEntity::class,
         com.bioacupunt.sync.data.local.SyncStateEntity::class,
         com.bioacupunt.sync.data.local.SyncConflictEntity::class,
-        com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity::class
+        com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity::class,
     ],
-    version = 16,
+    version = 18,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
+
+    // === MKIS DAOs ===
     abstract fun knowledgeNodeDao(): KnowledgeNodeDao
-    abstract fun patientDao(): PatientDao
-    abstract fun syncQueueDao(): SyncQueueDao
+    abstract fun ingestionJobDao(): IngestionJobDao
+    abstract fun purgeCertificateDao(): PurgeCertificateDao
+    abstract fun auditTrailDao(): AuditTrailDao
+
+    // === DAOs Existentes ===
+    abstract fun patientDao(): com.bioacupunt.patient.data.local.PatientDao
+    abstract fun syncQueueDao(): com.bioacupunt.sync.data.local.SyncQueueDao
     abstract fun crmPatientDao(): com.bioacupunt.crm.data.local.CrmPatientDao
     abstract fun appointmentDao(): com.bioacupunt.agenda.data.local.AppointmentDao
     abstract fun transacaoDao(): com.bioacupunt.financeiro.data.local.TransacaoDao

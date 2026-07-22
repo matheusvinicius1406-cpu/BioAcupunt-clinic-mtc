@@ -35,6 +35,7 @@ sealed class Screen(val route: String, val label: String, val emoji: String = ""
     data object Financeiro  : Screen("financeiro",  "Financeiro",  "💰")
     data object Conflitos   : Screen("conflitos",   "Conflitos",   "🔀")
     data object Curadoria   : Screen("curadoria",   "Curadoria",   "📥")
+    data object PipelineMonitor: Screen("pipeline",    "Pipeline",    "🔧")
 
     companion object {
         // Bottom navigation items — mockup order: Início, Pacientes, Prontuário,

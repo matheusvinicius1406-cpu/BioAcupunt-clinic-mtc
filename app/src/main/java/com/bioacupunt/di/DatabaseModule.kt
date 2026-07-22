@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 16
+    private const val DB_VERSION = 18
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -145,6 +145,8 @@ object DatabaseModule {
         if (current >= 14) migrations.add(MIGRATION_13_14)
         if (current >= 15) migrations.add(MIGRATION_14_15)
         if (current >= 16) migrations.add(MIGRATION_15_16)
+        if (current >= 17) migrations.add(MIGRATION_16_17)
+        if (current >= 18) migrations.add(MIGRATION_17_18)
         return migrations
     }
 
@@ -463,6 +465,278 @@ object DatabaseModule {
                 )
                 """.trimIndent(),
             )
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // v17 — tenantId na transacoes + override do veto clínico
+    //
+    // Multi-tenant isolation para o módulo financeiro (tenantId faltava) e
+    // registra o override do veto clínico (razão, usuário, timestamp) na
+    // mtc_assessments para auditoria LGPD/CFM.
+    //
+    // O default do tenantId é 1L (compatível com instalações single-tenant).
+    // ─────────────────────────────────────────────────────────────────────────
+    private val MIGRATION_16_17 = object : androidx.room.migration.Migration(16, 17) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE transacoes ADD COLUMN tenantId INTEGER NOT NULL DEFAULT 1")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_transacoes_tenantId ON transacoes(tenantId)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_transacoes_tenantId_date ON transacoes(tenantId, date)")
+            database.execSQL("ALTER TABLE mtc_assessments ADD COLUMN overrideReason TEXT NOT NULL DEFAULT ''")
+            database.execSQL("ALTER TABLE mtc_assessments ADD COLUMN overrideBy TEXT NOT NULL DEFAULT ''")
+            database.execSQL("ALTER TABLE mtc_assessments ADD COLUMN overrideAt TEXT NOT NULL DEFAULT ''")
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // v18 — MKIS On-Device: knowledge_nodes expandido + novas tabelas
+    //        + sqlite-vec + FTS5
+    //
+    // Adiciona:
+    // 1. Novas colunas ao knowledge_nodes (enums, scores, governança, timestamps)
+    // 2. Tabela ingestion_jobs (pipeline state machine)
+    // 3. Tabela purge_certificates (LGPD deep delete)
+    // 4. Tabela audit_trail (append-only audit log)
+    // 5. Tabela virtual vec_knowledge_nodes (sqlite-vec, 384d)
+    // 6. Tabela virtual knowledge_fts (FTS5 para busca híbrida)
+    //
+    // NOTA: O sqlite-vec precisa ter a extensão .so carregada via
+    // SupportSQLiteDatabase.execSQL("SELECT load_extension('libsqlite_vec')").
+    // Se a lib não estiver disponível, a migration ignora a criação da
+    // tabela virtual (usando IF NOT EXISTS) e o app continua funcionando
+    // sem busca vetorial — degradação graciosa.
+    // ═════════════════════════════════════════════════════════════════════
+    private val MIGRATION_17_18 = object : androidx.room.migration.Migration(17, 18) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // ── Passo 1: Expandir knowledge_nodes (colunas aditivas) ──
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN tenant_id TEXT NOT NULL DEFAULT 'default'")
+            }.onFailure {
+                com.bioacupunt.observability.AppLogger.w("MIGRATION_17_18", "tenant_id already exists", it)
+            }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN knowledge_type TEXT NOT NULL DEFAULT 'artigo'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN status TEXT NOT NULL DEFAULT 'rascunho'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN evidence_level TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN bias_risk TEXT NOT NULL DEFAULT 'nao_avaliado'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN clinical_evidence TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN category TEXT NOT NULL DEFAULT 'mtc'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN source TEXT NOT NULL DEFAULT 'manual'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN specialty TEXT NOT NULL DEFAULT 'geral'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN language TEXT NOT NULL DEFAULT 'pt'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN data_classification TEXT NOT NULL DEFAULT 'restrito'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN doi TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN pmid TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN source_url TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN authors TEXT NOT NULL DEFAULT '[]'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN citation TEXT NOT NULL DEFAULT ''")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN scientific_score REAL")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN ai_score REAL")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN reliability_score REAL")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN checksum TEXT NOT NULL DEFAULT ''")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN created_by TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN reviewed_by TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN approved_by TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN approved_at INTEGER")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN version TEXT NOT NULL DEFAULT '0.1.0'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN superseded_by TEXT")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN conflicts TEXT NOT NULL DEFAULT '[]'")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN created_at INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)")
+            }.onFailure { }
+            runCatching {
+                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN deleted_at INTEGER")
+            }.onFailure { }
+
+            // ── Passo 2: Criar índices no knowledge_nodes ──
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_knowledge_nodes_tenant_id ON knowledge_nodes(tenant_id)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_knowledge_nodes_status ON knowledge_nodes(status)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_knowledge_nodes_checksum ON knowledge_nodes(checksum, tenant_id)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_knowledge_nodes_tenant_created ON knowledge_nodes(tenant_id, created_at)")
+
+            // ── Passo 3: Criar tabela ingestion_jobs ──
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS `ingestion_jobs` (
+                    `id` TEXT NOT NULL PRIMARY KEY,
+                    `tenant_id` TEXT NOT NULL DEFAULT 'default',
+                    `artifact_id` TEXT,
+                    `node_id` TEXT,
+                    `status` TEXT NOT NULL DEFAULT 'na_fila',
+                    `attempt_id` TEXT NOT NULL,
+                    `attempt_count` INTEGER NOT NULL DEFAULT 1,
+                    `max_attempts` INTEGER NOT NULL DEFAULT 3,
+                    `current_stage` TEXT,
+                    `error_code` TEXT,
+                    `error_message` TEXT,
+                    `quarantine_reason` TEXT,
+                    `review_notes` TEXT,
+                    `source_url` TEXT,
+                    `source_package` TEXT,
+                    `priority` INTEGER NOT NULL DEFAULT 0,
+                    `started_at` INTEGER,
+                    `completed_at` INTEGER,
+                    `created_at` INTEGER NOT NULL,
+                    `updated_at` INTEGER NOT NULL
+                )
+            """.trimIndent())
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_ingestion_jobs_tenant_status ON ingestion_jobs(tenant_id, status)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_ingestion_jobs_node_id ON ingestion_jobs(node_id)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_ingestion_jobs_created_status ON ingestion_jobs(created_at, status)")
+
+            // ── Passo 4: Criar tabela purge_certificates ──
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS `purge_certificates` (
+                    `id` TEXT NOT NULL PRIMARY KEY,
+                    `tenant_id` TEXT NOT NULL DEFAULT 'default',
+                    `target_type` TEXT NOT NULL,
+                    `target_id` TEXT NOT NULL,
+                    `cascade_scope` TEXT NOT NULL DEFAULT 'metadata_only',
+                    `target_details` TEXT NOT NULL DEFAULT '{}',
+                    `requested_by` TEXT NOT NULL,
+                    `started_at` INTEGER NOT NULL,
+                    `completed_at` INTEGER,
+                    `checkpoint` TEXT NOT NULL DEFAULT 'pending',
+                    `steps_log` TEXT NOT NULL DEFAULT '[]',
+                    `certificate_hash` TEXT NOT NULL,
+                    `legal_hold_verified_at` INTEGER,
+                    `notes` TEXT,
+                    `created_at` INTEGER NOT NULL
+                )
+            """.trimIndent())
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_purge_certificates_tenant ON purge_certificates(tenant_id, created_at)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_purge_certificates_target ON purge_certificates(target_type, target_id)")
+
+            // ── Passo 5: Criar tabela audit_trail ──
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS `audit_trail` (
+                    `id` TEXT NOT NULL PRIMARY KEY,
+                    `tenant_id` TEXT NOT NULL DEFAULT 'default',
+                    `actor_id` TEXT NOT NULL,
+                    `actor_role` TEXT,
+                    `action` TEXT NOT NULL,
+                    `resource_type` TEXT NOT NULL,
+                    `resource_id` TEXT,
+                    `ip_address` TEXT,
+                    `outcome` TEXT,
+                    `request_id` TEXT NOT NULL,
+                    `metadata` TEXT NOT NULL DEFAULT '{}',
+                    `occurred_at` INTEGER NOT NULL,
+                    `created_at` INTEGER NOT NULL
+                )
+            """.trimIndent())
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_audit_trail_tenant_time ON audit_trail(tenant_id, occurred_at)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_audit_trail_resource ON audit_trail(resource_type, resource_id)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS index_audit_trail_action ON audit_trail(action)")
+
+            // ── Passo 6: Criar tabela virtual FTS5 (knowledge_fts) ──
+            // Separada do article_fts (FTS4) existente. FTS5 tem BM25 nativo.
+            runCatching {
+                database.execSQL("""
+                    CREATE VIRTUAL TABLE IF NOT EXISTS `knowledge_fts` USING fts5(
+                        `node_id` UNINDEXED,
+                        `title`,
+                        `summary`,
+                        `content`,
+                        `tags`,
+                        tokenize='porter unicode61'
+                    )
+                """.trimIndent())
+            }.onFailure { e ->
+                com.bioacupunt.observability.AppLogger.w("MIGRATION_17_18", "FTS5 creation failed (missing extension?)", e)
+            }
+
+            // ── Passo 7: Tentar criar tabela virtual sqlite-vec ──
+            // Se a extensão .so não estiver disponível, apenas loga o warning.
+            // A tabela pode ser criada posteriormente quando a lib estiver disponível.
+            runCatching {
+                database.execSQL("SELECT load_extension('libsqlite_vec')")
+                database.execSQL("""
+                    CREATE VIRTUAL TABLE IF NOT EXISTS `vec_knowledge_nodes` USING vec0(
+                        embedding float[384] distance_metric=cosine
+                    )
+                """.trimIndent())
+                com.bioacupunt.observability.AppLogger.i("MIGRATION_17_18", "sqlite-vec loaded and vec_knowledge_nodes created")
+            }.onFailure { e ->
+                com.bioacupunt.observability.AppLogger.w("MIGRATION_17_18",
+                    "sqlite-vec not available yet. Vector search disabled. ${e.message}", e)
+            }
+
+            // ── Passo 8: Backfill dados existentes ──
+            // Copia campos do schema antigo para os novos, quando aplicável.
+            // As colunas antigas (type, tags, version, metadata) são mantidas
+            // para compatibilidade, mas os novos campos são populados.
+            runCatching {
+                // type antigo vira knowledge_type (se type for um valor conhecido)
+                database.execSQL("""
+                    UPDATE knowledge_nodes SET
+                        knowledge_type = CASE
+                            WHEN type IN ('artigo','revisao','guideline','capitulo','livro','tese','caso_clinico','ensaio_clinico','protocolo','nota','relatorio','educacional') THEN type
+                            ELSE 'artigo'
+                        END,
+                        status = CASE
+                            WHEN status IS NULL OR status = '' THEN 'rascunho'
+                            ELSE status
+                        END,
+                        updated_at = (strftime('%s','now') * 1000)
+                    WHERE knowledge_type IS NULL OR knowledge_type = ''
+                """.trimIndent())
+            }.onFailure { e ->
+                com.bioacupunt.observability.AppLogger.w("MIGRATION_17_18", "Backfill failed", e)
+            }
         }
     }
 

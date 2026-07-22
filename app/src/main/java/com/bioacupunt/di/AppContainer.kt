@@ -173,6 +173,7 @@ object AppContainer {
                 "transaction" to com.bioacupunt.sync.TransacaoSyncWriter(
                     dao = transacaoDao,
                     patientDao = crmPatientDao,
+                    tenantId = { tenantManager.requireTenantId() },
                 ),
             ),
         )
@@ -277,7 +278,7 @@ object AppContainer {
 
     // ── Financeiro ─────────────────────────────────────────
     val transacaoRepository: com.bioacupunt.financeiro.domain.repository.TransacaoRepository by lazy {
-        com.bioacupunt.financeiro.data.repository.TransacaoRepositoryImpl(transacaoDao)
+        com.bioacupunt.financeiro.data.repository.TransacaoRepositoryImpl(transacaoDao, tenantManager)
     }
 
     // ── Repositories ───────────────────────────────────────
@@ -354,6 +355,8 @@ object AppContainer {
         com.bioacupunt.biblioteca.presentation.BibliotecaViewModelFactory(
             askLibrary = askLibrary,
             toggleFavoriteArticle = com.bioacupunt.biblioteca.domain.usecase.ToggleFavoriteArticle(favoriteArticleDao),
+            hybridSearchService = hybridSearchService,
+            knowledgeNodeDao = database.knowledgeNodeDao(),
             observeFavorites = favoriteArticleDao.observeAll().map { list -> list.map { fav -> fav.articleId }.toSet() },
             observeApprovedArticles = libraryStagingRepository.observeApprovedArticles(),
         )
@@ -377,6 +380,39 @@ object AppContainer {
     // ── AI ─────────────────────────────────────────────────
     val localModelManager: com.bioacupunt.ai.data.provider.LocalModelManager by lazy {
         com.bioacupunt.ai.data.provider.LocalModelManager(appContext)
+    }
+
+    // ── Embedding (MKIS On-Device) ────────────────────────
+    val embeddingService: com.bioacupunt.ai.embedding.EmbeddingService by lazy {
+        com.bioacupunt.ai.embedding.EmbeddingService(appContext)
+    }
+
+    val vecKnowledgeNodeRepository: com.bioacupunt.data.local.database.VecKnowledgeNodeRepository by lazy {
+        com.bioacupunt.data.local.database.VecKnowledgeNodeRepository.from(database)
+    }
+
+    // ── Content Extractor (MKIS Pipeline) ─────────────────
+    val contentExtractor: com.bioacupunt.mkis.domain.pipeline.ContentExtractor by lazy {
+        com.bioacupunt.mkis.domain.pipeline.ContentExtractor(aiRepository)
+    }
+
+    // ── Pipeline Service (MKIS On-Device) ─────────────────
+    val pipelineService: com.bioacupunt.mkis.domain.pipeline.PipelineService by lazy {
+        com.bioacupunt.mkis.domain.pipeline.PipelineService(
+            ingestionJobDao = database.ingestionJobDao(),
+            knowledgeNodeDao = database.knowledgeNodeDao(),
+            vecRepo = vecKnowledgeNodeRepository,
+            embeddingService = embeddingService,
+            contentExtractor = contentExtractor,
+        )
+    }
+
+    // ── Pipeline Monitor (MKIS UI) ────────────────────────
+    fun pipelineMonitorViewModelFactory(): com.bioacupunt.ui.screens.PipelineMonitorViewModelFactory {
+        return com.bioacupunt.ui.screens.PipelineMonitorViewModelFactory(
+            ingestionJobDao = database.ingestionJobDao(),
+            pipelineService = pipelineService,
+        )
     }
 
     val localLlmProvider: com.bioacupunt.ai.data.provider.LocalLlmProvider by lazy {
@@ -423,8 +459,16 @@ object AppContainer {
         )
     }
 
+    // ── Busca Híbrida: FTS5 + sqlite-vec (MKIS On-Device) ────
+    val hybridSearchService: com.bioacupunt.biblioteca.data.search.HybridSearchService by lazy {
+        com.bioacupunt.biblioteca.data.search.HybridSearchService(
+            vecRepo = vecKnowledgeNodeRepository,
+            embeddingService = embeddingService,
+        )
+    }
+
     val mtcRetriever: com.bioacupunt.biblioteca.domain.search.MtcRetriever by lazy {
-        com.bioacupunt.biblioteca.domain.search.MtcRetriever(ftsSearchService)
+        com.bioacupunt.biblioteca.domain.search.MtcRetriever(hybridSearchService)
     }
 
     /**
@@ -559,6 +603,7 @@ object AppContainer {
                 appointmentDao.save(apptEntity)
                 transacaoDao.save(
                     com.bioacupunt.financeiro.data.local.TransacaoEntity(
+                        tenantId = 1L,
                         patientId = patientId,
                         appointmentId = null,
                         amountBrl = 150.0,
