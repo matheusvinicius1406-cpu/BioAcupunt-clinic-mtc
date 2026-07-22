@@ -1,26 +1,29 @@
 package com.bioacupunt.biblioteca.domain.search
 
-import com.bioacupunt.biblioteca.domain.model.MtcArticle
 import java.text.Normalizer
-import kotlin.math.ln
 
 /**
- * SEARCH ENGINE FOR THE MTC LIBRARY
+ * TEXT PROCESSING UTILITIES FOR THE MTC LIBRARY SEARCH.
  *
- * Replaces `WHERE title LIKE '%query%'`, which was broken in three ways that all
- * matter for a Portuguese-speaking clinician typing fast between patients:
+ * ## O que esta classe faz AGORA
+ * Apenas pré-processamento textual: normalização de acentos, tokenização,
+ * stopwords e expansão de sinônimos bilíngues (Português ↔ pinyin).
  *
- *  1. **Accents.** `LIKE '%pulmao%'` does not match "Pulmão". Nobody types the tilde
- *     on a phone keyboard mid-consultation. Everything is folded to ASCII first.
- *  2. **Ranking.** LIKE returns rows in table order. The article *about* the Lung
- *     meridian and an article that merely mentions it in passing came back equally
- *     ranked. BM25 scores by term rarity and field weight, so the title match wins.
- *  3. **Vocabulary.** TCM is bilingual by nature. A practitioner searching "Baço"
- *     must find "Pi"; searching "deficiência" must find "Xu". A substring match
- *     cannot bridge that, so synonyms are expanded at query time.
+ * A indexação e o ranking BM25 foram movidos para o **SQLite FTS4**
+ * ([FtsSearchService]) — que usa comandos SQL nativos do banco para
+ * busca e ranqueamento. Isso escala para milhares de artigos sem ocupar RAM.
  *
- * Pure Kotlin, no Android, no SQL — which is why every claim above is unit-tested
- * rather than asserted.
+ * ## Por que manter esta classe?
+ * O FTS4 do SQLite não entende sinônimos de MTC. "Baço" e "Pi" são strings
+ * diferentes. Então o pré-processamento ainda é necessário: normalizamos e
+ * expandimos a query ANTES de enviá-la ao FTS4.
+ *
+ * ## O que foi removido
+ * - A classe `Index` (BM25 em memória)
+ * - A função `index()` (construção do índice)
+ * - A data class `SearchHit`
+ * - As constantes BM25 (K1, B, field boosts)
+ * - `MtcArticle` (não mais necessária aqui)
  */
 object MtcSearchEngine {
 
@@ -93,106 +96,4 @@ object MtcSearchEngine {
     /** Expands each query token into itself plus its synonym group. */
     fun expand(tokens: List<String>): List<String> =
         tokens.flatMap { token -> SYNONYMS[token]?.toList() ?: listOf(token) }.distinct()
-
-    // -- Indexing -----------------------------------------------------------
-
-    internal data class Doc(
-        val article: MtcArticle,
-        val titleTokens: List<String>,
-        val summaryTokens: List<String>,
-        val contentTokens: List<String>,
-        val tagTokens: List<String>,
-    ) {
-        val length: Int = titleTokens.size + summaryTokens.size +
-            contentTokens.size + tagTokens.size
-    }
-
-    class Index internal constructor(
-        private val docs: List<Doc>,
-        private val documentFrequency: Map<String, Int>,
-        private val averageLength: Double,
-    ) {
-
-        /**
-         * BM25 with per-field boosts. A hit in the title is worth far more than a
-         * hit buried in the body — the doctor searching "Kunlun" wants the article
-         * *about* Kunlun, not every article that name-drops it.
-         */
-        fun search(query: String, limit: Int = 20): List<SearchHit> {
-            val terms = expand(tokenize(query))
-            if (terms.isEmpty()) return emptyList()
-
-            return docs
-                .map { doc -> SearchHit(doc.article, score(doc, terms), matchedTerms(doc, terms)) }
-                .filter { it.score > 0.0 }
-                .sortedWith(
-                    compareByDescending<SearchHit> { it.score }
-                        .thenBy { it.article.title },  // stable, so results never jitter
-                )
-                .take(limit)
-        }
-
-        private fun matchedTerms(doc: Doc, terms: List<String>): Set<String> =
-            terms.filterTo(mutableSetOf()) { term ->
-                term in doc.titleTokens || term in doc.summaryTokens ||
-                    term in doc.contentTokens || term in doc.tagTokens
-            }
-
-        private fun score(doc: Doc, terms: List<String>): Double =
-            terms.sumOf { term -> termScore(doc, term) }
-
-        private fun termScore(doc: Doc, term: String): Double {
-            val weighted =
-                doc.titleTokens.count { it == term } * TITLE_BOOST +
-                    doc.tagTokens.count { it == term } * TAG_BOOST +
-                    doc.summaryTokens.count { it == term } * SUMMARY_BOOST +
-                    doc.contentTokens.count { it == term } * CONTENT_BOOST
-
-            if (weighted == 0.0) return 0.0
-
-            val df = documentFrequency[term] ?: 0
-            if (df == 0) return 0.0
-
-            // Standard BM25 IDF. A term present in every article carries no signal.
-            val idf = ln(1.0 + (docs.size - df + 0.5) / (df + 0.5))
-            val norm = weighted * (K1 + 1) /
-                (weighted + K1 * (1 - B + B * doc.length / averageLength))
-            return idf * norm
-        }
-    }
-
-    fun index(articles: List<MtcArticle>): Index {
-        val docs = articles.map { article ->
-            Doc(
-                article = article,
-                titleTokens = tokenize(article.title),
-                summaryTokens = tokenize(article.summary),
-                contentTokens = tokenize(article.content),
-                tagTokens = article.tags.flatMap { tokenize(it) },
-            )
-        }
-
-        val df = mutableMapOf<String, Int>()
-        docs.forEach { doc ->
-            val unique = (doc.titleTokens + doc.summaryTokens + doc.contentTokens + doc.tagTokens)
-                .toSet()
-            unique.forEach { term -> df[term] = (df[term] ?: 0) + 1 }
-        }
-
-        val avg = docs.map { it.length }.average().takeIf { !it.isNaN() } ?: 1.0
-        return Index(docs, df, avg.coerceAtLeast(1.0))
-    }
-
-    private const val K1 = 1.2
-    private const val B = 0.75
-    private const val TITLE_BOOST = 8.0
-    private const val TAG_BOOST = 5.0
-    private const val SUMMARY_BOOST = 3.0
-    private const val CONTENT_BOOST = 1.0
 }
-
-data class SearchHit(
-    val article: MtcArticle,
-    val score: Double,
-    val matchedTerms: Set<String>,
-)

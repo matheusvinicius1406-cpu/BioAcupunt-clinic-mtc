@@ -1,0 +1,44 @@
+{
+ "source": "PubMed — pesquisa aberta sobre MTC/acupuntura, categoria TECNICAS, 2026 (E-utilities, resumos/abstracts públicos)",
+ "items": [
+  {
+   "id": "pubmed-38146251",
+   "title": "An acupuncture manipulation classification system based on three-axis attitude sensor and computer vision.",
+   "category": "TECNICAS",
+   "summary": "To explore the action characteristics of acupuncture manipulations by combining visual and sensor technique, so as to improve the identification and classification accuracy of acupuncture manipulations and to quantificate the classifiations. METHODS: In this paper, the time domain features of acupuncture physical parameters and dynamic gesture features in the video of acupuncture manipulations...",
+   "content": "OBJECTIVES: To explore the action characteristics of acupuncture manipulations by combining visual and sensor technique, so as to improve the identification and classification accuracy of acupuncture manipulations and to quantificate the classifiations.\nMETHODS: In this paper, the time domain features of acupuncture physical parameters and dynamic gesture features in the video of acupuncture manipulations are combined together to identify and classify acupuncture techniques. The acupuncture needle manipulation processes of 2 acupuncture experts and 3 young acupuncturists were selected as the study objects. The collected data included 4 basic manipulation techniques：lifting-thrusting reinforcing, lifting- thrusting reducing, twisting reinforcing and twisting reducing methods, all of which were performed by right-handed doctors. During acupuncture manipulation, a three-axis attitude sensor was used to acquire finger moving acceleration velocity and needle-rotating angle velocity, followed by analyzing the parameters of hand-moving velocity, amplitude, strength and angle. The mapping relationship among physical parameters and different manipulating methods was formed in time domain. The computer vision technology was employed to extract the spatio-temporal features of the acupuncture manipulation video images, and a hybrid model of three-dimensional convolutional neural network (3D CNN) and long- and short-term memory (LSTM) neural network were used for the recognition and classification of dynamic gestures of hand in acupuncture manipulation videos. Then the time-domain features of physical parameters were combined with the dynamic gestures in the classification process, with the manipulation classification realized.\nRESULTS: In performing the lift-thrusting reinforcing method, the needle insertion speed was faster and the force was larger, while the needle lifting speed was slower and the force was smaller. And in performing the lift-thrusting reducing method, the needle lifting speed was faster, the force was stronger, and the needle insertion speed was slower and the force was smaller. In the performance of twisting reinforcing, the leftward twisting force was bigger and the rotation amplitude was larger, while in performing the reducing method, the rightward twisting force was larger and the rotation amplitude was larger. When using the mean value of time of acceleration, speed, and amplitude as the basis of discrimination, the accuracy rates of lifting-thrusting reinforcing and reducing were 95.56% and 93.33%, while those of the two twisting manipulations were 95.56% and 91.11%, respectively. Compared with the classification method that only uses the sensor to obtain the manipulation information, the recognition accuracy was significantly improved.\nCONCLUSIONS: The acupuncture manipulation classification system can achieve quantitative analysis of physical parameters and dynamic recognition of acupuncture techniques, providing a certain foundation for the quantification and inheritance of acupuncture techniques.",
+   "tags": [
+    "acupuncture"
+   ],
+   "citation": "PubMed PMID:38146251, Zhu M et al., 2023, Zhen ci yan jiu = Acupuncture research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38146251/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33559441",
+   "title": "[Exploration on lateral needling technique].",
+   "category": "TECNICAS",
+   "summary": "Regarding the existing questions of the understanding and application of lateral needling technique in the Chapter 7 of Lingshu (Miraculous Pivot), after analyzing the original meaning of the lateral needling technique and its indication for \"tendon bi syndrome\" in literature, it is believed that lateral needling technique is the classic manipulation for tendon bi syndrome, mainly for tendon sp...",
+   "content": "Regarding the existing questions of the understanding and application of lateral needling technique in the Chapter 7 of Lingshu (Miraculous Pivot), after analyzing the original meaning of the lateral needling technique and its indication for \"tendon bi syndrome\" in literature, it is believed that lateral needling technique is the classic manipulation for tendon bi syndrome, mainly for tendon spasticity caused by obstruction of qi activity or retarded qi activity. The filiform needle is used in the operation. The puncture hand and the pressing hand should be cooperated during the manipulation, in which, after detecting the location of tendon disorder by the pressing hand, the needle is inserted from the lateral side of the affected site and is manipulated with the reinforcing technique achieved by lifting and thrusting needle. Afterwards, the needle is withdrawn. The lateral needling technique of acupuncture is one of the mass-loosening techniques in Neijing (Inner Classic). It is a reliable technique of acupuncture in clinical treatment of acute and chronic diseases, such as cervical spondylosis and tendon injury of lumber region and has a stable therapeutic effect.",
+   "tags": [
+    "acupuncture"
+   ],
+   "citation": "PubMed PMID:33559441, Tian DZ, Zhao JY, Li NQ, 2021, Zhongguo zhen jiu = Chinese acupuncture & moxibustion",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33559441/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34779442",
+   "title": "Three-dimensional Finger Motion Tracking during Needling: A Solution for the Kinematic Analysis of Acupuncture Manipulation.",
+   "category": "TECNICAS",
+   "summary": "Three-dimensional (3D) motion tracking has been used in many fields, such as the researches of sport and medical skills. This experiment aimed to use 3D motion tracking technology to measure the kinematic parameters of the joints of fingers during acupuncture manipulation (AM) and establish three technical indicators \"amplitude, velocity and time\".",
+   "content": "Three-dimensional (3D) motion tracking has been used in many fields, such as the researches of sport and medical skills. This experiment aimed to use 3D motion tracking technology to measure the kinematic parameters of the joints of fingers during acupuncture manipulation (AM) and establish three technical indicators \"amplitude, velocity and time\". This method can reflect the operation characteristics of AM and provide quantitative parameters along three axes of multiple finger joints. The current evidence shows that the method has great potential for future applications such as the study of the dose-effect relationship of acupuncture, teaching, and learning of AM, and the measurement and preservation of famous acupuncturists' AM.",
+   "tags": [
+    "acupuncture"
+   ],
+   "citation": "PubMed PMID:34779442, Xu LL et al., 2021, Journal of visualized experiments : JoVE",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34779442/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

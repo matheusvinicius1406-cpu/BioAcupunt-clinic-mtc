@@ -1,0 +1,69 @@
+{
+  "source": "PAHO IRIS (Institutional Repository for Information Sharing, https://iris.paho.org) — publicações da OPAS/OMS sobre medicina tradicional, natural e complementar nas Américas (Brasil, Cuba, Peru), via API REST pública (server/api/discover, server/api/core/items)",
+  "items": [
+    {
+      "id": "paho-iris-59606",
+      "title": "Laboratório de Inovação em Saúde: Práticas Integrativas e Complementares em Saúde (PICS)",
+      "category": "CLINICA_MEDICA",
+      "summary": "Seis experiências exitosas em Práticas Integrativas e Complementares em Saúde (PICS) no Sistema Único de Saúde (SUS) participaram do Laboratório de Inovação em Saúde, que teve o desafio de compreender a complexidade e o alcance das PICS no SUS e, a partir da sistematização...",
+      "content": "Seis experiências exitosas em Práticas Integrativas e Complementares em Saúde (PICS) no Sistema Único de Saúde (SUS) participaram do Laboratório de Inovação em Saúde, que teve o desafio de compreender a complexidade e o alcance das PICS no SUS e, a partir da sistematização delas, aqui apresentadas, fomentar o intercâmbio de conhecimento entre os profissionais de saúde e gestores do SUS. A iniciativa foi lançada em outubro de 2021, pela Organização Pan-Americana da Saúde/Organização Mundial da Saúde (OPAS/OMS) no Brasil e pela Secretaria de Atenção Primária à Saúde do Ministério da Saúde, por meio da Coordenação Nacional de Práticas Integrativas e Complementares em Saúde, em comemoração aos 15 anos da Política Nacional de Práticas Integrativas e Complementares em Saúde no SUS (PNPIC). As PICS vêm se demonstrando como estratégias de cuidados inovadoras, baseadas em conhecimentos tradicionais, e que há mais de uma década está ganhando protagonismo nos serviços de saúde, em todos os níveis de atenção, da primária à média e alta complexidade. Atualmente, 29 práticas são oferecidas pelo SUS: apiterapia, aromaterapia, arteterapia, ayurveda, biodança, bioenergética, constelação familiar, cromoterapia, dança circular, geoterapia, hipnoterapia, homeopatia, imposição de mãos, medicina antroposófica, medicina tradicional chinesa/acupuntura, meditação, musicoterapia, naturopatia, osteopatia, ozonioterapia, plantas medicinais e fitoterápicos, quiropraxia, reflexoterapia, reiki, shantala, terapia comunitária integrativa, terapia de florais, termalismo social/crenoterapia e yoga. No campo acadêmico, registra-se que, apesar de muito ter se avançado na busca de evidências científicas que demonstrem a eficácia das PICS para a saúde, é necessário avançar com metodologias de pesquisa cada vez mais robustas, com a ampliação do campo de pesquisa clínico. Com o objetivo de reduzir as lacunas do conhecimento sobre o tema, o Laboratório de Inovação em Saúde sistematizou práticas consolidadas no SUS para contribuir para a promoção e recomendação das PICS de forma segura e oportuna, para o bem comum das populações, ampliando o acesso aos cuidados de saúde.",
+      "tags": [
+        "praticas integrativas e complementares",
+        "PICS",
+        "SUS",
+        "OPAS",
+        "Brasil"
+      ],
+      "citation": "Organización Panamericana de la Salud. Laboratório de Inovação em Saúde: Práticas Integrativas e Complementares em Saúde (PICS). OPAS, 2024. PAHO IRIS: 10665.2/59606.",
+      "sourceUrl": "https://iris.paho.org/handle/10665.2/59606",
+      "sourceRef": "Resumen / Abstract"
+    },
+    {
+      "id": "paho-iris-50479",
+      "title": "Situación de las plantas medicinales en Perú. Informe de reunión del grupo de expertos en plantas medicinales. (Lima, 19 de marzo del 2018)",
+      "category": "FITOTERAPIA",
+      "summary": "[Introducción]. Las plantas medicinales han significado a través de la historia una de las principales alternativas en el cuidado de la salud. El Perú, a pesar de ser un país megadiverso, no ha prestado mucha atención al desarrollo de la cadena de valor de las plantas...",
+      "content": "[Introducción]. Las plantas medicinales han significado a través de la historia una de las principales alternativas en el cuidado de la salud. El Perú, a pesar de ser un país megadiverso, no ha prestado mucha atención al desarrollo de la cadena de valor de las plantas medicinales. Algunos de los mayores desafíos al respecto son el registro adecuado de las plantas, la protección de la biodiversidad, la inversión en investigación, y la garantía de calidad y seguridad de su uso. Con el objetivo de avanzar en el conocimiento y aprovechamiento de las plantas medicinales de Perú, se conformó el Grupo Técnico de Expertos en Plantas Medicinales, compuesto por investigadores de todas las ramas vinculadas en su estudio. El 19 de marzo de 2018 tuvo lugar la Reunión Técnica \"Plantas Medicinales y Salud Pública: pasado, Presente y Futuro\", en la sede de la Organización Panamericana de la Salud en Perú. Este boletín es una compilación de la información y discusión con los aportes de los asistentes, como punto de inicio para la colaboración en el avance en el desarrollo de investigación y uso adecuado de la medicina tradicional.",
+      "tags": [
+        "plantas medicinales",
+        "Peru",
+        "OPS"
+      ],
+      "citation": "Organización Panamericana de la Salud. Situación de las plantas medicinales en Perú. Informe de reunión del grupo de expertos en plantas medicinales. (Lima, 19 de marzo del 2018). OPS, 2019. PAHO IRIS: 10665.2/50479.",
+      "sourceUrl": "https://iris.paho.org/handle/10665.2/50479",
+      "sourceRef": "Resumen / Abstract"
+    },
+    {
+      "id": "paho-iris-51712",
+      "title": "La Sabiduría Popular y la Salud. Inventario de conocimientos relacionados con la medicina natural y tradicional: Quiviján, una experiencia local",
+      "category": "CLINICA_MEDICA",
+      "summary": "[Presentación] Esta publicación se propone recoger los momentos y testimonios más significativos durante la implementación del proyecto “Salvaguardia de las manifestaciones del patrimonio cultural inmaterial de Quiviján en Guantánamo, Cuba, relacionadas a la medicina natural y...",
+      "content": "[Presentación] Esta publicación se propone recoger los momentos y testimonios más significativos durante la implementación del proyecto “Salvaguardia de las manifestaciones del patrimonio cultural inmaterial de Quiviján en Guantánamo, Cuba, relacionadas a la medicina natural y tradicional”. Lo reflejado en\teste texto es fruto de un esfuerzo mancomunado de la\tOficina\tRegional de Cultura\tpara América Latina y el Caribe\tde la UNESCO y de la representación en Cuba de la Organización Panamericana de la Salud/Organización Mundial de la Salud (OPS/OMS), con la participación del Consejo Nacional de Patrimonio Cultural de Cuba (CNPC) del Ministerio de Cultura (MINCULT), la Comisión Nacional Cubana de la UNESCO (CNCU), autoridades de Cultura de la provincia de Guantánamo, del municipio Baracoa y del Consejo Popular de Quiviján, así como del Departamento de Medicina Natural y Tradicional del Ministerio de Salud Pública (MINSAP), las Direcciones provincial y municipal de Salud Pública de Guantánamo y Baracoa, respectivamente, así como las autoridades y la población del Consejo Popular de Quiviján. Esta iniciativa se integró al proyecto “Uso de recursos culturales para la creación de empleo\ty el desarrollo sostenible en Cuba, para\t2014-2017”, diseñado y\t desarrollado por la Oficina\tRegional de Cultura de la UNESCO y se corresponde con el Documento de Programación de País de la UNESCO para la República de Cuba (2014-2018). De\tforma particular, contribuyó al fortalecimiento de las capacidades locales para una efectiva implementación de la Convención para la Salvaguardia del Patrimonio Cultural Inmaterial (2003) en Cuba que incluye, entre sus ámbitos, los conocimientos y usos relacionados con la naturaleza y el universo.",
+      "tags": [
+        "medicina natural y tradicional",
+        "Cuba",
+        "UNESCO",
+        "patrimonio cultural"
+      ],
+      "citation": "Organización Panamericana de la Salud. La Sabiduría Popular y la Salud. Inventario de conocimientos relacionados con la medicina natural y tradicional: Quiviján, una experiencia local. OPS, 2019. PAHO IRIS: 10665.2/51712.",
+      "sourceUrl": "https://iris.paho.org/handle/10665.2/51712",
+      "sourceRef": "Resumen / Abstract"
+    },
+    {
+      "id": "paho-iris-15767",
+      "title": "Los curanderos brasileños: promotores eficientes de la terapia de rehidratación oral y otras estrategias para la supervivencia infantil",
+      "category": "CLINICA_MEDICA",
+      "summary": "A fin de combatir la elevada mortalidad infantil causada por diarrea en Pacatuba, poblado del nordeste de Brasil, se instruyó a 46 curanderos en la preparación de sales caseras de rehidratación oral (SRO) y en otras estrategias fundamentales para la supervivencia infantil. Se...",
+      "content": "A fin de combatir la elevada mortalidad infantil causada por diarrea en Pacatuba, poblado del nordeste de Brasil, se instruyó a 46 curanderos en la preparación de sales caseras de rehidratación oral (SRO) y en otras estrategias fundamentales para la supervivencia infantil. Se ideó una mezcla de SRO y tés medicinales de uso tradicional que fue incorporada en los rituales de los curanderos. Estos lograron que un número sustancial de madres utilizaran preparaciones caseras de SRO de bajo costo; se enteraron de que el gobierno distribuía paquetes de SRO gratuitos; continuaron la lactancia natural de los niños con diarrea; rechazaron el empleo de fármacos contraindicados, y abandonaron la perjudicial costumbre de no alimentar a los niños durante los episodios de diarrea. Estas actividades no alteraron la percepción de los habitantes sobre la medicina tradicional, su preferencia por esa medicina o sus creencias en \"etiologías\" de origen folklórico. No obstante, las repercusiones del programa de Pacatuba en el público y en el uso de la TRO pueden compararse favorablemente con los mejores resultados obtenidos por muchos programas oficiales en otros lugares. Se demostró que la correcta incorporación de la TRO y de otras estrategias de supervivencia infantil en la medicina popular es un método adecuado y eficaz para el nordeste de Brasil y, posiblemente, para otros países en desarrollo (AU)",
+      "tags": [
+        "curanderos",
+        "medicina tradicional",
+        "terapia de rehidratacion oral",
+        "Brasil"
+      ],
+      "citation": "Organización Panamericana de la Salud. Los curanderos brasileños: promotores eficientes de la terapia de rehidratación oral y otras estrategias para la supervivencia infantil. Organización Panamericana de la Salud, s.d. 1989. PAHO IRIS: 10665.2/15767.",
+      "sourceUrl": "https://iris.paho.org/handle/10665.2/15767",
+      "sourceRef": "Resumen / Abstract"
+    }
+  ]
+}

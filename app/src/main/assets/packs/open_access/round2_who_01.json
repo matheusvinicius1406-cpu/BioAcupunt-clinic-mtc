@@ -1,0 +1,376 @@
+{
+  "source": "WHO IRIS (Institutional Repository for Information Sharing, https://iris.who.int) — documentos técnicos e diretrizes da OMS sobre medicina tradicional, complementar e integrativa, acupuntura e fitoterapia, via API REST pública (server/api/discover, server/api/core/items)",
+  "items": [
+    {
+      "id": "who-iris-44353",
+      "title": "Benchmarks for training in traditional / complementary and alternative medicine: benchmarks for training in traditional Chinese medicine",
+      "category": "TECNICAS",
+      "summary": "This WHO benchmark document provides guidance on the education and training of practitioners, dispensers and distributors of traditional Chinese medicine (TCM). Developed within the framework of WHO’s work on traditional, complementary and alternative medicine, it aims to...",
+      "content": "This WHO benchmark document provides guidance on the education and training of practitioners, dispensers and distributors of traditional Chinese medicine (TCM). Developed within the framework of WHO’s work on traditional, complementary and alternative medicine, it aims to support countries in establishing systems for the qualification, accreditation, licensing and regulation of TCM practitioners while promoting consumer protection, patient safety and the quality of care. The document describes the historical development and fundamental principles of TCM, including diagnostic concepts, Chinese Materia Medica, therapeutic approaches and the role of TCM within contemporary health systems. It also addresses the increasing global use of TCM and the need for appropriate regulatory and educational frameworks in countries where specific standards may not yet exist.\n\nThe publication establishes benchmark curricula, learning outcomes and competency requirements for different categories of TCM personnel. It outlines training models for practitioners with varying educational backgrounds and specifies curriculum content covering traditional Chinese medicine, Chinese Materia Medica, pharmacognosy, phytochemistry, pharmacology, clinical medicine, ethics, research and health regulations. The document also provides guidance on the training of dispensers and distributors, emphasizing quality assurance, identification and handling of medicinal materials, and regulatory compliance. In addition, it highlights safety issues related to TCM practice, including contraindications, herb incompatibilities, quality control and the prevention of adverse events, offering a reference framework for the safe and competent practice of traditional Chinese medicine.",
+      "tags": [
+        "mtc",
+        "benchmarks",
+        "formação",
+        "OMS"
+      ],
+      "citation": "World Health Organization. Benchmarks for training in traditional / complementary and alternative medicine: benchmarks for training in traditional Chinese medicine. World Health Organization, 2010-12-31. WHO IRIS: 10665/44353.",
+      "sourceUrl": "https://iris.who.int/handle/10665/44353",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-353407",
+      "title": "WHO standard acupuncture point locations in the Western Pacific region",
+      "category": "PONTOS",
+      "summary": "Acupuncture has been practised for more than 2500 years in the Western Pacific Region and has become a global therapeutic method in recent decades. However, it was reportedthat acupuncturists differed by up to 25% in the acupuncture points they used, raising doubts and...",
+      "content": "Acupuncture has been practised for more than 2500 years in the Western Pacific Region and has become a global therapeutic method in recent decades. However, it was reportedthat acupuncturists differed by up to 25% in the acupuncture points they used, raising doubts and uncertainty regarding the efficacy and safety of acupuncture treatment, as well as causing difficulties in the fields of acupuncture research and education. Member States therefore increasingly began to demand standardization in acupuncture point locations. Responding to this request, the WHO Western Pacific Regional Office initiated a project to reach consensus on acupuncture point locations and thus convened 11 serial meetings, resulting in these guidelines. This Standard stipulates the methodology for locating acupuncture points on the surface of the human body, as well as the locations of 361 acupuncture points. The Standard is applicable for teaching, research, clinical service, publication and academic exchanges involving acupuncture.",
+      "tags": [
+        "pontos de acupuntura",
+        "localização",
+        "Pacífico Ocidental"
+      ],
+      "citation": "World Health Organization. WHO standard acupuncture point locations in the Western Pacific region. WHO Regional Office for the Western Pacific, 2008-12-31. WHO IRIS: 10665/353407.",
+      "sourceUrl": "https://iris.who.int/handle/10665/353407",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-384103",
+      "title": "Acupuncture recommendations for migraine in headache treatment guidelines: a systematic review",
+      "category": "CLINICA_MEDICA",
+      "summary": "Migraine is a highly prevalent and disabling neurological condition for which non-pharmacological therapies such as acupuncture are increasingly considered, yet guidance on their use remains variable. This systematic review evaluates the quality of global clinical practice...",
+      "content": "Migraine is a highly prevalent and disabling neurological condition for which non-pharmacological therapies such as acupuncture are increasingly considered, yet guidance on their use remains variable. This systematic review evaluates the quality of global clinical practice guidelines addressing acupuncture for migraine management, assessing methodological rigour, reporting standards and the validity of recommendations using established appraisal instruments, including AGREE II, RIGHT and AGREE-REX . It analyses 25 guidelines identified through comprehensive searches of international databases and repositories, covering diverse geographical and institutional contexts.\n\nThe review examines recommendation patterns, evidence grading approaches and the extent to which guidelines provide actionable clinical details. It identifies that a minority of guidelines recommend acupuncture, often conditionally, while most lack procedural specifications such as treatment frequency or techniques. Overall methodological and reporting quality is found to be suboptimal, particularly regarding applicability and quality assurance, and only a very small proportion of guidelines provide high-quality recommendations. The findings highlight gaps in evidence synthesis, stakeholder involvement and implementation guidance, underscoring the need to strengthen methodological standards, improve reporting practices and enhance the clarity and usability of recommendations to support informed clinical decision-making.",
+      "tags": [
+        "acupuntura",
+        "enxaqueca",
+        "revisão sistemática"
+      ],
+      "citation": "World Health Organization. Acupuncture recommendations for migraine in headache treatment guidelines: a systematic review. World Health Organization, 2025-11-01. WHO IRIS: 10665/384103.",
+      "sourceUrl": "https://iris.who.int/handle/10665/384103",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-384111",
+      "title": "Policy implications of WHO’s Global traditional medicine strategy 2025–2034",
+      "category": "CLINICA_MEDICA",
+      "summary": "The growing global use of traditional, complementary and integrative medicine highlights the need for coherent policy frameworks to ensure its safe, effective and equitable contribution to health systems. This policy and practice article examines the implications of the WHO...",
+      "content": "The growing global use of traditional, complementary and integrative medicine highlights the need for coherent policy frameworks to ensure its safe, effective and equitable contribution to health systems. This policy and practice article examines the implications of the WHO Global traditional medicine strategy 2025–2034, outlining its role in supporting universal health coverage through the integration of evidence-based practices into national systems . It describes the evolving global landscape, including increased demand, expanded national policies and alignment with international initiatives related to intellectual property, cultural heritage and digital innovation.\n\nThe analysis identifies four strategic areas: strengthening the evidence base through adapted research approaches and emerging technologies; establishing risk-based regulatory frameworks to ensure quality and safety; promoting context-sensitive integration into health services, particularly primary health care; and enhancing multisectoral collaboration to address issues such as knowledge protection and equitable benefit-sharing. Persistent challenges, including limited research capacity, regulatory variability and risks of misappropriation, are also examined. The article is intended to inform policy-makers, regulators and health system planners, emphasizing coordinated global action and country-level implementation to optimize the contribution of traditional, complementary and integrative medicine while safeguarding public health and advancing equitable access.",
+      "tags": [
+        "política de saúde",
+        "medicina tradicional",
+        "estratégia global"
+      ],
+      "citation": "World Health Organization. Policy implications of WHO’s Global traditional medicine strategy 2025–2034. World Health Organization, 2025-11-01. WHO IRIS: 10665/384111.",
+      "sourceUrl": "https://iris.who.int/handle/10665/384111",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-384102",
+      "title": "Integration of traditional and complementary medicine into primary health care systems: a systematic review",
+      "category": "CLINICA_MEDICA",
+      "summary": "The integration of traditional and complementary medicine into primary health care is increasingly recognized as a strategy to advance universal health coverage and address health system gaps, particularly in low- and middle-income countries. This systematic review examines how...",
+      "content": "The integration of traditional and complementary medicine into primary health care is increasingly recognized as a strategy to advance universal health coverage and address health system gaps, particularly in low- and middle-income countries. This systematic review examines how such integration can strengthen health systems and identifies the key enablers and barriers influencing this process . Drawing on 43 studies from 19 countries published between 2001 and 2025, and conducted in accordance with PRISMA guidance, the analysis applies thematic synthesis and maps findings across the six core health system components, including service delivery, governance and financing, medical products, health information systems and the health workforce.\n\nThe review includes qualitative, quantitative and mixed-methods studies, identifying 11 determinant domains affecting integration. Policies and financing, resource availability, and efficacy, quality and safety emerge as the most influential factors, acting as both facilitators and barriers depending on context. The findings highlight the contribution of traditional and complementary medicine to service delivery and access, while underscoring challenges related to standardization, evidence generation and coordination between health sectors. The analysis provides policy-relevant insights for decision-makers, emphasizing the need to strengthen regulatory frameworks, improve quality assurance through scientific methods, and reform medical education and resource allocation to support effective and safe integration.",
+      "tags": [
+        "atenção primária",
+        "integração",
+        "revisão sistemática"
+      ],
+      "citation": "World Health Organization. Integration of traditional and complementary medicine into primary health care systems: a systematic review. World Health Organization, 2025-11-01. WHO IRIS: 10665/384102.",
+      "sourceUrl": "https://iris.who.int/handle/10665/384102",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-379886",
+      "title": "A map of the systematic reviews on select traditional, complementary and integrative medicine 2018-2022: plain language summary",
+      "category": "CLINICA_MEDICA",
+      "summary": "This publication presents a plain language summary of an Evidence Gap Map (EGM) commissioned by the WHO Global Traditional Medicine Centre to assess the scope, distribution and quality of systematic reviews on selected traditional, complementary and integrative medicine...",
+      "content": "This publication presents a plain language summary of an Evidence Gap Map (EGM) commissioned by the WHO Global Traditional Medicine Centre to assess the scope, distribution and quality of systematic reviews on selected traditional, complementary and integrative medicine interventions published between 2018 and 2022. The map synthesizes evidence from 2719 systematic reviews evaluating the effectiveness of interventions such as herbal medicine, acupuncture, moxibustion, mind–body therapies, aromatherapy and manual therapies across a wide range of health conditions classified under ICD-11. It describes the methodology used to identify, categorize and visually present the available evidence, with the aim of supporting evidence-informed decision-making and policy development.\n\nThe summary highlights patterns in the existing evidence base, including the predominance of reviews focused on herbal medicine and acupuncture, the concentration of research originating from a limited number of countries, and the range of health conditions most frequently studied. It also reports the quality assessment of the included reviews using the AMSTAR 2 tool and identifies important research gaps related to intervention coverage, methodological quality, outcome reporting and geographical representation. The document outlines areas requiring further investigation and provides considerations for strengthening future traditional medicine research and evidence synthesis.",
+      "tags": [
+        "mapa de evidências",
+        "revisões sistemáticas"
+      ],
+      "citation": "World Health Organization. A map of the systematic reviews on select traditional, complementary and integrative medicine 2018-2022: plain language summary. World Health Organization, 2024-12-22. WHO IRIS: 10665/379886.",
+      "sourceUrl": "https://iris.who.int/handle/10665/379886",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-381577",
+      "title": "WHO Traditional Medicine Global Summit 2023: meeting recommendations: Gujarat Declaration",
+      "category": "CLINICA_MEDICA",
+      "summary": "This publication presents the Gujarat Declaration, which summarizes the outcomes and recommendations of the first WHO Traditional Medicine Global Summit held in Gandhinagar, India, in August 2023. The declaration reflects discussions among governments, WHO, Indigenous Peoples,...",
+      "content": "This publication presents the Gujarat Declaration, which summarizes the outcomes and recommendations of the first WHO Traditional Medicine Global Summit held in Gandhinagar, India, in August 2023. The declaration reflects discussions among governments, WHO, Indigenous Peoples, researchers, practitioners, civil society organizations and other stakeholders on the role of traditional, complementary and integrative medicine (TCIM) in advancing health and well-being. It reaffirms international commitments related to universal health coverage, primary health care, biodiversity, Indigenous knowledge systems and sustainable development, while recognizing the widespread use of TCIM globally and the importance of ensuring its safety, effectiveness and equitable access through rigorous scientific methods.\n\nThe document outlines a broad action agenda covering research and evidence generation, integration of evidence-based TCIM into health systems, education and workforce development, health information systems, digital health and artificial intelligence, biodiversity protection, ethics and human rights. It emphasizes the importance of culturally appropriate and multidisciplinary research approaches, strengthened regulation and governance, protection of Indigenous knowledge and resources, and international collaboration through the WHO Global Traditional Medicine Centre. The publication also includes a detailed list of summit participants from governments, WHO, United Nations organizations, academic institutions and civil society.",
+      "tags": [
+        "cúpula global",
+        "declaração de Gujarat"
+      ],
+      "citation": "World Health Organization. WHO Traditional Medicine Global Summit 2023: meeting recommendations: Gujarat Declaration. World Health Organization, 2025-06-03. WHO IRIS: 10665/381577.",
+      "sourceUrl": "https://iris.who.int/handle/10665/381577",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-379887",
+      "title": "A map of the systematic reviews on select traditional, complementary, and integrative medicine 2018-2022: user manual",
+      "category": "CLINICA_MEDICA",
+      "summary": "This user manual accompanies the Evidence Gap Map (EGM) on systematic reviews of selected traditional, complementary and integrative medicine interventions published between 2018 and 2022. Developed for the WHO Global Traditional Medicine Centre, the manual explains the purpose,...",
+      "content": "This user manual accompanies the Evidence Gap Map (EGM) on systematic reviews of selected traditional, complementary and integrative medicine interventions published between 2018 and 2022. Developed for the WHO Global Traditional Medicine Centre, the manual explains the purpose, structure and functionality of the interactive EGM, which was designed to support clinicians, researchers, policy-makers and other stakeholders in identifying available evidence and research gaps related to traditional medicine. The document describes the organization of the map, including its intervention–outcome matrix, which categorizes systematic reviews according to seven traditional medicine interventions and health conditions classified under ICD-11.\n\nThe manual provides detailed instructions on how to navigate and interpret the online tool, including the use of filters, record views and multiple visualization formats such as bubble, heat, mosaic, donut and text maps. It explains how users can access information on publication year, population groups, quality assessments and individual systematic review records. By facilitating exploration of 2719 systematic reviews, the publication supports efficient access to evidence on traditional medicine interventions and promotes the identification of areas where further research and evidence synthesis are needed.",
+      "tags": [
+        "mapa de evidências",
+        "manual",
+        "revisões sistemáticas"
+      ],
+      "citation": "World Health Organization. A map of the systematic reviews on select traditional, complementary, and integrative medicine 2018-2022: user manual. World Health Organization, 2024-12-22. WHO IRIS: 10665/379887.",
+      "sourceUrl": "https://iris.who.int/handle/10665/379887",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-383310",
+      "title": "Global traditional medicine strategy 2025-2034",
+      "category": "CLINICA_MEDICA",
+      "summary": "Growing global reliance on traditional, complementary and integrative medicine (TCIM) highlights the need for coherent policies to ensure its safe, effective and equitable contribution to health systems. This strategy outlines a comprehensive framework to guide Member States and...",
+      "content": "Growing global reliance on traditional, complementary and integrative medicine (TCIM) highlights the need for coherent policies to ensure its safe, effective and equitable contribution to health systems. This strategy outlines a comprehensive framework to guide Member States and stakeholders in strengthening the role of TCIM in achieving universal health coverage and improving population health and well-being, in alignment with the Sustainable Development Goals and relevant international commitments.\n\nIt presents a vision of universal access to people-centred TCIM and defines strategic objectives focused on strengthening the evidence base, establishing appropriate regulatory mechanisms, integrating TCIM into health systems and optimizing its cross-sectoral value. The document describes guiding principles such as evidence-based practice, health equity, sustainability, respect for Indigenous Peoples’ rights and culturally appropriate care. It further examines key areas including research development, regulatory standards for products and practitioners, integration across the continuum of care and life course, and mechanisms to protect and promote traditional medical knowledge. Developed through an extensive consultative process involving Member States, experts and diverse stakeholders, the strategy also underscores the importance of addressing misinformation and ensuring that all practices are grounded in robust scientific evidence. Intended for policy-makers, health authorities and partners, it supports the design and implementation of national plans adapted to local contexts, while promoting global collaboration, monitoring and evaluation to ensure the safe and effective use of TCIM.",
+      "tags": [
+        "estratégia global",
+        "OMS",
+        "2025-2034"
+      ],
+      "citation": "World Health Organization. Global traditional medicine strategy 2025-2034. World Health Organization, 2025-10-30. WHO IRIS: 10665/383310.",
+      "sourceUrl": "https://iris.who.int/handle/10665/383310",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-384118",
+      "title": "Artificial intelligence in traditional medicine: policy and governance strategies",
+      "category": "CLINICA_MEDICA",
+      "summary": "The expanding role of artificial intelligence in health systems presents new opportunities and challenges for traditional, complementary and integrative medicine, particularly in relation to governance, ethics and system integration. This perspective article examines the...",
+      "content": "The expanding role of artificial intelligence in health systems presents new opportunities and challenges for traditional, complementary and integrative medicine, particularly in relation to governance, ethics and system integration. This perspective article examines the evolving application of artificial intelligence across three key domains: clinical care, research and knowledge systems, and health system governance within traditional medicine. It describes how digital tools can support personalized care, improve diagnostic processes, facilitate knowledge digitization and enhance innovation, while also strengthening access through telemedicine and data-driven platforms.\n\nThe analysis identifies key policy and governance challenges, including regulatory complexity, data quality limitations, privacy and security concerns, and ethical issues related to intellectual property, cultural sensitivity and algorithmic bias. It further highlights the need to preserve human-centred care and ensure transparency in the use of artificial intelligence. The article outlines strategic policy directions, emphasizing adaptive regulatory frameworks, robust data governance, standardized infrastructures and capacity-building for practitioners, while promoting equitable, culturally sensitive and sustainable integration. Strengthening interdisciplinary and international collaboration is essential to support responsible and context-appropriate adoption of artificial intelligence in traditional medicine systems.",
+      "tags": [
+        "inteligência artificial",
+        "governança",
+        "política"
+      ],
+      "citation": "World Health Organization. Artificial intelligence in traditional medicine: policy and governance strategies. World Health Organization, 2025-11-01. WHO IRIS: 10665/384118.",
+      "sourceUrl": "https://iris.who.int/handle/10665/384118",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-44355",
+      "title": "Benchmarks for training in traditional / complementary and alternative medicine: benchmarks for training in naturopathy",
+      "category": "TECNICAS",
+      "summary": "This WHO benchmark document provides guidance on the education and training of naturopathic practitioners within the framework of traditional, complementary and alternative medicine. Developed to support consumer protection, patient safety and the quality of naturopathic...",
+      "content": "This WHO benchmark document provides guidance on the education and training of naturopathic practitioners within the framework of traditional, complementary and alternative medicine. Developed to support consumer protection, patient safety and the quality of naturopathic practice, the publication establishes minimum training standards and competency requirements for individuals seeking qualification as naturopathic practitioners. It describes the historical origins and philosophical foundations of naturopathy, emphasizing health promotion, disease prevention, individualized care and the use of therapeutic approaches intended to support the body’s self-healing processes. The document is intended to assist national authorities, educational institutions and regulatory bodies in developing systems for training, examination, accreditation and licensure.\n\nThe publication outlines benchmark curricula for different categories of trainees, including those without prior health-care qualifications and those seeking additional professional training. It specifies learning outcomes, core areas of study, supervised clinical training requirements and competencies in disciplines such as nutrition, hydrotherapy, homeopathy, botanical medicine, public health and clinical assessment. Particular attention is given to competency in botanical medicine, including pharmacognosy, preparation and dispensing practices, safety considerations and the identification of interactions and adverse effects. The document also addresses referral practices, contraindications and professional responsibilities, providing a reference framework for the safe, competent and regulated practice of naturopathy.",
+      "tags": [
+        "naturopatia",
+        "benchmarks",
+        "formação"
+      ],
+      "citation": "World Health Organization. Benchmarks for training in traditional / complementary and alternative medicine: benchmarks for training in naturopathy. World Health Organization, 2010-12-31. WHO IRIS: 10665/44355.",
+      "sourceUrl": "https://iris.who.int/handle/10665/44355",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-44354",
+      "title": "Benchmarks for training in traditional / complementary and alternative medicine: benchmarks for training in Unani medicine",
+      "category": "TECNICAS",
+      "summary": "This WHO benchmark document provides guidance on the education and training of Unani medicine practitioners within the framework of traditional, complementary and alternative medicine. Developed as part of a series of WHO benchmark publications, it aims to support countries in...",
+      "content": "This WHO benchmark document provides guidance on the education and training of Unani medicine practitioners within the framework of traditional, complementary and alternative medicine. Developed as part of a series of WHO benchmark publications, it aims to support countries in establishing systems for the qualification, accreditation, licensing and regulation of practitioners, while promoting consumer protection and patient safety. The document outlines the historical origins and fundamental principles of Unani medicine, including its concepts of humours, temperament, health, disease prevention and therapeutic approaches. It also describes the role of Unani medicine within contemporary health systems and its growing use in several regions of the world.\n\nThe publication sets out benchmark requirements for three categories of training programmes designed for students with different educational and professional backgrounds. It specifies curriculum content, duration of study, supervised clinical practice and expected competencies in areas such as diagnosis, therapeutics, pharmacognosy, pharmacy, public health and regimental therapies. In addition, the document identifies safety considerations associated with the use of herbal, animal and mineral medicines, including adverse effects, herb–drug interactions and pharmacovigilance requirements. The benchmarks are intended to provide a common reference framework for educational institutions, professional bodies and health authorities involved in the training and regulation of Unani medicine practitioners.",
+      "tags": [
+        "medicina unani",
+        "benchmarks",
+        "formação"
+      ],
+      "citation": "World Health Organization. Benchmarks for training in traditional / complementary and alternative medicine: benchmarks for training in Unani medicine. World Health Organization, 2010-12-31. WHO IRIS: 10665/44354.",
+      "sourceUrl": "https://iris.who.int/handle/10665/44354",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-351481",
+      "title": "WHO benchmarks for the training of Unani medicine",
+      "category": "TECNICAS",
+      "summary": "This WHO benchmark document provides normative guidance on the training of Unani medicine practitioners and associated personnel. Developed in response to requests from Member States and as part of WHO’s series of benchmarks for traditional, complementary and integrative...",
+      "content": "This WHO benchmark document provides normative guidance on the training of Unani medicine practitioners and associated personnel. Developed in response to requests from Member States and as part of WHO’s series of benchmarks for traditional, complementary and integrative medicine, the publication establishes minimum training requirements, learning outcomes and competency standards to support the safe, effective and quality-assured practice of Unani medicine. The document was prepared through a review of national regulations, standards and training programmes, complemented by evidence reviews and international expert consultation. It is intended to serve as a reference for policy-makers, regulators, educational institutions and health professionals involved in the development, evaluation and accreditation of Unani medicine training programmes.\n\nThe publication outlines different categories of training pathways for Unani medicine practitioners, specialists and associated staff, including therapists, pharmacists, nurses and health promoters. It describes curriculum content, eligibility requirements, essential knowledge and skills, and considerations related to programme structure, licensing and quality assurance. The document also emphasizes patient safety, infection prevention and control, waste management, professional ethics, and the safe use of Unani medicines and therapeutic procedures. By establishing a common reference framework, the benchmark aims to support countries in strengthening regulatory systems, promoting competent practice and facilitating the appropriate integration of Unani medicine within health systems.",
+      "tags": [
+        "medicina unani",
+        "benchmarks",
+        "formação"
+      ],
+      "citation": "World Health Organization. WHO benchmarks for the training of Unani medicine. World Health Organization, 2022-02-03. WHO IRIS: 10665/351481.",
+      "sourceUrl": "https://iris.who.int/handle/10665/351481",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-206952",
+      "title": "WHO international standard terminologies on traditional medicine in the Western Pacific Region",
+      "category": "CLINICA_MEDICA",
+      "summary": "Traditional medicine has been developing for thousands of years with its own set of terms. However, historical conditions have brought about various expressions in traditional medicine. Being the very first step towards globalization of traditional medicine, it is believed that...",
+      "content": "Traditional medicine has been developing for thousands of years with its own set of terms. However, historical conditions have brought about various expressions in traditional medicine. Being the very first step towards globalization of traditional medicine, it is believed that international standard terminology will greatly expedite scientific communications in traditional medicine societies.In an effort to address the pressing need for a common language, i.e. international standard terminology and technical terms to be used in traditional medicine, the WHO International Standard Terminologies on Traditional Medicine in the Western Pacific Region has been prepared. The number of commonly used terms in traditional medicine is estimated to be more than 4000, most of which are included in this book, which is designed for use by students and clinical practitioners and researchers in the Western Pacific Region. This is also useful to assist Member States in our Region in developing evidence-based clinical practice guidelines on traditional medicine.The technical terms featured in this book are classified into eight categories: (1) General; (2) Basic Theories; (3) Diagnostics; (4) Disease; (5) Therapeutics; (6) Acupuncture and Moxibustion; (7) Medicinal Treatment; and (8) Classics.",
+      "tags": [
+        "terminologia",
+        "medicina tradicional",
+        "Pacífico Ocidental"
+      ],
+      "citation": "World Health Organization. WHO international standard terminologies on traditional medicine in the Western Pacific Region. WHO Regional Office for the Western Pacific, 2007-12-31. WHO IRIS: 10665/206952.",
+      "sourceUrl": "https://iris.who.int/handle/10665/206952",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-206476",
+      "title": "The use of herbal medicines in primary health care",
+      "category": "FITOTERAPIA",
+      "summary": "Herbal medicines (HM) form an essential and major component of traditional medicines (TM). HM are commonly used in countries of the South-East Asia Region. This regional meeting was held to exchange information and to promote the development of herbal medicine for use in primary...",
+      "content": "Herbal medicines (HM) form an essential and major component of traditional medicines (TM). HM are commonly used in countries of the South-East Asia Region. This regional meeting was held to exchange information and to promote the development of herbal medicine for use in primary health care (PHC). Technical presentations covered the role of WHO in promoting the use of herbal medicines in PHC; research strategy to ensure efficacy, safety and quality of herbal remedies; and conservation of medicinal plants through sustainable harvesting practices. Development of a generic framework on the sharing of information on the use of herbal medicines in PHC, a generic framework on quality, safety and efficacy of herbal remedies and a generic framework on intercountry cooperation in HM for use in PHC were developed through group work. Countries presented the use of herbal medicines in their respective countries, thereby providing the baseline status for development of HM in countries of the Region. The meeting made a number of conclusions and recommendations on sharing of information on the use of HM/TM in PHC; research to improve quality, efficacy, and safety of herbal medicines; and for intercountry cooperation. Conservation and sustainable utilization of medicinal plants were also recommended, which would further facilitate the use of herbal medicines in countries of the SEA Region.",
+      "tags": [
+        "medicinas herbais",
+        "atenção primária",
+        "Sudeste Asiático"
+      ],
+      "citation": "World Health Organization. The use of herbal medicines in primary health care. WHO Regional Office for South-East Asia, 2009-12-31. WHO IRIS: 10665/206476.",
+      "sourceUrl": "https://iris.who.int/handle/10665/206476",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-341406",
+      "title": "Key technical issues of herbal medicines with reference to interaction with other medicines",
+      "category": "FITOTERAPIA",
+      "summary": "This WHO technical document examines the key issues associated with interactions between herbal medicines and other medicines in the context of the increasing global use of traditional, complementary and conventional therapies in combination. Developed in response to requests...",
+      "content": "This WHO technical document examines the key issues associated with interactions between herbal medicines and other medicines in the context of the increasing global use of traditional, complementary and conventional therapies in combination. Developed in response to requests from Member States, the publication aims to support health-care professionals, regulators, researchers, pharmacovigilance centres, manufacturers and consumers by providing information on the nature, mechanisms and implications of herb–drug interactions. It outlines both beneficial and harmful interactions, describes pharmaceutical, pharmacokinetic and pharmacodynamic mechanisms, and reviews the role of in vitro and in vivo approaches in their evaluation.\n\nThe document discusses the challenges of assessing and monitoring herb–drug interactions, including the complexity and variability of herbal products, quality-related factors, patient susceptibility and limitations in available evidence. It also addresses the collection, assessment and dissemination of interaction data through pharmacovigilance systems and clinical reporting. In addition, the publication highlights the importance of education and training for health professionals and consumers, and identifies research priorities to improve understanding, detection, monitoring and management of herb–drug interactions. A compilation of documented interaction reports involving well-established herbal medicines is included to support informed and safe use of herbal and conventional medicines concurrently.",
+      "tags": [
+        "interações medicamentosas",
+        "medicinas herbais"
+      ],
+      "citation": "World Health Organization. Key technical issues of herbal medicines with reference to interaction with other medicines. World Health Organization, 2021-05-19. WHO IRIS: 10665/341406.",
+      "sourceUrl": "https://iris.who.int/handle/10665/341406",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-40001",
+      "title": "A proposed standard international acupuncture nomenclature  : report of a WHO scientific group",
+      "category": "MERIDIANOS",
+      "summary": "Records the consensus reached by a group of 12 experts commissioned to develop a standard international nomenclature for identifying the meridians, points, and lines used in acupuncture. The nomenclature, which has been under development since 1981, is intended to facilitate...",
+      "content": "Records the consensus reached by a group of 12 experts commissioned to develop a standard international nomenclature for identifying the meridians, points, and lines used in acupuncture. The nomenclature, which has been under development since 1981, is intended to facilitate communication among those engaged in both the practice of acupuncture and research into its modes of action and therapeutic efficacy. Classical acupuncture points, in use for more than 2500 years, are covered together with several new points introduced over the past two decades. The book opens with a brief overview of the history of acupuncture and a discussion of reasons for the recent revival of interest in this unique system of therapy and pain relief. Readers are also given an explanation of the many factors that have repeatedly hindered past efforts to develop a standard international nomenclature. Problems identified range from the multiplicity of names used for individual points to the fact that the Han character, widely used in oriental medicine, confers philosophical concepts on meridians and acupuncture points which often defy translation.  Against this background, the proposed nomenclature is set out in 18 pages of tables and figures. Each of the 14 main meridians used in classical acupuncture is identified by its name in the Chinese phonetic alphabet (Pinyin), its Han character name, a proposed name in English, and a two-letter alphabetic code derived from the English name. The 361 classical acupuncture points, organized under these 14 main meridians, are identified by an alphanumeric code, the Pinyin name, and the Han character. The book also proposes a nomenclature for eight extra meridians, 48 extra points, and 14 scalp acupuncture lines accompanied by diagrams showing their location. The book concludes with a series of recommendations for the standardization of other areas of acupuncture nomenclature and for further action pertaining to training for the practice of acupuncture, regulation by health authorities, safety, and research",
+      "tags": [
+        "nomenclatura",
+        "meridianos",
+        "pontos",
+        "grupo científico OMS"
+      ],
+      "citation": "World Health Organization. A proposed standard international acupuncture nomenclature  : report of a WHO scientific group. World Health Organization World Health Organization, 1991-12-31. WHO IRIS: 10665/40001.",
+      "sourceUrl": "https://iris.who.int/handle/10665/40001",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-385513",
+      "title": "Online sources of health-related traditional knowledge: content for a traditional medicine library",
+      "category": "CLINICA_MEDICA",
+      "summary": "The widespread use of traditional, complementary and integrative medicine underscores the need for accessible, reliable and ethically governed digital knowledge systems to support global health and well-being. This study presents a rapid review, complemented by a survey of...",
+      "content": "The widespread use of traditional, complementary and integrative medicine underscores the need for accessible, reliable and ethically governed digital knowledge systems to support global health and well-being. This study presents a rapid review, complemented by a survey of specialists, aimed at mapping digital resources related to traditional medicine, including databases, repositories, digital libraries and web portals that provide access to traditional knowledge, research and policy information.\n\nIt describes the methods used to identify and analyse relevant resources and outlines their scope, content and geographic distribution. The analysis identifies 125 eligible digital resources from an initial pool of 358, with most platforms focusing on pharmacological, clinical or phytochemical data, and a smaller proportion comprising bibliographic databases, digital libraries and repositories. The findings reveal marked regional concentration, particularly in the Western Pacific and the Americas, as well as significant gaps, including the limited representation of Indigenous knowledge systems and the fragmentation of available resources. The study also highlights ethical and governance considerations related to access, consent and equitable use of traditional knowledge, and discusses implications for the development of the WHO Traditional Medicine Global Library as an inclusive and interoperable platform. Intended for policy-makers, researchers and health professionals, it supports efforts to strengthen equitable access to traditional medicine knowledge and its integration into health systems.",
+      "tags": [
+        "conhecimento tradicional",
+        "biblioteca digital",
+        "governança de dados"
+      ],
+      "citation": "World Health Organization. Online sources of health-related traditional knowledge: content for a traditional medicine library. World Health Organization, 2026-05-01. WHO IRIS: 10665/385513.",
+      "sourceUrl": "https://iris.who.int/handle/10665/385513",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-340393",
+      "title": "Traditional medicine in the WHO South-East Asia Region: review of progress 2014–2019",
+      "category": "CLINICA_MEDICA",
+      "summary": "The quest for traditional health knowledge began since the dawn of civilization.Currently at least 25% of all modern medicines are derived, either directly or indirectly,from medicinal plants. Traditional medicines and practices are in use in bothindustrialized and developing...",
+      "content": "The quest for traditional health knowledge began since the dawn of civilization.Currently at least 25% of all modern medicines are derived, either directly or indirectly,from medicinal plants. Traditional medicines and practices are in use in bothindustrialized and developing countries. More than three fourths of the populations ofcountries of the SEA Region use traditional medicines and practitioners for their healthcare. These traditional systems of medicine have the potential to improve health,wellness and people-centred health care.This is the  rst ever regional publication on traditional medicine from the WHOSouth-East Asia Region. It enumerates the overall situation and development oftraditional medicine from the perspective of health system building blocks, and analysespolicies, regulations, training and education, as well as human resource development,service delivery, research and development. It highlights the key developments andprogress made in recent years, and seeks to generate evidence and data that could serveas baseline for future assessments.This publication provides a detailed account of work done in the last  ve years tostrengthen traditional medicine in the Region by countries and WHO, and includescountry pro les. It is a contribution to the e orts towards the evolution of traditionalmedicine and the quest for evidence-based, safe and quality health care.",
+      "tags": [
+        "Sudeste Asiático",
+        "progresso",
+        "revisão regional"
+      ],
+      "citation": "World Health Organization. Traditional medicine in the WHO South-East Asia Region: review of progress 2014–2019. World Health Organization. Regional Office for South-East Asia, 2020-12-31. WHO IRIS: 10665/340393.",
+      "sourceUrl": "https://iris.who.int/handle/10665/340393",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-384500",
+      "title": "Training in Yoga: technical report",
+      "category": "TECNICAS",
+      "summary": "This WHO technical report provides a comprehensive overview of training in Yoga as part of traditional, complementary and integrative medicine. It aims to support Member States, educational institutions and health practitioners by outlining standardized approaches to Yoga...",
+      "content": "This WHO technical report provides a comprehensive overview of training in Yoga as part of traditional, complementary and integrative medicine. It aims to support Member States, educational institutions and health practitioners by outlining standardized approaches to Yoga training, including competencies, curricula and professional requirements.\n\nThe report describes Yoga as a holistic discipline integrating physical, mental and spiritual dimensions of health, with growing global use and evidence supporting its role in promoting well-being and managing noncommunicable diseases. Despite its widespread practice, training systems vary considerably across countries, highlighting the need for harmonized frameworks to ensure quality, safety and effectiveness.\n\nBased on a global scoping review of scientific and grey literature, the document identifies key elements, trends and gaps in Yoga training, including variations in curricula, certification and regulatory systems. It proposes structured training models tailored to different educational backgrounds and defines two levels of professional training—basic and advanced—covering theoretical knowledge, practical skills, ethics, research and supervised learning.\n\nOverall, the report serves as a non-binding reference tool to guide the development of standardized, competency-based Yoga training programmes, strengthen workforce capacity and promote the safe integration of Yoga into health systems worldwide.",
+      "tags": [
+        "yoga",
+        "formação",
+        "relatório técnico"
+      ],
+      "citation": "World Health Organization. Training in Yoga: technical report. World Health Organization, 2025-12-17. WHO IRIS: 10665/384500.",
+      "sourceUrl": "https://iris.who.int/handle/10665/384500",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-384100",
+      "title": "Global research funding for traditional, complementary and integrative medicine",
+      "category": "CLINICA_MEDICA",
+      "summary": "The growing global reliance on traditional, complementary and integrative medicine contrasts with limited understanding of how research in this field is funded and supported. This research article examines the global funding landscape for traditional medicine, aiming to inform...",
+      "content": "The growing global reliance on traditional, complementary and integrative medicine contrasts with limited understanding of how research in this field is funded and supported. This research article examines the global funding landscape for traditional medicine, aiming to inform implementation of the WHO Global traditional medicine strategy 2025–2034 . It presents a three-part analysis combining grant identification from international databases and online sources, assessment of national research infrastructure using WHO data, and a case study appraisal of funding schemes across multiple countries and regions.\n\nThe analysis identifies nearly 40 000 grants, with available funding data indicating a total of US$ 24.5 billion between 1960 and 2024, although most grants are small in value and short in duration. Despite widespread use of traditional medicine, it accounts for only a small proportion of global health research funding. Funding is concentrated in a limited number of regions and research areas, particularly cancer and cardiovascular diseases, while only a small number of countries maintain dedicated funding schemes. Case study findings reveal limited alignment of funding mechanisms with traditional medicine paradigms, including insufficient support for innovation, capacity-building and knowledge systems. The study highlights structural gaps in funding distribution, data availability and methodological inclusivity, underscoring the need for strengthened and coordinated funding strategies to support evidence generation and inform policy and research governance.",
+      "tags": [
+        "financiamento de pesquisa",
+        "medicina tradicional"
+      ],
+      "citation": "World Health Organization. Global research funding for traditional, complementary and integrative medicine. World Health Organization, 2025-11-01. WHO IRIS: 10665/384100.",
+      "sourceUrl": "https://iris.who.int/handle/10665/384100",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-384104",
+      "title": "Regulatory frameworks and evidence requirements for traditional, complementary and integrative medicines",
+      "category": "CLINICA_MEDICA",
+      "summary": "The regulation of traditional, complementary and integrative medicine is a critical component of ensuring the quality, safety and efficacy of widely used health products across diverse health systems. This policy and practice article presents a comparative analysis of regulatory...",
+      "content": "The regulation of traditional, complementary and integrative medicine is a critical component of ensuring the quality, safety and efficacy of widely used health products across diverse health systems. This policy and practice article presents a comparative analysis of regulatory frameworks governing traditional medicine products in six jurisdictions—Australia, Canada, China, the Republic of Korea, the United States of America and the European Union—focusing on marketing authorization pathways, evidence requirements and approval outcomes . It examines how differing regulatory approaches, including those based on clinical studies or traditional knowledge, shape requirements for non-clinical and clinical evidence and influence product classification and access.\n\nThe analysis highlights substantial variability in regulatory standards, quality control practices and the use of historical human-use evidence, alongside differences in approval volumes associated with risk-based regulatory models. It identifies key challenges, including limited harmonization, lack of mutual recognition mechanisms and constraints in generating robust evidence for complex traditional products. The article outlines policy implications such as strengthening evidence generation through clinical and real-world data, improving regulatory consistency and transparency, and promoting international convergence through coordinated, tiered and risk-based frameworks to support the safe and effective integration of traditional medicine into health systems.",
+      "tags": [
+        "regulação",
+        "requisitos de evidência"
+      ],
+      "citation": "World Health Organization. Regulatory frameworks and evidence requirements for traditional, complementary and integrative medicines. World Health Organization, 2025-11-01. WHO IRIS: 10665/384104.",
+      "sourceUrl": "https://iris.who.int/handle/10665/384104",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-383467",
+      "title": "WHO global report on traditional, complementary and integrative medicine 2024",
+      "category": "CLINICA_MEDICA",
+      "summary": "Traditional, complementary and integrative medicine remains a major component of health care for populations worldwide and is increasingly recognized within efforts to strengthen people-centred, equitable and sustainable health systems. This global report examines the status,...",
+      "content": "Traditional, complementary and integrative medicine remains a major component of health care for populations worldwide and is increasingly recognized within efforts to strengthen people-centred, equitable and sustainable health systems. This global report examines the status, governance, regulation and integration of traditional, complementary and integrative medicine across WHO Member States, drawing on data collected through the third WHO global survey conducted between 2023 and 2024 and incorporating comparative information from previous global surveys. The publication analyses national policies, regulatory frameworks, financing mechanisms, workforce development, quality assurance systems, service delivery models and the use of herbal medicines, while also exploring research capacity, health information systems and access to care. Particular attention is given to the integration of safe and evidence-based practices into primary health care and universal health coverage strategies.\n\nThe report highlights progress achieved by Member States in establishing national policies, expert committees, regulatory systems and educational standards, while identifying persistent challenges related to data availability, safety monitoring, financing and research capacity. It also examines issues concerning Indigenous Peoples, biodiversity, intellectual property and international cooperation. Intended for policy-makers, regulators, researchers and health system planners, the publication provides an important baseline for monitoring implementation of the WHO global traditional medicine strategy 2025–2034 and supports the development of safe, effective and culturally responsive traditional, complementary and integrative medicine within national health systems.",
+      "tags": [
+        "relatório global",
+        "OMS 2024"
+      ],
+      "citation": "World Health Organization. WHO global report on traditional, complementary and integrative medicine 2024. World Health Organization, 2025-11-12. WHO IRIS: 10665/383467.",
+      "sourceUrl": "https://iris.who.int/handle/10665/383467",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-384114",
+      "title": "Data on the use of traditional and complementary medicine, WHO Region of the Americas",
+      "category": "CLINICA_MEDICA",
+      "summary": "Understanding population-level use of traditional, complementary and integrative medicine is essential for addressing unmet health needs and informing equitable health system development. This policy and practice article analyses how population-based surveys can generate...",
+      "content": "Understanding population-level use of traditional, complementary and integrative medicine is essential for addressing unmet health needs and informing equitable health system development. This policy and practice article analyses how population-based surveys can generate policy-relevant evidence on the use of traditional medicine in the WHO Region of the Americas, where diverse models of integration coexist. It examines the relationship between traditional medicine use and unmet health-care needs, considering key determinants such as cultural preferences, accessibility, affordability and perceptions of effectiveness, drawing on nationally representative survey data and a literature-based policy analysis to assess current data availability, patterns of use and methodological limitations.\n\nThe analysis identifies significant gaps in survey design, including limited specificity, lack of comparability and insufficient information on motivations, care processes and outcomes, which constrain interpretation and policy application. It outlines practical recommendations to improve data collection, such as refining survey questions, distinguishing between preference and access barriers, and capturing contextual and outcome-related information. Strengthened data systems are highlighted as critical for supporting evidence-informed policies, improving resource allocation, enhancing coordination between health-care sectors and promoting the safe, culturally responsive and effective integration of traditional medicine into health systems.",
+      "tags": [
+        "dados de uso",
+        "Américas",
+        "política"
+      ],
+      "citation": "World Health Organization. Data on the use of traditional and complementary medicine, WHO Region of the Americas. World Health Organization, 2025-11-01. WHO IRIS: 10665/384114.",
+      "sourceUrl": "https://iris.who.int/handle/10665/384114",
+      "sourceRef": "Abstract"
+    },
+    {
+      "id": "who-iris-383614",
+      "title": "Integration of traditional, complementary and integrative medicine into health systems: conceptual framework",
+      "category": "CLINICA_MEDICA",
+      "summary": "This publication provides a conceptual framework for the integration of traditional, complementary and integrative medicine into health systems. The framework identifies four models of integration—people-led, practitioner-led, coordinated and blended—based on two dimensions:...",
+      "content": "This publication provides a conceptual framework for the integration of traditional, complementary and integrative medicine into health systems. The framework identifies four models of integration—people-led, practitioner-led, coordinated and blended—based on two dimensions: decentralized versus centralized and pluralistic versus unified. It also links these models to the six building blocks of health systems, including leadership and governance, financing, service delivery, workforce, information systems and health products.\n\nDeveloped through evidence reviews, country visits and global consultations, the publication offers a foundation for policy dialogue, assessment and research. It provides Member States with practical guidance and tools to define, compare and strengthen integration in ways suited to their national contexts.",
+      "tags": [
+        "integração",
+        "sistemas de saúde",
+        "modelos conceituais"
+      ],
+      "citation": "World Health Organization. Integration of traditional, complementary and integrative medicine into health systems: conceptual framework. World Health Organization, 2025-11-21. WHO IRIS: 10665/383614.",
+      "sourceUrl": "https://iris.who.int/handle/10665/383614",
+      "sourceRef": "Abstract"
+    }
+  ]
+}

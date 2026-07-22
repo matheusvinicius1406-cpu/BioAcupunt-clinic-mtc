@@ -1,0 +1,421 @@
+{
+ "source": "PubMed — pesquisa aberta sobre MTC/acupuntura, categoria LINGUA, 2026 (E-utilities, resumos/abstracts públicos)",
+ "items": [
+  {
+   "id": "pubmed-38715181",
+   "title": "Development and Application of Traditional Chinese Medicine Using AI Machine Learning and Deep Learning Strategies.",
+   "category": "LINGUA",
+   "summary": "Traditional Chinese medicine (TCM) has been used for thousands of years and has been proven to be effective at treating many complicated illnesses with minimal side effects. The application and advancement of TCM are, however, constrained by the absence of objective measuring standards due to its relatively abstract diagnostic methods and syndrome differentiation theories.",
+   "content": "Traditional Chinese medicine (TCM) has been used for thousands of years and has been proven to be effective at treating many complicated illnesses with minimal side effects. The application and advancement of TCM are, however, constrained by the absence of objective measuring standards due to its relatively abstract diagnostic methods and syndrome differentiation theories. Ongoing developments in machine learning (ML) and deep learning (DL), specifically in computer vision (CV) and natural language processing (NLP), offer novel opportunities to modernize TCM by exploring the profound connotations of its theory. This review begins with an overview of the ML and DL methods employed in TCM; this is followed by practical instances of these applications. Furthermore, extensive discussions emphasize the mature integration of ML and DL in TCM, such as tongue diagnosis, pulse diagnosis, and syndrome differentiation treatment, highlighting their early successful application in the TCM field. Finally, this study validates the accomplishments and addresses the problems and challenges posed by the application and development of TCM powered by ML and DL. As ML and DL techniques continue to evolve, modern technology will spark new advances in TCM.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:38715181, Pan D et al., 2024, The American journal of Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38715181/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33562368",
+   "title": "Can Traditional Chinese Medicine Diagnosis Be Parameterized and Standardized? A Narrative Review.",
+   "category": "LINGUA",
+   "summary": "The integration of Traditional Chinese Medicine (TCM) in Western health systems and research requires a rational communicable theory, scientific proof of efficacy and safety, and quality control measures. The existence of clear definitions and the diagnosis standardization are critical factors to establish the patient's vegetative functional status accurately and, therefore, systematically appl...",
+   "content": "The integration of Traditional Chinese Medicine (TCM) in Western health systems and research requires a rational communicable theory, scientific proof of efficacy and safety, and quality control measures. The existence of clear definitions and the diagnosis standardization are critical factors to establish the patient's vegetative functional status accurately and, therefore, systematically apply TCM therapeutics such as the stimulation of reflex skin areas known as acupoints. This science-based conceptualization entails using validated methods, or even developing new systems able to parameterize the diagnosis and assess TCM related effects by objective measurements. Traditionally, tongue and pulse diagnosis and the functional evaluation of action points by pressure sensitivity and physical examination may be regarded as essential diagnostic tools. Parameterizing these techniques is a future key point in the objectification of TCM diagnosis, such as by electronic digital image analysis, mechanical pulse diagnostic systems, or the systematic evaluation of acupoints' electrophysiology. This review aims to demonstrate and critically analyze some achievements and limitations in the clinical application of device-assisted TCM diagnosis systems to evaluate functional physiological patterns. Despite some limitations, tongue, pulse, and electrophysiological diagnosis devices have been reported as a useful tool while establishing a person's functional status.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:33562368, Matos LC et al., 2021, Healthcare (Basel, Switzerland)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33562368/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-37125807",
+   "title": "Objectification of Tongue Diagnosis in Traditional Medicine, Data Analysis, and Study Application.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis is an essential technique of traditional Chinese medicine (TCM) diagnosis, and the need for objectifying tongue images through image processing technology is growing. The present study provides an overview of the progress made in tongue objectification over the past decade and compares segmentation models.",
+   "content": "Tongue diagnosis is an essential technique of traditional Chinese medicine (TCM) diagnosis, and the need for objectifying tongue images through image processing technology is growing. The present study provides an overview of the progress made in tongue objectification over the past decade and compares segmentation models. Various deep learning models are constructed to verify and compare algorithms using real tongue image sets. The strengths and weaknesses of each model are analyzed. The findings indicate that the U-Net algorithm outperforms other models regarding precision accuracy (PA), recall, and mean intersection over union (MIoU) metrics. However, despite the significant progress in tongue image acquisition and processing, a uniform standard for objectifying tongue diagnosis has yet to be established. To facilitate the widespread application of tongue images captured using mobile devices in tongue diagnosis objectification, further research could address the challenges posed by tongue images captured in complex environments.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:37125807, Feng L et al., 2023, Journal of visualized experiments : JoVE",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37125807/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40636921",
+   "title": "Traditional Chinese medicine diagnosis and treatment based on systematics.",
+   "category": "LINGUA",
+   "summary": "Traditional Chinese Medicine (TCM) is a well-established medical system with a long history. However, the overall concept and systematic thinking in TCM are not comprehensively understood and applied in its inheritance and development.",
+   "content": "BACKGROUND: Traditional Chinese Medicine (TCM) is a well-established medical system with a long history. However, the overall concept and systematic thinking in TCM are not comprehensively understood and applied in its inheritance and development.\nOBJECTIVE: This study aims to provide a basic theory for TCM diagnosis using systematics as the guiding principle. Using modern scientific and technological achievements, we aim to explore a new TCM diagnosis method.\nMETHODS: We analyzed previous studies on TCM diagnosis and treatment, and reviewed clinical research on TCM diagnosis and treatment from the viewpoint of systematics. We propose a new process model based on systematics for TCM diagnosis and treatment. This is a generalized model that summarizes the process of \"establishing an image to express meaning\".\nRESULTS: The proposed model was implemented in the clinical practice of TCM. We monitored the detailed treatment process of patients in the Department of Liver Diseases at Beijing Hospital. One patient underwent a treatment program that lasted 1 year and 45 days, consisting of 12 iterative cycles, each guided by the proposed diagnostic model and tailored to the patient's evolving condition. This case study validates the effectiveness of the proposed model in the diagnosis and treatment of liver disease in TCM. The therapeutic efficacy has been validated through the examination of both TCM indicators and Western medical auxiliary parameters. Among these, the TCM indicators consist of 2 components: tongue diagnosis and pulse diagnosis. Meanwhile, the Western medical auxiliary indicators encompass a range of assessments, including whole blood cell analysis, professional liver function examination, a series of liver function assessments, a high-sensitivity hepatitis B pentathlete test, as well as color Doppler ultrasound evaluations of the liver, bile duct, pancreas, spleen, and assessments of liver elasticity, among other related examination parameters. In conclusion, it is evident that the syndrome of liver depression and spleen deficiency has significantly diminished, and the viral load has decreased to levels below the detectable threshold, thereby confirming the restoration of normal liver function. These findings indicate that the disease is now under control.\nCONCLUSIONS: In this study, we applied the guiding principle of systematics to the study of TCM diagnosis and treatment, and combined it with modern medical technology. We proposed a TCM diagnosis and treatment process model, and a TCM model to establish an image, which can effectively support the diagnosis and treatment of TCM diseases. We illustrated the effectiveness of these models by applying them to TCM liver disease.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:40636921, Wang Z et al., 2023, iLIVER",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40636921/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36825238",
+   "title": "Development of a tongue image-based machine learning tool for the diagnosis of gastric cancer: a prospective multicentre clinical cohort study.",
+   "category": "LINGUA",
+   "summary": "Tongue images (the colour, size and shape of the tongue and the colour, thickness and moisture content of the tongue coating), reflecting the health state of the whole body according to the theory of traditional Chinese medicine (TCM), have been widely used in China for thousands of years. Herein, we investigated the value of tongue images and the tongue coating microbiome in the diagnosis of g...",
+   "content": "BACKGROUND: Tongue images (the colour, size and shape of the tongue and the colour, thickness and moisture content of the tongue coating), reflecting the health state of the whole body according to the theory of traditional Chinese medicine (TCM), have been widely used in China for thousands of years. Herein, we investigated the value of tongue images and the tongue coating microbiome in the diagnosis of gastric cancer (GC).\nMETHODS: From May 2020 to January 2021, we simultaneously collected tongue images and tongue coating samples from 328 patients with GC (all newly diagnosed with GC) and 304 non-gastric cancer (NGC) participants in China, and 16 S rDNA was used to characterize the microbiome of the tongue coating samples. Then, artificial intelligence (AI) deep learning models were established to evaluate the value of tongue images and the tongue coating microbiome in the diagnosis of GC. Considering that tongue imaging is more convenient and economical as a diagnostic tool, we further conducted a prospective multicentre clinical study from May 2020 to March 2022 in China and recruited 937 patients with GC and 1911 participants with NGC from 10 centres across China to further evaluate the role of tongue images in the diagnosis of GC. Moreover, we verified this approach in another independent external validation cohort that included 294 patients with GC and 521 participants with NGC from 7 centres. This study is registered at ClinicalTrials.gov, NCT01090362.\nFINDINGS: For the first time, we found that both tongue images and the tongue coating microbiome can be used as tools for the diagnosis of GC, and the area under the curve (AUC) value of the tongue image-based diagnostic model was 0.89. The AUC values of the tongue coating microbiome-based model reached 0.94 using genus data and 0.95 using species data. The results of the prospective multicentre clinical study showed that the AUC values of the three tongue image-based models for GCs reached 0.88-0.92 in the internal verification and 0.83-0.88 in the independent external verification, which were significantly superior to the combination of eight blood biomarkers.\nINTERPRETATION: Our results suggest that tongue images can be used as a stable method for GC diagnosis and are significantly superior to conventional blood biomarkers. The three kinds of tongue image-based AI deep learning diagnostic models that we developed can be used to adequately distinguish patients with GC from participants with NGC, even early GC and precancerous lesions, such as atrophic gastritis (AG).\nFUNDING: The National Key R&D Program of China (2021YFA0910100), Program of Zhejiang Provincial TCM Sci-tech Plan (2018ZY006), Medical Science and Technology Project of Zhejiang Province (2022KY114, WKJ-ZJ-2104), Zhejiang Provincial Research Center for Upper Gastrointestinal Tract Cancer (JBZX-202006), Natural Science Foundation of Zhejiang Province (HDMY22H160008), Science and Technology Projects of Zhejiang Province (2019C03049), National Natural Science Foundation of China (82074245, 81973634, 82204828), and Chinese Postdoctoral Science Foundation (2022M713203).",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:36825238, Yuan L et al., 2023, EClinicalMedicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36825238/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36185091",
+   "title": "Deep Learning Based Tongue Prickles Detection in Traditional Chinese Medicine.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis is a convenient and noninvasive clinical practice of traditional Chinese medicine (TCM), having existed for thousands of years. Prickle, as an essential indicator in TCM, appears as a large number of red thorns protruding from the tongue.",
+   "content": "Tongue diagnosis is a convenient and noninvasive clinical practice of traditional Chinese medicine (TCM), having existed for thousands of years. Prickle, as an essential indicator in TCM, appears as a large number of red thorns protruding from the tongue. The term \"prickly tongue\" has been used to describe the flow of qi and blood in TCM and assess the conditions of disease as well as the health status of subhealthy people. Different location and density of prickles indicate different symptoms. As proved by modern medical research, the prickles originate in the fungiform papillae, which are enlarged and protrude to form spikes like awn. Prickle recognition, however, is subjective, burdensome, and susceptible to external factors. To solve this issue, an end-to-end prickle detection workflow based on deep learning is proposed. First, raw tongue images are fed into the Swin Transformer to remove interference information. Then, segmented tongues are partitioned into four areas: root, center, tip, and margin. We manually labeled the prickles on 224 tongue images with the assistance of an OpenCV spot detector. After training on the labeled dataset, the super-resolutionfaster-RCNN extracts advanced tongue features and predicts the bounding box of each single prickle. We show the synergy of deep learning and TCM by achieving a 92.42% recall, which is 2.52% higher than the previous work. This work provides a quantitative perspective for symptoms and disease diagnosis according to tongue characteristics. Furthermore, it is convenient to transfer this portable model to detect petechiae or tooth-marks on tongue images.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:36185091, Wang X et al., 2022, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36185091/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40506765",
+   "title": "Study on a Traditional Chinese Medicine constitution recognition model using tongue image characteristics and deep learning: a prospective dual-center investigation.",
+   "category": "LINGUA",
+   "summary": "The objective of this study was to develop a quantitatively analyzed Traditional Chinese Medicine (TCM) constitution recognition model utilizing tongue fusion features and deep learning techniques. METHODS: A prospective investigation was conducted on participants undergoing TCM constitution assessment at two medical centers.",
+   "content": "PURPOSE: The objective of this study was to develop a quantitatively analyzed Traditional Chinese Medicine (TCM) constitution recognition model utilizing tongue fusion features and deep learning techniques.\nMETHODS: A prospective investigation was conducted on participants undergoing TCM constitution assessment at two medical centers. Tongue images and corresponding TCM constitution data were collected from 1374 participants using specialized equipment. Both traditional and deep features were extracted from these images. Significant features associated with constitutional characteristics were identified through LASSO regression and Random Forest (RF). Eight machine learning algorithms were employed to construct and evaluate the efficacy of the models. The highest-performing model was selected as the foundational classifier for developing an integrated tongue image feature model. Model performance was comprehensively evaluated using accuracy, precision, recall, F1 score, and area under the curve (AUC).\nRESULTS: Analysis revealed 11 critical traditional tongue image features and 26 deep tongue image features. Three datasets were constructed: traditional tongue image features, deep tongue image features, and a fusion feature dataset incorporating both. The multilayer perceptron (MLP) model combining traditional and deep features demonstrated superior performance in TCM constitution classification compared to single-feature models. In the training phase, the model achieved an accuracy (ACC) of 0.893 and an AUC of 0.948. On the test set, it achieved an ACC of 0.837 and an AUC of 0.898, with sensitivity and specificity of 0.680 and 0.930, respectively, indicating excellent generalization ability.\nCONCLUSIONS: This study successfully developed an intelligent TCM constitution recognition model that overcomes the limitations of traditional methods and validates the value of tongue images for accurate constitution recognition.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:40506765, Liu Y et al., 2025, Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40506765/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-41626136",
+   "title": "Exploring traditional Chinese medicine tongue diagnosis in potential cancer identification: A scoping review.",
+   "category": "LINGUA",
+   "summary": "Traditional Chinese medicine (TCM) tongue diagnosis entails the systematic evaluation of morphological characteristics (tongue features) on both dorsal and ventral tongue surfaces. Recent advancements in research have highlighted the potential diagnostic relevance of specific tongue features for cancer detection and monitoring through various inspection methodologies.",
+   "content": "BACKGROUND: Traditional Chinese medicine (TCM) tongue diagnosis entails the systematic evaluation of morphological characteristics (tongue features) on both dorsal and ventral tongue surfaces. Recent advancements in research have highlighted the potential diagnostic relevance of specific tongue features for cancer detection and monitoring through various inspection methodologies. This scoping review aims to provide a comprehensive overview of tongue features investigated in relation to cancer detection.\nMETHODS: A literature search for clinical studies (excluding case reports) that examined the application of tongue inspection for detecting cancer, recurrence, or metastasis was conducted. Extracted data included study characteristics, patient populations, inspection techniques, and diagnostic outcomes.\nRESULTS: Twenty-four studies consisting of 14 case-control studies, 4 cross sectional studies, 5 observational study, and 1 prospective multicentred cohort were identified, involving a total of 5458 cancer patients and 7880 control participants. Documented tongue features included lingual flange protrusion, sublingual nodules, engorged sublingual veins, purple-bluish tongue, and variations in tongue coating thickness, etc. that were associated with different cancer types and metastasis. Using QUADAS-2, the overall quality was low with potentially high risk of bias in some key domains, especially participant selection and index test.\nCONCLUSION: The findings from this review provide a foundation for future research questions aimed at high-level observational studies. Tongue inspection holds promise as a cost-effective, time-efficient, and non-invasive method for detecting cancers and metastasis. Based on quality assessment, the study highlights future needs such as more prospective, blinded interpretation, pre-specified thresholds, and transparent reporting to improve both methodological rigor and external validity.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:41626136, Wu MB et al., 2026, Integrative medicine research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41626136/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32692238",
+   "title": "Tongue diagnosis and treatment in traditional Chinese medicine for severe COVID-19: a case report.",
+   "category": "LINGUA",
+   "summary": "As one of the most urgent public health events, coronavirus disease 2019 (COVID-19) has attracted worldwide attention. This case highlighted the importance of close coordination between Chinese medicine and western medicine in the diagnosis and treatment, as well as the need for rapid dissemination of clinical information related to patient care with this emerging infection.",
+   "content": "As one of the most urgent public health events, coronavirus disease 2019 (COVID-19) has attracted worldwide attention. This case highlighted the importance of close coordination between Chinese medicine and western medicine in the diagnosis and treatment, as well as the need for rapid dissemination of clinical information related to patient care with this emerging infection. We reported a COVID-19 case confirmed in China and described the identification, diagnosis, clinical course, and management of the case. The patient had initial mild symptoms at presentation; it progressed to severe pneumonia on the 10th day of onset. This cured case supplied a time series analysis of tongue characteristics found in severe COVID-19. Chinese medicine formulae were tweaked by tongue characteristics, which include tongue color, fur thickness, and fur color. Tongue images were obtained every two days, and the changes were firmly related to the progression of COVID-19. These tongue characteristics could be used as effective, non-intrusive indices for the distinct stages of COVID-19 stages. Our study was the first time tongue diagnosis was applied in time series analysis of the progression of COVID-19 disease. We found that tongue color, fur thickness, and fur color were closely related to the progression of COVID-19 by analyzing various tongue images obtained regularly. Based on this success, we will further apply tongue diagnosis to tongue characteristics of COVID-19 patients to help limit the risk of COVID-19.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:32692238, Liang K et al., 2020, Annals of palliative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32692238/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40773005",
+   "title": "Artificial Intelligence in Traditional Chinese Medicine: Multimodal Fusion and Machine Learning for Enhanced Diagnosis and Treatment Efficacy.",
+   "category": "LINGUA",
+   "summary": "Artificial intelligence (AI) serves as a key technology in global industrial transformation and technological restructuring and as the core driver of the fourth industrial revolution. Currently, deep learning techniques, such as convolutional neural networks, enable intelligent information collection in fields such as tongue and pulse diagnosis owing to their robust feature-processing capabilit...",
+   "content": "Artificial intelligence (AI) serves as a key technology in global industrial transformation and technological restructuring and as the core driver of the fourth industrial revolution. Currently, deep learning techniques, such as convolutional neural networks, enable intelligent information collection in fields such as tongue and pulse diagnosis owing to their robust feature-processing capabilities. Natural language processing models, including long short-term memory and transformers, have been applied to traditional Chinese medicine (TCM) for diagnosis, syndrome differentiation, and prescription generation. Traditional machine learning algorithms, such as neural networks, support vector machines, and random forests, are also widely used in TCM diagnosis and treatment because of their strong regression and classification performance on small structured datasets. Future research on AI in TCM diagnosis and treatment may emphasize building large-scale, high-quality TCM datasets with unified criteria based on syndrome elements; identifying algorithms suited to TCM theoretical data distributions; and leveraging AI multimodal fusion and ensemble learning techniques for diverse raw features, such as images, text, and manually processed structured data, to increase the clinical efficacy of TCM diagnosis and treatment.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:40773005, Wang J et al., 2025, Current medical science",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40773005/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-37904483",
+   "title": "Black hairy tongue treated with traditional Chinese medicine: A case report.",
+   "category": "LINGUA",
+   "summary": "Black hairy tongue (BHT) is a rare condition that is conventionally managed by discontinuing associated medications or habits and practicing good oral hygiene, including tongue brushing. Previous studies have indicated that black tongue coating is often associated with gastrointestinal discomfort, which traditional Chinese medicine (TCM) could be a potentially effective option for treating this...",
+   "content": "RATIONALE: Black hairy tongue (BHT) is a rare condition that is conventionally managed by discontinuing associated medications or habits and practicing good oral hygiene, including tongue brushing. Previous studies have indicated that black tongue coating is often associated with gastrointestinal discomfort, which traditional Chinese medicine (TCM) could be a potentially effective option for treating this condition with minimal side effects. We present a case of BHT diagnosed and treated within 2 weeks by using TCM methods.\nPATIENT CONCERNS: A 73-year-old woman presented with a chief concern of a black tongue that had persisted for 2 weeks and was accompanied by thirst and diarrhea. These symptoms were initially observed during her hospitalization for the treatment of staghorn calculi, xanthogranulomatous pyelonephritis, and urosepsis. Using the \"four diagnostic methods\" of TCM, we observed that her tongue had a thick black coating surrounded by a thick white coating; her tongue was of medium size with tooth marks, and its body color was light red.\nDIAGNOSES, INTERVENTIONS, AND OUTCOMES: On the basis of TCM theory, we made a clinical diagnosis of BHT and \"spleen Qi deficiency with turbid dampness,\" which may have been caused by the antibiotic treatment during hospitalization. Subsequently, we administered a Chinese herbal medicine (CHM) formula comprising a combination of Wu-Ling-San () and a modification of Da-Yuan-Yin (). After 2 weeks of CHM treatment, the patient's BHT was nearly eliminated, and the thick white coating and the corresponding symptoms were ameliorated. After 4 weeks of CHM treatment, the BHT was completely resolved.\nLESSON AND CONCLUSION: We present a case of BHT, a benign condition that may be caused by antibiotics. The literature does not contain reports on TCM-based diagnosis and treatment strategies for BHT. Using the 4 diagnostic methods of TCM, we observed that BHT was associated with gastrointestinal symptoms, which is consistent with the TCM theory. Moreover, CHM treatment rapidly relieved BHT and related symptoms without adverse events.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:37904483, Kuo PY, Chen PH, Wu SH, 2023, Medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37904483/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38759050",
+   "title": "Intelligent quality control of traditional chinese medical tongue diagnosis images based on deep learning.",
+   "category": "LINGUA",
+   "summary": "Computer-aided tongue and face diagnosis technology can make Traditional Chinese Medicine (TCM) more standardized, objective and quantified. However, many tongue images collected by the instrument may not meet the standard in clinical applications, which affects the subsequent quantitative analysis.",
+   "content": "BACKGROUND: Computer-aided tongue and face diagnosis technology can make Traditional Chinese Medicine (TCM) more standardized, objective and quantified. However, many tongue images collected by the instrument may not meet the standard in clinical applications, which affects the subsequent quantitative analysis. The common tongue diagnosis instrument cannot determine whether the patient has fully extended the tongue or collected the face.\nOBJECTIVE: This paper proposes an image quality control algorithm based on deep learning to verify the eligibility of TCM tongue diagnosis images.\nMETHODS: We firstly gathered enough images and categorized them into five states. Secondly, we preprocessed the training images. Thirdly, we built a ResNet34 model and trained it by the transfer learning method. Finally, we input the test images into the trained model and automatically filter out unqualified images and point out the reasons.\nRESULTS: Experimental results show that the model's quality control accuracy rate of the test dataset is as high as 97.06%. Our methods have the strong discriminative power of the learned representation. Compared with previous studies, it can guarantee subsequent tongue image processing.\nCONCLUSIONS: Our methods can guarantee the subsequent quantitative analysis of tongue shape, tongue state, tongue spirit, and facial complexion.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:38759050, Zhou X et al., 2024, Technology and health care : official journal of the European Society for Engineering and Medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38759050/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-24311851",
+   "title": "Tongue diagnosis of traditional Chinese medicine for rheumatoid arthritis.",
+   "category": "LINGUA",
+   "summary": "Rheumatoid arthritis (RA) is a chronic, systemic autoimmune disease with unknown aetiology that causes the immune system to attack the joints (synoviums), leading to chronic inflammation. According to the traditional Chinese medicine (TCM), RA falls into the category of Impediment disease (\"Bi\" syndrome), that is, poor circulation of qi and blood (stasis).",
+   "content": "Rheumatoid arthritis (RA) is a chronic, systemic autoimmune disease with unknown aetiology that causes the immune system to attack the joints (synoviums), leading to chronic inflammation. According to the traditional Chinese medicine (TCM), RA falls into the category of Impediment disease (\"Bi\" syndrome), that is, poor circulation of qi and blood (stasis). Tongue diagnosis is an important method of TCM to detect blood stasis. In this study, 74 RA patients, meeting the pre-set criteria, were recruited via rheumatology outpatient clinic and examined by experienced rheumatology physicians. Two images-one of the tongue and the other, sublingual vessels-of the same patient were taken by a Canon digital camera in a darkroom with uniform lighting conditions. Relevant features of the tongue were extracted by utilising image processing techniques. Every tongue was classified into corresponding patterns based on the features identified. The subjects included 62 females and 12 males with an average age of 49.86 ± 13.81 years old, an average morbidity period of 4.56 ± 3.92 years, an average rheumatoid factor (RF) of 225.3 ± 373.8 IU/mL and an average erythrocyte sedimentation rate of (ESR) 40.9 ± 31.9 m/hr. According to our study, 86% of the patients with RA have tongues with sublingual vessels with a width of more than 2.7 mm, a length of more than 3/5 from tongue tipto sublingual caruncle, or a count of sublingual vessels more than 2. Moreover, since RA index is highly correlated with blood stasis in TCM, a logistic regression is conducted to predict the probability of presence of RA using RF and ESR as explanatory variables. Also, the logistic regression analysis of RA with respect to the conventional tongue diagnosis criteria was performed. Based on the aforementioned studies, we concluded that tongue diagnosis is helpful in detecting blood stasis of RA.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:24311851, Lo LC et al., 2013, African journal of traditional, complementary, and alternative medicines : AJTCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24311851/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39000825",
+   "title": "S5Utis: Structured State-Space Sequence SegNeXt UNet-like Tongue Image Segmentation in Traditional Chinese Medicine.",
+   "category": "LINGUA",
+   "summary": "Intelligent Traditional Chinese Medicine can provide people with a convenient way to participate in daily health care. The ease of acceptance of Traditional Chinese Medicine is also a major advantage in promoting health management.",
+   "content": "Intelligent Traditional Chinese Medicine can provide people with a convenient way to participate in daily health care. The ease of acceptance of Traditional Chinese Medicine is also a major advantage in promoting health management. In Traditional Chinese Medicine, tongue imaging is an important step in the examination process. The segmentation and processing of the tongue image directly affects the results of intelligent Traditional Chinese Medicine diagnosis. As intelligent Traditional Chinese Medicine continues to develop, remote diagnosis and patient participation will play important roles. Smartphone sensor cameras can provide irreplaceable data collection capabilities in enhancing interaction in smart Traditional Chinese Medicine. However, these factors lead to differences in the size and quality of the captured images due to factors such as differences in shooting equipment, professionalism of the photographer, and the subject's cooperation. Most current tongue image segmentation algorithms are based on data collected by professional tongue diagnosis instruments in standard environments, and are not able to demonstrate the tongue image segmentation effect in complex environments. Therefore, we propose a segmentation algorithm for tongue images collected in complex multi-device and multi-user environments. We use convolutional attention and extend state space models to the 2D environment in the encoder. Then, cross-layer connection fusion is used in the decoder part to fuse shallow texture and deep semantic features. Through segmentation experiments on tongue image datasets collected by patients and doctors in real-world settings, our algorithm significantly improves segmentation performance and accuracy.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:39000825, Song D et al., 2024, Sensors (Basel, Switzerland)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39000825/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39588057",
+   "title": "Machine Learning Research Trends in Traditional Chinese Medicine: A Bibliometric Review.",
+   "category": "LINGUA",
+   "summary": "Integrating Traditional Chinese Medicine (TCM) knowledge with modern technology, especially machine learning (ML), has shown immense potential in enhancing TCM diagnostics and treatment. This study aims to systematically review and analyze the trends and developments in ML applications in TCM through a bibliometric analysis.",
+   "content": "BACKGROUND: Integrating Traditional Chinese Medicine (TCM) knowledge with modern technology, especially machine learning (ML), has shown immense potential in enhancing TCM diagnostics and treatment. This study aims to systematically review and analyze the trends and developments in ML applications in TCM through a bibliometric analysis.\nMETHODS: Data for this study were sourced from the Web of Science Core Collection. Data were analyzed and visualized using Microsoft Office Excel, Bibliometrix, and VOSviewer.\nRESULTS: 474 documents were identified. The analysis revealed a significant increase in research output from 2000 to 2023, with China leading in both the number of publications and research impact. Key research institutions include the Shanghai University of Traditional Chinese Medicine and the China Academy of Chinese Medical Sciences. Major research hotspots identified include ML applications in TCM diagnosis, network pharmacology, and tongue diagnosis. Additionally, chemometrics with ML are highlighted for their roles in quality control and authentication of TCM products.\nCONCLUSION: This study provides a comprehensive overview of ML applications' development trends and research landscape in TCM. The integration of ML has led to significant advancements in TCM diagnostics, personalized medicine, and quality control, paving the way for the modernization and internationalization of TCM practices. Future research should focus on improving model interpretability, fostering international collaborations, and standardized reporting protocols.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:39588057, Lim J et al., 2024, International journal of general medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39588057/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40356770",
+   "title": "Deep learning-based automated tongue analysis system for assisted Chinese medicine diagnosis.",
+   "category": "LINGUA",
+   "summary": "This study proposes an automated tongue analysis system that combines deep learning with traditional Chinese medicine to enhance the accuracy and objectivity of tongue diagnosis. The system includes a hardware device to provide a stable acquisition environment, an improved semi-supervised learning segmentation algorithm based on U2net, a high-performance colour correction module for standardisi...",
+   "content": "This study proposes an automated tongue analysis system that combines deep learning with traditional Chinese medicine to enhance the accuracy and objectivity of tongue diagnosis. The system includes a hardware device to provide a stable acquisition environment, an improved semi-supervised learning segmentation algorithm based on U2net, a high-performance colour correction module for standardising the segmented images, and a tongue image analysis algorithm that fuses different features according to the characteristics of each feature of the TCM tongue image. Experimental results demonstrate the system's performance and robustness in feature extraction and classification. The proposed methods ensure consistency and reliability in tongue analysis, addressing key challenges in traditional practices and providing a foundation for future correlation studies with endoscopic findings.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:40356770, Chen T et al., 2025, Frontiers in physiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40356770/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32459647",
+   "title": "Intra-Rater and Inter-Rater Reliability of Tongue Coating Diagnosis in Traditional Chinese Medicine Using Smartphones: Quasi-Delphi Study.",
+   "category": "LINGUA",
+   "summary": "There is a growing trend in the use of mobile health (mHealth) technologies in traditional Chinese medicine (TCM) and telemedicine, especially during the coronavirus disease (COVID-19) outbreak. Tongue diagnosis is an important component of TCM, but also plays a role in Western medicine, for example in dermatology.",
+   "content": "BACKGROUND: There is a growing trend in the use of mobile health (mHealth) technologies in traditional Chinese medicine (TCM) and telemedicine, especially during the coronavirus disease (COVID-19) outbreak. Tongue diagnosis is an important component of TCM, but also plays a role in Western medicine, for example in dermatology. However, the procedure of obtaining tongue images has not been standardized and the reliability of tongue diagnosis by smartphone tongue images has yet to be evaluated.\nOBJECTIVE: The first objective of this study was to develop an operating classification scheme for tongue coating diagnosis. The second and main objective of this study was to determine the intra-rater and inter-rater reliability of tongue coating diagnosis using the operating classification scheme.\nMETHODS: An operating classification scheme for tongue coating was developed using a stepwise approach and a quasi-Delphi method. First, tongue images (n=2023) were analyzed by 2 groups of assessors to develop the operating classification scheme for tongue coating diagnosis. Based on clinicians' (n=17) own interpretations as well as their use of the operating classification scheme, the results of tongue diagnosis on a representative tongue image set (n=24) were compared. After gathering consensus for the operating classification scheme, the clinicians were instructed to use the scheme to assess tongue features of their patients under direct visual inspection. At the same time, the clinicians took tongue images of the patients with smartphones and assessed tongue features observed in the smartphone image using the same classification scheme. The intra-rater agreements of these two assessments were calculated to determine which features of tongue coating were better retained by the image. Using the finalized operating classification scheme, clinicians in the study group assessed representative tongue images (n=24) that they had taken, and the intra-rater and inter-rater reliability of their assessments was evaluated.\nRESULTS: Intra-rater agreement between direct subject inspection and tongue image inspection was good to very good (Cohen κ range 0.69-1.0). Additionally, when comparing the assessment of tongue images on different days, intra-rater reliability was good to very good (κ range 0.7-1.0), except for the color of the tongue body (κ=0.22) and slippery tongue fur (κ=0.1). Inter-rater reliability was moderate for tongue coating (Gwet AC2 range 0.49-0.55), and fair for color and other features of the tongue body (Gwet AC2=0.34).\nCONCLUSIONS: Taken together, our study has shown that tongue images collected via smartphone contain some reliable features, including tongue coating, that can be used in mHealth analysis. Our findings thus support the use of smartphones in telemedicine for detecting changes in tongue coating.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:32459647, Wang ZC et al., 2020, JMIR mHealth and uHealth",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32459647/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36752014",
+   "title": "[Discussion on Technical Evaluation of Tongue Diagnosis Equipment of Traditional Chinese Medicine].",
+   "category": "LINGUA",
+   "summary": "This study briefly introduces the tongue diagnostic equipment of traditional Chinese medicine. It analyzes and discusses the key points of technical evaluation of tongue diagnostic equipment from the aspects of product name, performance parameters, image processing functions, product use methods, clinical evaluation, etc.",
+   "content": "This study briefly introduces the tongue diagnostic equipment of traditional Chinese medicine. It analyzes and discusses the key points of technical evaluation of tongue diagnostic equipment from the aspects of product name, performance parameters, image processing functions, product use methods, clinical evaluation, etc. It analyzes the safety risks and effectiveness indicators of tongue diagnostic equipment, hoping to bring some help to the gradual standardization of tongue diagnostic equipment and the registration of enterprises.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:36752014, Mi Y, Duan S, Fu Q, 2023, Zhongguo yi liao qi xie za zhi = Chinese journal of medical instrumentation",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36752014/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40352152",
+   "title": "TongueNet: a multi-modal fusion and multi-label classification model for traditional Chinese Medicine tongue diagnosis.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis in Traditional Chinese Medicine (TCM) plays a crucial role in clinical practice. By observing the shape, color, and coating of the tongue, practitioners can assist in determining the nature and location of a disease.",
+   "content": "Tongue diagnosis in Traditional Chinese Medicine (TCM) plays a crucial role in clinical practice. By observing the shape, color, and coating of the tongue, practitioners can assist in determining the nature and location of a disease. However, the field of tongue diagnosis currently faces challenges such as data scarcity and a lack of efficient multimodal diagnostic models, making it difficult to fully align with TCM theories and clinical needs. Additionally, existing methods generally lack multi-label classification capabilities, making it challenging to simultaneously meet the multidimensional requirements of TCM diagnosis for disease nature and location. To address these issues, this paper proposes TongueNet, a multimodal deep learning model that integrates tongue image data with text-based features. The model utilizes a Hierarchical Aggregation Network (HAN) and a Feature Space Projection Module to efficiently extract and fuse features while introducing consistency and complementarity constraints to optimize multimodal information fusion. Furthermore, the model incorporates a multi-scale attention mechanism (EMA) to enhance the diversity and accuracy of feature weighting and employs a Kolmogorov-Arnold Network (KAN) instead of traditional MLPs for output optimization, thereby improving the representation of complex features. For model training, this study integrates three publicly available tongue image datasets from the Roboflow platform and enlists multiple experts for multimodal annotation, incorporating multi-label information on disease nature and location to align with TCM clinical needs. Experimental results demonstrate that TongueNet outperforms existing models in both disease nature and disease location classification tasks. Specifically, in the disease nature classification task, it achieves 89.12% accuracy and an AUC of 83%; in the disease location classification task, it achieves 86.47% accuracy and an AUC of 81%. Moreover, TongueNet contains only 32.1 M parameters, significantly reducing computational resource requirements while maintaining high diagnostic performance. TongueNet provides a new approach for the intelligent development of TCM tongue diagnosis.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:40352152, Yang L et al., 2025, Frontiers in physiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40352152/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40442807",
+   "title": "Clinical study of intelligent tongue diagnosis and oral microbiome for classifying TCM syndromes in MASLD.",
+   "category": "LINGUA",
+   "summary": "This study aimed to analyze the tongue image features and oral microbial markers in different TCM syndromes related to metabolic dysfunction-associated steatotic liver disease (MASLD). METHODS: This study involved 34 healthy volunteers and 66 MASLD patients [36 with Dampness-Heat (DH) and 30 with Qi-Deficiency (QD) syndrome].",
+   "content": "BACKGROUND: This study aimed to analyze the tongue image features and oral microbial markers in different TCM syndromes related to metabolic dysfunction-associated steatotic liver disease (MASLD).\nMETHODS: This study involved 34 healthy volunteers and 66 MASLD patients [36 with Dampness-Heat (DH) and 30 with Qi-Deficiency (QD) syndrome]. Oral microbiome analysis was conducted through 16S rRNA sequencing. Tongue image feature extraction used the Uncertainty Augmented Context Attention Network (UACANet), while syndrome classification was performed using five different machine learning methods based on tongue features and oral microbiota.\nRESULTS: Significant differences in tongue color, coating, and oral microbiota were noted between DH band QD syndromes in MASLD patients. DH patients exhibited a red-crimson tongue color with a greasy coating and enriched Streptococcus and Rothia on the tongue. In contrast, QD patients displayed a pale tongue with higher abundances of Neisseria, Fusobacterium, Porphyromonas and Haemophilus. Combining tongue image characteristics with oral microbiota differentiated DH and QD syndromes with an AUC of 0.939 and an accuracy of 85%.\nCONCLUSION: This study suggests that tongue characteristics are related to microbial metabolism, and different MASLD syndromes possess distinct biomarkers, supporting syndrome classification.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:40442807, Deng J et al., 2025, Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40442807/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34896205",
+   "title": "Constructing tongue coating recognition model using deep transfer learning to assist syndrome diagnosis and its potential in noninvasive ethnopharmacological evaluation.",
+   "category": "LINGUA",
+   "summary": "Tongue coating has been used as an effective signature of health in traditional Chinese medicine (TCM). The level of greasy coating closely relates to the strength of dampness or pathogenic qi in TCM theory.",
+   "content": "ETHNOPHARMACOLOGICAL RELEVANCE: Tongue coating has been used as an effective signature of health in traditional Chinese medicine (TCM). The level of greasy coating closely relates to the strength of dampness or pathogenic qi in TCM theory. Previous empirical studies and our systematic review have shown the relation between greasy coating and various diseases, including gastroenteropathy, coronary heart disease, and coronavirus disease 2019 (COVID-19). However, the objective and intelligent greasy coating and related diseases recognition methods are still lacking. The construction of the artificial intelligent tongue recognition models may provide important syndrome diagnosis and efficacy evaluation methods, and contribute to the understanding of ethnopharmacological mechanisms based on TCM theory.\nAIM OF THE STUDY: The present study aimed to develop an artificial intelligent model for greasy tongue coating recognition and explore its application in COVID-19.\nMATERIALS AND METHODS: Herein, we developed greasy tongue coating recognition networks (GreasyCoatNet) using convolutional neural network technique and a relatively large (N = 1486) set of tongue images from standard devices. Tests were performed using both cross-validation procedures and a new dataset (N = 50) captured by common cameras. Besides, the accuracy and time efficiency comparisons between the GreasyCoatNet and doctors were also conducted. Finally, the model was transferred to recognize the greasy coating level of COVID-19.\nRESULTS: The overall accuracy in 3-level greasy coating classification with cross-validation was 88.8% and accuracy on new dataset was 82.0%, indicating that GreasyCoatNet can obtain robust greasy coating estimates from diverse datasets. In addition, we conducted user study to confirm that our GreasyCoatNet outperforms TCM practitioners, yet only consuming roughly 1% of doctors' examination time. Critically, we demonstrated that GreasyCoatNet, along with transfer learning, can construct more proper classifier of COVID-19, compared to directly training classifier on patient versus control datasets. We, therefore, derived a disease-specific deep learning network by finetuning the generic GreasyCoatNet.\nCONCLUSIONS: Our framework may provide an important research paradigm for differentiating tongue characteristics, diagnosing TCM syndrome, tracking disease progression, and evaluating intervention efficacy, exhibiting its unique potential in clinical applications.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:34896205, Wang X et al., 2022, Journal of ethnopharmacology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34896205/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40012785",
+   "title": "Cross-population tongue image features and tongue coating microbiome changes in the evolution of colorectal cancer.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis, a cornerstone of Traditional Chinese Medicine (TCM), relies significantly on the assessment of tongue coating, which is used to evaluate Zang-fu organ functions, qi and blood dynamics, and the influence of pathogenic factors. This diagnostic method is integral to disease diagnosis and treatment in TCM.",
+   "content": "INTRODUCTION: Tongue diagnosis, a cornerstone of Traditional Chinese Medicine (TCM), relies significantly on the assessment of tongue coating, which is used to evaluate Zang-fu organ functions, qi and blood dynamics, and the influence of pathogenic factors. This diagnostic method is integral to disease diagnosis and treatment in TCM. Recent research suggests a strong correlation between the characteristics of tongue coating and its microbial composition. These microbial variations may influence the formation and changes in tongue coating and are potentially linked to the progression of specific diseases. However, comprehensive research on the association between tongue coating, its microorganisms, and colorectal cancer (CRC) is limited. Notably, the quantitative aspects of tongue diagnosis and the microbial diversity in tongue coatings across different stages of colorectal cancer (from healthy individuals to colorectal adenoma (CRA) and CRC patients) are yet to be fully elucidated. By studying the cross-population characteristics of tongue image and tongue coating microorganisms during the evolution of colorectal cancer, the differences of tongue image characteristics and tongue coating microorganisms among different populations were further evaluated, providing references for early screening, diagnosis and treatment of colorectal cancer.\nMETHODS: The tongue image features of the subjects were collected by DS01-B tongue surface information collection system, mainly including tongue quality and tongue coating, and the tongue image was quantitatively analyzed by color space Lab value. The microbial characteristics of tongue coating were detected by high-throughput sequencing (16SrRNA amplicon sequencing). All subjects came from the patients in the Sixth Affiliated Hospital of Sun Yat-sen University and recruited volunteers (divided into health group, CRA group and CRC group), and obtained the ethical approval of the Sixth Affiliated Hospital of Sun Yat-sen University (ethical batch number: 2021ZSLYEC-328).\nRESULTS: A total of 377 subjects were recruited in this study, including 56 healthy subjects, 65 colorectal adenomas and 256 colorectal cancer patients. The results showed that: in terms of texture of fur, the \"thick fur\" was a significant statistical difference (p < 0.05) in the 3 groups. In addition, there was also a statistical difference in \"greasy fur\" and \"peeled fur\" among the 3 groups (p < 0.05). Lab quantitative analysis of tongue color and fur color: The results showed that the L value of tongue color in healthy group was significantly different from that in CRA group and CRC group (p < 0.01), but there was no significant difference between CRA group and CRC group (p > 0.05). Tongue coating microorganisms, there was no significant difference in the richness and diversity of the three groups of subjects (p > 0.05). There were 296 species in the three groups, accounting for 44.65%, and the species in colorectal cancer population was the most, reaching 502. From the differences in community composition among the three groups, it was found that there were certain differences in bacterial community composition between healthy people, CRA and CRC, and the differences became more and more obvious with the development of the disease.\nCONCLUSION: This study revealed the specific cross-population tongue image characteristics and the specificity of tongue coating microorganisms in the evolution of CRC, providing new research ideas for early screening, early diagnosis, mechanism exploration, prevention and treatment of colorectal cancer.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:40012785, Liu F et al., 2025, Frontiers in microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40012785/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-42255425",
+   "title": "Integration of tongue image features and tongue coating microbiome for differentiating dampness patterns in MASLD.",
+   "category": "LINGUA",
+   "summary": "Metabolic dysfunction-associated steatotic liver disease (MASLD) is a prevalent metabolic disorder that can progress to hepatic fibrosis, cirrhosis, and hepatocellular carcinoma. Traditional Chinese medicine (TCM) has therapeutic effects in MASLD.",
+   "content": "BACKGROUND: Metabolic dysfunction-associated steatotic liver disease (MASLD) is a prevalent metabolic disorder that can progress to hepatic fibrosis, cirrhosis, and hepatocellular carcinoma. Traditional Chinese medicine (TCM) has therapeutic effects in MASLD. In TCM, dampness patterns predominate in MASLD and are further classified into damp heat (DH) and cold dampness (CD) subtypes based on distinct pathogenic mechanisms. However, the characteristics of the tongue image and tongue coating microbiome across different dampness patterns and their associations with clinical features remain poorly understood.\nMATERIALS AND METHODS: This study enrolled 320 participants, including 214s dampness patterns patients with MASLD, further classified into DH pattern (n = 110) and CD pattern(n = 104), along with 106 healthy controls. Tongue images and tongue coating samples were collected; tongue image segmentation was performed using a customized Tongue-InSPyReNet framework and extract quantitative features, while tongue coating microbiota were profiled using 16S rRNA gene sequencing. To distinguish between patterns, five machine learning models were developed and evaluated based on integrated tongue image features and microbiome data.\nRESULTS: Significant differences in tongue features and microbial composition were observed between groups. The DH pattern was characterized by a red-crimson tongue with yellow coating and enrichment of Prevotella (P < 0.05). In contrast, the CD pattern more frequently exhibited a pale tongue with petechiae and higher abundances of Streptococcus and Rothia (P < 0.05). Integration of tongue image features and tongue coating microbiome effectively distinguished DH and CD patterns, achieving an AUC of 0.871 and an accuracy of 79.1%.\nCONCLUSION: Our study highlights the contributions of tongue image features and the tongue coating microbiome to differentiating two TCM patterns in MASLD, and may provide the rationale for adopting different treatment strategies for different TCM syndromes of MASLD in the future.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:42255425, Hu R et al., 2026, Frontiers in endocrinology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42255425/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36570335",
+   "title": "Tongue Image Texture Classification Based on Image Inpainting and Convolutional Neural Network.",
+   "category": "LINGUA",
+   "summary": "Tongue texture analysis is of importance to inspection diagnosis in traditional Chinese medicine (TCM), which has great application and irreplaceable value. The tough and tender classification for tongue image relies mainly on image texture of tongue body.",
+   "content": "Tongue texture analysis is of importance to inspection diagnosis in traditional Chinese medicine (TCM), which has great application and irreplaceable value. The tough and tender classification for tongue image relies mainly on image texture of tongue body. However, texture discontinuity adversely affects the classification of the tough and tender tongue classification. In order to promote the accuracy and robustness of tongue texture analysis, a novel tongue image texture classification method based on image inpainting and convolutional neural network is proposed. Firstly, Gaussian mixture model is applied to separate the tongue coating and body. In order to exclude the interference of tongue coating on tough and tender tongue classification, a tongue body image inpainting model is built based on generative image inpainting with contextual attention to realize the inpainting of the tongue body image to ensure the continuity of texture and color change of tongue body image. Finally, the classification model of the tough and tender tongue inpainting image based on ResNet101 residual network is used to train and test. The experimental results show that the proposed method achieves better classification results compared with the existing methods of texture classification of tongue image and provides a new idea for tough and tender tongue classification.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:36570335, Yan J et al., 2022, Computational and mathematical methods in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36570335/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-35986968",
+   "title": "A multi-step approach for tongue image classification in patients with diabetes.",
+   "category": "LINGUA",
+   "summary": "In China, diabetes is a common, high-incidence chronic disease. Diabetes has become a severe public health problem.",
+   "content": "BACKGROUND: In China, diabetes is a common, high-incidence chronic disease. Diabetes has become a severe public health problem. However, the current diagnosis and treatment methods are difficult to control the progress of diabetes. Traditional Chinese Medicine (TCM) has become an option for the treatment of diabetes due to its low cost, good curative effect, and good accessibility.\nOBJECTIVE: Based on the tongue images data to realize the fine classification of the diabetic population, provide a diagnostic basis for the formulation of individualized treatment plans for diabetes, ensure the accuracy and consistency of the TCM diagnosis, and promote the objective and standardized development of TCM diagnosis.\nMETHODS: We use the TFDA-1 tongue examination instrument to collect the tongue images of the subjects. Tongue Diagnosis Analysis System (TDAS) is used to extract the TDAS features of the tongue images. Vector Quantized Variational Autoencoder (VQ-VAE) extracts VQ-VAE features from tongue images. Based on VQ-VAE features, K-means clustering tongue images. TDAS features are used to describe the differences between clusters. Vision Transformer (ViT) combined with Grad-weighted Class Activation Mapping (Grad-CAM) is used to verify the clustering results and calculate positioning diagnostic information.\nRESULTS: Based on VQ-VAE features, K-means divides the diabetic population into 4 clusters with clear boundaries. The silhouette, calinski harabasz, and davies bouldin scores are 0.391, 673.256, and 0.809, respectively. Cluster 1 had the highest Tongue Body L (TB-L) and Tongue Coating L (TC-L) and the lowest Tongue Coating Angular second moment (TC-ASM), with a pale red tongue and white coating. Cluster 2 had the highest TC-b with a yellow tongue coating. Cluster 3 had the highest TB-a with a red tongue. Group 4 had the lowest TB-L, TC-L, and TB-b and the highest Per-all with a purple tongue and the largest tongue coating area. ViT verifies the clustering results of K-means, the highest Top-1 Classification Accuracy (CA) is 87.8%, and the average CA is 84.4%.\nCONCLUSIONS: The study organically combined unsupervised learning, self-supervised learning, and supervised learning and designed a complete diabetic tongue image classification method. This method does not rely on human intervention, makes decisions based entirely on tongue image data, and achieves state-of-the-art results. Our research will help TCM deeply participate in the individualized treatment of diabetes and provide new ideas for promoting the standardization of TCM diagnosis.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:35986968, Li J et al., 2022, Computers in biology and medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35986968/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-25281933",
+   "title": "Tongue images and tongue coating microbiome in patients with colorectal cancer.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis, as a unique method of traditional Chinese medicine (TCM), discriminates physiological functions and pathological conditions by observing the changes of the tongue coating. AIMS: To evaluate the differences of tongue images and tongue coating microbiome between patients with colorectal cancer and healthy people.",
+   "content": "BACKGROUND: Tongue diagnosis, as a unique method of traditional Chinese medicine (TCM), discriminates physiological functions and pathological conditions by observing the changes of the tongue coating.\nAIMS: To evaluate the differences of tongue images and tongue coating microbiome between patients with colorectal cancer and healthy people.\nMETHODS: The tongue diagnostic information acquisition system was used to photograph the tongue images and analyze the thickness of the tongue coatings in patients with colorectal cancer and healthy people. The next-generation sequencing technology was used to determine the V2-V4 hypervariable region of 16S rDNA to investigate the microbial community structure and diversity on the tongue coating.\nRESULTS: The tongue coatings in patients with colorectal cancer were obvious thickening compared with tongue images in healthy people. The microbial community structure on the tongue coating was different between patients with colorectal cancer and healthy people.\nCONCLUSION: Tongue diagnosis may provide important leads towards novel microbiome-related diagnostic tools and tongue coating microbiome may be a novel biomarker for characterizing patient with colorectal cancer.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:25281933, Han S et al., 2014, Microbial pathogenesis",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25281933/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40730130",
+   "title": "Investigating the relationship between tongue diagnosis features and gastric cancer: A machine learning-based prediction model.",
+   "category": "LINGUA",
+   "summary": "Gastric cancer (GC) remains a major cause of cancer-related mortality, particularly in China, where early detection is hindered by reliance on invasive, resource-intensive methods like gastroscopy. This study aimed to develop a non-invasive diagnostic tool integrating tongue features derived from traditional Chinese medicine (TCM) with machine learning (ML) to enhance early GC detection.",
+   "content": "BACKGROUND AND OBJECTIVE: Gastric cancer (GC) remains a major cause of cancer-related mortality, particularly in China, where early detection is hindered by reliance on invasive, resource-intensive methods like gastroscopy. This study aimed to develop a non-invasive diagnostic tool integrating tongue features derived from traditional Chinese medicine (TCM) with machine learning (ML) to enhance early GC detection.\nMETHODS: A prospective, propensity score-matched cohort of 292 participants (146 GC, 146 non-GC) was analyzed. Standardized protocols captured tongue features (color, morphology, coating) alongside gastroscopic findings. Seven ML algorithms, including GBDT, LightGBM, and XGBoost, were trained on multimodal clinical and imaging data. Feature selection was performed using LASSO regression, and model performance was evaluated through stratified 5-fold cross-validation and a 30 % independent test set. Association rule mining (FP-Growth) was employed to explore predictive tongue-gastroscopy patterns.\nRESULTS: GC patients exhibited more frequent bluish-purple (42 %), cracked (87 %), swollen (86 %), and prickly tongues (67 %), as well as grayish-black coatings (29 %). Non-GC individuals more often showed pale white tongues (40 %) and peeled coatings (71 %). FP-Growth identified combinations such as cracked tongue, grayish-black, and thin coatings as predictors of hemorrhagic GC (confidence = 88.89 %). LASSO highlighted key predictors including prickly tongue and CA19-9. Among the models, GBDT achieved the best performance (test AUC = 0.980, F1 = 0.932). SHAP analysis confirmed the predictive value of both tongue features and tumor markers.\nCONCLUSION: TCM-based tongue diagnostics combined with ML provides a promising, non-invasive tool for early GC detection.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:40730130, Tian P et al., 2025, European journal of surgical oncology : the journal of the European Society of Surgical Oncology and the British Association of Surgical Oncology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40730130/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38452007",
+   "title": "Tongue feature dataset construction and real-time detection.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis in traditional Chinese medicine (TCM) provides clinically important, objective evidence from direct observation of specific features that assist with diagnosis. However, the current interpretation of tongue features requires a significant amount of manpower and time.",
+   "content": "BACKGROUND: Tongue diagnosis in traditional Chinese medicine (TCM) provides clinically important, objective evidence from direct observation of specific features that assist with diagnosis. However, the current interpretation of tongue features requires a significant amount of manpower and time. TCM physicians may have different interpretations of features displayed by the same tongue. An automated interpretation system that interprets tongue features would expedite the interpretation process and yield more consistent results.\nMATERIALS AND METHODS: This study applied deep learning visualization to tongue diagnosis. After collecting tongue images and corresponding interpretation reports by TCM physicians in a single teaching hospital, various tongue features such as fissures, tooth marks, and different types of coatings were annotated manually with rectangles. These annotated data and images were used to train a deep learning object detection model. Upon completion of training, the position of each tongue feature was dynamically marked.\nRESULTS: A large high-quality manually annotated tongue feature dataset was constructed and analyzed. A detection model was trained with average precision (AP) 47.67%, 58.94%, 71.25% and 59.78% for fissures, tooth marks, thick and yellow coatings, respectively. At over 40 frames per second on a NVIDIA GeForce GTX 1060, the model was capable of detecting tongue features from any viewpoint in real time.\nCONCLUSIONS/SIGNIFICANCE: This study constructed a tongue feature dataset and trained a deep learning object detection model to locate tongue features in real time. The model provided interpretability and intuitiveness that are often lacking in general neural network models and implies good feasibility for clinical application.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:38452007, Chang WH et al., 2024, PloS one",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38452007/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-27035407",
+   "title": "Potential screening and early diagnosis method for cancer: Tongue diagnosis.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis, as a unique method of traditional Chinese medicine (TCM), was used to discriminate physiological functions and pathological conditions by observing the changes of the tongue and tongue coating. The aims of the present study were to explore a potential screening and early diagnosis method of cancer through evaluating the differences of the images of tongue and tongue coating an...",
+   "content": "Tongue diagnosis, as a unique method of traditional Chinese medicine (TCM), was used to discriminate physiological functions and pathological conditions by observing the changes of the tongue and tongue coating. The aims of the present study were to explore a potential screening and early diagnosis method of cancer through evaluating the differences of the images of tongue and tongue coating and the microbiome on the tongue coating. The DS01-B tongue diagnostic information acquisition system was used to photograph and analyze the tongue and tongue coating. The next-generation sequencing technology was used to determine the V2-V4 hypervariable regions of 16S rDNA to investigate the microbiome on the tongue coating. Bioinformatics and statistical methods were used to analyze the microbial community structure and diversity. Comparing with the healthy people, the number of mirror-like tongue, thick tongue coating and the moisture of tongue were increased in cancers. The dominant color of the tongue in the healthy people was reddish while it was purple in the cancers. The relative abundance of Neisseria, Haemophilus, Fusobacterium and Porphyromonas in the healthy people were higher than that in the cancers. We also found 6 kinds of special microorganisms at species level in cancers. The study suggested that tongue diagnosis may provide potential screening and early diagnosis method for cancer.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:27035407, Han S et al., 2016, International journal of oncology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27035407/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39773492",
+   "title": "Construction of machine learning-based models for screening the high-risk patients with gastric precancerous lesions.",
+   "category": "LINGUA",
+   "summary": "The individualized prediction and discrimination of precancerous lesions of gastric cancer (PLGC) is critical for the early prevention of gastric cancer (GC). However, accurate non-invasive methods for distinguishing between PLGC and GC are currently lacking.",
+   "content": "BACKGROUND: The individualized prediction and discrimination of precancerous lesions of gastric cancer (PLGC) is critical for the early prevention of gastric cancer (GC). However, accurate non-invasive methods for distinguishing between PLGC and GC are currently lacking. This study therefore aimed to develop a risk prediction model by machine learning and deep learning techniques to aid the early diagnosis of GC.\nMETHODS: In this study, a total of 2229 subjects were recruited from nine tertiary hospitals between October 2022 and November 2023. We designed a comprehensive questionnaire, identified statistically significant factors, and created a web-based column chart. Then, a risk prediction model was subsequently developed by machine learning techniques. In addition, a tongue image-based risk prediction model was established by deep learning algorithms.\nRESULTS: Based on logistic regression analysis, a dynamic web-based nomogram was developed and it is freely accessible at: https://yz6677.shinyapps.io/GC67/ . Then, the prediction model was established using ten different machine learning algorithms and the Random Forest (RF) model achieved the highest accuracy at 85.65%. According with the predictive results, the top 10 key risk factors were age, traditional Chinese medicine (TCM) constitution type, tongue coating color, tongue color, irregular meals, pickled food, greasy fur, over-hot eating habit, anxiety and sleep onset latency. These factors are all significant risk indicators for the progression of PLGC patients to GC patients. Subsequently, the Swin Transformer architecture was used to develop a tongue image-based model for predicting the risk for progression of PLGC. The verification set showed an accuracy of 73.33% and an area under curve (AUC) greater than 0.8 across all models.\nCONCLUSIONS: Our study developed machine learning and deep learning-based models for predicting the risk for progression of PLGC to GC, which will offer the assistance to determine the high-risk patients from PLGC and improve the early diagnosis of GC.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:39773492, Yu S et al., 2025, Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39773492/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-31164206",
+   "title": "Complexity perception classification method for tongue constitution recognition.",
+   "category": "LINGUA",
+   "summary": "The body constitution is much related to the diseases and the corresponding treatment programs in Traditional Chinese Medicine. It can be recognized by the tongue image diagnosis, so that it is essentially regarded as a problem of tongue image classification, where each tongue image is classified into one of nine constitution types.",
+   "content": "The body constitution is much related to the diseases and the corresponding treatment programs in Traditional Chinese Medicine. It can be recognized by the tongue image diagnosis, so that it is essentially regarded as a problem of tongue image classification, where each tongue image is classified into one of nine constitution types. This paper first presents a system framework to automatically identify the constitution through natural tongue images, where deep convolutional neural networks are carefully designed for tongue coating detection, tongue coating calibration, and constitution recognition. Under the system framework, a novel complexity perception (CP) classification method is proposed to nicely perform the constitution recognition, which can better deal with the bad influence of the variation of environmental condition and the uneven distribution of the tongue images on constitution recognition performance. CP performs the constitution recognition based on the complexity of individual tongue images by selecting the classifier with the corresponding complexity. To evaluate the performance of the proposed method, experiments are conducted on three sizes of clinic tongue images from hospitals. The experimental results illustrate that CP is effective to improve the accuracy of body constitution recognition.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:31164206, Ma J et al., 2019, Artificial intelligence in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31164206/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36212950",
+   "title": "Deep Learning Multi-label Tongue Image Analysis and Its Application in a Population Undergoing Routine Medical Checkup.",
+   "category": "LINGUA",
+   "summary": "Research on intelligent tongue diagnosis is a main direction in the modernization of tongue diagnosis technology. Identification of tongue shape and texture features is a difficult task for tongue diagnosis in traditional Chinese medicine (TCM).",
+   "content": "BACKGROUND: Research on intelligent tongue diagnosis is a main direction in the modernization of tongue diagnosis technology. Identification of tongue shape and texture features is a difficult task for tongue diagnosis in traditional Chinese medicine (TCM). This study aimed to explore the application of deep learning techniques in tongue image analyses.\nMETHODS: A total of 8676 tongue images were annotated by clinical experts, into seven categories, including the fissured tongue, tooth-marked tongue, stasis tongue, spotted tongue, greasy coating, peeled coating, and rotten coating. Based on the labeled tongue images, the deep learning model faster region-based convolutional neural networks (Faster R-CNN) was utilized to classify tongue images. Four performance indices, i.e., accuracy, recall, precision, and F1-score, were selected to evaluate the model. Also, we applied it to analyze tongue image features of 3601 medical checkup participants in order to explore gender and age factors and the correlations among tongue features in diseases through complex networks.\nRESULTS: The average accuracy, recall, precision, and F1-score of our model achieved 90.67%, 91.25%, 99.28%, and 95.00%, respectively. Over the tongue images from the medical checkup population, the model Faster R-CNN detected 41.49% fissured tongue images, 37.16% tooth-marked tongue images, 29.66% greasy coating images, 18.66% spotted tongue images, 9.97% stasis tongue images, 3.97% peeled coating images, and 1.22% rotten coating images. There were significant differences in the incidence of the fissured tongue, tooth-marked tongue, spotted tongue, and greasy coating among age and gender. Complex networks revealed that fissured tongue and tooth-marked were closely related to hypertension, dyslipidemia, overweight and nonalcoholic fatty liver disease (NAFLD), and a greasy coating tongue was associated with hypertension and overweight.\nCONCLUSION: The model Faster R-CNN shows good performance in the tongue image classification. And we have preliminarily revealed the relationship between tongue features and gender, age, and metabolic diseases in a medical checkup population.",
+   "tags": [
+    "tongue"
+   ],
+   "citation": "PubMed PMID:36212950, Jiang T et al., 2022, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36212950/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

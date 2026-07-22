@@ -21,12 +21,18 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 14
+    private const val DB_VERSION = 16
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
 
-    private var initialized = false
+    // @Volatile is required here, not decorative: this is textbook double-checked
+    // locking (check outside the lock, re-check inside). Without it, a reader on
+    // another thread can observe `initialized == true` before the write to
+    // `instance` is visible to it (JMM reordering), and return a database handle
+    // that isn't safely published — the same failure family as the lateinit/init()
+    // bug already caught in RetrofitInstance (see CLAUDE.md).
+    @Volatile private var initialized = false
     private lateinit var instance: AppDatabase
 
     fun provideAppDatabase(context: Context): AppDatabase {
@@ -137,6 +143,8 @@ object DatabaseModule {
         if (current >= 12) migrations.add(MIGRATION_11_12)
         if (current >= 13) migrations.add(MIGRATION_12_13)
         if (current >= 14) migrations.add(MIGRATION_13_14)
+        if (current >= 15) migrations.add(MIGRATION_14_15)
+        if (current >= 16) migrations.add(MIGRATION_15_16)
         return migrations
     }
 
@@ -398,6 +406,63 @@ object DatabaseModule {
                 }
 
             CLINICAL_TABLE_SCHEMAS.forEach { schema -> rebuildWithCrmForeignKey(database, schema) }
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // v15 — FTS4 search index
+    //
+    // Adiciona a tabela virtual FTS4 `article_fts` para busca textual
+    // dos artigos da biblioteca. Substitui o índice BM25 em memória
+    // por comandos SQL no SQLite.
+    //
+    // Additive only: nenhuma tabela existente é modificada.
+    // ─────────────────────────────────────────────────────────────────────────
+    private val MIGRATION_14_15 = object : androidx.room.migration.Migration(14, 15) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE VIRTUAL TABLE IF NOT EXISTS `article_fts` USING fts4(
+                    `articleId` TEXT,
+                    `category` TEXT,
+                    `title` TEXT,
+                    `summary` TEXT,
+                    `content` TEXT,
+                    `tags` TEXT
+                )
+                """.trimIndent(),
+            )
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // v16 — Provenance no FTS4
+    //
+    // Adiciona a coluna `provenance` ao índice FTS4 para classificar
+    // artigos como VERIFICAVEL (com localizador de fonte) ou RASCUNHO
+    // (sem localizador, gerado por IA).
+    //
+    // FTS4 não permite ALTER TABLE, então a tabela é dropada e recriada.
+    // Como ela é populada unicamente pelo [FtsSearchService.rebuildIndex()]
+    // (que limpa e reinsere tudo), não há perda de dados — o rebuild roda
+    // na próxima busca.
+    // ─────────────────────────────────────────────────────────────────────────
+    private val MIGRATION_15_16 = object : androidx.room.migration.Migration(15, 16) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("DROP TABLE IF EXISTS `article_fts`")
+            database.execSQL(
+                """
+                CREATE VIRTUAL TABLE IF NOT EXISTS `article_fts` USING fts4(
+                    `articleId` TEXT,
+                    `category` TEXT,
+                    `title` TEXT,
+                    `summary` TEXT,
+                    `content` TEXT,
+                    `tags` TEXT,
+                    `provenance` TEXT
+                )
+                """.trimIndent(),
+            )
         }
     }
 

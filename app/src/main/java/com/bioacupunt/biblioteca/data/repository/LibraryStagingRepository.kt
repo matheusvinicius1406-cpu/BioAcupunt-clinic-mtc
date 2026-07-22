@@ -43,7 +43,12 @@ class LibraryStagingRepository(
 
     // A categoria do artigo encenado é guardada no campo `type` da entity (ver stagePack),
     // então recuperá-la é direto — sem heurística.
-    private fun toArticle(entity: BibliotecaNodeEntity): MtcArticle =
+    //
+    // `meta`, quando informado, carrega a citação/fonte/proveniência até o MtcArticle —
+    // é o que permite a médica conferir de onde veio o artigo depois que ele sai da
+    // fila de curadoria (sem isto a proveniência ficava presa em ReviewMeta e sumia
+    // assim que o artigo virava "acervo consultável" comum).
+    private fun toArticle(entity: BibliotecaNodeEntity, meta: ReviewMeta? = null): MtcArticle =
         MtcArticle(
             id = entity.id,
             title = entity.title,
@@ -51,6 +56,10 @@ class LibraryStagingRepository(
             summary = entity.summary,
             content = entity.content,
             tags = entity.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
+            citation = meta?.citation.orEmpty(),
+            sourceUrl = meta?.sourceUrl.orEmpty(),
+            sourceRef = meta?.sourceRef.orEmpty(),
+            provenance = meta?.provenance?.name.orEmpty(),
         )
 
     /**
@@ -83,9 +92,33 @@ class LibraryStagingRepository(
             }
         }
 
+    /**
+     * Flow de artigos APROVADOS — reage a mudanças na tabela.
+     * A curadoria aprova/rejeita → o observador recebe a lista atualizada automaticamente.
+     */
+    fun observeApprovedArticles(): kotlinx.coroutines.flow.Flow<List<MtcArticle>> =
+        dao.observeAll().map { list ->
+            list.mapNotNull { e ->
+                val meta = metaOf(e) ?: return@mapNotNull null
+                if (meta.status != ReviewStatus.APPROVED) null
+                else toArticle(e, meta)
+            }
+        }
+
     /** Snapshot dos artigos APROVADOS — o que pode entrar no acervo consultável/RAG. */
-    suspend fun approvedArticles(): List<MtcArticle> =
-        dao.getAllOnce().filter { metaOf(it)?.status == ReviewStatus.APPROVED }.map(::toArticle)
+    suspend fun approvedArticles(): List<MtcArticle> = approvedArticlesWithMeta().map { it.first }
+
+    /**
+     * Artigos aprovados com metadados completos (incluindo proveniência).
+     * Necessário para o índice FTS4 incluir a classificação de proveniência.
+     */
+    suspend fun approvedArticlesWithMeta(): List<Pair<MtcArticle, ReviewMeta>> =
+        dao.getAllOnce()
+            .mapNotNull { e ->
+                val meta = metaOf(e) ?: return@mapNotNull null
+                if (meta.status != ReviewStatus.APPROVED) null
+                else toArticle(e, meta) to meta
+            }
 
     suspend fun approve(id: String, now: Long) = transition(id, ReviewStatus.APPROVED, now)
     suspend fun reject(id: String, now: Long) = transition(id, ReviewStatus.REJECTED, now)

@@ -1,0 +1,265 @@
+{
+ "source": "PubMed — pesquisa aberta sobre MTC/acupuntura, categoria PULSO, 2026 (E-utilities, resumos/abstracts públicos)",
+ "items": [
+  {
+   "id": "pubmed-32824477",
+   "title": "Traditional Chinese Medicine Pulse Diagnosis on a Smartphone Using Skin Impedance at Acupoints: A Feasibility Study.",
+   "category": "PULSO",
+   "summary": "In traditional Chinese medicine (TCM), pulse diagnosis is one of the most important methods for diagnosis. A pulse can be felt by applying firm fingertip pressure to the skin where the arteries travel.",
+   "content": "In traditional Chinese medicine (TCM), pulse diagnosis is one of the most important methods for diagnosis. A pulse can be felt by applying firm fingertip pressure to the skin where the arteries travel. The pulse diagnosis has become an important tool not only for TCM practitioners but also for several areas of Western medicine. Many pulse measuring devices have been proposed to obtain objective pulse conditions. In the past, pulse diagnosis instruments were single-point sensing methods, which missed a lot of information. Later, multi-point sensing instruments were developed that resolved this issue but were much higher in cost and lacked mobility. In this article, based on the concept of sensor fusion, we describe a portable low-cost system for TCM pulse-type estimation using a smartphone connected to two sensors, including one photoplethysmography (PPG) sensor and one galvanic skin response (GSR) sensor. As a proof of concept, we collected five-minute PPG pulse information and skin impedance on 24 acupoints from 80 subjects. Based on these collected data, we implemented a fully connected neural network (FCN), which was able to provide high prediction accuracy (>90%) for patients with a TCM wiry pulse.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:32824477, Lan KC, Litscher G, Hung TH, 2020, Sensors (Basel, Switzerland)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32824477/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-28137520",
+   "title": "The correlation between pulse diagnosis and constitution identification in traditional Chinese medicine.",
+   "category": "PULSO",
+   "summary": "Our study aimed to correlate pulse wave parameters such as augmentation index (AI) and heart rate variability with traditional Chinese medicine (TCM) constitution for evaluating health status. DESIGN: Out of 177 subjects, 69 healthy subjects were enrolled in the present study, and others were excluded because of cardiovascular, liver, kidney, or other diseases.",
+   "content": "OBJECTIVES: Our study aimed to correlate pulse wave parameters such as augmentation index (AI) and heart rate variability with traditional Chinese medicine (TCM) constitution for evaluating health status.\nDESIGN: Out of 177 subjects, 69 healthy subjects were enrolled in the present study, and others were excluded because of cardiovascular, liver, kidney, or other diseases. Each subject was invited to complete pulse wave examination and the Constitution in Chinese Medicine Questionnaire. Independent Student's t-tests, Mann-Whitney tests, and binary logistic regression analysis were used to analyse the correlation between pulse wave parameters and TCM constitution.\nRESULTS: Qi-deficient individuals had higher AI (p=0.006) and lower diastolic blood pressure (p=0.011); yang-deficient individuals had lower dP/dt max (p=0.030), systolic blood pressure (p=0.020), and pulse pressure (p=0.048); and damp-heat individuals had higher subendocardial viability index (SEVI) scores (p=0.011). We then categorized the phlegm dampness and yang-deficiency individuals into the cold group and those with damp-heat and yin-deficiency into the heat group. A comparison of the two constitution groups showed higher AI in the cold group (p=0.026). Binary logistic regression analysis demonstrated that only AI was a determinant, as evidenced by the finding that an increase of one unit in AI corresponded to an increase of 5% in the odds ratio for individuals to have a cold constitution (p=0.026).\nCONCLUSIONS: Individuals with qi-deficient and cold constitutions had higher AI and lower SEVI, potentially reflecting an increase in arterial stiffness. This study can provide a basis for further investigation of the physiological indicators of TCM constitutions in modern medicine.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:28137520, Wu HK et al., 2017, Complementary therapies in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/28137520/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-24139459",
+   "title": "Contemporary Chinese pulse diagnosis: a modern interpretation of an ancient and traditional method.",
+   "category": "PULSO",
+   "summary": "Contemporary Chinese pulse diagnosis™ (CCPD) is a system of pulse diagnosis utilized by Dr. John He Feng Shen, OMD, and documented by Dr.",
+   "content": "Contemporary Chinese pulse diagnosis™ (CCPD) is a system of pulse diagnosis utilized by Dr. John He Feng Shen, OMD, and documented by Dr. Leon Hammer, MD, in the book Chinese Pulse Diagnosis, A Contemporary Approach. It is the traditional method of the Ding medical lineage from the Shanghai region and dates to the 15th century in Chinese language texts. The fundamentals of this system are, however, much older and can be directly traced to the Neijing Suwen. Having been passed from the last direct inheritor of Ding knowledge (Dr. Shen) to modern practitioners of Chinese medicine by way of Dr. Hammer and his students, it represents an important system of advanced diagnosis. Although modern diagnostic technology provides very sophisticated diagnoses, for these instruments to be effective, the disease process must already have a physical manifestation. CCPD, on the other hand, provides the earliest warnings of physiological processes, which if left unchecked may result in the subsequent appearance of a disease. This article describes the derivation and the principles of this system of pulse diagnosis and explores its successful integration into the modern practice of Chinese medicine.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:24139459, Bilton K, Hammer L, Zaslawski C, 2013, Journal of acupuncture and meridian studies",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24139459/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40925696",
+   "title": "TPC-GCN: Deep learning for pulse pattern classification in traditional Chinese medicine.",
+   "category": "PULSO",
+   "summary": "Pulse diagnosis holds a pivotal role in traditional Chinese medicine (TCM) diagnostics, with pulse characteristics serving as one of the critical bases for its assessment. Accurate classification of these pulse pattern is paramount for the objectification of TCM.",
+   "content": "Pulse diagnosis holds a pivotal role in traditional Chinese medicine (TCM) diagnostics, with pulse characteristics serving as one of the critical bases for its assessment. Accurate classification of these pulse pattern is paramount for the objectification of TCM. This study proposes an enhanced SMOTE approach to achieve data augmentation, followed by multi-domain feature extraction. Graph data structures with varying configurations are subsequently constructed to facilitate more profound insights into the intrinsic information within the data. Additionally, a multi-channel lightweight graph convolutional network (GCN) is devised. This network's core strategy lies in extracting diverse layers of information through parallel branches, integrating local structural information with adaptive weights, and employing attention-weighted fusion to improve classification accuracy and model robustness. The proposed network model achieved 91.68% accuracy, a mean F1 score of 92%, a mean recall rate of 92%, and a mean precision rate of 92% on the pulse dataset. The results demonstrate a marked improvement in pulse classification accuracy, validating the efficacy of this approach while offering new perspectives and methodologies for pulse signal classification research.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:40925696, Li H et al., 2025, Medical engineering & physics",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40925696/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-26988431",
+   "title": "Traditional Chinese medicine wrist pulse-taking is associated with pulse waveform analysis and hemodynamics in hypertension.",
+   "category": "PULSO",
+   "summary": "Pulse wave analysis (PWA) quantifies the phenomenon of pulse waveform propagation in patients with cardiovascular diseases, whereas pulse image analysis (PIA) is a subjective examination in traditional Chinese medicine. OBJECTIVE: This study evaluated the association of PIA with PWA and hemodynamics in patients with hypertension.",
+   "content": "BACKGROUND: Pulse wave analysis (PWA) quantifies the phenomenon of pulse waveform propagation in patients with cardiovascular diseases, whereas pulse image analysis (PIA) is a subjective examination in traditional Chinese medicine.\nOBJECTIVE: This study evaluated the association of PIA with PWA and hemodynamics in patients with hypertension.\nDESIGN, SETTING, PARTICIPANTS AND INTERVENTIONS: This observational, cross-sectional study enrolled 45 patients (26 men, (55.2 ± 10.3) years, systolic blood pressure (155 ± 28) mmHg, diastolic blood pressure (93 ± 17) mmHg) for assessment of clinical and laboratorial data.\nMAIN OUTCOME MEASURES: Primary outcomes comprised: pattern differentiation based on an automated method; PIA at the radial artery using the 'simultaneous pressing' method for identification of factors such as strength (strong/weak), depth (superficial/deep), and speed (fast/moderate/slow); and PWA at the same artery using a noninvasive system.\nRESULTS: Significant multivariate main effects were observed for depth (λ=0.648, F5,29 =3.149, P=0.022, η(2) =0.352), strength (λ=0.608, F5,29 =3.736, P=0.010, η(2) =0.392), and speed (λ=0.535, F5,29 =5.302, P=0.002, η(2) =0.465). General effects comprised high values of PWA and blood pressure for superficial, strong, and fast pulse images. A strong pulse was found for pulse pressure ≥ 62.5 mmHg and systolic blood pressure ≥ 149.5 mmHg, whereas a superficial pulse was found for heart rate ≥ 58.25 beats/min; a fast pulse was found for heart rate ≥ 69.6 beats/min and pulse wave velocity ≥ 9.185 m/s.\nCONCLUSION: Associations were explained by LaPlace's law, arterial remodeling in hypertension, alongside the traditional criterion for classifying speed in pulse images. PIA is associated with PWA and hemodynamics in patients with hypertension. Systolic and pulse pressures, heart rate, and pulse wave velocity are quantitative variables that have information to describe the qualitative pulse images such as strength, depth and speed.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:26988431, Moura NG, Cordovil I, Ferreira Ade S, 2016, Journal of integrative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/26988431/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33220452",
+   "title": "Disclosure of suboptimal health status through traditional Chinese medicine-based body constitution and pulse patterns.",
+   "category": "PULSO",
+   "summary": "Suboptimal health status (SHS) is a dynamic state wherein people have not been diagnosed with a disease but tend to develop diseases. People with SHS often experience fatigue and other nonspecific symptoms, which are related to a deviated body constitution in traditional Chinese medicine (TCM).",
+   "content": "OBJECTIVES: Suboptimal health status (SHS) is a dynamic state wherein people have not been diagnosed with a disease but tend to develop diseases. People with SHS often experience fatigue and other nonspecific symptoms, which are related to a deviated body constitution in traditional Chinese medicine (TCM). However, the correlation between TCM constitution and SHS has not been adequately investigated. Furthermore, no study has explored the radial pulse analysis-an assistive objective indicator of TCM constitution-in healthy people and people with SHS.\nDESIGN: A cross-sectional study.\nSETTINGS/LOCATION: Center for Traditional Medicine, Taipei Veterans General Hospital, Taiwan.\nSUBJECTS: Sixty-six adults (27 healthy participants and 39 participants with SHS) who were aged 20-39 years.\nOUTCOME MEASURES: The body constitution questionnaire (BCQ) scores, suboptimal health status questionnaire-25 (SHSQ-25) scores, and radial pulse waves detected using sphygmography were recorded. Pulse wave analyses are presented as the ratio of frequency below 10 Hz to that above 10 Hz (SER10), which represent energy changes in organ blood flow.\nRESULTS: Participants with SHS had significantly higher Yang-Xu, Yin-Xu, and stasis scores of BCQ compared with healthy participants. The SHSQ-25 scores of the participants with SHS were moderately correlated with their Yang-Xu, Yin-Xu, and stasis scores (r = 0.65, 0.66, and 0.72, respectively; all p < 0.001), but weak correlations were discovered for healthy participants. The participants with SHS had significantly higher SER10 at the left guan (the \"liver\" system in TCM) than did the healthy participants.\nCONCLUSIONS: SHS is moderately correlated with TCM-based constitution and those with SHS had increased SER10 at the leftguan of the radial pulse.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:33220452, Kung YY et al., 2021, Complementary therapies in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33220452/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-29295163",
+   "title": "The Study of Pulse Condition of Traditional Chinese Medicine in Information Age.",
+   "category": "PULSO",
+   "summary": "Using the study of pulse condition in Traditional Chinese Medicine (TCM) as a case example, this paper discusses the characteristics of pulse information obtained by Chinese medicine practitioners, how to correctly understand the relationship between the human body and Chinese medicine in the information age, how to deal with pulse data, and how to study TCM pulse condition . Furthermore, we po...",
+   "content": "Using the study of pulse condition in Traditional Chinese Medicine (TCM) as a case example, this paper discusses the characteristics of pulse information obtained by Chinese medicine practitioners, how to correctly understand the relationship between the human body and Chinese medicine in the information age, how to deal with pulse data, and how to study TCM pulse condition . Furthermore, we point out that the application of modern big data processing technology to the pulse of Chinese medicine offers new opportunities.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:29295163, Shi C et al., 2017, Studies in health technology and informatics",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29295163/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-22732024",
+   "title": "Digitalizing traditional chinese medicine pulse diagnosis with artificial neural network.",
+   "category": "PULSO",
+   "summary": "The increasing popularities of traditional Chinese medicine (TCM) and telehealth indicate a need for digitalizing major clinical assessment methods used during TCM consultations. In this study, an electronic TCM pulse diagnostic system was developed, and its validity was explored.",
+   "content": "OBJECTIVES: The increasing popularities of traditional Chinese medicine (TCM) and telehealth indicate a need for digitalizing major clinical assessment methods used during TCM consultations. In this study, an electronic TCM pulse diagnostic system was developed, and its validity was explored.\nMATERIALS AND METHODS: The system was developed with an artificial neural network (ANN). The output neurons were TCM pulse qualities operationalized as the intensity of eight elements (depth, rate, regularity, width, length, smoothness, stiffness, and strength) at six locations (left and right cun, guan, and chi). The input neurons were physical parameters of arterial pressure waveform acquired from the six locations by a pulse acquisition device. TCM pulse quality was rated by a TCM doctor on a 0-10 visual analog scale. Physical parameters were extracted from the arterial pressure waveform with a pulse extraction program developed in-house. The model structure, including number of hidden neurons and hidden layers, and training algorithms were manipulated to optimize model performance. The value of r² was the outcome measure indicating model performance.\nRESULTS: Two hundred twenty-nine subjects were recruited. Four-layer ANN models trained with 45 hidden neurons and the Levenberg-Marquardt algorithm performed the best. The r² ranged from 0.60 to 0.86.\nCONCLUSIONS: The validity of the proposed system generated by ANN is established and can assist TCM doctors in collecting relevant health data during telehealth consultation.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:22732024, Tang AC, Chung JW, Wong TK, 2012, Telemedicine journal and e-health : the official journal of the American Telemedicine Association",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22732024/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39344553",
+   "title": "Traditional Chinese Medicine (TCM)-Inspired Fully Printed Soft Pressure Sensor Array with Self-Adaptive Pressurization for Highly Reliable Individualized Long-Term Pulse Diagnostics.",
+   "category": "PULSO",
+   "summary": "Reliable, non-invasive, continuous monitoring of pulse and blood pressure is essential for the prevention and diagnosis of cardiovascular diseases. However, the pulse wave varies drastically among individuals or even over time in the same individual, presenting significant challenges for the existing pulse sensing systems.",
+   "content": "Reliable, non-invasive, continuous monitoring of pulse and blood pressure is essential for the prevention and diagnosis of cardiovascular diseases. However, the pulse wave varies drastically among individuals or even over time in the same individual, presenting significant challenges for the existing pulse sensing systems. Inspired by pulse diagnosis methods in traditional Chinese medicine (TCM), this work reports a self-adaptive pressure sensing platform (PSP) that combines the fully printed flexible pressure sensor array with an adaptive wristband-style pressure system can identify the optimal pulse signal. Besides the detected pulse rate/width/length, \"Cun, Guan, Chi\" position, and \"floating, moderate, sinking\" pulse features, the PSP combined with a machine learning-based linear regression model can also accurately predict blood pressure such as systolic, diastolic, and mean arterial pressure values. The developed diagnostic platform is demonstrated for highly reliable long-term monitoring and analysis of pulse and blood pressure across multiple human subjects over time. The design concept and proof-of-the-concept demonstrations also pave the way for the future developments of flexible sensing devices/systems for adaptive individualized monitoring in the complex practical environments for personalized medicine, along with the support for the development of digital TCM.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:39344553, Wang X et al., 2025, Advanced materials (Deerfield Beach, Fla.)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39344553/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-41087424",
+   "title": "Integrating traditional Chinese pulse diagnosis with machine learning: novel approaches for pregnancy and coronary heart disease identification.",
+   "category": "PULSO",
+   "summary": "This study integrated ancient Traditional Chinese Medicine (TCM) pulse diagnosis techniques with modern machine learning to advance contemporary medical diagnostics. A portable intelligent TCM pulse diagnostic device was developed using MEMS and CMOS technologies to collect detailed pulse waveform data from three groups: healthy females, females with coronary heart disease (CHD), and pregnant f...",
+   "content": "This study integrated ancient Traditional Chinese Medicine (TCM) pulse diagnosis techniques with modern machine learning to advance contemporary medical diagnostics. A portable intelligent TCM pulse diagnostic device was developed using MEMS and CMOS technologies to collect detailed pulse waveform data from three groups: healthy females, females with coronary heart disease (CHD), and pregnant females in the first trimester. Three feature selection methods-Random Forest, Recursive Feature Elimination, and correlation analysis were adopted to identify key pulse features. Thirteen classification algorithms using various combinations of feature selection and machine learning approaches were evaluated. This study achieved a maximum classification accuracy of 80% using solely pulse data. Incorporating clinical parameters such as temperature and age significantly increased classification accuracy to 91%. The Gradient Boosting Decision Tree model with correlation analysis-based feature selection and Random Forest-based dimensionality reduction demonstrated the highest accuracy. Key pulse features identified included those related to the Liver Meridian, Pericardium Meridian, and Heart Meridian, which are crucial for differentiating the three groups. This study validated the clinical utility of pulse diagnostic devices when combined with machine learning algorithms. This study demonstrates concrete clinical utility for the pulse diagnostic device, while empirically validating foundational TCM concepts. It establishes a rigorous framework to advance evidence-driven modernization of pulse diagnosis protocols.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:41087424, Qiao M et al., 2025, Scientific reports",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41087424/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-18316054",
+   "title": "Feeling the pulse in Maya medicine: an endangered traditional tool for diagnosis, therapy, and tracking patients' progress.",
+   "category": "PULSO",
+   "summary": "Throughout history, diagnostic tools utilizing the human senses, such as pulse diagnosis, have developed all over the world. In many areas where medical technology is limited or absent, they persist, whereas in other areas these skills are in danger of extinction.",
+   "content": "Throughout history, diagnostic tools utilizing the human senses, such as pulse diagnosis, have developed all over the world. In many areas where medical technology is limited or absent, they persist, whereas in other areas these skills are in danger of extinction. The practice of pulse diagnosis by the accomplished Maya healer, Don Elijio Panti, who lived in Belize, Central America, was observed over the final decade of his life and work. Don Elijio used pulse palpation as a diagnostic tool, therapeutic tool, and as a means for tracking patients' progress. He could diagnose a wide array of both physical and spiritual afflictions and was observed diagnosing 42 different conditions or states throughout this period by feeling the pulse. He recognized at least 28 distinct pulse types. Herein, the authors report the detailed system of an endangered diagnostic tradition as practiced by the late, acclaimed Maya healer, including pulse-type descriptions and corresponding diagnoses. Pulse diagnosis is still practiced today among some of Belize's diminishing population of traditional healers, although no practice appears to be as developed as that of the previous generation of Maya healers. Furthermore, it is unlikely that there are new practitioners of pulse diagnosis in the Maya community to maintain and build on the disappearing tradition. Given the unfortunate paucity of data on Maya pulse diagnosis, the practice of pulse diagnosis in Traditional Chinese Medicine (TCM) is used as an illustrative framework for documenting Don Elijio's practice. Corresponding diagnoses from TCM and Don Elijio's system are compared, elucidating similarities between the two disparate medical systems.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:18316054, Balick MJ, De Gezelle JM, Arvigo R, 2008, Explore (New York, N.Y.)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18316054/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40056842",
+   "title": "TCM-KLLaMA: Intelligent generation model for Traditional Chinese Medicine Prescriptions based on knowledge graph and large language model.",
+   "category": "PULSO",
+   "summary": "Traditional Chinese medicine (TCM) prescriptions are a basic component of TCM treatment, developed by assessing patient symptoms and prescribing a mix of herbs. Accurate prescription generation is critical for enhancing treatment outcomes and maintaining patient safety.",
+   "content": "Traditional Chinese medicine (TCM) prescriptions are a basic component of TCM treatment, developed by assessing patient symptoms and prescribing a mix of herbs. Accurate prescription generation is critical for enhancing treatment outcomes and maintaining patient safety. However, conventional methods based on Large Language Models (LLMs) focus mainly on symptom information, neglecting other TCM diagnostic expertise, such as tongue and pulse diagnosis, and are prone to hallucination, which is unacceptable in medical applications. To address these challenges, the paper proposes an effective prescription generation model enriched by a TCM knowledge graph (KG) called the TCM-KLLaMA model. In this model, the Chinese-LLaMA2-7 B model is provided with a new output layer and loss function to suppress hallucinations and increase recommendation accuracy. A TCM KG including symptoms, tongue diagnosis, and pulse diagnosis was developed, and the model was fine-tuned utilizing the suggested synonym and matching knowledge injection (SMKI) mechanism. Extensive experiments demonstrate that the TCM- KLLaMA outperforms baseline models in both Precision and F1 Score, proving its superior performance in prescription generation tasks.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:40056842, Zhuang Y et al., 2025, Computers in biology and medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40056842/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33969117",
+   "title": "Artificial Intelligence-Based Diagnosis of Diabetes Mellitus: Combining Fundus Photography with Traditional Chinese Medicine Diagnostic Methodology.",
+   "category": "PULSO",
+   "summary": "In this study, we propose a technique for diagnosing both type 1 and type 2 diabetes in a quick, noninvasive way by using equipment that is easy to transport. Diabetes mellitus is a chronic disease that affects public health globally.",
+   "content": "In this study, we propose a technique for diagnosing both type 1 and type 2 diabetes in a quick, noninvasive way by using equipment that is easy to transport. Diabetes mellitus is a chronic disease that affects public health globally. Although diabetes mellitus can be accurately diagnosed using conventional methods, these methods require the collection of data in a clinical setting and are unlikely to be feasible in areas with few medical resources. This technique combines an analysis of fundus photography of the physical and physiological features of the patient, namely, the tongue and the pulse, which are used in Traditional Chinese Medicine. A random forest algorithm was used to analyze the data, and the accuracy, precision, recall, and F1 scores for the correct classification of diabetes were 0.85, 0.89, 0.67, and 0.76, respectively. The proposed technique for diabetes diagnosis offers a new approach to the diagnosis of diabetes, in that it may be convenient in regions that lack medical resources, where the early detection of diabetes is difficult to achieve.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:33969117, Xiang Y et al., 2021, BioMed research international",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33969117/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-41813224",
+   "title": "Assistive Technologies for Pulse-Based Tele-Practice in Traditional Chinese Medicine: Two-Phase, Dual-Method Feasibility and Pilot Study.",
+   "category": "PULSO",
+   "summary": "Pulse palpation is essential for accurate traditional Chinese medicine diagnosis. However, this tactile-sensory-dependent technique is not feasible in teleconference, leaving traditional Chinese medicine underserved by conventional tele-practice frameworks.",
+   "content": "BACKGROUND: Pulse palpation is essential for accurate traditional Chinese medicine diagnosis. However, this tactile-sensory-dependent technique is not feasible in teleconference, leaving traditional Chinese medicine underserved by conventional tele-practice frameworks. To address this, we developed an Assistive Pulse Data Collection (APDC; Logistics and Supply Chain MultiTech R&D Centre) device.\nOBJECTIVE: This study aimed to evaluate feasibility and to preliminarily examine the Chinese medicine practitioners (CMPs) agreement on real-person pulses and machine-generated pulses and collect users' feedback.\nMETHODS: Following World Health Organization guidelines for piloting new medical technologies, a 2-phase, dual-method evaluation was conducted. In the feasibility phase, 10 participants' pulses were recorded using the APDC device. Overall, 5 CMPs evaluated the participants' and machine-generated pulses using a 5-point Likert scale (1=\"Strongly Disagree\" to 5=\"Strongly Agree\"). In the pilot phase, 10 CMPs assessed pulses from 42 participants and refined the regenerated outputs for comparison. Quantitative and qualitative feedback from CMPs and participants was collected.\nRESULTS: CMPs evaluated machine-regenerated pulses across 4 parameters: frequency (mean agreement score 4.1, SD 0.6), rhythm (mean 3.8, SD 0.6), width (mean 2.7, SD 0.9), and force (mean 2.4, SD 1), indicating moderate-to-high agreement for frequency or rhythm but lower consensus for width and force. Following device refinements (eg, adjustable armrest, pressure calibration, and pulse algorithms), the pilot phase CMPs' agreement improved for frequency (mean 4.3, SD 0.7) and rhythm (mean 4, SD 0.8), while width (mean 3, SD 0.9) and force (mean 2.8, SD 0.9) remained suboptimal. CMPs reported enhanced clarity (mean 4.3, SD 1) but persistent inefficiency (mean 2.5, SD 0.5) and neutral satisfaction (mean 2.6, SD 0.5). Participants maintained favorable ratings for comfort (mean 4, SD 0.7), easy to use (mean 3.9, SD 0.8), and high satisfaction (mean 4, SD 0.7).\nCONCLUSIONS: The APDC device is feasible and enables CMPs to take remote pulse feature assessment, but further optimization of pulse force and width is warranted.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:41813224, Ruan JY et al., 2026, JMIR human factors",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41813224/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-17709064",
+   "title": "Developing classification indices for Chinese pulse diagnosis.",
+   "category": "PULSO",
+   "summary": "To develop classification criteria for Chinese pulse diagnosis and to objectify the ancient diagnostic technique. METHODS: Chinese pulse curves are treated as wave signals.",
+   "content": "AIM: To develop classification criteria for Chinese pulse diagnosis and to objectify the ancient diagnostic technique.\nMETHODS: Chinese pulse curves are treated as wave signals. Multidimensional variable analysis is performed to provide the best curve fit between the recorded Chinese pulse waveforms and the collective Gamma density functions.\nRESULTS: Chinese pulses can be recognized quantitatively by the newly-developed four classification indices, that is, the wave length, the relative phase difference, the rate parameter, and the peak ratio. The new quantitative classification not only reduces the dependency of pulse diagnosis on Chinese physician's experience, but also is able to interpret pathological wrist-pulse waveforms more precisely.\nCONCLUSIONS: Traditionally, Chinese physicians use fingertips to feel the wrist-pulses of patients in order to determine their health conditions. The qualitative theory of the Chinese pulse diagnosis is based on the experience of Chinese physicians for thousands of years. However, there are no quantitative theories to relate these different wrist-pulse waveforms to the health conditions of patients. In this paper, new quantified classification indices have been introduced to interpret the Chinese pulse waveform patterns objectively.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:17709064, Shu JJ, Sun Y, 2007, Complementary therapies in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17709064/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39839895",
+   "title": "Traditional Chinese medicine in the treatment of Helicobacter pylori-related gastritis: The mechanisms of signalling pathway regulations.",
+   "category": "PULSO",
+   "summary": "Helicobacter pylori-associated gastritis (HPAG) is a common condition of the gastrointestinal tract. However, extensive and long-term antibiotic use has resulted in numerous adverse effects, including increased resistance, gastrointestinal dysfunction, and increased recurrence rates.",
+   "content": "Helicobacter pylori-associated gastritis (HPAG) is a common condition of the gastrointestinal tract. However, extensive and long-term antibiotic use has resulted in numerous adverse effects, including increased resistance, gastrointestinal dysfunction, and increased recurrence rates. When these concerns develop, traditional Chinese medicine (TCM) may have advantages. TCM is based on the concept of completeness and aims to eliminate pathogens and strengthen the body. It has the potential to prevent this condition while also boosting the rate of Helicobacter pylori eradication. This review elaborates on the mechanism of TCM treatment for HPAG based on cellular signalling pathways, which reflects the flexibility of TCM in treating diseases and the advantages of multi-level, multi-pathway, and multi-target treatments for HPAG.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:39839895, Zhang PP et al., 2025, World journal of gastroenterology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39839895/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-25352897",
+   "title": "Design and application of pulse information acquisition and analysis system with dynamic recognition in traditional Chinese medicine.",
+   "category": "PULSO",
+   "summary": "To design the pulse information which includes the parameter of pulse-position, pulse-number, pulse-shape and pulse-force acquisition and analysis system with function of dynamic recognition, and research the digitalization and visualization of some common cardiovascular mechanism of single pulse. METHODS: To use some flexible sensors to catch the radial artery pressure pulse wave and utilize t...",
+   "content": "BACKGROUND: To design the pulse information which includes the parameter of pulse-position, pulse-number, pulse-shape and pulse-force acquisition and analysis system with function of dynamic recognition, and research the digitalization and visualization of some common cardiovascular mechanism of single pulse.\nMETHODS: To use some flexible sensors to catch the radial artery pressure pulse wave and utilize the high frequency B mode ultrasound scanning technology to synchronously obtain the information of radial extension and axial movement, by the way of dynamic images, then the gathered information was analyzed and processed together with ECG. Finally, the pulse information acquisition and analysis system was established which has the features of visualization and dynamic recognition, and it was applied to serve for ten healthy adults.\nRESULTS: The new system overcome the disadvantage of one-dimensional pulse information acquisition and process method which was common used in current research area of pulse diagnosis in traditional Chinese Medicine, initiated a new way of pulse diagnosis which has the new features of dynamic recognition, two-dimensional information acquisition, multiplex signals combination and deep data mining.\nCONCLUSIONS: The newly developed system could translate the pulse signals into digital, visual and measurable motion information of vessel.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:25352897, Zhang J et al., 2014, African health sciences",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25352897/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-27562483",
+   "title": "A Distinguishing Arterial Pulse Waves Approach by Using Image Processing and Feature Extraction Technique.",
+   "category": "PULSO",
+   "summary": "Traditional Chinese Medicine (TCM) is based on five main types of diagnoses methods consisting of inspection, auscultation, olfaction, inquiry, and palpation. The most important one is palpation also called pulse diagnosis which is to measure wrist artery pulse by doctor's fingers for detecting patient's health state.",
+   "content": "Traditional Chinese Medicine (TCM) is based on five main types of diagnoses methods consisting of inspection, auscultation, olfaction, inquiry, and palpation. The most important one is palpation also called pulse diagnosis which is to measure wrist artery pulse by doctor's fingers for detecting patient's health state. In this paper, it is carried out by using a specialized pulse measuring instrument to classify one's pulse type. The measured pulse waves (MPWs) were segmented into the arterial pulse wave curve (APWC) by image proposing method. The slopes and periods among four specific points on the APWC were taken to be the pulse features. Three algorithms are proposed in this paper, which could extract these features from the APWCs and compared their differences between each of them to the average feature matrix, individually. These results show that the method proposed in this study is superior and more accurate than the previous studies. The proposed method could significantly save doctors a large amount of time, increase accuracy and decrease data volume.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:27562483, Chen HC et al., 2016, Journal of medical systems",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27562483/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-37429664",
+   "title": "[Discussion on the relationship between yuan-source points of yang meridians and diseases of fu- organs].",
+   "category": "PULSO",
+   "summary": "Huangdi Neijing (Yellow Emperor 's Canon of Medicine) establishes the theory that yuan-source points are indicated in zangfu diseases. However, compared with the yuan-source points of yin meridians for the treatment of zang-organ diseases, there is less attention to the indication of yuan-source points of yang meridians for fu-organ diseases, and this statement is even questioned.",
+   "content": "Huangdi Neijing (Yellow Emperor 's Canon of Medicine) establishes the theory that yuan-source points are indicated in zangfu diseases. However, compared with the yuan-source points of yin meridians for the treatment of zang-organ diseases, there is less attention to the indication of yuan-source points of yang meridians for fu-organ diseases, and this statement is even questioned. Collating the early literature and associating with the researches of medical experts, it is found that Nanjing (Classic of Difficult Questions) should be the theoretic origin that yuan-source points of yang meridians are indicated in fu-organ diseases. Regarding the reasons why this theory has not received clinical attention, the three aspects are involved, i.e. the theoretic completion of \"he-sea points of three-foot-yang meridians for the diseases of six fu-organs\", the limitation of the theory itself, and the lack of literature materials. It is proposed that the exploration on this theory should be deepened in views of the essence of yuan-source points relevant with the characteristic of the wrist-ankle pulse palpation region, acupoint combination, modern technology, etc.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:37429664, Wu T, Wang XY, 2023, Zhongguo zhen jiu = Chinese acupuncture & moxibustion",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37429664/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-18077940",
+   "title": "How to standardize 3 finger positions of examiner for palpating radial pulses at wrist in traditional Chinese medicine.",
+   "category": "PULSO",
+   "summary": "This study was to provide a standardized definition of the positioning method of finger placement on the radial artery for pulse diagnosis in traditional Chinese medicine (TCM); that is, to define the locations of Cun, Guan and Chi in TCM. A total of 200 subjects (100 males and 100 females, 18-40 years of age) were recruited from the general population.",
+   "content": "This study was to provide a standardized definition of the positioning method of finger placement on the radial artery for pulse diagnosis in traditional Chinese medicine (TCM); that is, to define the locations of Cun, Guan and Chi in TCM. A total of 200 subjects (100 males and 100 females, 18-40 years of age) were recruited from the general population. According to ancient TCM records, the \"6% of the elbow length\" (ELx6%) is used as the standard method of establishing the length of Cun. We hypothesized that the highest point of \"prominent bone\" (PB) is the lower limit of Cun, so \"the distance between the distal wrist crease and the highest point of the PB\" (DWP) is considered the length of Cun. If this hypothesis holds, then we can define the locations of Cun, Guan and Chi by using the ratio 6:6:7 from the ancient TCM records. The distribution of relative bias and paired t-test were used to verify the findings. The mean value of relative bias of DWP compared with ELx6% was close to 0% (males = 2.1%, SD = 12.2%; females = 0.2%, SD = 12.6%). The paired t-test confirmed that there was no significant difference (p > 0.05) between the mean values of the DWP and ELx6%. Therefore, it is reasonable to assume that the length of the Cun is equal to the length of the DWP. Our findings confirm that the location of Cun is from the distal wrist crease to the highest point of PB.",
+   "tags": [
+    "pulse"
+   ],
+   "citation": "PubMed PMID:18077940, Tyan CC et al., 2007, Acupuncture & electro-therapeutics research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18077940/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

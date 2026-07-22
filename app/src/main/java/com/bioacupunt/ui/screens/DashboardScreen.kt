@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -261,7 +262,7 @@ private fun ReengagementCard(
                             Text(r.name, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium), maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Text(r.lastVisitLabel, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        RoundIconButton(Icons.Default.Chat) { onWhats(r.phone) }
+                        RoundIconButton(Icons.AutoMirrored.Filled.Chat) { onWhats(r.phone) }
                         RoundIconButton(Icons.Default.Call) { onCall(r.phone) }
                     }
                 }

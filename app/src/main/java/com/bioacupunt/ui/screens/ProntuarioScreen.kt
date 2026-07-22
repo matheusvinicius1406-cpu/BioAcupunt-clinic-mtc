@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -104,7 +105,7 @@ fun ProntuarioScreen(
                 title = { Text("Prontuário") },
                 navigationIcon = {
                     if (onBack != null && state.patientId > 0L) {
-                        IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Voltar") }
+                        IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar") }
                     }
                 },
             )
@@ -352,6 +353,29 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
                 SectionHeader(title = "Completude do prontuário")
                 Spacer(Modifier.height(10.dp))
                 CompletenessBar(progress = state.completeness)
+            }
+        }
+
+        item {
+            // R1: o motor de segurança (ClinicalSafetyEngine) só enxerga o que estiver
+            // aqui — `MtcAssessment.flags`. Sem esta seção não existe NENHUMA forma de
+            // marcar gestação, marca-passo, anticoagulante etc. em lugar algum do app;
+            // `SupremoViewModel.toggleFlag` ficava sem chamador, `flags` era sempre
+            // vazio, e a triagem sempre devolvia "Sem contraindicações detectadas" —
+            // não porque a paciente não tinha risco, mas porque nada jamais era
+            // registrado. Isso não estava errado, estava faltando.
+            SupremoCard {
+                SectionHeader(
+                    title = "Fatores de risco / contraindicações",
+                    subtitle = "Alimenta a triagem de segurança determinística (aba Plano). Toque para marcar.",
+                )
+                Spacer(Modifier.height(14.dp))
+                val flags = state.draft.flags
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ClinicalFlag.entries.forEach { flag ->
+                        SelectableChip(flag.label, flag in flags, { viewModel.toggleFlag(flag) })
+                    }
+                }
             }
         }
 

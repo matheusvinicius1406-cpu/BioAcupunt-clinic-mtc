@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,7 +48,7 @@ fun EvolucaoScreen(patientId: Long, onBack: () -> Unit = {}) {
             topBar = {
                 TopAppBar(
                     title = { Text("Evolução Clínica") },
-                    navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Voltar") } },
+                    navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar") } },
                 )
             }
         ) { padding ->
@@ -85,7 +85,7 @@ fun EvolucaoScreen(patientId: Long, onBack: () -> Unit = {}) {
         topBar = {
             TopAppBar(
                 title = { Text("Evolução Clínica") },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Voltar") } },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar") } },
             )
         }
     ) { padding ->
@@ -161,7 +161,7 @@ private fun ComparisonBanner(comparison: com.bioacupunt.prontuario.presentation.
             .padding(14.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Icon(Icons.Default.TrendingUp, null, tint = Primary, modifier = Modifier.size(20.dp))
+        Icon(Icons.AutoMirrored.Filled.TrendingUp, null, tint = Primary, modifier = Modifier.size(20.dp))
         Column {
             Text("Comparação automática", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Primary)
             Spacer(Modifier.height(2.dp))

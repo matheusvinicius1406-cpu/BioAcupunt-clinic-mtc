@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -448,7 +449,7 @@ private fun SecurityTab(onLogout: () -> Unit) {
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFEF5350)),
                 border = BorderStroke(1.dp, Color(0xFFEF5350))
             ) {
-                Icon(Icons.Default.Logout, null); Spacer(Modifier.width(8.dp)); Text("Sair da Conta")
+                Icon(Icons.AutoMirrored.Filled.Logout, null); Spacer(Modifier.width(8.dp)); Text("Sair da Conta")
             }
         }
     }
@@ -456,7 +457,7 @@ private fun SecurityTab(onLogout: () -> Unit) {
     if (showLogoutConfirm) {
         AlertDialog(
             onDismissRequest = { showLogoutConfirm = false },
-            icon = { Icon(Icons.Default.Logout, null, tint = Color(0xFFEF5350)) },
+            icon = { Icon(Icons.AutoMirrored.Filled.Logout, null, tint = Color(0xFFEF5350)) },
             title = { Text("Bloquear o app?") },
             text = { Text("Você voltará à tela de PIN. Sua conta e seus dados continuam salvos no aparelho.") },
             confirmButton = {

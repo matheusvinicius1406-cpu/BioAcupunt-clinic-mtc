@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -49,7 +51,7 @@ private data class BottomNavItem(val screen: Screen, val icon: ImageVector, val 
 private val bottomItems = listOf(
     BottomNavItem(Screen.Dashboard, Icons.Default.Home, "Início"),
     BottomNavItem(Screen.CRM, Icons.Default.Group, "Pacientes"),
-    BottomNavItem(Screen.Prontuario, Icons.Default.Assignment, "Prontuário"),
+    BottomNavItem(Screen.Prontuario, Icons.AutoMirrored.Filled.Assignment, "Prontuário"),
     BottomNavItem(Screen.Biblioteca, Icons.Default.AutoStories, "Biblioteca"),
 )
 
@@ -84,7 +86,7 @@ fun BioAcupuntNavHost(
         listOf(
             MoreItem("Agenda", Icons.Default.CalendarMonth, Screen.Agenda.route),
             MoreItem("Atendimento", Icons.Default.Healing, Screen.Agenda.route),
-            MoreItem("Evolução", Icons.Default.TrendingUp, Screen.Evolucao.routeFor(0)),
+            MoreItem("Evolução", Icons.AutoMirrored.Filled.TrendingUp, Screen.Evolucao.routeFor(0)),
             MoreItem("Inteligência", Icons.Default.SmartToy, Screen.AiAssistant.route),
             MoreItem("Financeiro", Icons.Default.AccountBalance, Screen.Financeiro.route),
             MoreItem("Relatórios", Icons.Default.Description, Screen.Relatorios.route),
@@ -247,7 +249,7 @@ fun BioAcupuntNavHost(
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Simulador.route)   { SimuladorScreen() }
-            composable(Screen.AiAssistant.route) { AiAssistantScreen(onNavigateToCRM = { navigateTab(Screen.CRM.route) }) }
+            composable(Screen.AiAssistant.route) { InteligenciaScreen(onNavigateToCRM = { navigateTab(Screen.CRM.route) }) }
             composable(Screen.Relatorios.route)  { RelatoriosScreen() }
         }
     }

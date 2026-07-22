@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,7 +33,7 @@ fun AnalyticsScreen(onBack: (() -> Unit)? = null) {
                     modifier = Modifier.fillMaxWidth().padding(start = 4.dp, top = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Voltar") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar") }
                     Text("Analytics", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
                 }
             }
@@ -180,7 +183,7 @@ private fun KpiCard(modifier: Modifier, title: String, value: String, change: St
             Text(value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = color))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    if (positive) Icons.Default.TrendingUp else Icons.Default.TrendingDown,
+                    if (positive) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown,
                     null, tint = if (positive) Color(0xFF4CAF50) else Color(0xFFEF5350), modifier = Modifier.size(14.dp)
                 )
                 Text(change, style = MaterialTheme.typography.labelSmall.copy(color = if (positive) Color(0xFF4CAF50) else Color(0xFFEF5350)))

@@ -1,7 +1,5 @@
 package com.bioacupunt.biblioteca.domain.search
 
-import com.bioacupunt.biblioteca.domain.model.MtcArticle
-
 /**
  * RETRIEVAL-AUGMENTED GENERATION OVER THE MTC LIBRARY
  *
@@ -17,17 +15,22 @@ import com.bioacupunt.biblioteca.domain.model.MtcArticle
  *  - The model only ever sees passages pulled from the curated library.
  *  - The prompt forbids using any knowledge outside those passages.
  *  - **If retrieval finds nothing, no model call is made at all.** The app says "não
- *    encontrei nada na biblioteca" rather than letting the model improvise. An empty
+ *    encontrei na biblioteca" rather than letting the model improvise. An empty
  *    context is exactly the condition under which a model hallucinates most, so the
  *    correct engineering response is to not ask it.
  *  - Every passage is numbered so the answer can cite, and the doctor can verify.
  *
  * Grounding is a *retrieval* property, not a prompt property. The instruction text is
  * the weakest link here and is treated as such.
+ *
+ * ## Search backend
+ * O ranking fica num [ArticleSearchBackend] (hoje SQLite FTS4, antes BM25 em
+ * memória). O backend só diz *quais artigos casam*; **o portão mora aqui**. Essa
+ * separação é deliberada: trocar o motor de busca não pode reabrir o portão por
+ * acidente, e o teste que guarda a R2 roda em Kotlin puro, sem device.
  */
 class MtcRetriever(
-    private val articles: List<MtcArticle>,
-    private val index: MtcSearchEngine.Index = MtcSearchEngine.index(articles),
+    private val backend: ArticleSearchBackend,
 ) {
 
     data class Passage(
@@ -46,63 +49,52 @@ class MtcRetriever(
     }
 
     /**
-     * Splits article bodies on markdown headings, so a passage is a coherent section
-     * rather than an arbitrary character window that cuts a sentence in half.
+     * O PORTÃO DA R2.
+     *
+     * Se o backend não devolve nada, devolvemos um [Grounding] vazio — e
+     * [Grounding.hasEvidence] fica `false`, o que faz [AskLibraryUseCase] parar
+     * antes de qualquer chamada ao modelo. É um `if`, não uma instrução de prompt.
      */
-    internal fun chunk(article: MtcArticle): List<String> {
-        val body = article.content.trim()
-        if (body.isEmpty()) return emptyList()
-
-        val sections = body
-            .split(Regex("(?m)^#{1,3} "))
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-
-        return sections
-            .flatMap { section ->
-                if (section.length <= MAX_CHARS) {
-                    listOf(section)
-                } else {
-                    section.chunked(MAX_CHARS)
-                }
-            }
-            .filter { it.length >= MIN_CHARS }
-    }
-
-    fun retrieve(question: String, maxPassages: Int = 4): Grounding {
-        val hits = index.search(question, limit = maxPassages)
+    suspend fun retrieve(question: String, maxPassages: Int = 4): Grounding {
+        val hits = backend.search(question, maxPassages)
         if (hits.isEmpty()) return Grounding(question, emptyList())
 
-        val terms = MtcSearchEngine.expand(MtcSearchEngine.tokenize(question))
-
-        val passages = hits.flatMapIndexed { _, hit ->
-            val best = chunk(hit.article)
-                // Within the winning article, pick the section that actually mentions
-                // the query terms — not just the first paragraph.
-                .maxByOrNull { section ->
-                    val tokens = MtcSearchEngine.tokenize(section)
-                    terms.count { term -> term in tokens }
-                }
-            if (best.isNullOrBlank()) {
-                emptyList()
-            } else {
-                listOf(hit.article to best)
-            }
-        }.mapIndexed { i, (article, text) ->
+        val terms = MtcSearchEngine.expand(MtcSearchEngine.tokenize(question)).toSet()
+        val passages = hits.mapIndexed { i, hit ->
             Passage(
                 ordinal = i + 1,
-                articleId = article.id,
-                articleTitle = article.title,
-                text = text,
+                articleId = hit.articleId,
+                articleTitle = hit.title,
+                text = extractBestSection(hit, terms),
             )
         }
-
         return Grounding(question, passages)
     }
 
+    /**
+     * Recorta do artigo a seção que mais casa com os termos da pergunta.
+     *
+     * Sem isto, um artigo longo entrega ao modelo 1.200 caracteres que podem não
+     * conter a resposta — contexto que parece evidência e não é.
+     */
+    private fun extractBestSection(hit: RetrievedArticle, terms: Set<String>): String {
+        val sections = hit.content
+            .split(SECTION_HEADING)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+
+        if (sections.isEmpty()) return hit.summary.take(MAX_SECTION_CHARS)
+
+        val best = sections.maxByOrNull { section ->
+            val sectionTokens = MtcSearchEngine.tokenize(section).toSet()
+            terms.count { it in sectionTokens }
+        }
+        return (best ?: hit.summary).take(MAX_SECTION_CHARS)
+    }
+
     companion object {
-        private const val MAX_CHARS = 1200
-        private const val MIN_CHARS = 40
+        private const val MAX_SECTION_CHARS = 1200
+        private val SECTION_HEADING = Regex("(?m)^#{1,3} ")
 
         /**
          * The system prompt. Note what it does *not* do: it does not try to make the

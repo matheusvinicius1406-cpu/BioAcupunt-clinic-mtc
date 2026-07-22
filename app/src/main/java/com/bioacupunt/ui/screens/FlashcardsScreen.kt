@@ -8,6 +8,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -80,7 +83,7 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
         ) {
             if (onBack != null) {
                 IconButton(onClick = onBack, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Default.ArrowBack, "Voltar", modifier = Modifier.size(20.dp))
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar", modifier = Modifier.size(20.dp))
                 }
             }
             Text(
@@ -210,7 +213,7 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
                 TextButton(
                     onClick = { if (safeIndex > 0) { currentIndex--; isFlipped = false } },
                     enabled = safeIndex > 0
-                ) { Icon(Icons.Default.ArrowBack, null); Text("Anterior") }
+                ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null); Text("Anterior") }
 
                 TextButton(onClick = { currentIndex = 0; knownCount = 0; unknownCount = 0; isFlipped = false }) {
                     Text("Reiniciar")
@@ -219,7 +222,7 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
                 TextButton(
                     onClick = { if (safeIndex < filteredCards.size - 1) { currentIndex++; isFlipped = false } },
                     enabled = safeIndex < filteredCards.size - 1
-                ) { Text("Próximo"); Icon(Icons.Default.ArrowForward, null) }
+                ) { Text("Próximo"); Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
             }
         }
     }
@@ -264,7 +267,7 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
             modifier = Modifier.padding(24.dp).graphicsLayer { if (rotation > 90f) rotationY = 180f }
         ) {
             Icon(
-                if (!isFlipped || rotation < 90f) Icons.Default.Help else Icons.Default.Lightbulb,
+                if (!isFlipped || rotation < 90f) Icons.AutoMirrored.Filled.Help else Icons.Default.Lightbulb,
                 null, tint = Primary, modifier = Modifier.size(32.dp)
             )
             Spacer(Modifier.height(16.dp))

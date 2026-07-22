@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -189,7 +191,7 @@ private fun SimModeCard(icon: androidx.compose.ui.graphics.vector.ImageVector, t
                 Text(title, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                 Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Icon(Icons.Default.ArrowForwardIos, null, tint = color, modifier = Modifier.size(16.dp))
+            Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, null, tint = color, modifier = Modifier.size(16.dp))
         }
     }
 }
@@ -212,7 +214,7 @@ private fun QuizMode(state: SimMode.Quiz, onUpdate: (SimMode.Quiz) -> Unit, onBa
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         // Progress
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, null) }
+            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
             Column(Modifier.weight(1f)) {
                 LinearProgressIndicator(
                     progress = { progress },
@@ -384,7 +386,7 @@ Trabalho estressante, conflitos familiares recentes. Ciclos menstruais irregular
     ) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, null) }
+                IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
                 Text("Caso Clínico", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
             }
         }

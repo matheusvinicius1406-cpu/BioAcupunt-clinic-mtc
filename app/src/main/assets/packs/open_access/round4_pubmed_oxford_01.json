@@ -1,0 +1,96 @@
+{
+ "source": "Europe PMC (https://www.ebi.ac.uk/europepmc/) — literatura biomedica de acesso aberto sobre acupuntura/MTC com pelo menos um autor afiliado a University of Oxford, via API REST publica (webservices/rest/search), filtro AFF + topico + OPEN_ACCESS:Y + HAS_ABSTRACT:Y, revisado manualmente para confirmar afiliacao real e relevancia tematica, 2026",
+ "items": [
+  {
+   "id": "europepmc-38035021",
+   "title": "Multi-level advances in databases related to systems pharmacology in traditional Chinese medicine: a 60-year review.",
+   "category": "FITOTERAPIA",
+   "summary": "The therapeutic effects of traditional Chinese medicine (TCM) involve intricate interactions among multiple components and targets. Currently, computational approaches play a pivotal role in simulating various pharmacological processes of TCM. The application of network analysis in TCM research has...",
+   "content": "The therapeutic effects of traditional Chinese medicine (TCM) involve intricate interactions among multiple components and targets. Currently, computational approaches play a pivotal role in simulating various pharmacological processes of TCM. The application of network analysis in TCM research has provided an effective means to explain the pharmacological mechanisms underlying the actions of herbs or formulas through the lens of biological network analysis. Along with the advances of network analysis, computational science has coalesced around the core chain of TCM research: formula-herb-component-target-phenotype-<i>ZHENG</i>, facilitating the accumulation and organization of the extensive TCM-related data and the establishment of relevant databases. Nonetheless, recent years have witnessed a tendency toward homogeneity in the development and application of these databases. Advancements in computational technologies, including deep learning and foundation model, have propelled the exploration and modeling of intricate systems into a new phase, potentially heralding a new era. This review aims to delves into the progress made in databases related to six key entities: formula, herb, component, target, phenotype, and <i>ZHENG</i>. Systematically discussions on the commonalities and disparities among various database types were presented. In addition, the review raised the issue of research bottleneck in TCM computational pharmacology and envisions the forthcoming directions of computational research within the realm of TCM.",
+   "tags": [
+    "Frontiers in pharmacology"
+   ],
+   "citation": "Fan M, Jin C, Li D, Deng Y, Yao L, Chen Y, Ma YL, Wang T. Multi-level advances in databases related to systems pharmacology in traditional Chinese medicine: a 60-year review. Frontiers in pharmacology 14. (2023) (afiliacao: University of Oxford) doi:10.3389/fphar.2023.1289901",
+   "sourceUrl": "https://doi.org/10.3389/fphar.2023.1289901",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-34188688",
+   "title": "The Effectiveness of Traditional Chinese Medicine (TCM) as an Adjunct Treatment on Stable COPD Patients: A Systematic Review and Meta-Analysis.",
+   "category": "FITOTERAPIA",
+   "summary": "<h4>Background</h4>Traditional Chinese medicine (TCM), including Chinese herbal medicine (CHM) and acupuncture, exhibits beneficial effects on stable chronic obstructive pulmonary disease (COPD) such as improving lung function and reducing exacerbation. Previous research studies have examined...",
+   "content": "<h4>Background</h4>Traditional Chinese medicine (TCM), including Chinese herbal medicine (CHM) and acupuncture, exhibits beneficial effects on stable chronic obstructive pulmonary disease (COPD) such as improving lung function and reducing exacerbation. Previous research studies have examined either CHM or acupuncture alone, which are not the usual practice in TCM clinic setting. We conduct a systematic review for evaluating the clinical effectiveness and safety of TCM by combining CHM and acupuncture.<h4>Methods</h4>Databases are searched from inception to November 2019. Randomized controlled trials examining either acupuncture or CHM on stable COPD are included. Primary outcomes include lung functions, exacerbations, and COPD assessment test. Secondary outcomes include quality of life, TCM syndrome score and effective rate, and 6-minute walk distance. Two independent reviewers extract data and assess the quality of evidence and generate meta-analysis and risk of bias by STATA. This protocol follows the Preferred Reporting Items for Systematic Review and Meta-Analysis Protocols (PRISMA-P) guidelines.<h4>Results</h4>100 randomized controlled trials (8291 participants) were included to compare add-on Chinese medicine treatment with conventional treatment (CT). Combining CHM with CT improves FEV<sub>1</sub> (MD: 0.18, 95% CI: 0.08, 0.28), exacerbation rate (MD: -0.29, 95% CI: -0.61, 0.03), COPD assessment test (MD: -2.16, 95% CI: -3.44, -0.88), TCM syndrome score (MD: -3.96, 95% CI: -5.41, -2.51) and effective rate (RR: 0.89, 95% CI: 0.80, 0.93), and 6-minute walk test (MD: 37.81, 95% CI: 20.90, 54.73). No serious adverse events were reported. Risk of bias: <i>low</i> to <i>unclear</i>.<h4>Conclusions</h4>This review identifies sufficient moderate-to-low-quality evidence to suggest TCM as an adjunct treatment for stable COPD patients. Though heterogeneity was low among studies, the results were limited and the quality of evidence was low or very low based on small sample sizes and risk of bias. Future studies with larger sample sizes are warranted. The trial is registered with CRD42019161324.",
+   "tags": [
+    "Evidence-based complementary and alternative medicine : eCAM"
+   ],
+   "citation": "Chan KH, Chan KH, Tsoi YYS, McCall M. The Effectiveness of Traditional Chinese Medicine (TCM) as an Adjunct Treatment on Stable COPD Patients: A Systematic Review and Meta-Analysis. Evidence-based complementary and alternative medicine : eCAM 2021. (2021) (afiliacao: University of Oxford) doi:10.1155/2021/5550332",
+   "sourceUrl": "https://doi.org/10.1155/2021/5550332",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-34975377",
+   "title": "Evaluating the Effects of 5-Hz Repetitive Transcranial Magnetic Stimulation With and Without Wrist-Ankle Acupuncture on Improving Spasticity and Motor Function in Children With Cerebral Palsy: A Randomized Controlled Trial.",
+   "category": "TECNICAS",
+   "summary": "<b>Objective:</b> The goal of this study is to explore the effect of wrist-ankle acupuncture combined with 5-Hz repetitive transcranial magnetic stimulation (rTMS) on improving spastic state and motor function of children with spastic cerebral palsy by measuring electrophysiological parameters and...",
+   "content": "<b>Objective:</b> The goal of this study is to explore the effect of wrist-ankle acupuncture combined with 5-Hz repetitive transcranial magnetic stimulation (rTMS) on improving spastic state and motor function of children with spastic cerebral palsy by measuring electrophysiological parameters and behaviors. <b>Methods:</b> Twenty-five children with spastic cerebral palsy were enrolled in a single-blind and randomized controlled trial. The control group received 20 sessions of 5-Hz rTMS over the affected hemisphere with 1,000 pulses. The experimental group was given wrist-ankle acupuncture on the basis of the control group. Gross motor function measure (GMFM-66), muscle tension, and electrophysiological parameters of the two groups were assessed at baseline and after intervention. <b>Results:</b> After treatment, the GMFM-66 scores in the same groups were significantly improved (<i>p</i> < 0.001). Besides, the <i>R</i>-value of soleus, gastrocnemius, and hamstring muscle decreased (<i>p</i> < 0.05), and the results showed a trend of shortening MEP latency, increasing amplitude and duration (<i>p</i> < 0.05). Compared to the controlled group, the experimental group displayed more excellent changes in the GMFM-66 scores and motor evoked potential (MEP) latency. The statistical results showed that the increase of GMFM-66 score and the shortening of MEP latency in the experimental group were greater than that in the control group (<i>p</i> < 0.05). However, no significant differences were found in the assessment of muscle tension, amplitude, and duration of MEPs between two groups (<i>p</i> > 0.05). <b>Conclusion:</b> Wrist-ankle acupuncture combined with 5-Hz rTMS is optimal to improve gross motor function and enhance the conductivity of corticospinal tract in children with cerebral palsy but cannot highlight its clinical superiority in improving spasticity. <b>Clinical Trial Registration:</b> [http://www.chictr.org.cn/index.aspx], identifier [chictr2000039495].",
+   "tags": [
+    "Frontiers in neuroscience"
+   ],
+   "citation": "Li J, Chen C, Zhu S, Niu X, Yu X, Ren J, Shen M. Evaluating the Effects of 5-Hz Repetitive Transcranial Magnetic Stimulation With and Without Wrist-Ankle Acupuncture on Improving Spasticity and Motor Function in Children With Cerebral Palsy: A Randomized Controlled Trial. Frontiers in neuroscience 15. (2021) (afiliacao: University of Oxford) doi:10.3389/fnins.2021.771064",
+   "sourceUrl": "https://doi.org/10.3389/fnins.2021.771064",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-35241146",
+   "title": "Combination of stem cell therapy and acupuncture to treat ischemic stroke: a prospective review.",
+   "category": "TECNICAS",
+   "summary": "Stroke is the second leading cause globally that leads to severe disability and death. Stem cell therapy has been developed over the recent years to treat stroke and diminish the mortality and disability rate of brain injuries. Acupuncture, which can activate endogenous recovery via physical...",
+   "content": "Stroke is the second leading cause globally that leads to severe disability and death. Stem cell therapy has been developed over the recent years to treat stroke and diminish the mortality and disability rate of brain injuries. Acupuncture, which can activate endogenous recovery via physical stimuli, has been applied to enhance the recovery and rehabilitation of stroke patients. Attempts have been made to combine stem cell therapy and acupuncture to treat stroke patients and have shown the promising results. This prospective review will look into the possible mechanisms of stem cell therapy and acupuncture and intend to undercover the potential benefit of the combined therapy. It intends to bridge the modern emerging stem cell therapy and traditional acupuncture at cellular and molecular levels and to demonstrate the potential benefit to improve clinical outcomes.",
+   "tags": [
+    "Stem cell research & therapy"
+   ],
+   "citation": "Jia H, He J, Zhao L, Hsu CC, Zhao X, Du Y, Han L, Cui Z, Shi X, Ye H. Combination of stem cell therapy and acupuncture to treat ischemic stroke: a prospective review. Stem cell research & therapy 13(1). (2022) (afiliacao: University of Oxford) doi:10.1186/s13287-022-02761-y",
+   "sourceUrl": "https://doi.org/10.1186/s13287-022-02761-y",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-26792101",
+   "title": "Acupuncture promotes mTOR-independent autophagic clearance of aggregation-prone proteins in mouse brain.",
+   "category": "PONTOS",
+   "summary": "Acupuncture has historically been practiced to treat medical disorders by mechanically stimulating specific acupoints with fine needles. Despite its well-documented efficacy, its biological basis remains largely elusive. In this study, we found that mechanical stimulation at the acupoint of...",
+   "content": "Acupuncture has historically been practiced to treat medical disorders by mechanically stimulating specific acupoints with fine needles. Despite its well-documented efficacy, its biological basis remains largely elusive. In this study, we found that mechanical stimulation at the acupoint of Yanglingquan (GB34) promoted the autophagic clearance of α-synuclein (α-syn), a well known aggregation-prone protein closely related to Parkinson's disease (PD), in the substantia nigra par compacta (SNpc) of the brain in a PD mouse model. We found the protein clearance arose from the activation of the autophagy-lysosome pathway (ALP) in a mammalian target of rapamycin (mTOR)-independent approach. Further, we observed the recovery in the activity of dopaminergic neurons in SNpc, and improvement in the motor function at the behavior level of PD mice. Whereas acupuncture and rapamycin, a chemical mTOR inhibitor, show comparable α-syn clearance and therapeutic effects in the PD mouse model, the latter adopts a distinctly different, mTOR-dependent, autophagy induction process. Due to this fundamental difference, acupuncture may circumvent adverse effects of the rapamycin treatment. The newly discovered connection between acupuncture and autophagy not only provides a new route to understanding the molecular mechanism of acupuncture but also sheds new light on cost-effective and safe therapy of neurodegenerative diseases.",
+   "tags": [
+    "Scientific reports"
+   ],
+   "citation": "Tian T, Sun Y, Wu H, Pei J, Zhang J, Zhang Y, Wang L, Li B, Wang L, Shi J, Hu J, Fan C. Acupuncture promotes mTOR-independent autophagic clearance of aggregation-prone proteins in mouse brain. Scientific reports 6. (2016) (afiliacao: University of Oxford) doi:10.1038/srep19714",
+   "sourceUrl": "https://doi.org/10.1038/srep19714",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-34858163",
+   "title": "Xin Su Ning-A Review of Basic and Clinical Pharmacology Integrated With Traditional Chinese Medicine Antiarrhythmic Theory.",
+   "category": "FITOTERAPIA",
+   "summary": "Xin Su Ning (XSN) is a patented multicomponent medicine, which was certified in 2005 by the China State Food and Drug Administration to be produced pharmaceutically and to be used clinically. The XSN capsule was developed from an effective formula composed by Prof. Shuwen Ding of Shandong...",
+   "content": "Xin Su Ning (XSN) is a patented multicomponent medicine, which was certified in 2005 by the China State Food and Drug Administration to be produced pharmaceutically and to be used clinically. The XSN capsule was developed from an effective formula composed by Prof. Shuwen Ding of Shandong University of Traditional Chinese Medicine. Through more than 30 years of clinical observation, Prof. Ding concluded that XSN has a significant effect on arrhythmia with phlegm-heat heart-disturbed syndrome according to the traditional Chinese medicine (TCM) diagnosis. XSN, derived from a classical TCM formula Huanglian Wen Dan Decoction, is formulated with 11 Chinese herbal medicines to treat cardiac ventricular arrhythmia. Clinical evidence suggests that it is particularly efficacious for the arrhythmias induced by cardiac ischemia and viral myocarditis without obvious adverse reactions being reported. Cellular electrophysiological studies in ventricular myocytes revealed that XSN prolongs the duration and suppresses the amplitude of the action potential (AP), which is supported by the blockage of sodium and potassium channels indicating the characteristics of class I and III antiarrhythmic drugs. A recently reported double-blind, placebo-controlled, multicenter clinical trial of XSN enrolled 861 patients (ChiCTR-TRC-14004180) and showed that XSN significantly inhibited premature ventricular contraction (PVC). The cellular electrophysiological discoveries provided the mechanistic evidence for the clinical efficacy on inhibition of PVC by XSN as demonstrated in the clinical trial. These studies, for the first time, provided exclusive evidence that multicomponent TCM antiarrhythmic medicine can be evaluated using conventional research methods that have been used for antiarrhythmic drug discoveries for decades. We aimed to give a comprehensive review on XSN including its origin with the support of TCM theory, its pre-licensing clinical use and development, and its pharmacological and clinical study discoveries. The review will be summarized with the discoveries reported in a novel network pharmacological study that introduced a weight coefficient, which made it possible to evaluate the pharmacological properties of the TCM formula with regard to its formation based on TCM theory. Limitations regarding XSN's basic and clinical research and possible future studies are listed. We hope that the advances in how XSN was studied may offer useful guidance on how other TCM could be studied with respect to the integrity of the TCM formulas.",
+   "tags": [
+    "Frontiers in pharmacology"
+   ],
+   "citation": "Wang X, Wang T, Ding S, Ma YL. Xin Su Ning-A Review of Basic and Clinical Pharmacology Integrated With Traditional Chinese Medicine Antiarrhythmic Theory. Frontiers in pharmacology 12. (2021) (afiliacao: University of Oxford) doi:10.3389/fphar.2021.657484",
+   "sourceUrl": "https://doi.org/10.3389/fphar.2021.657484",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-34567957",
+   "title": "Traditional Chinese medicine in COVID-19.",
+   "category": "CLINICA_MEDICA",
+   "summary": "COVID-19 pandemic caused by severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) has spread across the globe, posing an enormous threat to public health and safety. Traditional Chinese medicine (TCM), in combination with Western medicine (WM), has made important and lasting contributions in...",
+   "content": "COVID-19 pandemic caused by severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) has spread across the globe, posing an enormous threat to public health and safety. Traditional Chinese medicine (TCM), in combination with Western medicine (WM), has made important and lasting contributions in the battle against COVID-19. In this review, updated clinical effects and potential mechanisms of TCM, presented in newly recognized three distinct phases of the disease, are summarized and discussed. By integrating the available clinical and preclinical evidence, the efficacies and underlying mechanisms of TCM on COVID-19, including the highly recommended three Chinese patent medicines and three Chinese medicine formulas, are described in a panorama. We hope that this comprehensive review not only provides a reference for health care professionals and the public to recognize the significant contributions of TCM for COVID-19, but also serves as an evidence-based in-depth summary and analysis to facilitate understanding the true scientific value of TCM.",
+   "tags": [
+    "Acta pharmaceutica Sinica. B"
+   ],
+   "citation": "Lyu M, Fan G, Xiao G, Wang T, Xu D, Gao J, Ge S, Li Q, Ma Y, Zhang H, Wang J, Cui Y, Zhang J, Zhu Y, Zhang B. Traditional Chinese medicine in COVID-19. Acta pharmaceutica Sinica. B 11(11). (2021) (afiliacao: University of Oxford) doi:10.1016/j.apsb.2021.09.008",
+   "sourceUrl": "https://doi.org/10.1016/j.apsb.2021.09.008",
+   "sourceRef": "Resumo (abstract)"
+  }
+ ]
+}

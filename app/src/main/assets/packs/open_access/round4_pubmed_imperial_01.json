@@ -1,0 +1,31 @@
+{
+ "source": "Europe PMC (https://www.ebi.ac.uk/europepmc/) — literatura biomedica de acesso aberto sobre acupuntura/MTC com pelo menos um autor afiliado a Imperial College London, via API REST publica (webservices/rest/search), filtro AFF + topico + OPEN_ACCESS:Y + HAS_ABSTRACT:Y, revisado manualmente para confirmar afiliacao real e relevancia tematica, 2026",
+ "items": [
+  {
+   "id": "europepmc-37665197",
+   "title": "Comprehensive review on sexual dimorphism to improve scalp acupuncture in nervous system disease.",
+   "category": "TECNICAS",
+   "summary": "<h4>Background</h4>With the development of modern medicine, the Traditional Chinese Medicine (TCM) combined with western medicine began to be produced and applied. Scalp acupuncture (SA) as a Chinese medicine based on neurological theory, has a great advantage compared with TCM in the treatment of...",
+   "content": "<h4>Background</h4>With the development of modern medicine, the Traditional Chinese Medicine (TCM) combined with western medicine began to be produced and applied. Scalp acupuncture (SA) as a Chinese medicine based on neurological theory, has a great advantage compared with TCM in the treatment of nervous system diseases.<h4>Method</h4>In this paper, we analyze the physiological and pathological manifestations of sexual dimorphism (SD) to illustrate the necessity of SD treatment. In addition, we review the factors that can affect SD and analyze in physiological structure, function, and pathological neurons. Diseases (pathological basis, pathological manifestations, and incidence) and factors leading to gender differences, which to analyze the possibility of gender differences in SA.<h4>Result</h4>Furthermore, we creatively a new insight of SD-SA and provide the complete SD treatment cases on the basis of the existing SA in different kinds of diseases including stroke, migraine, attention deficit hyperactivity disorder (ADHD), and depression.<h4>Conclusion</h4>In summary, we believe that it is feasible to improve the clinical effectiveness of SA, which is able to promote the development of SA, and then provides an actionable evidence for the promotion of precision medicine in the future.",
+   "tags": [
+    "CNS neuroscience & therapeutics"
+   ],
+   "citation": "Wang C, Wang J, Wu X, Liu T, Wang F, Zhou H, Chen C, Shi L, Ma L, Liu T, Li C. Comprehensive review on sexual dimorphism to improve scalp acupuncture in nervous system disease. CNS neuroscience & therapeutics 30(1). (2024) (afiliacao: Imperial College London) doi:10.1111/cns.14447",
+   "sourceUrl": "https://doi.org/10.1111/cns.14447",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-36440293",
+   "title": "<i>East Wind</i>, <i>West Wind</i>: Toward the modernization of traditional Chinese medicine.",
+   "category": "FITOTERAPIA",
+   "summary": "Traditional Chinese medicine (TCM) has used herbal remedies for more than 2,000 years. The use of complimentary therapies has increased dramatically during the last years, especially in the West, and the incorporation and modernization of TCM in current medical practice is gaining momentum. We...",
+   "content": "Traditional Chinese medicine (TCM) has used herbal remedies for more than 2,000 years. The use of complimentary therapies has increased dramatically during the last years, especially in the West, and the incorporation and modernization of TCM in current medical practice is gaining momentum. We reflect on the main bottlenecks in the modernization of arcane Chinese herbal medicine: lack of standardization, safety concerns and poor quality of clinical trials, as well as the ways these are being overcome. Progress in these areas will facilitate the implementation of an efficacy approach, in which only successful clinical trials lead to the molecular characterization of active compounds and their mechanism of action. Traditional pharmacological methodologies will produce novel leads and drugs, and we describe TCM successes such as the discovery of artemisinin as well as many others still in the pipeline. Neurodegenerative diseases, such as Parkinson's and Alzheimer's disease, cancer and cardiovascular disease are the main cause of mortality in the Western world and, with an increasing old population in South East Asia, this trend will also increase in the Far East. TCM has been used for long time for treating these diseases in China and other East Asian countries. However, the holistic nature of TCM requires a paradigm shift. By changing our way of thinking, from \"one-target, one-drug\" to \"network-target, multiple-component-therapeutics,\" network pharmacology, together with other system biology methodologies, will pave the way toward TCM modernization.",
+   "tags": [
+    "Frontiers in neuroscience"
+   ],
+   "citation": "Yagüe E, Sun H, Hu Y. <i>East Wind</i>, <i>West Wind</i>: Toward the modernization of traditional Chinese medicine. Frontiers in neuroscience 16. (2022) (afiliacao: Imperial College London) doi:10.3389/fnins.2022.1057817",
+   "sourceUrl": "https://doi.org/10.3389/fnins.2022.1057817",
+   "sourceRef": "Resumo (abstract)"
+  }
+ ]
+}

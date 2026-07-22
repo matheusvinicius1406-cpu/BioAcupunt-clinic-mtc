@@ -1,0 +1,83 @@
+{
+ "source": "Europe PMC (https://www.ebi.ac.uk/europepmc/) — literatura biomedica de acesso aberto sobre acupuntura/MTC com pelo menos um autor afiliado a Johns Hopkins University, via API REST publica (webservices/rest/search), filtro AFF + topico + OPEN_ACCESS:Y + HAS_ABSTRACT:Y, revisado manualmente para confirmar afiliacao real e relevancia tematica, 2026",
+ "items": [
+  {
+   "id": "europepmc-38988505",
+   "title": "Therapeutically Fine-Tuning Autonomic Nervous System to Treat Sepsis: A New Perspective on the Immunomodulatory Effects of Acupuncture.",
+   "category": "PONTOS",
+   "summary": "Recent studies have highlighted the immunomodulatory effects of acupuncture on sepsis and proposed novel non-pharmacological or bioelectronic approaches to managing inflammatory illnesses. Establishing rules for selectively activating sympathetic or vagal nerve-mediated anti-inflammatory pathways...",
+   "content": "Recent studies have highlighted the immunomodulatory effects of acupuncture on sepsis and proposed novel non-pharmacological or bioelectronic approaches to managing inflammatory illnesses. Establishing rules for selectively activating sympathetic or vagal nerve-mediated anti-inflammatory pathways using acupuncture has valuable clinical applications. Over the years, studies have revealed the segmental modulatory role of acupuncture in regulating visceral function by targeting the autonomic nervous system (ANS). In this review, we aim to summarize recent findings on acupuncture in treating sepsis, focusing on the underlying ANS mechanism, as well as the rules of acupoint specificity, intensity, frequency, and other parameters utilized in these studies. Mechanistically, the immunomodulatory properties of the sympathetic nervous system have been highlighted. Furthermore, we explore the immunotherapeutic benefits of acupuncture in treating sepsis. A better understanding of the immunoregulatory mechanism of sympathetic nervous system may offer novel approaches for the development of therapeutics to treat or prevent a variety of inflammatory diseases.",
+   "tags": [
+    "Journal of inflammation research"
+   ],
+   "citation": "Zhang Z, Zhang D, Lin Q, Cui X. Therapeutically Fine-Tuning Autonomic Nervous System to Treat Sepsis: A New Perspective on the Immunomodulatory Effects of Acupuncture. Journal of inflammation research 17. (2024) (afiliacao: Johns Hopkins University) doi:10.2147/jir.s477181",
+   "sourceUrl": "https://doi.org/10.2147/jir.s477181",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-40832609",
+   "title": "Heat syndrome types prediction of traditional Chinese medicine in acute ischemic stroke through deep learning: a pilot study.",
+   "category": "CLINICA_MEDICA",
+   "summary": "Integrating Chinese medicine and biomedicine for treating acute ischemic stroke (AIS) presents a promising strategy. Accurately predicting Traditional Chinese Medicine (TCM) heat syndrome types in AIS patients is crucial for guiding appropriate medication use within this combined treatment...",
+   "content": "Integrating Chinese medicine and biomedicine for treating acute ischemic stroke (AIS) presents a promising strategy. Accurately predicting Traditional Chinese Medicine (TCM) heat syndrome types in AIS patients is crucial for guiding appropriate medication use within this combined treatment strategy. In this study, a clinical cohort including TCM syndromes, laboratory markers, and baseline assessments, were collected from 193 AIS patients. We developed a deep learning method with Convolutional Neural Networks (CNNs) to predict heat syndrome types in AIS patients by integrating TCM pattern characteristics and laboratory indicators. Feature importance was assessed using SHapley Additive exPlanations (SHAP) and permutation importance, and partial dependence plots (PDP) were used to explore the relationships between features and predictions. The model with the comprehensive feature dataset achieved an accuracy of 0.95, F1 score of 0.95, and AUC of 0.91 on the test set, exhibiting better performance overall compared to predictions based solely on TCM pattern characteristics or laboratory indicators. Key factors associated with the heat syndrome types included Tongue Teeth Marks, Stool, Sweat, Tongue Fissures, glycated hemoglobin (HbA1c), triglycerides (TG), fasting blood glucose (FBG) and total cholesterol (CHO). In conclusion, this study confirms the effectiveness of the CNN model in predicting heat syndrome types in AIS patients when incorporating TCM patterns with biochemical laboratory indicators.",
+   "tags": [
+    "Frontiers in pharmacology"
+   ],
+   "citation": "Yu X, He L, Wang Q, Zhang Z, Zhu H, Song J. Heat syndrome types prediction of traditional Chinese medicine in acute ischemic stroke through deep learning: a pilot study. Frontiers in pharmacology 16. (2025) (afiliacao: Johns Hopkins University) doi:10.3389/fphar.2025.1601601",
+   "sourceUrl": "https://doi.org/10.3389/fphar.2025.1601601",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-31045554",
+   "title": "A TCM acupoints ranking approach towards post-stroke dysphagia based on an improved MCTS decision method.",
+   "category": "PONTOS",
+   "summary": "Traditional Chinese Medicine (TCM) multiple-acupoints stimulation is widely used to improve dysphagia among post-stroke patients. However, prior research in evidence-based acupuncture mostly focused on the treatment effects of single acupoint's on dysphagia, while the evidence of optimal sequence...",
+   "content": "Traditional Chinese Medicine (TCM) multiple-acupoints stimulation is widely used to improve dysphagia among post-stroke patients. However, prior research in evidence-based acupuncture mostly focused on the treatment effects of single acupoint's on dysphagia, while the evidence of optimal sequence of multiple-acupoints stimulation remains limited. In this paper, we developed an evaluation method of hybrid knowledge (deterministic knowledge and the experiential group decision knowledge) sequences based on segmentation mechanism of sub-sequence fragments, and then, we proposed a Monte Carlo Tree Search (MCTS) sequential decision-making method under the hybrid knowledge. Thereafter, we applied this proposed sequential decision-making approach to optimizing sequential decision-making schema of multiple-acupoints stimulation, to treat dysphagia among post-stroke patients. Finally, we verified the validity and the feasibility of this method by comparing it to other sequential decision-making search methods.",
+   "tags": [
+    "Technology and health care : official journal of the European Society for Engineering and Medicine"
+   ],
+   "citation": "Su C, Han P, Jiang B, Liu C, Chen J. A TCM acupoints ranking approach towards post-stroke dysphagia based on an improved MCTS decision method. Technology and health care : official journal of the European Society for Engineering and Medicine 27(S1). (2019) (afiliacao: Johns Hopkins University) doi:10.3233/thc-199034",
+   "sourceUrl": "https://doi.org/10.3233/thc-199034",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-36101343",
+   "title": "Alterations in Gut Microbiota and Upregulations of VPAC2 and Intestinal Tight Junctions Correlate with Anti-Inflammatory Effects of Electroacupuncture in Colitis Mice with Sleep Fragmentation.",
+   "category": "TECNICAS",
+   "summary": "The relationship between inflammatory bowel disease and sleep disturbances is complicated and of increasing interest. We investigated the inflammatory and immunological consequences of EA in sleep-deprived colitis and found that dextran sulfate sodium (DSS)-induced colitis in sleep-fragmented (SF)...",
+   "content": "The relationship between inflammatory bowel disease and sleep disturbances is complicated and of increasing interest. We investigated the inflammatory and immunological consequences of EA in sleep-deprived colitis and found that dextran sulfate sodium (DSS)-induced colitis in sleep-fragmented (SF) mice was more severe than that in mice with normal sleep. This increase in the severity of colitis was accompanied by reduced body weight, shortened colon length, and deteriorated disease activity index. DSS with SF mice presented obvious diminished intestinal tight junction proteins (claudin-1 and occludin), elevated proinflammatory cytokines (CRP, IFN-γ, IL-6), lowered melatonin and adiponectin levels, downregulated vasoactive intestinal peptide (VIP) type 1 and 2 receptor (VPAC1, VPAC2) expression, and decreased diversity of gut bacteria. EA ameliorated colitis severity and preserved the performance of the epithelial tight junction proteins and VIP receptors, especially VPAC2. Meanwhile, the innate lymphoid cells-derived cytokines in both group 2 (IL-4, IL5, IL-9, IL-13) and group 3 (IL-22, GM-CSF) were elevated in mice colon tissue. Furthermore, dysbiosis was confirmed in the DSS group with and without SF, and EA could maintain the species diversity. <i>Firmicutes</i> could be restored, such as <i>Lachnospiraceae</i>, and <i>Proteobacteria</i> become rebalanced, mainly <i>Enterobacteriaceae</i>, after EA intervention. On the other hand, SF plays different roles in physiological and pathological conditions. In normal mice, interrupted sleep did not affect the expression of claudin-1 and occludin. But VPAC1, VPAC2, and gut microbiota diversity, including <i>Burkholderiaceae</i> and <i>Rhodococcus</i>, were opposite to mice in an inflamed state.",
+   "tags": [
+    "Biology"
+   ],
+   "citation": "Liu GH, Zhuo XC, Huang YH, Liu HM, Wu RC, Kuo CJ, Chen NH, Chuang LP, Lin SW, Chen YL, Yang HY, Lee TY. Alterations in Gut Microbiota and Upregulations of VPAC2 and Intestinal Tight Junctions Correlate with Anti-Inflammatory Effects of Electroacupuncture in Colitis Mice with Sleep Fragmentation. Biology 11(7). (2022) (afiliacao: Johns Hopkins University) doi:10.3390/biology11070962",
+   "sourceUrl": "https://doi.org/10.3390/biology11070962",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-28754994",
+   "title": "<sup>1</sup>H NMR-based Investigation of Metabolic Response to Electro-Acupuncture Stimulation.",
+   "category": "MERIDIANOS",
+   "summary": "Acupuncture is a traditional Chinese medicine therapy that has been found useful for treating various diseases. The treatments involve the insertion of fine needles at acupoints along specific meridians (meridian specificity). This study aims to investigate the metabolic basis of meridian...",
+   "content": "Acupuncture is a traditional Chinese medicine therapy that has been found useful for treating various diseases. The treatments involve the insertion of fine needles at acupoints along specific meridians (meridian specificity). This study aims to investigate the metabolic basis of meridian specificity using proton nuclear magnetic resonance (<sup>1</sup>H NMR)-based metabolomics. Electro-acupuncture (EA) stimulations were performed at acupoints of either Stomach Meridian of Foot-Yangming (SMFY) or Gallbladder Meridian of Foot-Shaoyang (GMFS) in healthy male Sprague Dawley (SD) rats. <sup>1</sup>H-NMR spectra datasets of serum, urine, cortex, and stomach tissue extracts from the rats were analysed by multivariate statistical analysis to investigate metabolic perturbations due to EA treatments at different meridians. EA treatment on either the SMFY or GMFS acupoints induced significant variations in 31 metabolites, e.g., amino acids, organic acids, choline esters and glucose. Moreover, a few meridian-specific metabolic changes were found for EA stimulations on the SMFY or GMFS acupoints. Our study demonstrated significant metabolic differences in response to EA stimulations on acupoints of SMFY and GMFS meridians. These results validate the hypothesis that meridian specificity in acupuncture is detectable in the metabolome and demonstrate the feasibility and effectiveness of a metabolomics approach in understanding the mechanism of acupuncture.",
+   "tags": [
+    "Scientific reports"
+   ],
+   "citation": "Lin C, Wei Z, Cheng KK, Xu J, Shen G, She C, Zhong H, Chang X, Dong J. <sup>1</sup>H NMR-based Investigation of Metabolic Response to Electro-Acupuncture Stimulation. Scientific reports 7(1). (2017) (afiliacao: Johns Hopkins University) doi:10.1038/s41598-017-07306-5",
+   "sourceUrl": "https://doi.org/10.1038/s41598-017-07306-5",
+   "sourceRef": "Resumo (abstract)"
+  },
+  {
+   "id": "europepmc-34805076",
+   "title": "Short Practical Regimen of Acupuncture for Melasma: A Prospective Cohort Study in a Tertiary Hospital in Thailand.",
+   "category": "TECNICAS",
+   "summary": "<b>Background:</b> Acupuncture shows benefits for patients with melasma, although no optimal number of sessions have been determined. <b>Methods:</b> The prospective observational study was conducted in melasma patients who were treated with acupuncture procedures two times a week and were...",
+   "content": "<b>Background:</b> Acupuncture shows benefits for patients with melasma, although no optimal number of sessions have been determined. <b>Methods:</b> The prospective observational study was conducted in melasma patients who were treated with acupuncture procedures two times a week and were evaluated after the 5th and the 10th sessions of acupuncture, with a 1-week follow-up after the last session. Participants Groups A and B received five and 10 acupuncture sessions, respectively. Melasma was assessed by using the melanin index (MI), melasma area and severity index (MASI), patient-reported improvement scores, and acupuncture-related adverse events. <b>Results:</b> Out of 113 participants, 67 received five sessions of acupuncture treatment while 39 received 10 sessions. At 1 week after five sessions of acupuncture in Group A, the mean MI decreased by 28.7 (95% CI -38.5 to -18.8, <i>p</i> < 0.001), whereas the median MASI decreased by 3.4 (95% CI -6.9 to -1.2, <i>p</i> < 0.001) points. At 1 week after ten sessions of acupuncture in Group B, the mean MI decreased by 31.3 (95% CI -45 to -17.6, <i>p</i> < 0.001), whereas the median MASI decreased by 5.4 (95%CI -9.9 to -3, <i>p</i> < 0.001) points. The first five sessions of acupuncture had a higher incremental effect than the last five sessions, although there was no statistically significant difference. Twenty-nine participants reported minor side effects. Group B had a risk ratio (RR) of having adverse events 1.8 times (95% CI 1.0-3.4, <i>p</i> = 0.05) compared with Group A. <b>Conclusion:</b> Short acupuncture regimens of 5-10 sessions in melasma seem to be effective and practical with minor side effects.",
+   "tags": [
+    "Frontiers in public health"
+   ],
+   "citation": "Supasiri T, Salakshna N, Pongpirul K. Short Practical Regimen of Acupuncture for Melasma: A Prospective Cohort Study in a Tertiary Hospital in Thailand. Frontiers in public health 9. (2021) (afiliacao: Johns Hopkins University) doi:10.3389/fpubh.2021.761017",
+   "sourceUrl": "https://doi.org/10.3389/fpubh.2021.761017",
+   "sourceRef": "Resumo (abstract)"
+  }
+ ]
+}

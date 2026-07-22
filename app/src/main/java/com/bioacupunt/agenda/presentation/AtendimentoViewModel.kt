@@ -59,7 +59,7 @@ class AtendimentoViewModel(
                 return@launch
             }
             val now = java.time.Instant.now().toString()
-            addEntry(
+            val entryResult = addEntry(
                 ProntuarioEntry(
                     patientId = appt.patientId,
                     doctorName = "",
@@ -70,6 +70,14 @@ class AtendimentoViewModel(
                     updatedAt = now,
                 )
             )
+            if (entryResult is Result.Error) {
+                // The appointment status was already updated, but the evolution note
+                // itself did not save. Surface this loudly instead of reporting
+                // "finalized" over a session that has no documentation — a doctor who
+                // sees success and navigates away would have no reason to retry.
+                _state.update { it.copy(finalizing = false, error = entryResult.kind.userMessage) }
+                return@launch
+            }
             _state.update {it.copy(finalizing = false, finalized = true) }
             onDone()
         }

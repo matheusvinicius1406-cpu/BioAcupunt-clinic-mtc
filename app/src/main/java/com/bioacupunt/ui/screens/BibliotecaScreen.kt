@@ -40,7 +40,13 @@ fun BibliotecaScreen(
 ) {
     val vm = viewModel<com.bioacupunt.biblioteca.presentation.BibliotecaViewModel>(factory = AppContainer.bibliotecaViewModelFactory)
     val state by vm.state.collectAsStateWithLifecycle()
-    var openArticle by remember { mutableStateOf<MtcArticle?>(null) }
+    // Guardamos só o id, não o MtcArticle inteiro: navegar para um "relacionado" troca
+    // o id, e o artigo atual é sempre resolvido contra state.allArticles (o universo
+    // completo, não filtrado por busca/categoria) — ver comentário em BibliotecaUiState.
+    var openArticleId by remember { mutableStateOf<String?>(null) }
+    val openArticle = remember(openArticleId, state.allArticles) {
+        openArticleId?.let { id -> state.allArticles.find { it.id == id } }
+    }
 
     LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -194,7 +200,7 @@ fun BibliotecaScreen(
                 ArticleCard(
                     article = article,
                     isFavorite = article.id in state.favoriteIds,
-                    onOpen = { openArticle = article },
+                    onOpen = { openArticleId = article.id },
                     onToggleFavorite = { vm.toggleFavorite(article.id) },
                 )
             }
@@ -202,7 +208,15 @@ fun BibliotecaScreen(
     }
 
     openArticle?.let { article ->
-        ArticleDetailDialog(article, onDismiss = { openArticle = null })
+        val related = remember(article.id, state.allArticles) {
+            state.allArticles.filter { it.category == article.category && it.id != article.id }
+        }
+        ArticleDetailSheet(
+            article = article,
+            relatedArticles = related,
+            onOpenRelated = { openArticleId = it.id },
+            onDismiss = { openArticleId = null },
+        )
     }
 }
 
@@ -271,20 +285,6 @@ private fun FlowRowCompat(tags: List<String>) {
             }
         }
     }
-}
-
-@Composable
-private fun ArticleDetailDialog(article: MtcArticle, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(article.title, fontWeight = FontWeight.Bold) },
-        text = {
-            LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
-                item { Text(article.content, style = MaterialTheme.typography.bodySmall) }
-            }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Fechar") } },
-    )
 }
 
 /** Small real-data helpers over the 16 reviewed articles — no fabricated numbers. */

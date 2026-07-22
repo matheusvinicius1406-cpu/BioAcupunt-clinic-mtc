@@ -5,11 +5,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository
 import com.bioacupunt.biblioteca.domain.ingestion.LibraryContentPack
+import com.bioacupunt.biblioteca.domain.ingestion.Provenance
 import com.bioacupunt.core.util.AppJson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
@@ -24,18 +26,54 @@ import kotlinx.serialization.decodeFromString
  */
 class LibraryReviewViewModel(
     private val repo: LibraryStagingRepository,
+    private val onContentChanged: (() -> Unit)? = null,
 ) : ViewModel() {
 
     val pending: StateFlow<List<LibraryStagingRepository.StagedArticle>> =
         repo.observePending().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /**
+     * Filtros da fila de curadoria — só de EXIBIÇÃO. Não afetam o portão de
+     * ingestão ([com.bioacupunt.biblioteca.domain.ingestion.LibraryIngestion]) nem o que
+     * é aceito na entrada; escondem/mostram itens já validados que aguardam revisão.
+     * `null` em categoria/proveniência = "Todas" (sem filtro).
+     */
+    private val _categoryFilter = MutableStateFlow<String?>(null)
+    val categoryFilter: StateFlow<String?> = _categoryFilter.asStateFlow()
+
+    private val _provenanceFilter = MutableStateFlow<Provenance?>(null)
+    val provenanceFilter: StateFlow<Provenance?> = _provenanceFilter.asStateFlow()
+
+    private val _searchText = MutableStateFlow("")
+    val searchText: StateFlow<String> = _searchText.asStateFlow()
+
+    /** Fila pendente já filtrada — é isto que a tela deve renderizar e contar. */
+    val filteredPending: StateFlow<List<LibraryStagingRepository.StagedArticle>> =
+        combine(pending, _categoryFilter, _provenanceFilter, _searchText) { items, category, provenance, text ->
+            items.filter { staged ->
+                (category == null || staged.article.category == category) &&
+                    (provenance == null || staged.meta.provenance == provenance) &&
+                    (text.isBlank() || staged.article.title.contains(text, ignoreCase = true))
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun setCategoryFilter(category: String?) { _categoryFilter.value = category }
+    fun setProvenanceFilter(provenance: Provenance?) { _provenanceFilter.value = provenance }
+    fun setSearchText(text: String) { _searchText.value = text }
 
     private val _feedback = MutableStateFlow<String?>(null)
     val feedback: StateFlow<String?> = _feedback.asStateFlow()
 
     private fun now() = System.currentTimeMillis()
 
-    fun approve(id: String) = viewModelScope.launch { repo.approve(id, now()) }
-    fun reject(id: String) = viewModelScope.launch { repo.reject(id, now()) }
+    fun approve(id: String) = viewModelScope.launch {
+        repo.approve(id, now())
+        onContentChanged?.invoke()
+    }
+    fun reject(id: String) = viewModelScope.launch {
+        repo.reject(id, now())
+        onContentChanged?.invoke()
+    }
 
     /**
      * Importa um pacote curado (JSON) que a médica/curadora escolheu no armazenamento.
@@ -57,9 +95,10 @@ class LibraryReviewViewModel(
 
 class LibraryReviewViewModelFactory(
     private val repo: LibraryStagingRepository,
+    private val onContentChanged: (() -> Unit)? = null,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return LibraryReviewViewModel(repo) as T
+        return LibraryReviewViewModel(repo, onContentChanged) as T
     }
 }

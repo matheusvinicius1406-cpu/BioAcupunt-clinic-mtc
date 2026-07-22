@@ -262,13 +262,17 @@ object AppContainer {
 
     val bibliotecaDao: com.bioacupunt.biblioteca.data.local.BibliotecaDao by lazy { database.bibliotecaDao() }
     val favoriteArticleDao: com.bioacupunt.biblioteca.data.local.FavoriteArticleDao by lazy { database.favoriteArticleDao() }
+    val articleSearchDao: com.bioacupunt.biblioteca.data.local.dao.ArticleSearchDao by lazy { database.articleSearchDao() }
 
     // ── Biblioteca: pipeline de ingestão + curadoria ───────
     val libraryStagingRepository: com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository by lazy {
         com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository(bibliotecaDao)
     }
     val libraryReviewViewModelFactory: com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory by lazy {
-        com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory(libraryStagingRepository)
+        com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory(
+            repo = libraryStagingRepository,
+            onContentChanged = { ftsSearchService.notifyContentChanged() },
+        )
     }
 
     // ── Financeiro ─────────────────────────────────────────
@@ -351,6 +355,7 @@ object AppContainer {
             askLibrary = askLibrary,
             toggleFavoriteArticle = com.bioacupunt.biblioteca.domain.usecase.ToggleFavoriteArticle(favoriteArticleDao),
             observeFavorites = favoriteArticleDao.observeAll().map { list -> list.map { fav -> fav.articleId }.toSet() },
+            observeApprovedArticles = libraryStagingRepository.observeApprovedArticles(),
         )
     }
     val reportDao: com.bioacupunt.relatorios.data.local.ReportDao by lazy { database.reportDao() }
@@ -410,23 +415,28 @@ object AppContainer {
     val aiRepository: com.bioacupunt.ai.core.AiRepository by lazy {
         com.bioacupunt.ai.data.repository.AiRepositoryImpl(aiOrchestrator)
     }
-    // ── Biblioteca: busca BM25 + RAG ancorado ──────────────
-    val mtcRetriever: com.bioacupunt.biblioteca.domain.search.MtcRetriever by lazy {
-        com.bioacupunt.biblioteca.domain.search.MtcRetriever(
-            com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles,
+    // ── Biblioteca: índice FTS4 + busca ──────────────────
+    val ftsSearchService: com.bioacupunt.biblioteca.data.search.FtsSearchService by lazy {
+        com.bioacupunt.biblioteca.data.search.FtsSearchService(
+            articleSearchDao,
+            libraryStagingRepository,
         )
+    }
+
+    val mtcRetriever: com.bioacupunt.biblioteca.domain.search.MtcRetriever by lazy {
+        com.bioacupunt.biblioteca.domain.search.MtcRetriever(ftsSearchService)
     }
 
     /**
      * The only sanctioned path for asking the AI a knowledge question: it refuses to
      * call the model when the library has no evidence. See AskLibraryUseCase.
      */
-    val askLibrary: com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase by lazy {
-        com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase(mtcRetriever, aiRepository)
+    val diagnosticRagUseCase: com.bioacupunt.biblioteca.domain.usecase.DiagnosticRagUseCase by lazy {
+        com.bioacupunt.biblioteca.domain.usecase.DiagnosticRagUseCase(mtcRetriever, aiRepository)
     }
 
-    val aiAssistantViewModelFactory: com.bioacupunt.biblioteca.presentation.AiAssistantViewModelFactory by lazy {
-        com.bioacupunt.biblioteca.presentation.AiAssistantViewModelFactory(askLibrary)
+    val askLibrary: com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase by lazy {
+        com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase(mtcRetriever, aiRepository)
     }
 
     val aiHealthRegistry: com.bioacupunt.ai.health.HealthRegistry by lazy {
@@ -440,6 +450,28 @@ object AppContainer {
     }
     val aiSecretsProvider: com.bioacupunt.ai.config.AiSecretsProvider by lazy {
         com.bioacupunt.ai.config.AndroidAiSecretsProvider(appContext)
+    }
+
+    // ── Inteligência: chat único (RAG-gated com fallback livre) ────
+    val appContextBuilder: com.bioacupunt.ai.presentation.AppContextBuilder by lazy {
+        com.bioacupunt.ai.presentation.AppContextBuilder(
+            appointmentRepository = appointmentRepository,
+            securePreferences = securePreferences,
+        )
+    }
+
+    /**
+     * Fábrica do chat único de IA. Toda pergunta passa primeiro por [askLibrary] (o gate R2);
+     * o fallback livre ([generateAiResponse]) só é chamado quando a biblioteca não tem
+     * evidência. Ver [com.bioacupunt.ai.presentation.UnifiedAiChatViewModel] para o porquê
+     * disso é seguro.
+     */
+    val unifiedAiChatViewModelFactory: com.bioacupunt.ai.presentation.UnifiedAiChatViewModelFactory by lazy {
+        com.bioacupunt.ai.presentation.UnifiedAiChatViewModelFactory(
+            askLibrary = askLibrary,
+            generateAiResponse = generateAiResponse,
+            contextBuilder = appContextBuilder,
+        )
     }
 
     // ── Seeder ──────────────────────────────────────────────

@@ -70,6 +70,16 @@ object LibraryIngestion {
                         source = pack.source.trim(),
                         citation = item.citation.trim(),
                         stagedAt = now,
+                        sourceUrl = item.sourceUrl.trim(),
+                        sourceRef = item.sourceRef.trim(),
+                        // Conferível só quando há ONDE olhar. Um nome de documento sem
+                        // localizador não permite checagem — classificar como rascunho
+                        // é fail-closed: na dúvida, a médica lê com desconfiança.
+                        provenance = if (item.sourceRef.isNotBlank()) {
+                            Provenance.VERIFICAVEL
+                        } else {
+                            Provenance.RASCUNHO
+                        },
                     ),
                 ),
             )

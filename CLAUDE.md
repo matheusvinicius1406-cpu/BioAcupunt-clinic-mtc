@@ -166,7 +166,7 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
 ## Estado honesto
 
 - **Executado e verde:** motor de segurança, catálogo de modelos, integridade, busca,
-  RAG, mapper de prontuário (62 testes, `./gradlew testDebugUnitTest`), `assembleDebug`.
+  RAG, mapper de prontuário (101 testes, `./gradlew testDebugUnitTest`), `compileDebugKotlin`.
 - **Compilado, não testado em device:** Compose, Room (migração 8→9), MediaPipe.
 - **Nunca testado:** inferência on-device (só roda em Android real).
 - **MediaPipe está em modo manutenção** — migrar para LiteRT-LM. O raio de explosão
@@ -174,3 +174,49 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
 - **Rasas ainda:** Agenda, CRM, Financeiro, Relatórios, Analytics, Educação.
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
+
+### Onde parei (2026-07-22) — leia antes de continuar
+
+Sessão de expansão da biblioteca + fusão de IA, feita com subagentes em paralelo.
+Tudo compila e `./gradlew testDebugUnitTest` passa (101 testes, 0 falhas), incluindo
+os 8 testes sagrados. **Nada testado em device ainda.**
+
+- **Biblioteca — conteúdo real ingerido:** `app/src/main/assets/packs/open_access/`
+  tem **1.069 itens reais** de fontes abertas verificadas (PubMed, WHO IRIS, PAHO
+  IRIS, DOAJ, NCBI Bookshelf, Europe PMC, + afiliação das 20 universidades pedidas +
+  USP), 49 arquivos JSON, zero duplicata, todos com citação+URL reais. Carregados por
+  `OpenAccessPacks.load(context)` na tela Curadoria. **Cada arquivo é um OBJETO
+  `{source,items}`, NUNCA um array** — o loader Kotlin exige isso (um agente errou e
+  foi corrigido). Total disponível pra curadoria: ~3.574 itens (509 packs Kotlin +
+  1.996 PCDT + 1.069 abertos). **NADA disso está no acervo/RAG ainda:** a médica
+  precisa Importar + Aprovar item a item na Curadoria (R4). Só os 16 fixos +
+  aprovados entram no `MtcRetriever`.
+- **Curadoria:** ganhou filtro (categoria/proveniência/busca) + link "Abrir fonte"
+  clicável. Página de detalhe do artigo (`ArticleDetailSheet.kt`) agora mostra
+  citação/fonte/proveniência/relacionados — antes era só um AlertDialog cru.
+- **IA unificada:** os 2 chats viraram 1 (`UnifiedAiChatViewModel` +
+  `InteligenciaScreen` reescrita). Roteamento por mensagem: **sempre tenta
+  `AskLibraryUseCase` primeiro (gate R2 intacto); só cai no chat geral quando
+  `NoEvidence`.** O gate `if (!grounding.hasEvidence)` NÃO foi tocado. Deletados
+  `AiAssistantViewModel/Screen/Route` e `GeneralChatViewModel`. "MCP" foi
+  interpretado como a infra de agente/tools já existente (não protocolo de rede —
+  inviável offline); ver relatório: `AgentRegistry`/`ToolRegistry`/orquestrador
+  precisam de investigação antes de rotear o fallback por eles.
+- **BUG CRÍTICO corrigido — a triagem clínica estava INERTE:** a UI pra marcar
+  contraindicações (`ClinicalFlag`: gestação, marca-passo, etc.) nunca tinha sido
+  fiada — `SupremoViewModel.toggleFlag` não tinha chamador. Resultado: o
+  `ClinicalSafetyEngine` (correto e testado) sempre via `flags` vazio e mostrava
+  "Sem contraindicações" pra TODA paciente. Fiado agora em `AnamneseTab`
+  (`ProntuarioScreen.kt`). **Precisa do aval da médica + teste em device.**
+- **Pendências reportadas, NÃO corrigidas** (precisam de decisão de produto/médica):
+  (a) `Transacao` não tem `tenantId` — mistura financeiro entre tenants; (b) o
+  callback de override do veto clínico é no-op (não persiste usuário+hora como o
+  CLAUDE.md exige); (c) 7 de 18 `ClinicalFlag` não têm regra no
+  `ClinicalSafetyEngine` (conteúdo clínico — R4, só a médica). 
+- **Fontes que não deram (anti-bot/SPA):** SciELO, BVS/LILACS, Karolinska Open
+  Archive, USP teses, WashU DigitalCommons. Karolinska/USP capturados via afiliação
+  no Europe PMC mesmo assim.
+- **Próximos passos:** testar em device (triagem clínica fiada + IA unificada);
+  resolver as 3 pendências acima com a médica; a meta de "11.000 assuntos" é de longo
+  prazo (hoje 1.069 reais abertos) e exige mais rodadas de fontes. **Nada foi
+  empurrado pro GitHub** — commits só locais.

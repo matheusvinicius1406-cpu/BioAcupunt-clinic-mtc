@@ -1,0 +1,18 @@
+{
+ "source": "Europe PMC (https://www.ebi.ac.uk/europepmc/) — literatura biomedica de acesso aberto sobre acupuntura/MTC com pelo menos um autor afiliado a University of Edinburgh, via API REST publica (webservices/rest/search), filtro AFF + topico + OPEN_ACCESS:Y + HAS_ABSTRACT:Y, revisado manualmente para confirmar afiliacao real e relevancia tematica, 2026",
+ "items": [
+  {
+   "id": "europepmc-26576808",
+   "title": "The BMEA study: the impact of meridian balanced method electroacupuncture on women with chronic pelvic pain-a three-arm randomised controlled pilot study using a mixed-methods approach.",
+   "category": "MERIDIANOS",
+   "summary": "<h4>Introduction</h4>Chronic pelvic pain (CPP) affects 3-4% of women worldwide. Proven treatments for CPP are limited and unsatisfactory. The meridian balance method (BM) electroacupuncture (EA) treatment (BMEA + Traditional Chinese Medicine Health Consultation (TCM HC) may be effective for CPP....",
+   "content": "<h4>Introduction</h4>Chronic pelvic pain (CPP) affects 3-4% of women worldwide. Proven treatments for CPP are limited and unsatisfactory. The meridian balance method (BM) electroacupuncture (EA) treatment (BMEA + Traditional Chinese Medicine Health Consultation (TCM HC) may be effective for CPP. Previous EA studies have demonstrated an analgesic effect. Large-scale studies on acupuncture for other chronic pain conditions suggest that patient-healthcare provider interaction might play a role in pain reduction. We propose a pilot study to explore the effectiveness of the meridian BMEA treatment in managing women with CPP to inform a future large randomised controlled trial.<h4>Methods and analysis</h4>A 3-armed randomised controlled pilot study is proposed with an aim to recruit 30 women with CPP in National Health Service (NHS) Lothian. Randomisation will be to BMEA treatment, TCM HC or standard care (SC). Validated pain, physical and emotional functioning questionnaires will be administered to all participants at weeks 0, 4, 8 and 12. Focus group discussions will be conducted when week 12 questionnaires are completed. The primary objective is to determine, recruitment and retention rates. The secondary objectives are to assess the effectiveness and acceptability of the proposed methods of recruitment, randomisation, interventions and assessment tools.<h4>Ethics and dissemination</h4>Ethical approval has been obtained from the Scotland Research Ethics Committee (REC 14/SS/1022). Data will be published in peer-reviewed journals and presented at international conferences.<h4>Trial registration number</h4>NCT02295111.",
+   "tags": [
+    "BMJ open"
+   ],
+   "citation": "Chong OT, Critchley HO, Horne AW, Elton R, Haraldsdottir E, Fallon M. The BMEA study: the impact of meridian balanced method electroacupuncture on women with chronic pelvic pain-a three-arm randomised controlled pilot study using a mixed-methods approach. BMJ open 5(11). (2015) (afiliacao: University of Edinburgh) doi:10.1136/bmjopen-2015-008621",
+   "sourceUrl": "https://doi.org/10.1136/bmjopen-2015-008621",
+   "sourceRef": "Resumo (abstract)"
+  }
+ ]
+}

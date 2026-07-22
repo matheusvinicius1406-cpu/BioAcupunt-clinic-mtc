@@ -1,0 +1,434 @@
+{
+ "source": "PubMed — pesquisa aberta sobre MTC/acupuntura, categoria DIETOTERAPIA, 2026 (E-utilities, resumos/abstracts públicos)",
+ "items": [
+  {
+   "id": "pubmed-37600709",
+   "title": "Exploring the underlying mechanisms of obesity and diabetes and the potential of Traditional Chinese Medicine: an overview of the literature.",
+   "category": "DIETOTERAPIA",
+   "summary": "Obesity and diabetes are closely related metabolic disorders that have become major public health concerns worldwide. Over the past few decades, numerous studies have explored the underlying mechanisms of these disorders and identified various risk factors, including genetics, lifestyle, and dietary habits.",
+   "content": "Obesity and diabetes are closely related metabolic disorders that have become major public health concerns worldwide. Over the past few decades, numerous studies have explored the underlying mechanisms of these disorders and identified various risk factors, including genetics, lifestyle, and dietary habits. Traditional Chinese Medicine (TCM) has been increasingly recognized for its potential to manage obesity and diabetes. Weight loss is difficult to sustain, and several diabetic therapies, such as sulfonylureas, thiazolidinediones, and insulin, might make it harder to lose weight. While lifestyle changes should be the primary approach for people interested in lowering weight, drugs are also worth investigating. Since some of the newer glucose-lowering medications that cause weight loss, such as glucagon-like peptide-1 receptor agonists (GLP-1 RAs) and sodium-glucose cotransporter 2 inhibitors (SGLT2i), are additionally utilized or are under consideration for use as anti-obesity drugs, the frontier between glucose-lowering medication and weight loss drugs appears to be shifting. This review provides an overview of the literature on the underlying mechanisms of obesity and diabetes and the prospect of TCM in their management. We discuss the various TCM interventions, including acupuncture, herbal medicine, and dietary therapy, and their effects on metabolic health. We also highlight the potential of TCM in regulating gut microbiota, reducing inflammation, and improving insulin sensitivity. The findings suggest that TCM may provide a promising approach to preventing and managing obesity and diabetes. However, further well-designed studies are needed to confirm the efficacy and safety of TCM interventions and to elucidate their underlying mechanisms of action.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:37600709, Chen YK et al., 2023, Frontiers in endocrinology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37600709/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39832686",
+   "title": "AlphaFold-based AI docking reveals AMPK/SIRT1-TFEB pathway modulation by traditional Chinese medicine in metabolic-associated fatty liver disease.",
+   "category": "DIETOTERAPIA",
+   "summary": "Metabolic-associated fatty liver disease (MAFLD) is a chronic, progressive disorder characterized by hepatic steatosis and excessive lipid accumulation. Its high global adult prevalence (approximately 50.7 %) is a significant concern worldwide.",
+   "content": "Metabolic-associated fatty liver disease (MAFLD) is a chronic, progressive disorder characterized by hepatic steatosis and excessive lipid accumulation. Its high global adult prevalence (approximately 50.7 %) is a significant concern worldwide. However, FDA-approved therapeutic drugs remains lacking. Qigui Jiangzhi Formula (QGJZF) shows promise in treating MAFLD by effectively decreasing lipid levels and improving hepatic steatosis, however its mechanisms remain unclear. This study investigated QGJZF's effects in high-fat diet-induced zebrafish and golden hamsters, and in palmitate (PA) and oleic acid (OA) - induced HepG2 cells, using the SymMap database to identify potential targets and pathways of QGJZF in MAFLD and AlphaFold algorithms to predict protein structures. In vivo, QGJZF significantly alleviated hepatic lipid deposition. Intriguingly, QGJZF decreased lipid droplets and its levels are negative correlated with the numbers of autolysosomes, indicating that QGJZF's mechanism of ameliorating liver lipid deposition may be related to the regulation of autophagy. QGJZF upregulated the expressions of phosphorylated -Adenosine 5'-monophosphate (AMP) - activated protein kinase (p-AMPK), Sirtuin deacetylase 1 (SIRT1) and Transcription factor EB (TFEB), accompanied by the changes in autophagy-related proteins. In vitro, QGJZF inhibited the lipid deposition in PA/OA-stimulated HepG2 cells, and its effect was blocked by an autophagy inhibitor Baf-A1, which was mediated through upregulation of TFEB and its mediated autophagy-lysosomal pathway. Moreover, cotreatment with AMPK inhibitor Compound C, the regulation of QGJZF on TFEB, SIRT1, autophagy-related protein levels, and lipid deposition were reversed. Network pharmacology identified the PRKAA2 (AMPK) and SIRT1 as key hub targets. Futher analysis of their structures using AlphaFold3 algorithms, yielded high-ranking scores of 0.97 and 0.93, respectively. Liquid chromatography-mass spectrometry combined with molecular docking expounded its five compounds in QGJZF binding to AMPK protein. These findings suggest that QGJZF as a therapeutic agent in augmenting autophagy-facilitated lipid clearance for the management of MAFLD via AMPK/SIRT1-TFEB axis.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:39832686, Zhang L et al., 2025, Pharmacological research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39832686/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39170985",
+   "title": "Gut microbiota and psoriasis: pathogenesis, targeted therapy, and future directions.",
+   "category": "DIETOTERAPIA",
+   "summary": "Psoriasis is one of the most common autoimmune skin diseases. Increasing evidence shows that alterations in the diversity and function of microbiota can participate in the pathogenesis of psoriasis through various pathways and mechanisms.",
+   "content": "BACKGROUND: Psoriasis is one of the most common autoimmune skin diseases. Increasing evidence shows that alterations in the diversity and function of microbiota can participate in the pathogenesis of psoriasis through various pathways and mechanisms.\nOBJECTIVE: To review the connection between microbial changes and psoriasis, how microbial-targeted therapy can be used to treat psoriasis, as well as the potential of prebiotics, probiotics, synbiotics, fecal microbiota transplantation, diet, and Traditional Chinese Medicine as supplementary and adjunctive therapies.\nMETHODS: Literature related to the relationship between psoriasis and gut microbiota was searched in PubMed and CNKI.\nRESULTS: Adjunct therapies such as dietary interventions, traditional Chinese medicine, and probiotics can enhance gut microbiota abundance and diversity in patients with psoriasis. These therapies stimulate immune mediators including IL-23, IL-17, IL-22, and modulate gamma interferon (IFN-γ) along with the NF-kB pathway, thereby suppressing the release of pro-inflammatory cytokines and ameliorating systemic inflammatory conditions.\nCONCLUSION: This article discusses the direction of future research and clinical treatment of psoriasis from the perspective of intestinal microbiota and the mechanism of traditional Chinese medicine, so as to provide clinicians with more comprehensive diagnosis and treatment options and bring greater hope to patients with psoriasis.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:39170985, Zou X et al., 2024, Frontiers in cellular and infection microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39170985/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34444885",
+   "title": "Health-Promoting of Polysaccharides Extracted from Ganoderma lucidum.",
+   "category": "DIETOTERAPIA",
+   "summary": "Medicinal mushrooms are rich sources of pharmacologically active compounds. One of the mushrooms commonly used in traditional Chinese medicine is Ganoderma lucidum (Leyss.",
+   "content": "Medicinal mushrooms are rich sources of pharmacologically active compounds. One of the mushrooms commonly used in traditional Chinese medicine is Ganoderma lucidum (Leyss. Ex Fr.) Karst. In Asian countries it is treated as a nutraceutical, whose regular consumption provides vitality and improves health. Ganoderma lucidum is an important source of biologically active compounds. The pharmacologically active fraction of polysaccharides has antioxidant, immunomodulatory, antineurodegenerative and antidiabetic activities. In this review, we summarize the activity of Ganoderma lucidum polysaccharides (GLP).",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:34444885, Seweryn E, Ziała A, Gamian A, 2021, Nutrients",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34444885/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-30569745",
+   "title": "Dietary compounds and traditional Chinese medicine ameliorate type 2 diabetes by modulating gut microbiota.",
+   "category": "DIETOTERAPIA",
+   "summary": "Diabetes mellitus (DM) and its complications are major public health concerns which strongly influence the quality of humans' life. Modification of gut microbiota has been widely used for the management of diabetes.",
+   "content": "Diabetes mellitus (DM) and its complications are major public health concerns which strongly influence the quality of humans' life. Modification of gut microbiota has been widely used for the management of diabetes. In this review, the relationship between diabetes and gut microbiota, as well as the effects of different dietary components and traditional Chinese medicine (TCM) on gut microflora are summarized. Dietary compounds and TCM possessing bioactive components (fiber and phytochemicals) first change the composition of gut microbiota (inhibiting pathogens and promoting the beneficial bacteria growth) and then influence the production of their metabolites, which would further modify the intestinal environment through inhibiting the production of detrimental compounds (such as lipopolysaccharide, hydrogen sulfide, indol, etc.). Importantly, metabolites (short chain fatty acids and other bioactive components) fermented/degraded by gut microbiota can target multiple pathways in intestine, liver, pancreas, etc., resulting in the improvement of gut health, glycemic control, lipids profile, insulin resistance and inflammation. Furthermore, understanding the interaction between different dietary components and gut microbiota, as well as underlying mechanisms would help design different diet formula for the management of diabetes. Further researches could focus on the combination of different dietary components for preventing and treating diabetes, based on the principle of \"multiple components against multiple targets\" from the perspective of gut microbiota.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:30569745, Nie Q et al., 2019, Critical reviews in food science and nutrition",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30569745/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40513924",
+   "title": "Research progress on the regulation of interstitial cell of Cajal autophagy and apoptosis crosstalk by traditional Chinese medicine in gastrointestinal motility disorders.",
+   "category": "DIETOTERAPIA",
+   "summary": "Gastrointestinal motility disorders (GMD) severely impact quality of life, with rising global prevalence linked to modern dietary and lifestyle changes. Traditional Chinese medicine (TCM), rooted in the \"holistic regulation\" philosophy and centuries of empirical application, demonstrates unique advantages in restoring gastrointestinal homeostasis.",
+   "content": "ETHNOPHARMACOLOGICAL RELEVANCE: Gastrointestinal motility disorders (GMD) severely impact quality of life, with rising global prevalence linked to modern dietary and lifestyle changes. Traditional Chinese medicine (TCM), rooted in the \"holistic regulation\" philosophy and centuries of empirical application, demonstrates unique advantages in restoring gastrointestinal homeostasis. Historical records and modern clinical practices validate the efficacy of herbal compounds, bioactive phytochemicals, and external therapies in modulating intestinal pacemaker systems.\nAIM OF THE STUDY: This study aims to systematically review the pathogenesis of GMD mediated by autophagy-apoptosis imbalance in interstitial cells of Cajal (ICCs), examine the therapeutic application of traditional Chinese medicine (TCM) interventions, and identify the bioactive components and molecular mechanisms underlying TCM's regulatory effects on ICCs homeostasis.\nMETHODS: Utilize PubMed and NCBI databases to conduct a comprehensive search on GMD, focusing on diseases such as slow transit constipation (STC), functional dyspepsia (FD), diabetic gastroparesis (DGP), gastroesophageal reflux disease (GERD), irritable bowel syndrome (IBS), functional constipation (FC) and opioid-induced constipation (OIC). Additionally, explore the underlying mechanisms involving autophagy, apoptosis, molecular crosstalk, and ICC dynamics. Investigate the potential therapeutic effects of herbal medicine, TCM compounds, bioactive phytocompounds, and external TCM therapeutic modalities on these GMD.\nRESULTS: The study systematically identified 24 TCM compound formulations, 3 bioactive herbal extracts, and 10 specific active components, along with external therapeutic modalities including electroacupuncture (EA) and acupuncture. These therapeutic agents demonstrated multi-pathway regulatory effects by modulating autophagy-apoptosis dynamics in ICCs, with mechanistic analyses revealing their capacity to coordinate multiple signaling pathways for restoring gastrointestinal (GI) motility homeostasis.\nCONCLUSION: TCM and external therapies demonstrate significant therapeutic efficacy in ameliorating GMD. The underlying molecular mechanisms may involve the coordinated modulation of a multi-target regulatory network that restores autophagy-apoptosis homeostasis in ICCs. Given the specificity and adaptability of this mechanistic framework, future research should prioritize the development of active constituents and their corresponding molecular targets as novel therapeutic agents and intervention points. These findings provide both a theoretical foundation and translational directions for advancing precision-targeted strategies in GI motility regulation.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:40513924, Zhang L et al., 2025, Journal of ethnopharmacology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40513924/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38522913",
+   "title": "Considering traditional Chinese medicine as adjunct therapy in the management of chronic constipation by regulating intestinal flora.",
+   "category": "DIETOTERAPIA",
+   "summary": "Chronic constipation is one of the most common gastrointestinal disorders worldwide. Due to changes in diet, lifestyle, and the aging population, the incidence of chronic constipation has increased year by year.",
+   "content": "Chronic constipation is one of the most common gastrointestinal disorders worldwide. Due to changes in diet, lifestyle, and the aging population, the incidence of chronic constipation has increased year by year. It has had an impact on daily life and poses a considerable economic burden. Nowadays, many patients with chronic constipation try to seek help from complementary and alternative therapies, and traditional Chinese medicine (TCM) is often their choice. The intestinal flora play an important role in the pathogenesis of constipation by affecting the body's metabolism, secretion, and immunity. Regulating the intestinal flora and optimizing its composition might become an important prevention and treatment for chronic constipation. TCM has unique advantages in regulating the imbalance of intestinal flora, and its curative effect is precise. Therefore, we reviewed the relationship between intestinal flora and chronic constipation as well as advances in research on TCM as adjunct therapy in the management of chronic constipation by regulating intestinal flora. Some single Chinese herbs and their active ingredients (e.g., Rheum palmatum, Radix Astragalus, and Cistanche deserticola), some traditional herbal formulations (e.g., Jichuan decoction, Zengye decoction, and Zhizhu decoction) and some Chinese patent medicines (e.g., Maren pills and Shouhui Tongbian capsules) that are commonly used to treat chronic constipation by regulating intestinal flora are highlighted and summarized. Moreover, some external forms of TCM, and especially acupuncture, have also been found to improve intestinal movement and alleviate constipation symptoms by regulating intestinal flora. We hope this review can contribute to an understanding of TCM as an adjunct therapy for chronic constipation and that it can provide useful information for the development of more effective constipation therapies.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:38522913, Wang K et al., 2024, Bioscience trends",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38522913/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40086971",
+   "title": "Combined traditional Chinese medicine and probiotics (TCMP) alleviates lipid accumulation and improves metabolism in high-fat diet mice via the microbiota-gut-liver axis.",
+   "category": "DIETOTERAPIA",
+   "summary": "Lipid accumulation and metabolic disorders caused by a high-fat diet (HFD) pose significant threats to human health, and place a substantial burden on individuals and society. In this study, a novel combination comprising three traditional Chinese herbs (lotus leaf, hawthorn, and leaf of Chinese holly) and a probiotic (Bifidobacterium lactis BPL-1) (TCMP) was prepared.",
+   "content": "Lipid accumulation and metabolic disorders caused by a high-fat diet (HFD) pose significant threats to human health, and place a substantial burden on individuals and society. In this study, a novel combination comprising three traditional Chinese herbs (lotus leaf, hawthorn, and leaf of Chinese holly) and a probiotic (Bifidobacterium lactis BPL-1) (TCMP) was prepared. Then, its effects on growth performance, fat accumulation, hepatic function and gut microbiota in mice fed a high-fat diet were investigated. According to the results, TCMP significantly reduced adipose tissue fat accumulation, improved hepatic lipid metabolism, and ameliorated glucose homeostasis in HFD-fed mice. Notably, TCMP not only improved the abundance and diversity of gut microbiota and increased the content of beneficial intestinal bacteria related to lipid metabolism (especially Bifidobacterium animalis), but also increased the production of short-chain fatty acids, including2-methylbutyrate, isovaleric acid and isobutyric acid. Additionally, multi-omics (transcriptome and metabolome) analysis revealed that TCMP significantly inhibited the expression of genes involved in the lipid biosynthesis process and modulated the purine and glycerophospholipid metabolism caused by a high-fat diet, thereby achieving the purpose of reducing fat accumulation and regulating lipid metabolism. Taken together, our finding demonstrates the potential of TCMP as a promising therapeutic candidate for combatting obesity and lipid metabolism disorders induced by a high-fat diet.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:40086971, Liu X et al., 2025, Food research international (Ottawa, Ont.)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40086971/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36845103",
+   "title": "The effects of traditional Chinese medicine and dietary compounds on digestive cancer immunotherapy and gut microbiota modulation: A review.",
+   "category": "DIETOTERAPIA",
+   "summary": "Digestive tract-related cancers account for four of the top ten high-risk cancers worldwide. In recent years, cancer immunotherapy, which exploits the innate immune system to attack tumors, has led to a paradigm shifts in cancer treatment.",
+   "content": "Digestive tract-related cancers account for four of the top ten high-risk cancers worldwide. In recent years, cancer immunotherapy, which exploits the innate immune system to attack tumors, has led to a paradigm shifts in cancer treatment. Gut microbiota modification has been widely used to regulate cancer immunotherapy. Dietary compounds and traditional Chinese medicine (TCM) can alter the gut microbiota and its influence on toxic metabolite production, such as the effect of iprindole on lipopolysaccharide (LPS), and involvement in various metabolic pathways that are closely associated with immune reactions. Therefore, it is an effective strategy to explore new immunotherapies for gastrointestinal cancer to clarify the immunoregulatory effects of different dietary compounds/TCMs on intestinal microbiota. In this review, we have summarized recent progress regarding the effects of dietary compounds/TCMs on gut microbiota and their metabolites, as well as the relationship between digestive cancer immunotherapy and gut microbiota. We hope that this review will act as reference, providing a theoretical basis for the clinical immunotherapy of digestive cancer via gut microbiota modulation.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:36845103, Feng X et al., 2023, Frontiers in immunology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36845103/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-18296307",
+   "title": "Dietary patterns using Traditional Chinese Medicine principles in epidemiological studies.",
+   "category": "DIETOTERAPIA",
+   "summary": "Dietary intake and nutritional factors have been shown to be associated with many chronic diseases, such as heart disease, obesity, diabetes, and cancer. There are many approaches to studying dietary intake in relationship to disease; each approach has its strengths and weaknesses.",
+   "content": "Dietary intake and nutritional factors have been shown to be associated with many chronic diseases, such as heart disease, obesity, diabetes, and cancer. There are many approaches to studying dietary intake in relationship to disease; each approach has its strengths and weaknesses. Examples of different methods of studying dietary patterns will be reviewed. In most cultures, consumed and preferred foods are based on cultural and societal influence. Thus, it is important to consider dietary patterns within the context of culture in addition to the standard nutrients or food groupings approach. Traditional Chinese Medicine (TCM) offers another dimension to food analysis. Our approach classifies dietary intake based on Traditional Chinese Medicine principles of yin and yang, hot and cold, and acidic and alkaline forming food concepts in a case-control study of dietary factors and breast cancer. Our results complement previously reported findings of an increased risk of breast cancer associated with dietary fats in Taiwanese women. Our discussion will focus on the implication of using this dietary pattern research and the challenge of combining this research with culturally sensitive messages to improve health. Our ultimate goal is to design an intervention strategy for disease prevention and health promotion that is culturally appropriate for specific populations.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:18296307, Lee MM, Shen JM, 2008, Asia Pacific journal of clinical nutrition",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18296307/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36181077",
+   "title": "Different traditional Chinese medicine constitution is associated with dietary and lifestyle behaviors among adults in Taiwan.",
+   "category": "DIETOTERAPIA",
+   "summary": "The World Health Organization states prevention of chronic diseases should be based on good lifestyle behaviors and healthy diets as they can reduce the risk of chronic diseases by 80%. The theory of traditional Chinese medicine constitution (TCMC) emphasizes the congenital differences of TCMC stem from the genes of parents, while acquired differences in TCMC are caused by factors as living env...",
+   "content": "The World Health Organization states prevention of chronic diseases should be based on good lifestyle behaviors and healthy diets as they can reduce the risk of chronic diseases by 80%. The theory of traditional Chinese medicine constitution (TCMC) emphasizes the congenital differences of TCMC stem from the genes of parents, while acquired differences in TCMC are caused by factors as living environments, lifestyle behaviors, and dietary habits. From the perspective of preventive medicine, this study explores the correlation between dietary habits and lifestyle behaviors as potential risk factors for different types of TCMC-balanced constitution, Yang deficiency, Yin deficiency, and Phlegm stasis. Research data were collected from 2760 subjects aged 30 to 70 years participating in a survey conducted by Taiwan Biobank in 2012 to 2017. The survey included basic demographic characteristics, lifestyle behaviors, and dietary habits along with a Body Constitution Questionnaire. Compared to men, women were 3 to 4 times more likely to develop Yang-deficiency, Yin-deficiency, and Phlegm stasis. Variables that affected TCMC were smoking, midnight snack consumption, consumption of gravy-soaked or lard-soaked rice/noodles, deep-fried soybean products, bread spread, pickled vegetables as side dishes for the main course of a meal, and the dietary habit of vegetables or fruits instead of high-fat desserts. Poor dietary habits and lifestyle behaviors are the cause of unbalanced TCMCs. Understanding the specific TCMC of individual can provide useful information and predictions to maintain physical health and achieve early disease prevention to meet the goal of preventive medicine.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:36181077, Hsu MF et al., 2022, Medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36181077/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-27852126",
+   "title": "Traditional Chinese Medicine, Food Therapy, and Hypertension Control: A Narrative Review of Chinese Literature.",
+   "category": "DIETOTERAPIA",
+   "summary": "Despite the lack of English literature about Traditional Chinese Medicine (TCM) food therapy, there is abundant Chinese literature about the application of food therapy for hypertension control. This paper summarizes basic concepts of TCM, the principles of food therapy and its application for hypertension control according to Chinese literature.",
+   "content": "Despite the lack of English literature about Traditional Chinese Medicine (TCM) food therapy, there is abundant Chinese literature about the application of food therapy for hypertension control. This paper summarizes basic concepts of TCM, the principles of food therapy and its application for hypertension control according to Chinese literature. In TCM, food is conceptualized according to both nutritional and functional aspects, and can be used to treat illnesses. Four principles of TCM food therapy including light eating, balancing the \"hot\" and \"cold\" nature of food, the harmony of the five flavors of food, and consistency between dietary intake and different health conditions, can be used to facilitate hypertension control. Based on a statistical analysis of antihypertensive foods recommended in 20 books on the application of food therapy for hypertension control, the 38 most frequently recommended are celery, tomato, banana, hawthorn, garlic, onion, seaweed, apple, corn, green beans, persimmon, laver, kiwi, watermelon, eggplant, carrots, mushroom, peanut, soy products, sea cucumber, buckwheat, garland chrysanthemum, spinach, honey, dairy products, vinegar, black fungus, jellyfish, green onion, shepherd's purse, soybean, potato, pear, winter melon, bitter melon, oat, pea, and tea. Food therapy emphasizes the therapeutic effects of food, considering its nature, taste, and function on human balanced health, which leads to optimal blood pressure control. Current literature suggests that food therapy is effective in blood pressure control and can be incorporated into blood pressure self-management in the Chinese population.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:27852126, Zou P, 2016, The American journal of Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27852126/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34883312",
+   "title": "Dietary advice in chronic care: Comparing traditional Chinese and western medicine practiced in mainland China.",
+   "category": "DIETOTERAPIA",
+   "summary": "The study examines dietary advice-giving in regular consultations for patients with chronic conditions in two types of clinical practices: Traditional Chinese Medicine and Western Medicine practiced in mainland China. Dietary habits are unanimously considered relevant to the patient's health, particularly in chronic conditions.",
+   "content": "The study examines dietary advice-giving in regular consultations for patients with chronic conditions in two types of clinical practices: Traditional Chinese Medicine and Western Medicine practiced in mainland China. Dietary habits are unanimously considered relevant to the patient's health, particularly in chronic conditions. This article reports the differences in where and how dietary advice is occasioned and co-constructed by participants in two settings. One significant finding of this paper is that while Traditional Chinese Medicine doctors take dietary talk to instruct patients and put it into the treatment recommendation, WM doctors may treat it as incidental and only valuable for diagnostic assessment, leaving its treatment opaque and not discussed with the patient. Data are in Mandarin Chinese. Using Conversation Analysis, the article describes the interactional organisation of dietary advice delivery in different medical practices and ascribes their differences to clinical pathology.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:34883312, Jin Y, Kim Y, 2022, Social science & medicine (1982)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34883312/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39575403",
+   "title": "Potential of traditional Chinese medicine in the treatment of nonalcoholic fatty liver disease: A promising future.",
+   "category": "DIETOTERAPIA",
+   "summary": "In this editorial, we provide insights into the publication by Niu et al featured in the latest edition of the World Journal of Gastroenterology. Specifically, our focus was on exploring the potential of traditional Chinese medicine (TCM) in treating nonalcoholic fatty liver disease (NAFLD) induced by a high-fat diet through various mechanisms.",
+   "content": "In this editorial, we provide insights into the publication by Niu et al featured in the latest edition of the World Journal of Gastroenterology. Specifically, our focus was on exploring the potential of traditional Chinese medicine (TCM) in treating nonalcoholic fatty liver disease (NAFLD) induced by a high-fat diet through various mechanisms. NAFLD is a common liver condition, affecting approximately 25% of the world's population. It is closely linked to metabolic syndrome, insulin resistance, excessive body weight, and irregular lipid processing, leading to fat accumulation in the liver, as well as oxidative stress and inflammation. While maintaining a healthy diet and active lifestyle are essential for managing NAFLD, treatment options are limited due to undefined pathogenesis and a lack of specific medications. TCM, rooted in traditional Chinese practices, presents a promising alternative through its \"syndrome differentiation and treatment\" principles, enhancing liver lipid metabolism, reducing inflammation, and addressing fibrosis. Certain herbs, such as Poria cocos, Puaria lobata, and Salvia miltiorrhiza, have shown significant efficacy in reducing fat deposition and improving liver function. Due to systematic research and analysis of mechanisms, TCM is anticipated to yield new approaches to prevent and treat NAFLD, increasing its clinical application.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:39575403, Zhang WY, Wang MH, Xie C, 2024, World journal of gastroenterology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39575403/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39378978",
+   "title": "Alleviation of colitis by honeysuckle MIR2911 via direct regulation of gut microbiota.",
+   "category": "DIETOTERAPIA",
+   "summary": "Inflammatory bowel disease (IBD) is a group of chronic relapsing diseases associated with inflammatory disorders and microbial dysbiosis of the intestine. The use of traditional Chinese medicine (TCM) to treat colitis has the advantage of fewer side effects, but the molecular mechanism is not clear.",
+   "content": "Inflammatory bowel disease (IBD) is a group of chronic relapsing diseases associated with inflammatory disorders and microbial dysbiosis of the intestine. The use of traditional Chinese medicine (TCM) to treat colitis has the advantage of fewer side effects, but the molecular mechanism is not clear. Recently, miRNAs have been recognized as novel functional small molecules in plants that have regulatory effects on biological activities. This study mainly investigated the mechanism of action of MIR2911 from Honeysuckle, the main component of TCM preparations for colitis. The results demonstrated that MIR2911 can be absorbed through the diet and secreted within host small extracellular vesicles (sEVs), acting directly on intestinal bacteria, reducing the abundance of Escherichia-Shigella, and improving colitis symptoms. This study provides a new theoretical basis for the molecular mechanism of TCM therapy and identifies a potential new drug a new drug target for the treatment of colitis.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:39378978, Li W et al., 2024, Journal of controlled release : official journal of the Controlled Release Society",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39378978/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-26108523",
+   "title": "Traditional Chinese medical comprehensive therapy for cancer-related fatigue.",
+   "category": "DIETOTERAPIA",
+   "summary": "Cancer-related fatigue (CRF) is a common and one of the most severe symptom in the period of onset, diagnosis, treatment and rehabilitation process of cancer. But there are no confirmed measures to relieve this problem at present.",
+   "content": "Cancer-related fatigue (CRF) is a common and one of the most severe symptom in the period of onset, diagnosis, treatment and rehabilitation process of cancer. But there are no confirmed measures to relieve this problem at present. Traditional Chinese medical comprehensive therapy has its advantages in dealing with this condition. Based on the research status of CRF, the following problems have been analyzed and solved: the term of CRF has been defined and recommended, and the definition has been made clear; the disease mechanism is proposed, i.e. healthy qi has been impaired in the long-term disease duration, in the process of surgery, chemotherapy, radiotherapy and biology disturbing; it is clear that the clinical manifestations are related to six Chinese medicine patterns: decreased functioning of the Pi (Spleen) and Wei (Stomach), deficiency of the Pi with dampness retention, deficiency of the Xin (Heart) and Pi, disharmony between the Gan (Liver) and Pi, deficiency of the Pi and Shen (Kidney), and deficiency of the Fei (Lung) and Shen. Based on its severity, the mild patients are advised to have non-drug psychological intervention and sleep treatment in cooperation with appropriate exercise; diet therapy are recommended to moderate patients together with sleep treatment and acupuncture, severe patients are recommended to have herbal treatment based on pattern differentiation together with physiological sleep therapy.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:26108523, Yang L et al., 2016, Chinese journal of integrative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/26108523/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38053526",
+   "title": "Effects of dietary traditional Chinese medicine residues on growth performance, intestinal health and gut microbiota compositions in weaned piglets.",
+   "category": "DIETOTERAPIA",
+   "summary": "Weaning stress can induce diarrhea, intestinal damage and flora disorder of piglets, leading to slow growth and even death of piglets. Traditional Chinese medicine residue contains a variety of active ingredients and nutrients, and its resource utilization has always been a headache.",
+   "content": "Weaning stress can induce diarrhea, intestinal damage and flora disorder of piglets, leading to slow growth and even death of piglets. Traditional Chinese medicine residue contains a variety of active ingredients and nutrients, and its resource utilization has always been a headache. Therefore, we aimed to investigate the effects of traditional Chinese medicine residues (Xiasangju, composed of prunellae spica, mulberry leaves, and chrysanthemum indici flos) on growth performance, diarrhea, immune function, and intestinal health in weaned piglets. Forty-eight healthy Duroc× Landrace × Yorkshire castrated males weaned aged 21 days with similar body conditions were randomly divided into 6 groups with eight replicates of one piglet. The control group was fed a basal diet, the antibiotic control group was supplemented with 75 mg/kg chlortetracycline, and the residue treatment groups were supplemented with 0.5%, 1.0%, 2.0% and 4.0% Xiasangju residues. The results showed that dietary Xiasangju residues significantly reduced the average daily feed intake, but reduced the diarrhea score (P < 0.05). The 1.0% and 2.0% Xiasangju residues significantly increased the serum IgM content of piglets, and the 0.5%, 1.0%, 2.0% and 4.0% Xiasangju residues significantly increased the serum IgG content, while the 1.0%, 2.0% and 4.0% Xiasangju residues significantly increased the sIgA content of ileal contents (P < 0.05). Dietary Xiasangju residues significantly increased the villus height and the number of villus goblet cells in the jejunum and ileum, and significantly decreased the crypt depth (P<0.05). The relative mRNA expression of IL-10 in the ileum was significantly increased in the 1% and 2% Xiasangju residues supplemented groups (P < 0.05), while IL-1β in the ileum was downregulated (P < 0.05). Xiasangju residues improved the gut tight barrier, as evidenced by the enhanced expression of Occludin and ZO-1 in the jejunum and ileum. The diets with 1% Xiasangju residues significantly increased the relative abundance of Lactobacillus johnsonii, and 2% and 4% Xiasangju residues significantly increased the relative abundance of Weissella jogaeotgali (P < 0.05). Dietary supplementation with 0.5%, 1.0%, 2% and 4% with Xiasangju residues significantly decreased the relative abundance of Escherichia coli and Treponema porcinum (P < 0.05). In summary, dietary supplementation with Xiasangju residues improves intestinal health and gut microbiota in weaned piglets.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:38053526, Sun W et al., 2023, Frontiers in cellular and infection microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38053526/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-25220091",
+   "title": "Traditional Chinese medicine in the treatment of ADHD: a review.",
+   "category": "DIETOTERAPIA",
+   "summary": "This review covers an introduction of traditional Chinese medicine (TCM) in treating attention-deficit/hyperactivity disorder (ADHD), focusing on the traditional theoretic basis from the perspective of TCM regarding ADHD's cause, pathogenesis, methods of syndrome differentiation, and rationale for treatment. The authors present commonly accepted and successfully practiced clinical procedures us...",
+   "content": "This review covers an introduction of traditional Chinese medicine (TCM) in treating attention-deficit/hyperactivity disorder (ADHD), focusing on the traditional theoretic basis from the perspective of TCM regarding ADHD's cause, pathogenesis, methods of syndrome differentiation, and rationale for treatment. The authors present commonly accepted and successfully practiced clinical procedures used in China for diagnosis and treatment of ADHD by TCM clinicians along with the supportive clinical evidence. The authors hope to inspire more research to better understand the mechanisms underlying the therapies and to promote appropriate incorporation of TCM therapies with Western pharmacologic treatment to better help patients with ADHD.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:25220091, Ni X et al., 2014, Child and adolescent psychiatric clinics of North America",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25220091/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34323416",
+   "title": "Rebalancing TGF-β/Smad7 signaling via Compound kushen injection in hepatic stellate cells protects against liver fibrosis and hepatocarcinogenesis.",
+   "category": "DIETOTERAPIA",
+   "summary": "Liver fibrosis and fibrosis-related hepatocarcinogenesis are a rising cause for morbidity and death worldwide. Although transforming growth factor-β (TGF-β) is a critical mediator of chronic liver fibrosis, targeting TGF-β isoforms and receptors lead to unacceptable side effect.",
+   "content": "BACKGROUND: Liver fibrosis and fibrosis-related hepatocarcinogenesis are a rising cause for morbidity and death worldwide. Although transforming growth factor-β (TGF-β) is a critical mediator of chronic liver fibrosis, targeting TGF-β isoforms and receptors lead to unacceptable side effect. This study was designed to explore the antifibrotic effect of Compound kushen injection (CKI), an approved traditional Chinese medicine formula, via a therapeutic strategy of rebalancing TGF-β/Smad7 signaling.\nMETHODS: A meta-analysis was performed to evaluate CKI intervention on viral hepatitis-induced fibrosis or cirrhosis in clinical randomized controlled trials (RCTs). Mice were given carbon tetrachloride (CCl4 ) injection or methionine-choline deficient (MCD) diet to induce liver fibrosis, followed by CKI treatment. We examined the expression of TGF-β/Smad signaling and typical fibrosis-related genes in hepatic stellate cells (HSCs) and fibrotic liver tissues by qRT-PCR, Western blotting, RNA-seq, immunofluorescence, and immunohistochemistry.\nRESULTS: Based on meta-analysis results, CKI improved the liver function and relieved liver fibrosis among patients. In our preclinical studies by using two mouse models, CKI treatment demonstrated promising antifibrotic effects and postponed hepatocarcinogenesis with improved liver function and histopathologic features. Mechanistically, we found that CKI inhibited HSCs activation by stabilizing the interaction of Smad7/TGF-βR1 to rebalance Smad2/Smad3 signaling, and subsequently decreased the extracellular matrix formation. Importantly, Smad7 depletion abolished the antifibrotic effect of CKI in vivo and in vitro. Moreover, matrine, oxymatrine, sophocarpine, and oxysophocarpine were identified as material basis responsible for the antifibrosis effect of CKI.\nCONCLUSIONS: Our results unveil the approach of CKI in rebalancing TGF-β/Smad7 signaling in HSCs to protect against hepatic fibrosis and hepatocarcinogenesis in both preclinical and clinical studies. Our study suggests that CKI can be a candidate for treatment of hepatic fibrosis and related oncogenesis.",
+   "tags": [
+    "traditional"
+   ],
+   "citation": "PubMed PMID:34323416, Yang Y et al., 2021, Clinical and translational medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34323416/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39384730",
+   "title": "Ulcerative colitis: molecular insights and intervention therapy.",
+   "category": "DIETOTERAPIA",
+   "summary": "Ulcerative colitis (UC) is a chronic inflammatory bowel disease characterized by abdominal pain, diarrhea, rectal bleeding, and weight loss. The pathogenesis and treatment of UC remain key areas of research interest.",
+   "content": "Ulcerative colitis (UC) is a chronic inflammatory bowel disease characterized by abdominal pain, diarrhea, rectal bleeding, and weight loss. The pathogenesis and treatment of UC remain key areas of research interest. Various factors, including genetic predisposition, immune dysregulation, and alterations in the gut microbiota, are believed to contribute to the pathogenesis of UC. Current treatments for UC include 5-aminosalicylic acids, corticosteroids, immunosuppressants, and biologics. However, study reported that the one-year clinical remission rate is only around 40%. It is necessary to prompt the exploration of new treatment modalities. Biologic therapies, such as anti-TNF-α monoclonal antibody and JAK inhibitor, primarily consist of small molecules targeting specific pathways, effectively inducing and maintaining remission. Given the significant role of the gut microbiota, research into intestinal microecologics, such as probiotics and prebiotics, and fecal microbiota transplantation (FMT) shows promising potential in UC treatment. Additionally, medicinal herbs, such as chili pepper and turmeric, used in complementary therapy have shown promising results in UC management. This article reviews recent findings on the mechanisms of UC, including genetic susceptibility, immune cell dynamics and cytokine regulation, and gut microbiota alterations. It also discusses current applications of biologic therapy, herbal therapy, microecologics, and FMT, along with their prospects and challenges.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:39384730, Liang Y et al., 2024, Molecular biomedicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39384730/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-35242721",
+   "title": "Gut Microbiota: An Important Player in Type 2 Diabetes Mellitus.",
+   "category": "DIETOTERAPIA",
+   "summary": "Type 2 diabetes mellitus (T2DM) is one of the common metabolic diseases in the world. Due to the rise in morbidity and mortality, it has become a global health problem.",
+   "content": "Type 2 diabetes mellitus (T2DM) is one of the common metabolic diseases in the world. Due to the rise in morbidity and mortality, it has become a global health problem. To date, T2DM still cannot be cured, and its intervention measures mainly focus on glucose control as well as the prevention and treatment of related complications. Interestingly, the gut microbiota plays an important role in the development of metabolic diseases, especially T2DM. In this review, we introduce the characteristics of the gut microbiota in T2DM population, T2DM animal models, and diabetic complications. In addition, we describe the molecular mechanisms linking host and the gut microbiota in T2DM, including the host molecules that induce gut microbiota dysbiosis, immune and inflammatory responses, and gut microbial metabolites involved in pathogenesis. These findings suggest that we can treat T2DM and its complications by remodeling the gut microbiota through interventions such as drugs, probiotics, prebiotics, fecal microbiota transplantation (FMT) and diets.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:35242721, Zhou Z et al., 2022, Frontiers in cellular and infection microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35242721/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34872649",
+   "title": "Food allergy across the globe.",
+   "category": "DIETOTERAPIA",
+   "summary": "The prevalence of food allergy (FA) is increasing in some areas of the globe, highlighting the need for better strategies for prevention, diagnosis, and therapy. In the last few decades, we have made great strides in understanding the causes and mechanisms underlying FAs, prompting guideline updates.",
+   "content": "The prevalence of food allergy (FA) is increasing in some areas of the globe, highlighting the need for better strategies for prevention, diagnosis, and therapy. In the last few decades, we have made great strides in understanding the causes and mechanisms underlying FAs, prompting guideline updates. Earlier guidelines recommended avoidance of common food allergens during pregnancy and lactation and delaying the introduction of allergenic foods in children aged between 1 and 3 years. Recent guidelines for allergy prevention recommend consumption of a healthy and diverse diet without eliminating or increasing the consumption of allergenic foods during pregnancy or breast-feeding. Early introduction of allergenic foods is recommended by most guidelines for allergy prevention after a period of exclusive breast-feedng (6 months [World Health Organization] or 4 months [European Academy of Allergy and Clinical Immunology]). New diagnostics for FA have been developed with varied availability of these tests in different countries. Finally, the first oral immunotherapy drug for FA was approved by the US Food and Drug Administration and European Medicines Agency in 2020. In this review, we will address the global prevalence of FA, our current understanding of the causes of FA, and the latest guidelines for preventing, diagnosing, and treating FA. We will also discuss similarities and differences between FA guidelines.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:34872649, Sampath V et al., 2021, The Journal of allergy and clinical immunology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34872649/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34523250",
+   "title": "Understanding the gut microbiota and sarcopenia: a systematic review.",
+   "category": "DIETOTERAPIA",
+   "summary": "Gut microbiota dysbiosis and sarcopenia commonly occur in the elderly. Although the concept of the gut-muscle axis has been raised, the casual relationship is still unclear.",
+   "content": "BACKGROUND: Gut microbiota dysbiosis and sarcopenia commonly occur in the elderly. Although the concept of the gut-muscle axis has been raised, the casual relationship is still unclear. This systematic review analyses the current evidence of gut microbiota effects on muscle/sarcopenia.\nMETHODS: A systematic review was performed in PubMed, Embase, Web of Science, and The Cochrane Library databases using the keywords (microbiota* OR microbiome*) AND (sarcopen* OR muscle). Studies reporting the alterations of gut microbiota and muscle/physical performance were analysed.\nRESULTS: A total of 26 pre-clinical and 10 clinical studies were included. For animal studies, three revealed age-related changes and relationships between gut microbiota and muscle. Three studies focused on muscle characteristics of germ-free mice. Seventy-five per cent of eight faecal microbiota transplantation studies showed that the recipient mice successfully replicated the muscle phenotype of donors. There were positive effects on muscle from seven probiotics, two prebiotics, and short-chain fatty acids (SCFAs). Ten studies investigated on other dietary supplements, antibiotics, exercise, and food withdrawal that affected both muscle and gut microbiota. Twelve studies explored the potential mechanisms of the gut-muscle axis. For clinical studies, 6 studies recruited 676 elderly people (72.8 ± 5.6 years, 57.8% female), while 4 studies focused on 244 young adults (29.7 ± 7.8 years, 55.4% female). The associations of gut microbiota and muscle had been shown in four observational studies. Probiotics, prebiotics, synbiotics, fermented milk, caloric restriction, and exercise in six studies displayed inconsistent effects on muscle mass, function, and gut microbiota.\nCONCLUSIONS: Altering the gut microbiota through bacteria depletion, faecal transplantation, and various supplements was shown to directly affect muscle phenotypes. Probiotics, prebiotics, SCFAs, and bacterial products are potential novel therapies to enhance muscle mass and physical performance. Lactobacillus and Bifidobacterium strains restored age-related muscle loss. Potential mechanisms of microbiome modulating muscle mainly include protein, energy, lipid, and glucose metabolism, inflammation level, neuromuscular junction, and mitochondrial function. The role of the gut microbiota in the development of muscle loss during aging is a crucial area that requires further studies for translation to patients.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:34523250, Liu C et al., 2021, Journal of cachexia, sarcopenia and muscle",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34523250/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39019217",
+   "title": "Antioxidants and Fertility in Women with Ovarian Aging: A Systematic Review and Meta-Analysis.",
+   "category": "DIETOTERAPIA",
+   "summary": "Ovarian aging is a major factor for female subfertility. Multiple antioxidants have been applied in different clinical scenarios, but their effects on fertility in women with ovarian aging are still unclear.",
+   "content": "Ovarian aging is a major factor for female subfertility. Multiple antioxidants have been applied in different clinical scenarios, but their effects on fertility in women with ovarian aging are still unclear. To address this, a meta-analysis was performed to evaluate the effectiveness and safety of antioxidants on fertility in women with ovarian aging. A total of 20 randomized clinical trials with 2617 participants were included. The results showed that use of antioxidants not only significantly increased the number of retrieved oocytes and high-quality embryo rates but also reduced the dose of gonadotropin, contributing to higher clinical pregnancy rates. According to the subgroup analysis of different dose settings, better effects were more pronounced with lower doses; in terms of antioxidant types, coenzyme Q10 (CoQ10) tended to be more effective than melatonin, myo-inositol, and vitamins. When compared with placebo or no treatment, CoQ10 showed more advantages, whereas small improvements were observed with other drugs. In addition, based on subgroup analysis of CoQ10, the optimal treatment regimen of CoQ10 for improving pregnancy rate was 30 mg/d for 3 mo before the controlled ovarian stimulation cycle, and women with diminished ovarian reserve clearly benefited from CoQ10 treatment, especially those aged <35 y. Our study suggests that antioxidant consumption is an effective and safe complementary therapy for women with ovarian aging. Appropriate antioxidant treatment should be offered at a low dose according to the patient's age and ovarian reserve. This study was registered at PROSPERO as CRD42022359529.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:39019217, Shang Y et al., 2024, Advances in nutrition (Bethesda, Md.)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39019217/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-27929271",
+   "title": "Hormone Therapy and Other Treatments for Symptoms of Menopause.",
+   "category": "DIETOTERAPIA",
+   "summary": "The results of large clinical trials have led physicians and patients to question the safety of hormone therapy for menopause. In the past, physicians prescribed hormone therapy to improve overall health and prevent cardiac disease, as well as for symptoms of menopause.",
+   "content": "The results of large clinical trials have led physicians and patients to question the safety of hormone therapy for menopause. In the past, physicians prescribed hormone therapy to improve overall health and prevent cardiac disease, as well as for symptoms of menopause. Combined estrogen/progestogen therapy, but not estrogen alone, increases the risk of breast cancer when used for more than three to five years. Therefore, in women with a uterus, it is recommended that physicians prescribe combination therapy only to treat menopausal symptoms such as vasomotor symptoms (hot flashes) and vaginal atrophy, using the smallest effective dosage for the shortest possible duration. Although estrogen is the most effective treatment for hot flashes, nonhormonal alternatives such as low-dose paroxetine, venlafaxine, and gabapentin are effective alternatives. Women with a uterus who are using estrogen should also take a progestogen to reduce the risk of endometrial cancer. Women who cannot tolerate adverse effects of progestogens may benefit from a combined formulation of estrogen and the selective estrogen receptor modulator bazedoxifene. There is no highquality, consistent evidence that yoga, paced respiration, acupuncture, exercise, stress reduction, relaxation therapy, and alternative therapies such as black cohosh, botanical products, omega-3 fatty acid supplements, and dietary Chinese herbs benefit patients more than placebo. One systematic review suggests modest improvement in hot flashes and vaginal dryness with soy products, and small studies suggest that clinical hypnosis significantly reduces hot flashes. Patients with genitourinary syndrome of menopause may benefit from vaginal estrogen, nonhormonal vaginal moisturizers, or ospemifene (the only nonhormonal treatment approved by the U.S. Food and Drug Administration for dyspareunia due to menopausal atrophy). The decision to use hormone therapy depends on clinical presentation, a thorough evaluation of the risks and benefits, and an informed discussion with the patient.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:27929271, Hill DA, Crider M, Hill SR, 2016, American family physician",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27929271/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33061359",
+   "title": "Exosome: A Review of Its Classification, Isolation Techniques, Storage, Diagnostic and Targeted Therapy Applications.",
+   "category": "DIETOTERAPIA",
+   "summary": "Exosomes are nano-sized small extracellular vesicles secreted by cells, carrying nucleic acids, proteins, lipids and other bioactive substances to play a role in the body's physiological and pathological processes. Compared to synthetic carriers such as liposomes and nanoparticles, the endogeneity and heterogeneity of exosomes give them extensive and unique advantages in the field of disease di...",
+   "content": "Exosomes are nano-sized small extracellular vesicles secreted by cells, carrying nucleic acids, proteins, lipids and other bioactive substances to play a role in the body's physiological and pathological processes. Compared to synthetic carriers such as liposomes and nanoparticles, the endogeneity and heterogeneity of exosomes give them extensive and unique advantages in the field of disease diagnosis and treatment. However, the storage stability, low yield, low purity, and weak targeting of exosomes limit its clinical application. For this reason, further exploration is needed to optimize the above problems and facilitate future functional studies of exosomes. In this paper, the origin, classification, preparation and characterization, storage stability and applications of exosome delivery system are summarized and discussed by searching a large number of literatures.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:33061359, Zhang Y et al., 2020, International journal of nanomedicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33061359/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-29588654",
+   "title": "Psoriasis therapy by Chinese medicine and modern agents.",
+   "category": "DIETOTERAPIA",
+   "summary": "Psoriasis is a chronic, painful, disfiguring and non-contagious skin disease that has globally affected at least 200 million patients. In general, mild to moderate psoriasis patients will be treated by chemical drugs or Chinese medicine, while targeting systemic biological drugs have been successfully developed with good efficacy but high cost burden to patients with severe psoriasis.",
+   "content": "Psoriasis is a chronic, painful, disfiguring and non-contagious skin disease that has globally affected at least 200 million patients. In general, mild to moderate psoriasis patients will be treated by chemical drugs or Chinese medicine, while targeting systemic biological drugs have been successfully developed with good efficacy but high cost burden to patients with severe psoriasis. Since the underlying mechanisms of psoriasis are not well understood, in this review, psoriasis pathogenesis and clinical therapeutic principles by modern medicine and Chinese medicine are extensively described. Based on the data from the China Food and Drug Administration, the majority of chemical drugs are utilized as the topical formulations, while Chinese medicines are mainly delivered by an oral route, suggesting that the market for topical preparations of Chinese medicine to treat psoriasis is worth to exploration. Moreover, considering the unique clinical therapeutic theory and successful clinical application of Chinese medicine in the treatment of psoriasis, we believe that development of new small molecule drugs based on Chinese medicine will be a promising strategy to reduce therapeutic costs and improve safety for psoriatic patients.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:29588654, Meng S et al., 2018, Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29588654/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40317096",
+   "title": "Nutritional and herbal interventions for polycystic ovary syndrome (PCOS): a comprehensive review of dietary approaches, macronutrient impact, and herbal medicine in management.",
+   "category": "DIETOTERAPIA",
+   "summary": "Polycystic Ovary Syndrome (PCOS) is a common health condition related to a woman's hormonal problems. Hormonal imbalance, metabolic disorders, and an increased insulin level mainly characterize the ailment.",
+   "content": "Polycystic Ovary Syndrome (PCOS) is a common health condition related to a woman's hormonal problems. Hormonal imbalance, metabolic disorders, and an increased insulin level mainly characterize the ailment. This detailed review focuses on dietary strategies, macromolecules, macromolecules, and herbal interventions that exception-ally work in PCOS treatment. Research has shown that Mediterranean, low-glycemic index, and ketogenic diets that are modified with individuals in mind are the best ways to resolve insulin resistance, obesity, and lack of ovulation. The other nutrients shown to affect glucose metabolism and play a role in hormone regulation are the macromolecules, such as increased protein and reduced refined carbs. Among the different micronutrients, vitamin D, omega-3 fatty acids, and inositol were shown to be the most vital supplements in the treatment of PCOS-induced oxidative damage, hyperandrogenism, and infertility. Not to mention, cinnamon, curcumin, sage, fennel, and traditional Chinese herbal medicine are among some of the herbal remedies that so far show good potential to be the perfect complementary therapy tools as they create better glycemic control, inflammation reduction, and menstrual cycle regularization. Even though the findings are promising, the current supply of clinical trials for standardizing these nutritional and herbal protocols is lacking. Overall, this report stresses the fact that a customized, holistic diet regime is the best treatment for women with PCOS to make them feel well and live a long and healthy life.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:40317096, Muhammed Saeed AA et al., 2025, Journal of health, population, and nutrition",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40317096/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40770084",
+   "title": "The gut microbiota in cancer immunity and immunotherapy.",
+   "category": "DIETOTERAPIA",
+   "summary": "The human gastrointestinal tract harbors trillions of microorganisms, including bacteria, fungi, and viruses, to form the gut microbiota. Cumulative evidence has demonstrated the critical impact of gut microbes on cancer immunity.",
+   "content": "The human gastrointestinal tract harbors trillions of microorganisms, including bacteria, fungi, and viruses, to form the gut microbiota. Cumulative evidence has demonstrated the critical impact of gut microbes on cancer immunity. In cancer, an altered gut microbiota enriched with pathogenic bacteria can actively promote immune evasion and disrupt antitumor immunity, thereby supporting tumor growth and survival. Conversely, beneficial commensal bacteria (e.g., Lactobacillus and Bifidobacterium) have emerged as therapeutic probiotics for cancer prevention and as adjuvants for cancer therapy. The gut microbiota is also closely linked to the efficacy of immunotherapy. This review summarizes the effects of pathogenic bacteria and beneficial commensals, including T cells, B cells, natural killer cells, innate lymphoid cells, and myeloid-derived suppress cells, on various innate and adaptive immune cell populations in cancer. It also explores the mechanisms by which the gut microbiota influences immunotherapy efficacy, such as the modulation of innate immune cells and CD8+ T cells. Given its importance, an increasing number of studies have developed approaches to target the gut microbiota to improve immunotherapy outcomes and reduce immune-related adverse events. These strategies include antimicrobial intervention, probiotics, prebiotics/dietary modifications, microbial metabolites, phage therapy, and fecal microbiota transplantation. This review also evaluates clinical applications that use the gut microbiota to predict immunotherapy outcomes. Overall, the current understanding of host‒microbe interactions within the tumor microenvironment has laid a critical foundation for the translation of microbiota research into clinical practice, ultimately benefiting patients.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:40770084, Xie M et al., 2025, Cellular & molecular immunology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40770084/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40529304",
+   "title": "Microbiota and gastric cancer: from molecular mechanisms to therapeutic strategies.",
+   "category": "DIETOTERAPIA",
+   "summary": "Gastric cancer, a prevalent malignancy globally, is influenced by various factors. The imbalance in the gut microbiome and the existence of particular intratumoural microbiota could have a strong connection with the onset and progression of gastric cancer.",
+   "content": "Gastric cancer, a prevalent malignancy globally, is influenced by various factors. The imbalance in the gut microbiome and the existence of particular intratumoural microbiota could have a strong connection with the onset and progression of gastric cancer. High-throughput sequencing technology and bioinformatics analysis have revealed a close correlation between abnormal abundance of specific microbial communities and the risk of gastric cancer. These microbial communities contribute to gastric cancer progression through mechanisms including increasing cellular genomic damage, inhibiting DNA repair, activating abnormal signaling pathways, exacerbating tumor hypoxia, and shaping a tumor immune-suppressive microenvironment. This significantly impacts the efficacy of gastric cancer treatments, including chemotherapy and immunotherapy. Probiotic, prebiotic, antibiotic, carrier-based, dietary interventions, fecal microbiota transplantation, and traditional Chinese medicine show potential applications in gastric cancer treatment. However, the molecular mechanisms regarding dysbiosis of microbiota, including gut microbiota, and intra-tumoral microbiota during the progression of gastric cancer, as well as the therapeutic efficacy of microbiota-related applications, still require extensive exploration through experiments.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:40529304, Chen Z et al., 2025, Frontiers in cellular and infection microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40529304/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32929373",
+   "title": "Rhein modulates host purine metabolism in intestine through gut microbiota and ameliorates experimental colitis.",
+   "category": "DIETOTERAPIA",
+   "summary": "Background: Gut microbiota, which plays a crucial role in inflammatory bowel diseases (IBD), might have therapeutic benefits for ulcerative colitis or Crohn's disease. Targeting gut microbiota represents a new treatment strategy for IBD patients.",
+   "content": "Background: Gut microbiota, which plays a crucial role in inflammatory bowel diseases (IBD), might have therapeutic benefits for ulcerative colitis or Crohn's disease. Targeting gut microbiota represents a new treatment strategy for IBD patients. Rhein is one of the main components of rhubarb and exhibits poor oral bioavailability but still exerts anti-inflammatory effects in some diseases. Therefore, we investigated the effect of rhein on colitis and studied its possible mechanisms. Methods: The chronic mouse colitis model was induced by four rounds of 2% dextran sulfate sodium (DSS) treatment. The mice were treated with 50 mg/kg and 100 mg/kg rhein daily, body weight, colon length, histological score, inflammatory cytokines in serum or intestine, and fecal lipocalin 2 concentration were determined. Th17 cell, Th1 cell and Th2 cell infiltration in the mesenteric lymph node were analyzed by flow cytometry. Metabolic profiles were collected by non-targeted metabolomics and key metabolic pathways were identified using MetaboAnalyst 4.0. We also assessed intestinal barrier permeability and performed 16s rDNA sequencing. Lactobacillus sp. was cultured, and fecal microbiota transplantation (FMT) was employed to evaluate the contribution of gut microbiota. Results: Rhein could significantly alleviate DSS-induced chronic colitis. Uric acid was identified as a crucial modulator of colitis and rhein treatment led to decreased uric acid levels. We determined that rhein changed purine metabolism indirectly, while the probiotic Lactobacillus was involved in the regulation of host metabolism. Uric acid resulted in a worsened intestinal barrier, which could be rescued by rhein. We further confirmed that rhein-treated gut microbiota was sufficient to relieve DSS-induced colitis by FMT. Conclusion: We showed that rhein could modulate gut microbiota, which indirectly changed purine metabolism in the intestine and subsequently alleviated colitis. Our study has identified a new approach to the clinical treatment of colitis.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:32929373, Wu J et al., 2020, Theranostics",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32929373/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40068270",
+   "title": "Probiotics for the treatment of hyperlipidemia: Focus on gut-liver axis and lipid metabolism.",
+   "category": "DIETOTERAPIA",
+   "summary": "Hyperlipidemia, a metabolic disorder marked by dysregulated lipid metabolism, is a key contributor to the onset and progression of various chronic diseases. Maintaining normal lipid metabolism is critical for health, as disruptions lead to dyslipidemia.",
+   "content": "Hyperlipidemia, a metabolic disorder marked by dysregulated lipid metabolism, is a key contributor to the onset and progression of various chronic diseases. Maintaining normal lipid metabolism is critical for health, as disruptions lead to dyslipidemia. The gut and liver play central roles in lipid homeostasis, with their bidirectional communication, known as the gut-liver axis, modulated by bile acids (BAs), gut microbiota, and their metabolites. BAs are essential for regulating their own synthesis, lipid metabolism, and anti-inflammatory responses, primarily through the farnesoid X receptor (FXR) and Takeda G protein-coupled receptor 5 (TGR5). Available evidence suggests that high-fat diet-induced the gut microbiota dysbiosis can induce \"leaky gut,\" allowing toxic microbial metabolites to enter the liver via portal circulation, triggering liver inflammation and lipid metabolism disturbances, ultimately leading to hyperlipidemia. Extensive studies have highlighted the roles of probiotics and Traditional Chinese Medicine (TCM) in restoring gut-liver axis balance and modulating lipid metabolism through regulating the levels of lipopolysaccharides, short-chain fatty acids, and BAs. However, the therapeutic potential of probiotics and TCM for hyperlipidemia remains unclear. Here, firstly, we explore the intricate interplay among gut microbiota and metabolites, lipid metabolism, gut-liver axis, and hyperlipidemia. Secondly, we summarize the mechanisms by which probiotics and TCM can alleviate hyperlipidemia by altering the composition of gut microbiota and regulating lipid metabolism via the gut-liver axis. Finally, we emphasize that more clinical trials of probiotics and TCM are necessary to examine their effects on lipid metabolism and hyperlipidemia.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:40068270, You M et al., 2025, Pharmacological research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40068270/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39854158",
+   "title": "Long COVID and gut microbiome: insights into pathogenesis and therapeutics.",
+   "category": "DIETOTERAPIA",
+   "summary": "Post-acute coronavirus disease 2019 syndrome (PACS), following severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) infection or coronavirus disease 2019 (COVID-19), is typically characterized by long-term debilitating symptoms affecting multiple organs and systems. Unfortunately, there is currently a lack of effective treatment strategies.",
+   "content": "Post-acute coronavirus disease 2019 syndrome (PACS), following severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) infection or coronavirus disease 2019 (COVID-19), is typically characterized by long-term debilitating symptoms affecting multiple organs and systems. Unfortunately, there is currently a lack of effective treatment strategies. Altered gut microbiome has been proposed as one of the plausible mechanisms involved in the pathogenesis of PACS; extensive studies have emerged to bridge the gap between the persistent symptoms and the dysbiosis of gut microbiome. Recent clinical trials have indicated that gut microbiome modulation using probiotics, prebiotics, and fecal microbiota transplantation (FMT) led to improvements in multiple symptoms related to PACS, including fatigue, memory loss, difficulty in concentration, gastrointestinal upset, and disturbances in sleep and mood. In this review, we highlight the latest evidence on the key microbial alterations observed in PACS, as well as the use of microbiome-based therapeutics in managing PACS symptoms. These novel findings altogether shed light on the treatment of PACS and other chronic conditions.",
+   "tags": [
+    "food"
+   ],
+   "citation": "PubMed PMID:39854158, Lau RI, Su Q, Ng SC, 2025, Gut microbes",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39854158/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

@@ -34,7 +34,36 @@ data class LibraryContentItem(
     val tags: List<String> = emptyList(),
     /** Referência bibliográfica específica do item. Sem isto, o item é rejeitado (R4). */
     val citation: String = "",
+    /**
+     * URL do documento-fonte, quando ele é público (PCDT, bulário ANVISA, WHO).
+     * Vazio para fonte impressa (livro), que se identifica por [sourceRef].
+     */
+    val sourceUrl: String = "",
+    /**
+     * Onde exatamente no documento — "p. 26", "cap. 12, p. 340", "seção 7.2".
+     *
+     * É isto que transforma a revisão em **conferência**: a médica abre a página e
+     * compara, em vez de julgar de memória. Sem localizador, a citação nomeia um
+     * documento sem apontar para nada dentro dele.
+     */
+    val sourceRef: String = "",
 )
+
+/**
+ * De onde o texto veio, de fato — não o que ele alega.
+ *
+ * A distinção é a mesma da R3 entre modelo com hash fixado e modelo sem: o que
+ * importa não é parecer confiável, é ser conferível. Um item [VERIFICAVEL] pode ser
+ * checado contra a fonte em segundos; um [RASCUNHO] exige que a médica saiba a
+ * resposta de antemão — que é justamente o que ela está consultando o app para saber.
+ */
+enum class Provenance {
+    /** Extraído de documento identificado, com localizador. Conferível. */
+    VERIFICAVEL,
+
+    /** Gerado por IA ou sem localizador. Revisável, mas não conferível. */
+    RASCUNHO,
+}
 
 enum class ReviewStatus { PENDING, APPROVED, REJECTED }
 
@@ -50,4 +79,8 @@ data class ReviewMeta(
     val citation: String,
     val stagedAt: Long,
     val reviewedAt: Long? = null,
+    val sourceUrl: String = "",
+    val sourceRef: String = "",
+    /** Default RASCUNHO: itens encenados antes desta mudança não são conferíveis. */
+    val provenance: Provenance = Provenance.RASCUNHO,
 )
