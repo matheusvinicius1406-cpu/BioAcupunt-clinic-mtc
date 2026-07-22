@@ -35,7 +35,7 @@ class FinanceiroViewModel(
 
     init {
         viewModelScope.launch {
-            observeTransactions()
+            observeTransactions() // tenantId será extraído do TenantManager quando necessário
                 .catch { emit(emptyList()) }
                 .collect { all ->
                     val monthKey = today.toString().take(7) // yyyy-MM

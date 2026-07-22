@@ -2,6 +2,7 @@ package com.bioacupunt.financeiro.data.local
 
 fun TransacaoEntity.toDomain() = com.bioacupunt.financeiro.domain.model.Transacao(
     id = id,
+    tenantId = tenantId,
     patientId = patientId,
     appointmentId = appointmentId,
     amountBrl = amountBrl,
@@ -23,6 +24,7 @@ fun com.bioacupunt.financeiro.domain.model.Transacao.toEntity(
     val ts = now.ifBlank { java.time.Instant.now().toString() }
     return TransacaoEntity(
         id = id,
+        tenantId = tenantId,
         patientId = patientId,
         appointmentId = appointmentId,
         amountBrl = amountBrl,

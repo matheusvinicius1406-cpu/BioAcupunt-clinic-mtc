@@ -215,11 +215,12 @@ class AppointmentSyncWriter(
 class TransacaoSyncWriter(
     private val dao: TransacaoDao,
     private val patientDao: CrmPatientDao,
+    private val tenantId: () -> Long,
     private val now: () -> String = { java.time.Instant.now().toString() },
 ) : SyncEntityWriter {
 
     override suspend fun pendingChanges(): List<PendingChange> =
-        dao.getPendingSync().map { entity ->
+        dao.getPendingSync(tenantId()).map { entity ->
             val patientServerId = entity.patientId?.let { local ->
                 patientDao.getPendingSync().firstOrNull { it.id == local }?.serverId
                     ?: patientDao.getByServerId(local)?.serverId
@@ -258,6 +259,7 @@ class TransacaoSyncWriter(
         dao.save(
             TransacaoEntity(
                 id = existing?.id ?: 0L,
+                tenantId = existing?.tenantId ?: tenantId(),
                 patientId = localPatientId,
                 appointmentId = existing?.appointmentId,
                 amountBrl = payload.double("amount_brl", existing?.amountBrl ?: 0.0),

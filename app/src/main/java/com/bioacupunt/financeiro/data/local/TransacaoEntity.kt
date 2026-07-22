@@ -9,8 +9,10 @@ import androidx.room.PrimaryKey
     tableName = "transacoes",
     indices = [
         Index("patientId"),
+        Index("tenantId"),
         Index("date"),
         Index("type"),
+        Index("tenantId", "date"),
         Index("patientId", "date"),
         Index("pendingSync"),
         Index("clientId", unique = true)
@@ -26,6 +28,7 @@ import androidx.room.PrimaryKey
 )
 data class TransacaoEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    val tenantId: Long = 1L,
     val patientId: Long? = null,
     val appointmentId: Long? = null,
     val amountBrl: Double = 0.0,

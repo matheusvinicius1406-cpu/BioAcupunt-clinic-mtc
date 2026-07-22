@@ -15,6 +15,7 @@ enum class TransactionStatus(val label: String) {
 
 data class Transacao(
     val id: Long,
+    val tenantId: Long = 0L,
     val patientId: Long?,
     val appointmentId: Long?,
     val amountBrl: Double,

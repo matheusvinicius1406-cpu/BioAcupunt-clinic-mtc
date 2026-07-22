@@ -6,6 +6,7 @@ import com.bioacupunt.financeiro.data.local.toDomain
 import com.bioacupunt.financeiro.data.local.toEntity
 import com.bioacupunt.financeiro.domain.model.Transacao
 import com.bioacupunt.financeiro.domain.repository.TransacaoRepository
+import com.bioacupunt.core.multitenancy.TenantManager
 import com.bioacupunt.core.util.AppError
 import com.bioacupunt.core.util.Result
 import kotlinx.coroutines.flow.Flow
@@ -13,15 +14,18 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 class TransacaoRepositoryImpl(
-    private val dao: TransacaoDao
+    private val dao: TransacaoDao,
+    private val tenantManager: TenantManager
 ) : TransacaoRepository {
 
-    override fun observeAll(): Flow<List<Transacao>> {
-        return dao.observeAll().map { it.map { e -> e.toDomain() } }.catch { emit(emptyList()) }
+    private val tenantId: Long get() = tenantManager.requireTenantId()
+
+    override fun observeAll(tenantId: Long): Flow<List<Transacao>> {
+        return dao.observeAll(tenantId).map { it.map { e -> e.toDomain() } }.catch { emit(emptyList()) }
     }
 
-    override fun observeByPatientAndRange(patientId: Long, start: String, end: String): Flow<List<Transacao>> {
-        return dao.observeByPatientAndRange(patientId, start, end).map { it.map { e -> e.toDomain() } }.catch { emit(emptyList()) }
+    override fun observeByPatientAndRange(patientId: Long, tenantId: Long, start: String, end: String): Flow<List<Transacao>> {
+        return dao.observeByPatientAndRange(patientId, tenantId, start, end).map { it.map { e -> e.toDomain() } }.catch { emit(emptyList()) }
     }
 
     override suspend fun getById(id: Long): Result<Transacao> {
@@ -56,21 +60,21 @@ class TransacaoRepositoryImpl(
         )
     }
 
-    override suspend fun sumRevenue(start: String, end: String): Result<Double> {
+    override suspend fun sumRevenue(tenantId: Long, start: String, end: String): Result<Double> {
         return try {
-            val paid = dao.sumByStatusAndRange("PAGO", start, end, "PAGAMENTO")
-            val refunds = dao.sumByStatusAndRange("REEMBOLSADO", start, end, "REEMBOLSO")
+            val paid = dao.sumByStatusAndRange("PAGO", tenantId, start, end, "PAGAMENTO")
+            val refunds = dao.sumByStatusAndRange("REEMBOLSADO", tenantId, start, end, "REEMBOLSO")
             Result.Success(paid - refunds)
         } catch (e: Exception) {
             Result.Error(AppError.from(e))
         }
     }
 
-    override suspend fun sumPayments(start: String, end: String): Result<Double> {
-        return try { Result.Success(dao.sumByStatusAndRange("PAGO", start, end, "PAGAMENTO")) } catch (e: Exception) { Result.Error(AppError.from(e)) }
+    override suspend fun sumPayments(tenantId: Long, start: String, end: String): Result<Double> {
+        return try { Result.Success(dao.sumByStatusAndRange("PAGO", tenantId, start, end, "PAGAMENTO")) } catch (e: Exception) { Result.Error(AppError.from(e)) }
     }
 
-    override suspend fun sumPending(start: String, end: String): Result<Double> {
-        return try { Result.Success(dao.sumPending(start, end)) } catch (e: Exception) { Result.Error(AppError.from(e)) }
+    override suspend fun sumPending(tenantId: Long, start: String, end: String): Result<Double> {
+        return try { Result.Success(dao.sumPending(tenantId, start, end)) } catch (e: Exception) { Result.Error(AppError.from(e)) }
     }
 }
