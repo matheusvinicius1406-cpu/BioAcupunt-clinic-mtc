@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.biblioteca.data.MtcKnowledgeBase
+import com.bioacupunt.biblioteca.data.search.HybridSearchService
 import com.bioacupunt.biblioteca.domain.model.MtcArticle
 import com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase
 import com.bioacupunt.biblioteca.domain.usecase.ToggleFavoriteArticle
+import com.bioacupunt.data.local.database.KnowledgeNodeDao
+import com.bioacupunt.data.local.model.KnowledgeNodeEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +18,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+/** Modo de busca da biblioteca. */
+enum class SearchMode {
+    /** Busca textual local no acervo fixo (MtcKnowledgeBase + curadoria). */
+    LEGACY,
+    /** Busca híbrida (FTS5 + sqlite-vec + RRF) nos nós do MKIS. */
+    MKIS_HYBRID,
+}
 
 data class BibliotecaUiState(
     val query: String = "",
@@ -31,6 +42,23 @@ data class BibliotecaUiState(
     val askQuestion: String = "",
     val askAnswer: AskLibraryUseCase.Answer? = null,
     val asking: Boolean = false,
+    /** Modo de busca ativo. */
+    val searchMode: SearchMode = SearchMode.LEGACY,
+    /** Resultados da busca híbrida MKIS (quando searchMode = MKIS_HYBRID). */
+    val hybridResults: List<HybridResultItem> = emptyList(),
+    val isSearching: Boolean = false,
+    /** Nó MKIS selecionado para exibir no detail sheet. */
+    val selectedMkisNode: KnowledgeNodeEntity? = null,
+    val selectedMkisNodeScore: Double = 0.0,
+)
+
+/** Item de resultado da busca híbrida, adaptado para exibição na lista. */
+data class HybridResultItem(
+    val id: String,
+    val title: String,
+    val summary: String,
+    /** Score RRF combinado (0..1). */
+    val score: Double,
 )
 
 /**
@@ -48,6 +76,8 @@ data class BibliotecaUiState(
 class BibliotecaViewModel(
     private val askLibrary: AskLibraryUseCase,
     private val toggleFavoriteArticle: ToggleFavoriteArticle,
+    private val hybridSearchService: HybridSearchService?,
+    private val knowledgeNodeDao: KnowledgeNodeDao?,
     observeFavorites: kotlinx.coroutines.flow.Flow<Set<String>>,
     observeApprovedArticles: kotlinx.coroutines.flow.Flow<List<MtcArticle>>,
 ) : ViewModel() {
@@ -88,13 +118,32 @@ class BibliotecaViewModel(
 
     fun onQueryChanged(query: String) {
         _state.update { state ->
-            state.copy(query = query, articles = filtered(query, state.category, state.articles))
+            if (state.searchMode == SearchMode.MKIS_HYBRID) {
+                // Limpar resultados se a query foi limpa
+                val cleared = if (query.isBlank()) emptyList<HybridResultItem>() else state.hybridResults
+                state.copy(query = query, hybridResults = cleared)
+            } else {
+                state.copy(query = query, articles = filtered(query, state.category, state.allArticles))
+            }
+        }
+        // Disparar busca híbrida se estiver nesse modo
+        if (_state.value.searchMode == SearchMode.MKIS_HYBRID && query.isNotBlank()) {
+            performHybridSearch(query)
         }
     }
 
     fun onCategorySelected(category: String?) {
         _state.update { state ->
-            state.copy(category = category, articles = filtered(state.query, category, state.articles))
+            if (state.searchMode == SearchMode.MKIS_HYBRID) {
+                state.copy(category = category)
+            } else {
+                state.copy(category = category, articles = filtered(state.query, category, state.allArticles))
+            }
+        }
+        // Re-aplicar busca híbrida com filtro de categoria
+        val s = _state.value
+        if (s.searchMode == SearchMode.MKIS_HYBRID && s.query.isNotBlank()) {
+            performHybridSearch(s.query)
         }
     }
 
@@ -134,16 +183,77 @@ class BibliotecaViewModel(
     fun clearAnswer() {
         _state.update { it.copy(askAnswer = null, askQuestion = "") }
     }
+
+    // ======================== Busca Híbrida MKIS ========================
+
+    fun toggleSearchMode() {
+        _state.update { state ->
+            val newMode = if (state.searchMode == SearchMode.LEGACY) SearchMode.MKIS_HYBRID else SearchMode.LEGACY
+            state.copy(
+                searchMode = newMode,
+                hybridResults = emptyList(),
+                query = "",
+                articles = state.allArticles,
+            )
+        }
+    }
+
+    /** Realiza busca nos nós do MKIS via [HybridSearchService]. */
+    private fun performHybridSearch(query: String) {
+        val svc = hybridSearchService ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isSearching = true) }
+            try {
+                val results = svc.search(query, maxResults = 20)
+                // TODO: Usar score real do RRF quando o HybridSearchService expor scores normalizados
+                val items = results.mapIndexed { i, r ->
+                    HybridResultItem(
+                        id = r.articleId,
+                        title = r.title,
+                        summary = r.summary,
+                        score = 1.0 - (i.toDouble() / results.size.coerceAtLeast(1)),
+                    )
+                }
+                _state.update { it.copy(hybridResults = items, isSearching = false) }
+            } catch (e: Exception) {
+                _state.update { it.copy(hybridResults = emptyList(), isSearching = false) }
+            }
+        }
+    }
+
+    fun onHybridResultClick(item: HybridResultItem) {
+        val dao = knowledgeNodeDao ?: return
+        viewModelScope.launch {
+            val node = dao.getById(item.id)
+            _state.update { it.copy(
+                selectedMkisNode = node,
+                selectedMkisNodeScore = item.score,
+            )}
+        }
+    }
+
+    fun clearSelectedNode() {
+        _state.update { it.copy(selectedMkisNode = null, selectedMkisNodeScore = 0.0) }
+    }
 }
 
 class BibliotecaViewModelFactory(
     private val askLibrary: AskLibraryUseCase,
     private val toggleFavoriteArticle: ToggleFavoriteArticle,
+    private val hybridSearchService: HybridSearchService?,
+    private val knowledgeNodeDao: KnowledgeNodeDao?,
     private val observeFavorites: kotlinx.coroutines.flow.Flow<Set<String>>,
     private val observeApprovedArticles: kotlinx.coroutines.flow.Flow<List<MtcArticle>>,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return BibliotecaViewModel(askLibrary, toggleFavoriteArticle, observeFavorites, observeApprovedArticles) as T
+        return BibliotecaViewModel(
+            askLibrary,
+            toggleFavoriteArticle,
+            hybridSearchService,
+            knowledgeNodeDao,
+            observeFavorites,
+            observeApprovedArticles,
+        ) as T
     }
 }

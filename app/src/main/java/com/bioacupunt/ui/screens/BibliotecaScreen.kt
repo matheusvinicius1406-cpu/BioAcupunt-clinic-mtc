@@ -25,11 +25,9 @@ import com.bioacupunt.biblioteca.domain.model.MtcArticle
 import com.bioacupunt.biblioteca.domain.model.MtcCategory
 import com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase
 import com.bioacupunt.di.AppContainer
-import com.bioacupunt.ui.theme.Accent
-import com.bioacupunt.ui.theme.Primary
-import com.bioacupunt.ui.theme.SemanticError
-import com.bioacupunt.ui.theme.SemanticSuccess
-import com.bioacupunt.ui.theme.TextMuted
+import com.bioacupunt.biblioteca.presentation.HybridResultItem
+import com.bioacupunt.biblioteca.presentation.SearchMode
+import com.bioacupunt.ui.theme.*
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -109,6 +107,62 @@ fun BibliotecaScreen(
             }
         }
 
+        // ── Search mode toggle ────────────────────────────
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text("Buscar em:", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+                FilterChip(
+                    selected = state.searchMode == SearchMode.LEGACY,
+                    onClick = { if (state.searchMode != SearchMode.LEGACY) vm.toggleSearchMode() },
+                    label = { Text("Acervo fixo", style = MaterialTheme.typography.labelSmall) },
+                    leadingIcon = { Icon(Icons.Default.MenuBook, null, modifier = Modifier.size(14.dp)) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Primary,
+                        selectedLabelColor = Color.White,
+                    ),
+                )
+                FilterChip(
+                    selected = state.searchMode == SearchMode.MKIS_HYBRID,
+                    onClick = { if (state.searchMode != SearchMode.MKIS_HYBRID) vm.toggleSearchMode() },
+                    label = { Text("MKIS Híbrido", style = MaterialTheme.typography.labelSmall) },
+                    leadingIcon = { Icon(Icons.Default.TravelExplore, null, modifier = Modifier.size(14.dp)) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Primary,
+                        selectedLabelColor = Color.White,
+                    ),
+                )
+            }
+        }
+
+        // ── Hybrid search field (only in MKIS_HYBRID mode) ──
+        if (state.searchMode == SearchMode.MKIS_HYBRID) {
+            item {
+                OutlinedTextField(
+                    value = state.query,
+                    onValueChange = vm::onQueryChanged,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Buscar nos nós do MKIS…") },
+                    leadingIcon = { Icon(Icons.Default.Search, null, modifier = Modifier.size(18.dp)) },
+                    trailingIcon = {
+                        if (state.isSearching) {
+                            CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                        } else if (state.query.isNotEmpty()) {
+                            IconButton(onClick = { vm.onQueryChanged("") }) {
+                                Icon(Icons.Default.Close, "Limpar", modifier = Modifier.size(16.dp))
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+
+        // ── Stats row ──────────────────────────────────────
         item {
             val favCount = state.favoriteIds.size
             val categoryCount = MtcKnowledgeBaseCategories.usedCategories.size
@@ -186,27 +240,51 @@ fun BibliotecaScreen(
 
         item {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text("ARTIGOS", style = MaterialTheme.typography.labelMedium, color = TextMuted, modifier = Modifier.weight(1f))
-                Text("${state.articles.size}", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+                if (state.searchMode == SearchMode.MKIS_HYBRID) {
+                    Text("RESULTADOS MKIS", style = MaterialTheme.typography.labelMedium, color = Primary, modifier = Modifier.weight(1f))
+                    Text("${state.hybridResults.size}", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+                } else {
+                    Text("ARTIGOS", style = MaterialTheme.typography.labelMedium, color = TextMuted, modifier = Modifier.weight(1f))
+                    Text("${state.articles.size}", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+                }
             }
         }
 
-        if (state.articles.isEmpty()) {
-            item {
-                Text("Nenhum resultado para sua busca", color = TextMuted, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 20.dp))
+        if (state.searchMode == SearchMode.MKIS_HYBRID) {
+            // ── Hybrid results list ────────────────────────
+            if (state.query.isBlank()) {
+                item {
+                    Text("Digite uma busca acima para pesquisar nos nós do MKIS.", color = TextMuted, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 20.dp))
+                }
+            } else if (state.hybridResults.isEmpty() && !state.isSearching) {
+                item {
+                    Text("Nenhum resultado encontrado no MKIS para sua busca.", color = TextMuted, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 20.dp))
+                }
+            } else {
+                items(state.hybridResults, key = { it.id }) { item ->
+                    HybridResultCard(item, vm::onHybridResultClick)
+                }
             }
         } else {
-            items(state.articles, key = { it.id }) { article ->
-                ArticleCard(
-                    article = article,
-                    isFavorite = article.id in state.favoriteIds,
-                    onOpen = { openArticleId = article.id },
-                    onToggleFavorite = { vm.toggleFavorite(article.id) },
-                )
+            // ── Legacy articles list ───────────────────────
+            if (state.articles.isEmpty()) {
+                item {
+                    Text("Nenhum resultado para sua busca", color = TextMuted, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 20.dp))
+                }
+            } else {
+                items(state.articles, key = { it.id }) { article ->
+                    ArticleCard(
+                        article = article,
+                        isFavorite = article.id in state.favoriteIds,
+                        onOpen = { openArticleId = article.id },
+                        onToggleFavorite = { vm.toggleFavorite(article.id) },
+                    )
+                }
             }
         }
     }
 
+    // ── Legacy article detail sheet ────────────────────────
     openArticle?.let { article ->
         val related = remember(article.id, state.allArticles) {
             state.allArticles.filter { it.category == article.category && it.id != article.id }
@@ -216,6 +294,15 @@ fun BibliotecaScreen(
             relatedArticles = related,
             onOpenRelated = { openArticleId = it.id },
             onDismiss = { openArticleId = null },
+        )
+    }
+
+    // ── MKIS node detail sheet ────────────────────────────
+    state.selectedMkisNode?.let { node ->
+        MkisDetailSheet(
+            node = node,
+            score = state.selectedMkisNodeScore,
+            onDismiss = { vm.clearSelectedNode() },
         )
     }
 }
@@ -283,6 +370,55 @@ private fun FlowRowCompat(tags: List<String>) {
             Box(modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 10.dp, vertical = 2.dp)) {
                 Text(tag, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Primary)
             }
+        }
+    }
+}
+
+@Composable
+private fun HybridResultCard(item: HybridResultItem, onClick: (HybridResultItem) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, Primary.copy(alpha = 0.3f), MaterialTheme.shapes.large)
+            .clickable { onClick(item) }
+            .padding(16.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .background(Primary.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Default.TravelExplore, null, tint = Primary, modifier = Modifier.size(16.dp))
+            }
+            Text(item.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
+            // Score badge
+            val scorePct = (item.score * 100).toInt().coerceIn(0, 99)
+            val scoreColor = when {
+                scorePct >= 70 -> SemanticSuccess
+                scorePct >= 40 -> Accent
+                else -> TextMuted
+            }
+            Box(
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(scoreColor.copy(alpha = 0.12f))
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
+            ) {
+                Text("$scorePct%", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = scoreColor)
+            }
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(item.summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        Spacer(Modifier.height(4.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.TripOrigin, null, tint = Primary.copy(alpha = 0.5f), modifier = Modifier.size(10.dp))
+            Spacer(Modifier.width(4.dp))
+            Text("MKIS · busca híbrida", style = MaterialTheme.typography.labelSmall, color = Primary.copy(alpha = 0.7f))
         }
     }
 }
