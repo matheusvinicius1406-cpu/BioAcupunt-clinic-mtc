@@ -19,6 +19,15 @@ const TIME_FMT = new Intl.DateTimeFormat("pt-BR", {
   minute: "2-digit",
 });
 
+const CURRENCY_FMT = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
+export function formatCurrency(value: number): string {
+  return Number.isFinite(value) ? CURRENCY_FMT.format(value) : "—";
+}
+
 export function formatDate(iso: string): string {
   const d = new Date(iso);
   return isNaN(d.getTime()) ? "—" : DATE_FMT.format(d);

@@ -54,3 +54,65 @@ export const ROLE_LABELS: Record<string, string> = {
   professional: "Profissional",
   staff: "Recepção",
 };
+
+// backend/app/schemas/transaction.py :: TransactionResponse
+export interface Transaction {
+  id: number;
+  clinic_id: number;
+  patient_id: number | null;
+  appointment_id: number | null;
+  amount_brl: number;
+  occurred_on: string; // YYYY-MM-DD
+  type: string;
+  method: string;
+  category: string;
+  status: string;
+  notes: string;
+  created_at: string;
+}
+
+// backend/app/schemas/transaction.py :: FinancialSummary
+export interface FinancialSummary {
+  start: string | null;
+  end: string | null;
+  net_revenue_brl: number;
+  payments_brl: number;
+  refunds_brl: number;
+  pending_brl: number;
+  expenses_brl: number;
+  transaction_count: number;
+}
+
+// backend/app/schemas/report.py :: ReportsOverview
+export interface ReportsOverview {
+  patients_total: number;
+  appointments_total: number;
+  appointments_by_status: Record<string, number>;
+  finance: FinancialSummary;
+}
+
+// backend/app/models/transaction.py :: TransactionType / TransactionStatus
+export const TRANSACTION_TYPE_LABELS: Record<string, string> = {
+  PAGAMENTO: "Pagamento",
+  REEMBOLSO: "Reembolso",
+  DESPESA: "Despesa",
+};
+
+export const TRANSACTION_STATUS_LABELS: Record<string, string> = {
+  PAGO: "Pago",
+  PENDENTE: "Pendente",
+  REEMBOLSADO: "Reembolsado",
+};
+
+export function transactionBadgeClass(status: string): string {
+  switch (status) {
+    case "PAGO":
+      return "badge-ok";
+    case "PENDENTE":
+      return "badge-warn";
+    case "REEMBOLSADO":
+      return "badge-danger";
+    default:
+      return "badge-neutral";
+  }
+}
