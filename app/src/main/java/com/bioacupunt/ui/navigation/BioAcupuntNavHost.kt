@@ -85,7 +85,10 @@ fun BioAcupuntNavHost(
     val moreItems = remember {
         listOf(
             MoreItem("Agenda", Icons.Default.CalendarMonth, Screen.Agenda.route),
-            MoreItem("Atendimento", Icons.Default.Healing, Screen.Agenda.route),
+            // "Atendimento" foi removido do menu global: um atendimento só existe a
+            // partir de uma consulta concreta (precisa de appointmentId), então é
+            // aberto pelos cards da Agenda. O item antigo apontava para Screen.Agenda
+            // (copy/paste) — duplicava "Agenda" e nunca abria um atendimento.
             MoreItem("Evolução", Icons.AutoMirrored.Filled.TrendingUp, Screen.Evolucao.routeFor(0)),
             MoreItem("Inteligência", Icons.Default.SmartToy, Screen.AiAssistant.route),
             MoreItem("Financeiro", Icons.Default.AccountBalance, Screen.Financeiro.route),
@@ -249,8 +252,7 @@ fun BioAcupuntNavHost(
             composable(Screen.Curadoria.route)   { CuradoriaScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.PipelineMonitor.route) {
                 val factory = androidx.compose.runtime.remember { AppContainer.pipelineMonitorViewModelFactory() }
-                com.bioacupunt.ui.screens.pipelineMonitorFactory = factory
-                PipelineMonitorScreen(onBack = { navController.popBackStack() })
+                PipelineMonitorScreen(onBack = { navController.popBackStack() }, factory = factory)
             }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }

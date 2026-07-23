@@ -86,6 +86,7 @@ class DashboardViewModelFactory(
     private val appointmentRepository: AppointmentRepository,
     private val crmPatientRepository: CrmPatientRepository,
     private val transacaoRepository: TransacaoRepository,
+    private val tenantManager: com.bioacupunt.core.multitenancy.TenantManager,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
@@ -94,6 +95,7 @@ class DashboardViewModelFactory(
             appointmentRepository,
             crmPatientRepository,
             transacaoRepository,
+            tenantManager,
         ) as T
     }
 }
@@ -103,6 +105,7 @@ class DashboardViewModel(
     private val appointmentRepository: AppointmentRepository,
     private val crmPatientRepository: CrmPatientRepository,
     private val transacaoRepository: TransacaoRepository,
+    private val tenantManager: com.bioacupunt.core.multitenancy.TenantManager,
     private val today: LocalDate = LocalDate.now(),
     private val now: LocalTime = LocalTime.now(),
 ) : ViewModel() {
@@ -120,7 +123,9 @@ class DashboardViewModel(
     }
 
     /** Reload month totals (they are point-in-time sums, not observable streams). */
-    fun refreshFinance(tenantId: Long = 1L) {
+    // tenantId vem do TenantManager (não mais fixo em 1L, que misturava o financeiro
+    // entre tenants); mantém-se sobrescrevível para testes.
+    fun refreshFinance(tenantId: Long = tenantManager.currentTenantId()) {
         viewModelScope.launch {
             val start = today.withDayOfMonth(1).toString()
             val end = today.toString()

@@ -584,16 +584,20 @@ object DatabaseModule {
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_nodes_tenant_id_created_at` ON `knowledge_nodes` (`tenant_id`, `created_at`)")
 
             // ── Passo 3: Criar tabela ingestion_jobs ──
+            // CREATE sem DEFAULT SQL — as entidades usam defaults do Kotlin, não
+            // @ColumnInfo(defaultValue). Room 2.7 valida o schema ao abrir: se o SQL
+            // tem DEFAULT que a entidade não declara, a validação falha e o app
+            // CRASHA ao atualizar (mesma regra já aplicada a knowledge_nodes acima).
             database.execSQL("""
                 CREATE TABLE IF NOT EXISTS `ingestion_jobs` (
                     `id` TEXT NOT NULL PRIMARY KEY,
-                    `tenant_id` TEXT NOT NULL DEFAULT 'default',
+                    `tenant_id` TEXT NOT NULL,
                     `artifact_id` TEXT,
                     `node_id` TEXT,
-                    `status` TEXT NOT NULL DEFAULT 'na_fila',
+                    `status` TEXT NOT NULL,
                     `attempt_id` TEXT NOT NULL,
-                    `attempt_count` INTEGER NOT NULL DEFAULT 1,
-                    `max_attempts` INTEGER NOT NULL DEFAULT 3,
+                    `attempt_count` INTEGER NOT NULL,
+                    `max_attempts` INTEGER NOT NULL,
                     `current_stage` TEXT,
                     `error_code` TEXT,
                     `error_message` TEXT,
@@ -601,7 +605,7 @@ object DatabaseModule {
                     `review_notes` TEXT,
                     `source_url` TEXT,
                     `source_package` TEXT,
-                    `priority` INTEGER NOT NULL DEFAULT 0,
+                    `priority` INTEGER NOT NULL,
                     `started_at` INTEGER,
                     `completed_at` INTEGER,
                     `created_at` INTEGER NOT NULL,
@@ -616,16 +620,16 @@ object DatabaseModule {
             database.execSQL("""
                 CREATE TABLE IF NOT EXISTS `purge_certificates` (
                     `id` TEXT NOT NULL PRIMARY KEY,
-                    `tenant_id` TEXT NOT NULL DEFAULT 'default',
+                    `tenant_id` TEXT NOT NULL,
                     `target_type` TEXT NOT NULL,
                     `target_id` TEXT NOT NULL,
-                    `cascade_scope` TEXT NOT NULL DEFAULT 'metadata_only',
-                    `target_details` TEXT NOT NULL DEFAULT '{}',
+                    `cascade_scope` TEXT NOT NULL,
+                    `target_details` TEXT NOT NULL,
                     `requested_by` TEXT NOT NULL,
                     `started_at` INTEGER NOT NULL,
                     `completed_at` INTEGER,
-                    `checkpoint` TEXT NOT NULL DEFAULT 'pending',
-                    `steps_log` TEXT NOT NULL DEFAULT '[]',
+                    `checkpoint` TEXT NOT NULL,
+                    `steps_log` TEXT NOT NULL,
                     `certificate_hash` TEXT NOT NULL,
                     `legal_hold_verified_at` INTEGER,
                     `notes` TEXT,
@@ -639,7 +643,7 @@ object DatabaseModule {
             database.execSQL("""
                 CREATE TABLE IF NOT EXISTS `audit_trail` (
                     `id` TEXT NOT NULL PRIMARY KEY,
-                    `tenant_id` TEXT NOT NULL DEFAULT 'default',
+                    `tenant_id` TEXT NOT NULL,
                     `actor_id` TEXT NOT NULL,
                     `actor_role` TEXT,
                     `action` TEXT NOT NULL,
@@ -648,7 +652,7 @@ object DatabaseModule {
                     `ip_address` TEXT,
                     `outcome` TEXT,
                     `request_id` TEXT NOT NULL,
-                    `metadata` TEXT NOT NULL DEFAULT '{}',
+                    `metadata` TEXT NOT NULL,
                     `occurred_at` INTEGER NOT NULL,
                     `created_at` INTEGER NOT NULL
                 )

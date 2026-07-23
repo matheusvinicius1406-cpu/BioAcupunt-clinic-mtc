@@ -232,12 +232,20 @@ class VecKnowledgeNodeRepository(private val db: SupportSQLiteDatabase) {
 
         // FTS5 suporta prefix matching com *
         val ftsQuery = sanitized.split(Regex("\\s+")).joinToString(" ") { "$it*" }
+        // bm25(<tabela>) é a função de ranking nativa do FTS5 (não existe `rank_bm25`,
+        // que antes fazia toda busca lançar "no such function" e retornar vazio).
+        // bm25() dá valores menores para melhores matches; negamos para manter
+        // "score maior = melhor" e o ORDER BY DESC do restante do pipeline.
+        // Filtro de status = 'aprovado': só conteúdo revisado pela médica pode
+        // aparecer na busca clínica — a perna vetorial já filtra assim; sem isto,
+        // nós 'rascunho' criados pelo pipeline vazariam para o acervo (viola R4).
         val sql = """
             SELECT f.node_id, n.title, n.summary, f.content,
-                   rank_bm25(f) AS score
+                   -bm25(knowledge_fts) AS score
             FROM knowledge_fts f
             JOIN knowledge_nodes n ON n.id = f.node_id
             WHERE knowledge_fts MATCH ?
+              AND n.status = 'aprovado'
             ORDER BY score DESC
             LIMIT ?
         """.trimIndent()

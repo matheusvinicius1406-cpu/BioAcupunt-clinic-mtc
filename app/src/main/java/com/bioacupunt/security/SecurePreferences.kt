@@ -130,6 +130,44 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("enabled_techniques", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("enabled_techniques") } else edit { it.putString("enabled_techniques", value) }
 
+    // ── Perfil profissional (contato + apresentação) ─────────────────────────
+    // Antes estes campos viviam só como estado de Compose na tela de Ajustes e
+    // sumiam ao trocar de aba. Agora persistem como o resto do perfil.
+    var professionalPhone: String
+        get() = prefs.getString("professional_phone", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("professional_phone") } else edit { it.putString("professional_phone", value) }
+
+    var professionalEmail: String
+        get() = prefs.getString("professional_email", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("professional_email") } else edit { it.putString("professional_email", value) }
+
+    var professionalBio: String
+        get() = prefs.getString("professional_bio", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("professional_bio") } else edit { it.putString("professional_bio", value) }
+
+    /** URI (content://) da logo/foto escolhida. Requer persistable permission ao gravar. */
+    var professionalLogoUri: String
+        get() = prefs.getString("professional_logo_uri", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("professional_logo_uri") } else edit { it.putString("professional_logo_uri", value) }
+
+    // ── Clínica (identidade + horário de funcionamento) ──────────────────────
+    var clinicName: String
+        get() = prefs.getString("clinic_name", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("clinic_name") } else edit { it.putString("clinic_name", value) }
+
+    var clinicWorkStart: String
+        get() = prefs.getString("clinic_work_start", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("clinic_work_start") } else edit { it.putString("clinic_work_start", value) }
+
+    var clinicWorkEnd: String
+        get() = prefs.getString("clinic_work_end", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("clinic_work_end") } else edit { it.putString("clinic_work_end", value) }
+
+    /** CSV dos dias de atendimento (ex.: "SEG,TER,QUA,QUI,SEX"). */
+    var clinicWorkDaysCsv: String
+        get() = prefs.getString("clinic_work_days", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("clinic_work_days") } else edit { it.putString("clinic_work_days", value) }
+
     fun clearAll() {
         edit { it.clear() }
     }

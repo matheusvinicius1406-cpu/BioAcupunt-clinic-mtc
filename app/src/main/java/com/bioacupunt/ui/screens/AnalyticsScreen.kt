@@ -38,6 +38,29 @@ fun AnalyticsScreen(onBack: (() -> Unit)? = null) {
                 }
             }
         }
+        // AVISO honesto: esta tela ainda é uma maquete. Todos os números abaixo
+        // (receita, consultas, síndromes, retenção) são fixos/ilustrativos — NÃO
+        // vêm do banco. Sem este aviso, a médica poderia ler "R$ 6.4k" como a
+        // receita real da própria clínica e decidir em cima disso.
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(20.dp))
+                    Text(
+                        "Dados ilustrativos — esta tela usa números de demonstração, não as métricas reais da sua clínica. Não use para decisões.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    )
+                }
+            }
+        }
         // Period selector
         item {
             Row(

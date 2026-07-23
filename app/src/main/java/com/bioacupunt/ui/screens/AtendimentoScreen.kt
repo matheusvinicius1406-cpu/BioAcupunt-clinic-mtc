@@ -478,7 +478,21 @@ private fun androidx.compose.foundation.lazy.LazyListScope.planoStep(
         SupremoCard {
             SectionHeader(title = "Segurança clínica", subtitle = "Triagem determinística, sem IA.")
             Spacer(Modifier.height(12.dp))
-            ClinicalSafetyPanel(verdict = state.verdict)
+            // Override existe também no wizard: a médica é a responsável clínica e
+            // PODE prosseguir sobre um veto — mas exige justificativa ≥10 chars,
+            // gravada com usuário e horário (via overrideVeto → save). Sem este
+            // caminho, o wizard mostrava o veto sem nenhuma forma de decidir sobre
+            // ele com autoridade e registro.
+            ClinicalSafetyPanel(
+                verdict = state.verdict,
+                onOverride = { reason ->
+                    val userId = runCatching {
+                        AppContainer.authRepository.getCurrentUser()?.id?.toString()
+                            ?: AppContainer.securePreferences.pinHash?.take(8) ?: "unknown"
+                    }.getOrDefault("unknown")
+                    vm.overrideVeto(reason, userId)
+                },
+            )
         }
         Spacer(Modifier.height(14.dp))
     }

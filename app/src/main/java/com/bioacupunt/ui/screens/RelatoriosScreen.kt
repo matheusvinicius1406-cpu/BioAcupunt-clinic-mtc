@@ -189,30 +189,50 @@ private fun ReportTemplateCard(tpl: ReportTemplate, onGenerate: (com.bioacupunt.
 
 @Composable
 private fun GeneratedReportsTab(reports: List<com.bioacupunt.relatorios.domain.model.Report>) {
-    val today = java.time.LocalDate.now()
     val fmt = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy", java.util.Locale("pt", "BR"))
-    val items = if (reports.isEmpty()) {
-        listOf(Triple("Nenhum relatório gerado.", today.toString(), Icons.Default.Info))
-    } else {
-        reports.map { r -> Triple(r.title, r.generatedAt.take(10), Icons.Default.EditNote) }
-    }
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(items) { (title, date, icon) ->
-            Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(1.dp)) {
-                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(icon, null, tint = Primary, modifier = Modifier.size(22.dp))
-                    Spacer(Modifier.width(10.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(title, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium))
-                        Text(date, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (reports.isEmpty()) {
+            item {
+                Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(1.dp)) {
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Info, null, tint = Primary, modifier = Modifier.size(22.dp))
+                        Spacer(Modifier.width(10.dp))
+                        Text("Nenhum relatório gerado.", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium))
                     }
-                    Row {
-                        IconButton(onClick = {}, modifier = Modifier.size(32.dp)) {
-                            Icon(Icons.Default.Share, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                }
+            }
+        } else {
+            items(reports, key = { it.generatedAt + it.type }) { r ->
+                val date = runCatching {
+                    java.time.OffsetDateTime.parse(r.generatedAt).toLocalDate().format(fmt)
+                }.getOrDefault(r.generatedAt.take(10))
+                Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(1.dp)) {
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.EditNote, null, tint = Primary, modifier = Modifier.size(22.dp))
+                        Spacer(Modifier.width(10.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(r.title, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium))
+                            Text(date, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        IconButton(onClick = {}, modifier = Modifier.size(32.dp)) {
-                            Icon(Icons.Default.Download, null, tint = Primary, modifier = Modifier.size(18.dp))
+                        // Compartilhar via ACTION_SEND (a folha do sistema já inclui
+                        // "Salvar em Arquivos", cobrindo o antigo botão Download morto).
+                        IconButton(
+                            onClick = {
+                                val text = "Relatório: ${r.title}\nGerado em: $date"
+                                val send = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(android.content.Intent.EXTRA_SUBJECT, r.title)
+                                    putExtra(android.content.Intent.EXTRA_TEXT, text)
+                                }
+                                runCatching {
+                                    context.startActivity(android.content.Intent.createChooser(send, "Compartilhar relatório"))
+                                }
+                            },
+                            modifier = Modifier.size(32.dp),
+                        ) {
+                            Icon(Icons.Default.Share, "Compartilhar", tint = Primary, modifier = Modifier.size(18.dp))
                         }
                     }
                 }

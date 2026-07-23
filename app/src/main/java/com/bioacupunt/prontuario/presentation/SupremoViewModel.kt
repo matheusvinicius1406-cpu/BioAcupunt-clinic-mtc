@@ -106,6 +106,12 @@ class SupremoViewModel(
                 ),
             )
         }
+        // Um override é um EVENTO DE AUDITORIA (LGPD/CFM): quem prosseguiu sobre um
+        // veredito FORBIDDEN, quando e por quê. Manter isso só no draft em memória
+        // perde o registro se a médica sair do prontuário sem disparar outro save.
+        // `save()` lê _state.value.draft — que a atualização síncrona acima já
+        // preencheu com os campos de override —, então persiste na hora.
+        save()
     }
 
     fun togglePattern(pattern: ZangFuPattern) = edit { draft ->

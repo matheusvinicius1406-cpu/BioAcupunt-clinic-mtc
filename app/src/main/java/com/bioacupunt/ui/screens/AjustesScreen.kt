@@ -57,15 +57,29 @@ private fun ProfileTab() {
     var name by remember { mutableStateOf(securePrefs.professionalName.ifBlank { "Dra. Camila" }) }
     var specialty by remember { mutableStateOf(securePrefs.professionalSpecialty.ifBlank { "Acupunturista · MTC" }) }
     var crmNumber by remember { mutableStateOf(securePrefs.professionalRegistration.ifBlank { "CFMTC-12345" }) }
-    var phone by remember { mutableStateOf("+55 91 99999-0000") }
-    var email by remember { mutableStateOf("camila@bioacupunt.com.br") }
-    var bio by remember { mutableStateOf("Especialista em Medicina Tradicional Chinesa com mais de 10 anos de experiência em acupuntura, fitoterapia e moxibustão.") }
-    var logoUri by remember { mutableStateOf<Uri?>(null) }
+    var phone by remember { mutableStateOf(securePrefs.professionalPhone) }
+    var email by remember { mutableStateOf(securePrefs.professionalEmail.ifBlank { securePrefs.userEmail }) }
+    var bio by remember { mutableStateOf(securePrefs.professionalBio) }
+    var logoUri by remember {
+        mutableStateOf<Uri?>(securePrefs.professionalLogoUri.ifBlank { null }?.let { runCatching { Uri.parse(it) }.getOrNull() })
+    }
     var saved by remember { mutableStateOf(false) }
 
+    // OpenDocument (não GetContent): permite tomar permissão PERSISTÍVEL, para a logo
+    // continuar acessível depois de fechar e reabrir o app. Sem isso o content:// URI
+    // vira inválido no próximo boot e a foto "some".
     val logoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri -> logoUri = uri }
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            runCatching {
+                context.contentResolver.takePersistableUriPermission(
+                    uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                )
+            }
+            logoUri = uri
+        }
+    }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
@@ -107,7 +121,7 @@ private fun ProfileTab() {
                             }
                         }
                         IconButton(
-                            onClick = { logoPickerLauncher.launch("image/*") },
+                            onClick = { logoPickerLauncher.launch(arrayOf("image/*")) },
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(CircleShape)
@@ -127,9 +141,9 @@ private fun ProfileTab() {
                     if (logoUri != null) {
                         Spacer(Modifier.height(8.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = { logoUri = null }) { Text("Remover") }
+                            OutlinedButton(onClick = { logoUri = null; securePrefs.professionalLogoUri = "" }) { Text("Remover") }
                             Button(
-                                onClick = { saved = true },
+                                onClick = { securePrefs.professionalLogoUri = logoUri?.toString() ?: ""; saved = true },
                                 colors = ButtonDefaults.buttonColors(containerColor = Primary)
                             ) { Icon(Icons.Default.Save, null); Spacer(Modifier.width(4.dp)); Text("Salvar Logo") }
                         }
@@ -171,6 +185,9 @@ private fun ProfileTab() {
                     securePrefs.professionalName = name.trim()
                     securePrefs.professionalSpecialty = specialty.trim()
                     securePrefs.professionalRegistration = crmNumber.trim()
+                    securePrefs.professionalPhone = phone.trim()
+                    securePrefs.professionalEmail = email.trim()
+                    securePrefs.professionalBio = bio.trim()
                     saved = true
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -189,13 +206,18 @@ private fun ProfileTab() {
 private fun ClinicTab() {
     val scope = rememberCoroutineScope()
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
-    var clinicName by remember { mutableStateOf("Clínica BioAcupunt") }
+    var clinicName by remember { mutableStateOf(securePrefs.clinicName.ifBlank { "Clínica BioAcupunt" }) }
     var address by remember { mutableStateOf("") }
     var sessionPrice by remember { mutableStateOf(securePrefs.sessionPriceBrl.ifBlank { "150" }) }
     var firstPrice by remember { mutableStateOf(securePrefs.firstConsultPriceBrl.ifBlank { "250" }) }
-    var workStart by remember { mutableStateOf("08:00") }
-    var workEnd by remember { mutableStateOf("18:00") }
-    var workDays by remember { mutableStateOf(setOf("SEG", "TER", "QUA", "QUI", "SEX")) }
+    var workStart by remember { mutableStateOf(securePrefs.clinicWorkStart.ifBlank { "08:00" }) }
+    var workEnd by remember { mutableStateOf(securePrefs.clinicWorkEnd.ifBlank { "18:00" }) }
+    var workDays by remember {
+        mutableStateOf(
+            securePrefs.clinicWorkDaysCsv.ifBlank { "SEG,TER,QUA,QUI,SEX" }
+                .split(",").filter { it.isNotBlank() }.toSet(),
+        )
+    }
     var gdriveLinked by remember { mutableStateOf(securePrefs.googleDriveLinked) }
     var tcleText by remember {
         mutableStateOf(
@@ -331,6 +353,10 @@ private fun ClinicTab() {
                     securePrefs.firstConsultPriceBrl = firstPrice.trim()
                     securePrefs.tcleText = tcleText.trim()
                     securePrefs.enabledTechniquesCsv = enabledTechniques.joinToString(",")
+                    securePrefs.clinicName = clinicName.trim()
+                    securePrefs.clinicWorkStart = workStart.trim()
+                    securePrefs.clinicWorkEnd = workEnd.trim()
+                    securePrefs.clinicWorkDaysCsv = workDays.joinToString(",")
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Primary),
@@ -397,7 +423,10 @@ private fun SecurityTab(onLogout: () -> Unit) {
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     var biometricEnabled by remember { mutableStateOf(securePrefs.biometricEnabled) }
     var autoLockMin by remember { mutableIntStateOf(5) }
-    var encryptionEnabled by remember { mutableStateOf(true) }
+    // Estado do banco em repouso: HOJE é FALSE de verdade. Não há SQLCipher nem
+    // SupportFactory criptografada no projeto — o Room DB é texto puro em repouso.
+    // Mostrar "criptografado" seria claim de conformidade falso numa app clínica.
+    val dbEncryptedAtRest = false
     var showChangePass by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) }
     var oldPin by remember { mutableStateOf("") }
@@ -417,8 +446,8 @@ private fun SecurityTab(onLogout: () -> Unit) {
                     Icon(Icons.Default.Security, null, tint = Primary, modifier = Modifier.size(32.dp))
                     Spacer(Modifier.width(12.dp))
                     Column {
-                        Text("Segurança AES-256", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
-                        Text("Todos os dados são criptografados localmente com EncryptedSharedPreferences.", style = MaterialTheme.typography.bodySmall)
+                        Text("Credenciais protegidas (AES-256)", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+                        Text("PIN, chaves e tokens são guardados com EncryptedSharedPreferences (AES-256). O banco de prontuários ainda não é criptografado em repouso — veja abaixo.", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -434,7 +463,17 @@ private fun SecurityTab(onLogout: () -> Unit) {
         }
 
         item { SectionHeader("Dados") }
-        item { SettingsSwitchRow(Icons.Default.Lock, "Criptografia de Banco Local", "Room DB criptografado", encryptionEnabled, { encryptionEnabled = it }, enabled = false) }
+        item {
+            SettingsSwitchRow(
+                Icons.Default.Lock,
+                "Criptografia do Banco em Repouso",
+                if (dbEncryptedAtRest) "Banco local criptografado em repouso."
+                else "Ainda não disponível. O banco local não é criptografado em repouso — proteja o aparelho com PIN/biometria e bloqueio de tela.",
+                dbEncryptedAtRest,
+                { /* somente-leitura: reflete o estado real do build, não é alternável */ },
+                enabled = false,
+            )
+        }
         item {
             OutlinedButton(onClick = { showChangePass = true }, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.Key, null); Spacer(Modifier.width(8.dp)); Text("Alterar Senha")

@@ -38,8 +38,11 @@ import com.bioacupunt.ui.theme.*
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PipelineMonitorScreen(onBack: () -> Unit = {}) {
-    val vm = viewModel<PipelineMonitorViewModel>(factory = pipelineMonitorFactory)
+fun PipelineMonitorScreen(
+    onBack: () -> Unit = {},
+    factory: PipelineMonitorViewModelFactory = com.bioacupunt.di.AppContainer.pipelineMonitorViewModelFactory(),
+) {
+    val vm = viewModel<PipelineMonitorViewModel>(factory = factory)
     val stats by vm.stats.collectAsStateWithLifecycle()
     val filteredJobs by vm.filteredJobs.collectAsStateWithLifecycle()
     val pipelineState by vm.pipelineState.collectAsStateWithLifecycle()
@@ -678,5 +681,3 @@ private fun statusColor(status: String): Color = when (status) {
     else -> SemanticInfo
 }
 
-/** Variável global setada pelo AppContainer para injeção manual no ViewModel. */
-lateinit var pipelineMonitorFactory: PipelineMonitorViewModelFactory

@@ -330,6 +330,7 @@ object AppContainer {
             appointmentRepository = appointmentRepository,
             crmPatientRepository = crmPatientRepository,
             transacaoRepository = transacaoRepository,
+            tenantManager = tenantManager,
         )
     }
     val agendaViewModelFactory: com.bioacupunt.agenda.presentation.AgendaViewModelFactory by lazy {
@@ -467,8 +468,16 @@ object AppContainer {
         )
     }
 
+    // RAG backend = FtsSearchService (FTS4 sobre os 16 artigos fixos revisados + o
+    // que a médica aprova na Curadoria). O commit e78f5bf havia trocado para o
+    // hybridSearchService (MKIS knowledge_nodes), mas esse store nasce vazio, a perna
+    // FTS5 lançava (rank_bm25 inexistente) e a perna vetorial (sqlite-vec + embeddings)
+    // não roda no SQLite do framework Android — resultado: AskLibrary respondia
+    // NoEvidence para TODA pergunta. Voltamos ao backend que de fato tem acervo.
+    // O portão R2 (if (!hasEvidence)) mora no MtcRetriever/AskLibraryUseCase e segue
+    // intacto — trocar o backend não o reabre.
     val mtcRetriever: com.bioacupunt.biblioteca.domain.search.MtcRetriever by lazy {
-        com.bioacupunt.biblioteca.domain.search.MtcRetriever(hybridSearchService)
+        com.bioacupunt.biblioteca.domain.search.MtcRetriever(ftsSearchService)
     }
 
     /**
