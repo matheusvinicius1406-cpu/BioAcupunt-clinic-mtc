@@ -12,6 +12,7 @@ from app.models.audit import DataAccessLog
 from app.models.auth import RefreshSession
 from app.models.clinic import Clinic
 from app.models.crm_patient import CrmPatient
+from app.models.library_node import LibraryNode
 from app.models.patient import Patient
 from app.models.sync import ClinicRevision
 from app.models.transaction import Transaction
@@ -24,6 +25,7 @@ __all__ = [
     "DataAccessLog",
     "RefreshSession",
     "Clinic",
+    "LibraryNode",
     "Patient",
     "Transaction",
     "User",

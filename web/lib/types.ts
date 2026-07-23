@@ -91,6 +91,19 @@ export interface ReportsOverview {
   finance: FinancialSummary;
 }
 
+// backend/app/schemas/library.py :: LibraryNodeResponse
+export interface LibraryNode {
+  id: string;
+  type: string;
+  title: string;
+  content: string;
+  summary: string;
+  tags: string;
+  version: number;
+  metadata_json: string;
+  created_at: string;
+}
+
 // backend/app/schemas/report.py :: MonthlyPoint
 export interface MonthlyPoint {
   month: string; // "YYYY-MM"
