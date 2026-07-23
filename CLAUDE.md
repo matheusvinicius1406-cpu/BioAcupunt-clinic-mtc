@@ -175,7 +175,29 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
 
-### Onde parei (2026-07-22) — leia antes de continuar
+### Onde parei (2026-07-23) — leia antes de continuar
+
+Branch `fix/clinic-audit-phases`. Tudo compila (`compileDebugKotlin`), Kotlin verde
+(`testDebugUnitTest`), backend verde (`50 passed`), web verde (`tsc` + `next build`).
+
+- **Fase 3 commitada (`83de460`):** nuvem OPCIONAL (`CloudAiProvider`,
+  off-by-default, R1/R2 intactos, scorer local-first, toggle LGPD fiado em Ajustes),
+  auto-lock por inatividade (`AppLock` na MainActivity + slider), prompt de fallback
+  reescrito (tarefas administrativas liberadas, parede clínica intacta), remoção da
+  infra órfã de agente/tool/plugin, remoção da `PatientsScreen` órfã.
+- **Endpoints financeiro/relatórios + web (`5cb7fa0`):** `GET /api/v1/transactions`,
+  `/transactions/summary`, `/reports/overview` no FastAPI (escopo por clínica,
+  exclui tombstones, matemática espelhando o `TransacaoDao`); telas web Financeiro e
+  Relatórios saíram de "TODO backend" para reais.
+- **Pendências (a) e (b) do handoff anterior: RESOLVIDAS.** (a) `TransacaoEntity` tem
+  `tenantId` + índices, repo escopa por tenant. (b) `SupremoViewModel.overrideVeto`
+  persiste razão(≥10)+usuário+horário e salva na hora, fiado no `ProntuarioScreen`.
+- **Ainda aberto:** (c) 7/18 `ClinicalFlag` sem regra — **R4, só a médica**;
+  Biblioteca no web (não há modelo dela no backend — vive no Android); **nada testado
+  em device**; warnings de depreciação (Icons.AutoMirrored, GoogleSignIn, MasterKeys).
+- **Commits ainda são só locais — nada empurrado pro GitHub.**
+
+### Onde parei (2026-07-22)
 
 Sessão de expansão da biblioteca + fusão de IA, feita com subagentes em paralelo.
 Tudo compila e `./gradlew testDebugUnitTest` passa (101 testes, 0 falhas), incluindo
