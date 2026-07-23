@@ -125,13 +125,45 @@ class VecKnowledgeNodeRepository(private val db: SupportSQLiteDatabase) {
     // ======================== FTS5 ========================
 
     /**
-     * Indexa um nó no FTS5 para busca textual.
-     * @param nodeId UUID do knowledge node
-     * @param title Título do artigo
-     * @param summary Resumo
-     * @param content Conteúdo completo
-     * @return true se bem-sucedido
+     * Garante que a tabela virtual FTS5 `knowledge_fts` exista.
+     * Se a migration não a criou (ex: erro silencioso, banco corrompido),
+     * tenta criar agora. Isto é intencionalmente redundante com a migration
+     * para ser resiliente a falhas.
+     *
+     * @return true se a tabela existe (ou foi criada com sucesso)
      */
+    private fun ensureFts5Table(): Boolean {
+        return try {
+            // Verificar se a tabela já existe
+            val check = db.query(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='knowledge_fts'"
+            )
+            val exists = check.use { it.moveToFirst() }
+            if (exists) return true
+
+            // Tabela não existe — tentar criar (recuperação de migração falha)
+            android.util.Log.w("VecRepository", "knowledge_fts não existe! Recriando...")
+            db.execSQL("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS `knowledge_fts` USING fts5(
+                    `node_id` UNINDEXED,
+                    `title`,
+                    `summary`,
+                    `content`,
+                    `tags`,
+                    tokenize='porter unicode61'
+                )
+            """.trimIndent())
+
+            val retry = db.query(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='knowledge_fts'"
+            )
+            retry.use { it.moveToFirst() }
+        } catch (e: Exception) {
+            android.util.Log.e("VecRepository", "Falha ao criar knowledge_fts", e)
+            false
+        }
+    }
+
     /**
      * Indexa um nó no FTS5 para busca textual.
      *
@@ -146,8 +178,10 @@ class VecKnowledgeNodeRepository(private val db: SupportSQLiteDatabase) {
      * @return true se bem-sucedido
      */
     fun indexFts5(nodeId: String, title: String, summary: String, content: String): Boolean {
+        // Garantir que a tabela existe
+        if (!ensureFts5Table()) return false
+
         return try {
-            // Verificar se já existe
             val cursor = db.query(
                 "SELECT rowid FROM knowledge_fts WHERE node_id = ?",
                 arrayOf(nodeId),
@@ -189,6 +223,9 @@ class VecKnowledgeNodeRepository(private val db: SupportSQLiteDatabase) {
 
     /** Busca textual no FTS5 com BM25 scoring. */
     fun searchFts5(query: String, limit: Int = 20): List<Fts5SearchResult> {
+        // Garantir que a tabela FTS5 existe (cria se necessário)
+        if (!ensureFts5Table()) return emptyList()
+
         // Sanitizar query para FTS5: normalizar whitespace sem dropar CJK (中醫, 穴位)
         val sanitized = query.trim().replace(Regex("\\s+"), " ")
         if (sanitized.isBlank()) return emptyList()
@@ -205,8 +242,13 @@ class VecKnowledgeNodeRepository(private val db: SupportSQLiteDatabase) {
             LIMIT ?
         """.trimIndent()
 
-        val cursor = db.query(sql, arrayOf(ftsQuery, limit))
-        return cursor.use { parseFts5Results(it) }
+        return try {
+            val cursor = db.query(sql, arrayOf(ftsQuery, limit))
+            cursor.use { parseFts5Results(it) }
+        } catch (e: Exception) {
+            android.util.Log.e("VecRepository", "Falha ao buscar FTS5", e)
+            emptyList()
+        }
     }
 
     private fun parseFts5Results(cursor: Cursor): List<Fts5SearchResult> {

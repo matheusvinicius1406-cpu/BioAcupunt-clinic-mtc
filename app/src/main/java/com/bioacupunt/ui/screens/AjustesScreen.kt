@@ -20,9 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.*
 import coil.compose.AsyncImage
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.SemanticError
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,6 +187,7 @@ private fun ProfileTab() {
 // ── CLINIC TAB ──────────────────────────────────────────────
 @Composable
 private fun ClinicTab() {
+    val scope = rememberCoroutineScope()
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     var clinicName by remember { mutableStateOf("Clínica BioAcupunt") }
     var address by remember { mutableStateOf("") }
@@ -304,7 +308,15 @@ private fun ClinicTab() {
                         Text("Prontuários · Laudos · Fotos de evolução — sincronizados automaticamente", style = MaterialTheme.typography.bodySmall)
                         Spacer(Modifier.height(8.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = {}, modifier = Modifier.weight(1f)) { Text("Fazer backup agora") }
+                            OutlinedButton(onClick = {
+                scope.launch {
+                    com.bioacupunt.di.AppContainer.backupManager.createBackupBytes().onSuccess { bytes ->
+                        com.bioacupunt.di.AppContainer.googleDriveClient.lastAccount()?.let { acc ->
+                            com.bioacupunt.di.AppContainer.googleDriveClient.uploadBackup(acc, com.bioacupunt.backup.BackupManager.suggestedFileName(), bytes)
+                        }
+                    }
+                }
+            }, modifier = Modifier.weight(1f)) { Text("Fazer backup agora") }
                             OutlinedButton(onClick = { gdriveLinked = false; securePrefs.googleDriveLinked = false }, modifier = Modifier.weight(1f)) { Text("Desconectar") }
                         }
                     }
@@ -381,12 +393,18 @@ private fun AiApisTab() {
 // ── SECURITY TAB ────────────────────────────────────────────
 @Composable
 private fun SecurityTab(onLogout: () -> Unit) {
+    val scope = rememberCoroutineScope()
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     var biometricEnabled by remember { mutableStateOf(securePrefs.biometricEnabled) }
     var autoLockMin by remember { mutableIntStateOf(5) }
     var encryptionEnabled by remember { mutableStateOf(true) }
     var showChangePass by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) }
+    var oldPin by remember { mutableStateOf("") }
+    var newPin by remember { mutableStateOf("") }
+    var confirmNewPin by remember { mutableStateOf("") }
+    var changePassError by remember { mutableStateOf<String?>(null) }
+    var changePassSuccess by remember { mutableStateOf(false) }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
@@ -452,6 +470,83 @@ private fun SecurityTab(onLogout: () -> Unit) {
                 Icon(Icons.AutoMirrored.Filled.Logout, null); Spacer(Modifier.width(8.dp)); Text("Sair da Conta")
             }
         }
+    }
+
+    if (showChangePass) {
+        AlertDialog(
+            onDismissRequest = { showChangePass = false; changePassError = null; changePassSuccess = false },
+            icon = { Icon(Icons.Default.Key, null, tint = Primary) },
+            title = { Text("Alterar PIN") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (changePassSuccess) {
+                        Text("✅ PIN alterado com sucesso!", color = Color(0xFF4CAF50), style = MaterialTheme.typography.bodyMedium)
+                    } else {
+                        OutlinedTextField(
+                            value = oldPin, onValueChange = { oldPin = it.filter { c -> c.isDigit() }; changePassError = null },
+                            label = { Text("PIN atual") },
+                            leadingIcon = { Icon(Icons.Default.Lock, null) },
+                            visualTransformation = PasswordVisualTransformation(),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        OutlinedTextField(
+                            value = newPin, onValueChange = { newPin = it.filter { c -> c.isDigit() }; changePassError = null },
+                            label = { Text("Novo PIN (mín. 4 dígitos)") },
+                            leadingIcon = { Icon(Icons.Default.LockReset, null) },
+                            visualTransformation = PasswordVisualTransformation(),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        OutlinedTextField(
+                            value = confirmNewPin, onValueChange = { confirmNewPin = it.filter { c -> c.isDigit() }; changePassError = null },
+                            label = { Text("Confirmar novo PIN") },
+                            leadingIcon = { Icon(Icons.Default.LockReset, null) },
+                            visualTransformation = PasswordVisualTransformation(),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        changePassError?.let {
+                            Text(it, color = SemanticError, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                if (changePassSuccess) {
+                    Button(onClick = { showChangePass = false }) { Text("Fechar") }
+                } else {
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                when {
+                                    !com.bioacupunt.security.LocalPinAuth.isValidPin(newPin) -> changePassError = "O novo PIN deve ter ao menos 4 dígitos."
+                                    newPin != confirmNewPin -> changePassError = "Os PINs não coincidem."
+                                    else -> {
+                                        val localAuth = com.bioacupunt.di.AppContainer.localAuthManager
+                                        if (!localAuth.verifyPin(oldPin)) {
+                                            changePassError = "PIN atual incorreto."
+                                        } else if (localAuth.setPin(newPin)) {
+                                            changePassSuccess = true
+                                            changePassError = null
+                                            oldPin = ""; newPin = ""; confirmNewPin = ""
+                                        } else {
+                                            changePassError = "Erro ao alterar PIN."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        enabled = oldPin.isNotBlank() && newPin.isNotBlank() && confirmNewPin.isNotBlank(),
+                    ) { Text("Alterar PIN") }
+                }
+            },
+            dismissButton = {
+                if (!changePassSuccess) {
+                    TextButton(onClick = { showChangePass = false; changePassError = null }) { Text("Cancelar") }
+                }
+            },
+        )
     }
 
     if (showLogoutConfirm) {
@@ -524,7 +619,7 @@ private fun SystemTab() {
             val dark by com.bioacupunt.ui.theme.ThemeController.dark
             SettingsSwitchRow(
                 Icons.Default.DarkMode, "Modo Escuro",
-                "Paleta escura do design Supremo",
+                "Paleta escura do design BioAcupunt",
                 dark,
                 { com.bioacupunt.ui.theme.ThemeController.toggle(securePrefs) },
             )
