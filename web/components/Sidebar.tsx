@@ -16,6 +16,7 @@ const NAV: NavItem[] = [
   { href: "/dashboard", label: "Visão geral", icon: "◧" },
   { href: "/agenda", label: "Agenda", icon: "◷" },
   { href: "/pacientes", label: "Pacientes", icon: "◐" },
+  { href: "/crm", label: "CRM", icon: "◈" },
   { href: "/financeiro", label: "Financeiro", icon: "▤" },
   { href: "/relatorios", label: "Relatórios", icon: "◭" },
   { href: "/biblioteca", label: "Biblioteca", icon: "▧" },

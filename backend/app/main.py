@@ -10,6 +10,7 @@ from app.api.routers import (
     appointments,
     auth,
     clinics,
+    crm,
     health,
     patients,
     reports,
@@ -66,6 +67,7 @@ app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(clinics.router)
 app.include_router(patients.router)
+app.include_router(crm.router)
 app.include_router(appointments.router)
 app.include_router(transactions.router)
 app.include_router(reports.router)

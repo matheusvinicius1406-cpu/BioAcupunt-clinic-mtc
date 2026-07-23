@@ -11,6 +11,7 @@ from app.models.appointment import Appointment
 from app.models.audit import DataAccessLog
 from app.models.auth import RefreshSession
 from app.models.clinic import Clinic
+from app.models.crm_patient import CrmPatient
 from app.models.patient import Patient
 from app.models.sync import ClinicRevision
 from app.models.transaction import Transaction
@@ -19,6 +20,7 @@ from app.models.user import User
 __all__ = [
     "Appointment",
     "ClinicRevision",
+    "CrmPatient",
     "DataAccessLog",
     "RefreshSession",
     "Clinic",

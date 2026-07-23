@@ -116,3 +116,74 @@ export function transactionBadgeClass(status: string): string {
       return "badge-neutral";
   }
 }
+
+// backend/app/schemas/crm.py :: CrmPatientResponse
+export interface CrmPatient {
+  id: number;
+  clinic_id: number;
+  name: string;
+  phone: string;
+  email: string;
+  birth_date: string;
+  stage: string;
+  total_sessions: number;
+  total_revenue_brl: number;
+  last_visit: string;
+  next_appointment: string;
+  tags: string;
+  notes: string;
+  referral_source: string;
+  nps_score: number | null;
+  health_insurance: string;
+  main_complaint: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// backend/app/schemas/crm.py :: CrmPipelineSummary
+export interface CrmPipelineSummary {
+  total: number;
+  by_stage: Record<string, number>;
+  total_revenue_brl: number;
+  average_nps: number | null;
+}
+
+// app crm/domain/model/PatientStage.kt — ordem do funil preservada.
+export const CRM_STAGES: string[] = [
+  "FIRST_CONTACT",
+  "LEAD",
+  "ACTIVE",
+  "TREATMENT",
+  "MAINTENANCE",
+  "INACTIVE",
+  "CHURNED",
+];
+
+export const CRM_STAGE_LABELS: Record<string, string> = {
+  FIRST_CONTACT: "Primeiro contato",
+  LEAD: "Lead",
+  ACTIVE: "Ativo",
+  TREATMENT: "Em tratamento",
+  MAINTENANCE: "Manutenção",
+  INACTIVE: "Inativo",
+  CHURNED: "Churn",
+};
+
+export function crmStageBadgeClass(stage: string): string {
+  switch (stage) {
+    case "ACTIVE":
+    case "TREATMENT":
+      return "badge-ok";
+    case "MAINTENANCE":
+      return "badge-info";
+    case "FIRST_CONTACT":
+    case "LEAD":
+      return "badge-neutral";
+    case "INACTIVE":
+      return "badge-warn";
+    case "CHURNED":
+      return "badge-danger";
+    default:
+      return "badge-neutral";
+  }
+}
