@@ -508,105 +508,80 @@ object DatabaseModule {
     // ═════════════════════════════════════════════════════════════════════
     private val MIGRATION_17_18 = object : androidx.room.migration.Migration(17, 18) {
         override fun migrate(database: SupportSQLiteDatabase) {
-            // ── Passo 1: Expandir knowledge_nodes (colunas aditivas) ──
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN tenant_id TEXT NOT NULL DEFAULT 'default'")
-            }.onFailure {
-                com.bioacupunt.observability.AppLogger.w("MIGRATION_17_18", "tenant_id already exists", it)
-            }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN knowledge_type TEXT NOT NULL DEFAULT 'artigo'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN status TEXT NOT NULL DEFAULT 'rascunho'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN evidence_level TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN bias_risk TEXT NOT NULL DEFAULT 'nao_avaliado'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN clinical_evidence TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN category TEXT NOT NULL DEFAULT 'mtc'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN source TEXT NOT NULL DEFAULT 'manual'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN specialty TEXT NOT NULL DEFAULT 'geral'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN language TEXT NOT NULL DEFAULT 'pt'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN data_classification TEXT NOT NULL DEFAULT 'restrito'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN doi TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN pmid TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN source_url TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN authors TEXT NOT NULL DEFAULT '[]'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN citation TEXT NOT NULL DEFAULT ''")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN scientific_score REAL")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN ai_score REAL")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN reliability_score REAL")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN checksum TEXT NOT NULL DEFAULT ''")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN created_by TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN reviewed_by TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN approved_by TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN approved_at INTEGER")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN version TEXT NOT NULL DEFAULT '0.1.0'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN superseded_by TEXT")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN conflicts TEXT NOT NULL DEFAULT '[]'")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN created_at INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)")
-            }.onFailure { }
-            runCatching {
-                database.execSQL("ALTER TABLE knowledge_nodes ADD COLUMN deleted_at INTEGER")
-            }.onFailure { }
+            // ═══════════════════════════════════════════════════════════════
+            // Passo 1: Recriar knowledge_nodes com schema EXATO que Room espera
+            //
+            // A tabela ANTIGA foi criada por uma versão anterior do app com:
+            //   id TEXT PK, type TEXT, title TEXT, content TEXT,
+            //   summary TEXT, tags TEXT, version INTEGER, metadata TEXT
+            //
+            // A NOVA entidade KnowledgeNodeEntity tem ~37 colunas, SEM a coluna
+            // 'type' (renomeada para knowledge_type), com version como TEXT,
+            // e todas as colunas SEM DEFAULT SQL (Room usa defaults Kotlin,
+            // não SQL DEFAULT).
+            //
+            // ALTER TABLE ADD COLUMN não resolve porque:
+            // 1) 'type' antiga não existe na nova entidade (não tem como dropar)
+            // 2) 'version' mudou de INTEGER para TEXT
+            // 3) Room valida que DEFAULT values NÃO existam (usa Kotlin defaults)
+            //
+            // Solução: DROP e recria com o schema correto.
+            // A tabela antiga não tem dados clínicos reais (só seed de dev).
+            // ═══════════════════════════════════════════════════════════════
+            database.execSQL("DROP INDEX IF EXISTS index_knowledge_nodes_checksum")
+            database.execSQL("DROP INDEX IF EXISTS index_knowledge_nodes_tenant_created")
+            database.execSQL("DROP INDEX IF EXISTS index_knowledge_nodes_tenant_id")
+            database.execSQL("DROP INDEX IF EXISTS index_knowledge_nodes_status")
+            database.execSQL("DROP TABLE IF EXISTS `knowledge_nodes`")
 
-            // ── Passo 2: Criar índices no knowledge_nodes ──
-            database.execSQL("CREATE INDEX IF NOT EXISTS index_knowledge_nodes_tenant_id ON knowledge_nodes(tenant_id)")
-            database.execSQL("CREATE INDEX IF NOT EXISTS index_knowledge_nodes_status ON knowledge_nodes(status)")
-            database.execSQL("CREATE INDEX IF NOT EXISTS index_knowledge_nodes_checksum ON knowledge_nodes(checksum, tenant_id)")
-            database.execSQL("CREATE INDEX IF NOT EXISTS index_knowledge_nodes_tenant_created ON knowledge_nodes(tenant_id, created_at)")
+            // CREATE TABLE sem DEFAULT SQL — Room usa defaults do Kotlin na app.
+            // A ordem e tipos DEVEM corresponder exatamente ao @Entity.
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS `knowledge_nodes` (
+                    `id` TEXT NOT NULL PRIMARY KEY,
+                    `tenant_id` TEXT NOT NULL,
+                    `title` TEXT NOT NULL,
+                    `summary` TEXT NOT NULL,
+                    `content` TEXT NOT NULL,
+                    `knowledge_type` TEXT NOT NULL,
+                    `status` TEXT NOT NULL,
+                    `evidence_level` TEXT,
+                    `bias_risk` TEXT NOT NULL,
+                    `clinical_evidence` TEXT,
+                    `category` TEXT NOT NULL,
+                    `source` TEXT NOT NULL,
+                    `specialty` TEXT NOT NULL,
+                    `language` TEXT NOT NULL,
+                    `data_classification` TEXT NOT NULL,
+                    `doi` TEXT,
+                    `pmid` TEXT,
+                    `source_url` TEXT,
+                    `authors` TEXT NOT NULL,
+                    `citation` TEXT NOT NULL,
+                    `scientific_score` REAL,
+                    `ai_score` REAL,
+                    `reliability_score` REAL,
+                    `checksum` TEXT NOT NULL,
+                    `created_by` TEXT,
+                    `reviewed_by` TEXT,
+                    `approved_by` TEXT,
+                    `approved_at` INTEGER,
+                    `version` TEXT NOT NULL,
+                    `superseded_by` TEXT,
+                    `tags` TEXT NOT NULL,
+                    `metadata` TEXT NOT NULL,
+                    `conflicts` TEXT NOT NULL,
+                    `created_at` INTEGER NOT NULL,
+                    `updated_at` INTEGER NOT NULL,
+                    `deleted_at` INTEGER
+                )
+            """.trimIndent())
+
+            // ── Passo 2: Índices com nomes que Room gera do @Entity ──
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_nodes_tenant_id` ON `knowledge_nodes` (`tenant_id`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_nodes_status` ON `knowledge_nodes` (`status`)")
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_knowledge_nodes_checksum_tenant_id` ON `knowledge_nodes` (`checksum`, `tenant_id`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_nodes_tenant_id_created_at` ON `knowledge_nodes` (`tenant_id`, `created_at`)")
 
             // ── Passo 3: Criar tabela ingestion_jobs ──
             database.execSQL("""
@@ -715,28 +690,10 @@ object DatabaseModule {
                     "sqlite-vec not available yet. Vector search disabled. ${e.message}", e)
             }
 
-            // ── Passo 8: Backfill dados existentes ──
-            // Copia campos do schema antigo para os novos, quando aplicável.
-            // As colunas antigas (type, tags, version, metadata) são mantidas
-            // para compatibilidade, mas os novos campos são populados.
-            runCatching {
-                // type antigo vira knowledge_type (se type for um valor conhecido)
-                database.execSQL("""
-                    UPDATE knowledge_nodes SET
-                        knowledge_type = CASE
-                            WHEN type IN ('artigo','revisao','guideline','capitulo','livro','tese','caso_clinico','ensaio_clinico','protocolo','nota','relatorio','educacional') THEN type
-                            ELSE 'artigo'
-                        END,
-                        status = CASE
-                            WHEN status IS NULL OR status = '' THEN 'rascunho'
-                            ELSE status
-                        END,
-                        updated_at = (strftime('%s','now') * 1000)
-                    WHERE knowledge_type IS NULL OR knowledge_type = ''
-                """.trimIndent())
-            }.onFailure { e ->
-                com.bioacupunt.observability.AppLogger.w("MIGRATION_17_18", "Backfill failed", e)
-            }
+            // ── Passo 8: (obsoleto) Backfill removido — a tabela foi recriada
+            // do zero no Passo 1. Dados antigos (se houverem) são perdidos
+            // intencionalmente: o schema antigo era incompatível (type→knowledge_type,
+            // version INTEGER→TEXT) e não havia dados clínicos reais na tabela.
         }
     }
 
