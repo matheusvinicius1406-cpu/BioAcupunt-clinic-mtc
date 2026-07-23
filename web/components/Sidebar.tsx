@@ -19,6 +19,7 @@ const NAV: NavItem[] = [
   { href: "/crm", label: "CRM", icon: "◈" },
   { href: "/financeiro", label: "Financeiro", icon: "▤" },
   { href: "/relatorios", label: "Relatórios", icon: "◭" },
+  { href: "/analytics", label: "Analytics", icon: "◫" },
   { href: "/biblioteca", label: "Biblioteca", icon: "▧" },
 ];
 

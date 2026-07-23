@@ -28,6 +28,18 @@ export function formatCurrency(value: number): string {
   return Number.isFinite(value) ? CURRENCY_FMT.format(value) : "—";
 }
 
+const MONTH_FMT = new Intl.DateTimeFormat("pt-BR", {
+  month: "short",
+  year: "numeric",
+});
+
+// "2026-07" -> "jul de 2026". Meio do mês evita deslize de fuso.
+export function formatMonth(ym: string): string {
+  const [y, m] = ym.split("-").map(Number);
+  if (!y || !m) return ym;
+  return MONTH_FMT.format(new Date(y, m - 1, 15));
+}
+
 export function formatDate(iso: string): string {
   const d = new Date(iso);
   return isNaN(d.getTime()) ? "—" : DATE_FMT.format(d);

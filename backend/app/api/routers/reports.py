@@ -7,7 +7,7 @@ from app.api.deps import get_current_user
 from app.db.session import get_db
 from app.models.user import User
 from app.repositories import reports_repository, transaction_repository
-from app.schemas.report import ReportsOverview
+from app.schemas.report import AnalyticsOverview, ReportsOverview
 from app.schemas.transaction import FinancialSummary
 
 router = APIRouter(prefix="/api/v1/reports", tags=["reports"])
@@ -32,3 +32,12 @@ async def reports_overview(
         appointments_by_status=by_status,
         finance=FinancialSummary(start=start, end=end, **finance_totals),
     )
+
+
+@router.get("/analytics", response_model=AnalyticsOverview)
+async def reports_analytics(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> AnalyticsOverview:
+    series = await reports_repository.monthly_analytics(db, clinic_id=current_user.clinic_id)
+    return AnalyticsOverview(**series)

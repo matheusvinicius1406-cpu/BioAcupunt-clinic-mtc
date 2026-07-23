@@ -91,6 +91,19 @@ export interface ReportsOverview {
   finance: FinancialSummary;
 }
 
+// backend/app/schemas/report.py :: MonthlyPoint
+export interface MonthlyPoint {
+  month: string; // "YYYY-MM"
+  value: number;
+}
+
+// backend/app/schemas/report.py :: AnalyticsOverview
+export interface AnalyticsOverview {
+  monthly_net_revenue: MonthlyPoint[];
+  monthly_appointments: MonthlyPoint[];
+  monthly_new_patients: MonthlyPoint[];
+}
+
 // backend/app/models/transaction.py :: TransactionType / TransactionStatus
 export const TRANSACTION_TYPE_LABELS: Record<string, string> = {
   PAGAMENTO: "Pagamento",
