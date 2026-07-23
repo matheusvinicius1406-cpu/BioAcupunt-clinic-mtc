@@ -29,26 +29,93 @@ object MtcSearchEngine {
 
     // -- Text normalisation -------------------------------------------------
 
-    /** Folds accents, lowercases, strips punctuation. "Pulmão" -> "pulmao". */
-    fun normalize(text: String): String =
-        Normalizer.normalize(text, Normalizer.Form.NFD)
-            .replace(DIACRITICS, "")
-            .lowercase()
+    /**
+     * Normaliza texto: folds acentos latinos, mantém caracteres CJK (chinês).
+     * "Pulmão" → "pulmao", "中醫" → "中醫" (preservado).
+     */
+    fun normalize(text: String): String {
+        val nfd = Normalizer.normalize(text, Normalizer.Form.NFD)
+        // Remove combining diacritical marks (acentos, cedilhas, tils)
+        // preserva CJK (chinês) pois CJK não se decompõe em NFD
+        val sb = StringBuilder(nfd.length)
+        for (ch in nfd) {
+            // Character.NON_SPACING_MARK = 6 (Byte) — toda marca diacrítica combinante
+            if (Character.getType(ch).toByte() == Character.NON_SPACING_MARK) {
+                continue
+            }
+            sb.append(ch)
+        }
+        return sb.toString().lowercase()
+    }
 
-    private val DIACRITICS = Regex("\\p{Mn}+")
-    private val TOKEN_SPLIT = Regex("[^a-z0-9]+")
+    /** Tokens são separados por whitespace OU pontuação, mas CJK é preservado. */
+    private val TOKEN_SPLIT = Regex("[\\s\\p{P}&&[^一-龯々〆〤]]+")
 
-    fun tokenize(text: String): List<String> =
-        normalize(text)
+    /**
+     * Tokeniza: respeita caracteres chineses, separa por whitespace/pontuação.
+     * Aplica stemming básico em português.
+     */
+    fun tokenize(text: String): List<String> {
+        val tokens = mutableListOf<String>()
+        val normalized = normalize(text)
+
+        // 1. Extrair sequências CJK (cada caractere individual é token)
+        val cjkPattern = Regex("[一-龯々〆〤〇]")
+        val cjkChars = cjkPattern.findAll(normalized).map { it.value }.toList()
+        tokens.addAll(cjkChars)
+
+        // 2. Remover CJK do texto e splitar o resto
+        val noCjk = normalized.replace(cjkPattern, " ")
+        val latinTokens = noCjk
             .split(TOKEN_SPLIT)
             .filter { it.length > 1 && it !in STOPWORDS }
+        tokens.addAll(latinTokens)
 
-    /** Portuguese stopwords. Kept small on purpose: over-filtering hurts recall. */
+        return tokens.distinct()
+    }
+
+    /** Portuguese stopwords. */
     private val STOPWORDS = setOf(
         "de", "da", "do", "das", "dos", "em", "no", "na", "nos", "nas",
         "um", "uma", "os", "as", "ao", "aos", "com", "por", "para", "que",
-        "se", "sua", "seu", "e", "ou",
+        "se", "sua", "seu", "e", "ou", "mais", "mas", "como", "sao",
+        "este", "esta", "esse", "essa", "aquele", "aquela",
+        "ja", "muito", "pode", "tem", "foram", "ser", "era",
     )
+
+    /**
+     * Stemming conservador para português.
+     * APENAS sufixos nominais — NÃO verbais ("ia" em "energia" não é sufixo).
+     *
+     * Exemplos:
+     * - "pulmões" → "pulmao" (plural → singular, com/sem acento)
+     * - "tratamento" → "trata" (remove -mento)
+     * - "estagnação" → "estagna" (remove -ção)
+     * - "energia" → "energia" ("ia" é parte da raiz, não sufixo)
+     */
+    private fun stem(word: String): String {
+        if (word.length < 4) return word
+        var w = word
+
+        // Plural → singular: texto já normalizado (sem acentos)
+        w = w.replace(Regex("(oes|ões)$"), "ao")     // pulmões → pulmao
+            .replace(Regex("(aes|ães)$"), "ao")     // cães → cao
+            .replace(Regex("ns$"), "m")              // bens → bem
+
+        // Regular plural: remove 's' final
+        if (w.endsWith("s") && w.length > 3) {
+            val semS = w.dropLast(1)
+            if (semS.length >= 3) w = semS
+        }
+
+        // Sufixos nominais (conservador: só padrões seguros)
+        w = w.replace(Regex("(cao|ção|coes|ções)$"), "")   // estagnação → estagna
+            .replace(Regex("(mento|menta)$"), "")           // tratamento → trata
+            .replace(Regex("(dade|dades)$"), "")           // saudade → saud
+            .replace(Regex("(vel|velmente)$"), "")          // possível → possi
+
+        return w.ifEmpty { word }
+    }
 
     /**
      * Bilingual TCM vocabulary. Bidirectional: entering either side finds both.
@@ -94,6 +161,27 @@ object MtcSearchEngine {
     }
 
     /** Expands each query token into itself plus its synonym group. */
-    fun expand(tokens: List<String>): List<String> =
-        tokens.flatMap { token -> SYNONYMS[token]?.toList() ?: listOf(token) }.distinct()
+    /**
+     * Expande cada token: sinônimos + stemming português.
+     * Ex: "deficiencia" → [deficiencia, vazio, xu, deficienc]
+     *     "tratamento" → [tratamento, trata] (stemming)
+     */
+    fun expand(tokens: List<String>): List<String> {
+        val result = mutableListOf<String>()
+        for (token in tokens) {
+            // 1. Lookup de sinônimos MTC bilíngues
+            val group = SYNONYMS[token]
+            if (group != null) result.addAll(group)
+            else result.add(token)
+
+            // 2. Stemming português para capturar variantes gramaticais
+            val stemmed = stem(token)
+            if (stemmed != token && stemmed !in result) {
+                val stemmedGroup = SYNONYMS[stemmed]
+                if (stemmedGroup != null) result.addAll(stemmedGroup)
+                else result.add(stemmed)
+            }
+        }
+        return result.distinct()
+    }
 }

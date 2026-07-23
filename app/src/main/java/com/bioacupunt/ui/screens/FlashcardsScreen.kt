@@ -242,48 +242,97 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
 private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
-        animationSpec = tween(400, easing = FastOutSlowInEasing),
+        animationSpec = tween(500, easing = FastOutSlowInEasing),
         label = "flip"
     )
+
+    // Mostrar frente (0°-90°) ou verso (90°-180°)
+    val showFront = rotation < 90f
+    // A face do verso precisa estar espelhada para ser legível após a rotação
+    val effectiveRotation = rotation
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1.4f)
-            .graphicsLayer { rotationY = rotation; cameraDistance = 12f * density }
+            .graphicsLayer {
+                rotationY = effectiveRotation
+                cameraDistance = 12f * density
+                // Suavizar visibilidade durante a transição
+                alpha = if (effectiveRotation in 10f..170f) 1f else 1f
+            }
             .clip(RoundedCornerShape(20.dp))
             .background(
-                if (!isFlipped || rotation < 90f)
-                    androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xFF1B2F1A), Color(0xFF2D4E2C)))
-                else
-                    androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xFF0D1F0C), Color(0xFF1A3019)))
-            )
-            .clickable(onClick = onClick)
-            .graphicsLayer { if (rotation > 90f) rotationY = 180f },
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(24.dp).graphicsLayer { if (rotation > 90f) rotationY = 180f }
-        ) {
-            Icon(
-                if (!isFlipped || rotation < 90f) Icons.AutoMirrored.Filled.Help else Icons.Default.Lightbulb,
-                null, tint = Primary, modifier = Modifier.size(32.dp)
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                if (!isFlipped || rotation < 90f) card.frente else card.verso,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.White,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
+                androidx.compose.ui.graphics.Brush.verticalGradient(
+                    if (showFront) listOf(Color(0xFF1B2F1A), Color(0xFF2D4E2C))
+                    else listOf(Color(0xFF0D1F0C), Color(0xFF1A3019))
                 )
             )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                if (!isFlipped || rotation < 90f) "Toque para revelar" else "Resposta ✓",
-                style = MaterialTheme.typography.labelSmall.copy(color = Color.White.copy(alpha = 0.5f))
-            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        // Frente
+        AnimatedVisibility(
+            visible = showFront,
+            enter = fadeIn(animationSpec = tween(200)),
+            exit = fadeOut(animationSpec = tween(100))
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(24.dp)
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.Help, null,
+                    tint = Primary, modifier = Modifier.size(32.dp)
+                )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    card.frente,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    )
+                )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    "Toque para revelar",
+                    style = MaterialTheme.typography.labelSmall.copy(color = Color.White.copy(alpha = 0.5f))
+                )
+            }
+        }
+
+        // Verso (espelhado para legibilidade)
+        AnimatedVisibility(
+            visible = !showFront,
+            enter = fadeIn(animationSpec = tween(200)),
+            exit = fadeOut(animationSpec = tween(100))
+        ) {
+            Box(modifier = Modifier.graphicsLayer { rotationY = 180f }) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(24.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Lightbulb, null,
+                        tint = Color(0xFFFFD700), modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        card.verso,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        "Resposta ✓",
+                        style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF4CAF50))
+                    )
+                }
+            }
         }
     }
 }
