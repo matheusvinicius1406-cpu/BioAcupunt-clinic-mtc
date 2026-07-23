@@ -23,8 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.*
 import coil.compose.AsyncImage
+import com.bioacupunt.ui.theme.GoogleBlue
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.SemanticError
+import com.bioacupunt.ui.theme.statusColors
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,7 +153,7 @@ private fun ProfileTab() {
 
                     if (saved) {
                         Spacer(Modifier.height(8.dp))
-                        Text("✅ Logo salva com sucesso!", style = MaterialTheme.typography.labelMedium, color = Color(0xFF4CAF50))
+                        Text("✅ Logo salva com sucesso!", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
                     }
                 }
             }
@@ -316,17 +318,17 @@ private fun ClinicTab() {
                 subtitle = if (gdriveLinked) "Conectado — backup automático ativo" else "Não conectado. Ative para backup automático",
                 checked = gdriveLinked,
                 onCheck = { gdriveLinked = it; securePrefs.googleDriveLinked = it },
-                iconColor = Color(0xFF4285F4)
+                iconColor = GoogleBlue
             )
         }
         if (gdriveLinked) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4285F4).copy(alpha = 0.08f))
+                    colors = CardDefaults.cardColors(containerColor = GoogleBlue.copy(alpha = 0.08f))
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        Text("☁️ Google Drive conectado", style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFF4285F4)))
+                        Text("☁️ Google Drive conectado", style = MaterialTheme.typography.labelMedium.copy(color = GoogleBlue))
                         Text("Prontuários · Laudos · Fotos de evolução — sincronizados automaticamente", style = MaterialTheme.typography.bodySmall)
                         Spacer(Modifier.height(8.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -371,49 +373,94 @@ private fun ClinicTab() {
 @Composable
 private fun AiApisTab() {
     val cacheManager = remember { com.bioacupunt.di.AppContainer.cacheManager }
+    val configManager = remember { com.bioacupunt.di.AppContainer.aiConfigManager }
+    val secretsProvider = remember { com.bioacupunt.di.AppContainer.aiSecretsProvider }
+    val scope = rememberCoroutineScope()
 
-    var enableClinical by remember { mutableStateOf(true) }
-    var enableFlashcards by remember { mutableStateOf(true) }
-    var enableReports by remember { mutableStateOf(true) }
-    var enableCrm by remember { mutableStateOf(true) }
-    var enableImagePrompts by remember { mutableStateOf(false) }
-    var maxTokens by remember { mutableIntStateOf(2048) }
+    // Toggle + chave da IA na nuvem são estado REAL, lidos/escritos no AiConfigManager
+    // e no AiSecretsProvider (suspend). Antes esta aba tinha "Agentes de IA" com
+    // toggles fantasma — inclusive um "Assistente Clínico: diagnóstico energético"
+    // que sugeria IA decidindo clínica (proibido por R1/R4). Removidos.
+    var cloudEnabled by remember { mutableStateOf(false) }
+    var apiKey by remember { mutableStateOf("") }
+    var keyRevealed by remember { mutableStateOf(false) }
+    var keySaved by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        cloudEnabled = configManager.isCloudEnabled()
+        apiKey = secretsProvider.apiKeyFor("gemini").orEmpty()
+    }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { SectionHeader("📱 IA local (offline)") }
         item { LocalModelCard() }
 
-        item { SectionHeader("⚙️ Agentes de IA") }
-
+        item { SectionHeader("☁️ IA na nuvem (opcional)") }
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                SettingsSwitchRow(Icons.Default.MedicalServices, "Assistente Clínico", "Análise de padrões MTC, diagnóstico energético", enableClinical, { enableClinical = it })
-                SettingsSwitchRow(Icons.Default.School, "Gerador de Flashcards", "Cria cards de estudo com IA", enableFlashcards, { enableFlashcards = it })
-                SettingsSwitchRow(Icons.Default.Description, "Redator de Relatórios", "Laudos, evoluções e documentos clínicos", enableReports, { enableReports = it })
-                SettingsSwitchRow(Icons.Default.People, "Consultor CRM", "Insights de retenção e relacionamento", enableCrm, { enableCrm = it })
-                SettingsSwitchRow(Icons.Default.Image, "Gerador de Prompts Visuais", "Cria prompts para imagens médicas", enableImagePrompts, { enableImagePrompts = it })
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+            ) {
+                Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(20.dp))
+                    Text(
+                        "Ao ligar, o texto das suas conversas com a IA é enviado a um servidor externo (Google Gemini) — deixa de ser 100% offline. Não use com dados clínicos sensíveis sem consentimento (LGPD). A IA local continua sendo o padrão e tem prioridade quando disponível.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    )
+                }
+            }
+        }
+        item {
+            SettingsSwitchRow(
+                Icons.Default.Cloud,
+                "Usar IA na nuvem",
+                "Fallback quando não há modelo local. Desligado = 100% offline.",
+                cloudEnabled,
+                { checked ->
+                    cloudEnabled = checked
+                    scope.launch { configManager.setCloudEnabled(checked) }
+                },
+            )
+        }
+        if (cloudEnabled) {
+            item {
+                OutlinedTextField(
+                    value = apiKey,
+                    onValueChange = { apiKey = it; keySaved = false },
+                    label = { Text("Chave da API (Google Gemini)") },
+                    singleLine = true,
+                    visualTransformation = if (keyRevealed) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(),
+                    leadingIcon = { Icon(Icons.Default.Key, null) },
+                    trailingIcon = {
+                        IconButton(onClick = { keyRevealed = !keyRevealed }) {
+                            Icon(if (keyRevealed) Icons.Default.VisibilityOff else Icons.Default.Visibility, "Mostrar/ocultar chave")
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            item {
+                Button(
+                    onClick = { scope.launch { secretsProvider.setApiKey("gemini", apiKey.trim()); keySaved = true } },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                ) { Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar chave") }
+            }
+            if (keySaved) {
+                item { Text("✅ Chave salva. A IA na nuvem será usada como fallback.", style = MaterialTheme.typography.labelMedium, color = statusColors().success) }
             }
         }
 
-        item { SectionHeader("⚡ Performance") }
+        item { SectionHeader("⚡ Desempenho / Cache") }
         item {
-            Column {
-                Text("Máximo de tokens por resposta: $maxTokens", style = MaterialTheme.typography.bodySmall)
-                Slider(
-                    value = maxTokens.toFloat(), onValueChange = { maxTokens = it.toInt() },
-                    valueRange = 256f..4096f, steps = 15,
-                    colors = SliderDefaults.colors(thumbColor = Primary, activeTrackColor = Primary)
-                )
-                Text(
-                    "Cache de IA: ${cacheManager.memoryUsageKb()} KB em memória · ${cacheManager.diskUsageKb()} KB em disco",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Text(
+                "Cache de IA: ${cacheManager.memoryUsageKb()} KB em memória · ${cacheManager.diskUsageKb()} KB em disco",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
-
     }
-
 }
 
 // ── SECURITY TAB ────────────────────────────────────────────
@@ -422,7 +469,7 @@ private fun SecurityTab(onLogout: () -> Unit) {
     val scope = rememberCoroutineScope()
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     var biometricEnabled by remember { mutableStateOf(securePrefs.biometricEnabled) }
-    var autoLockMin by remember { mutableIntStateOf(5) }
+    var autoLockMin by remember { mutableIntStateOf(securePrefs.autoLockMinutes) }
     // Estado do banco em repouso: HOJE é FALSE de verdade. Não há SQLCipher nem
     // SupportFactory criptografada no projeto — o Room DB é texto puro em repouso.
     // Mostrar "criptografado" seria claim de conformidade falso numa app clínica.
@@ -458,7 +505,21 @@ private fun SecurityTab(onLogout: () -> Unit) {
         item {
             Column {
                 Text("Auto-bloqueio: $autoLockMin min", style = MaterialTheme.typography.bodySmall)
-                Slider(value = autoLockMin.toFloat(), onValueChange = { autoLockMin = it.toInt() }, valueRange = 1f..30f, steps = 28, colors = SliderDefaults.colors(thumbColor = Primary, activeTrackColor = Primary))
+                Slider(
+                    value = autoLockMin.toFloat(),
+                    onValueChange = { autoLockMin = it.toInt() },
+                    // Persistir só ao soltar o slider evita uma escrita
+                    // criptografada por frame durante o arraste.
+                    onValueChangeFinished = { securePrefs.autoLockMinutes = autoLockMin },
+                    valueRange = 1f..30f,
+                    steps = 28,
+                    colors = SliderDefaults.colors(thumbColor = Primary, activeTrackColor = Primary),
+                )
+                Text(
+                    "O app pede novo desbloqueio (PIN/biometria) após esse tempo em segundo plano.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
 
@@ -503,8 +564,8 @@ private fun SecurityTab(onLogout: () -> Unit) {
             OutlinedButton(
                 onClick = { showLogoutConfirm = true },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFEF5350)),
-                border = BorderStroke(1.dp, Color(0xFFEF5350))
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = statusColors().danger),
+                border = BorderStroke(1.dp, statusColors().danger)
             ) {
                 Icon(Icons.AutoMirrored.Filled.Logout, null); Spacer(Modifier.width(8.dp)); Text("Sair da Conta")
             }
@@ -519,7 +580,7 @@ private fun SecurityTab(onLogout: () -> Unit) {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (changePassSuccess) {
-                        Text("✅ PIN alterado com sucesso!", color = Color(0xFF4CAF50), style = MaterialTheme.typography.bodyMedium)
+                        Text("✅ PIN alterado com sucesso!", color = statusColors().success, style = MaterialTheme.typography.bodyMedium)
                     } else {
                         OutlinedTextField(
                             value = oldPin, onValueChange = { oldPin = it.filter { c -> c.isDigit() }; changePassError = null },
@@ -591,7 +652,7 @@ private fun SecurityTab(onLogout: () -> Unit) {
     if (showLogoutConfirm) {
         AlertDialog(
             onDismissRequest = { showLogoutConfirm = false },
-            icon = { Icon(Icons.AutoMirrored.Filled.Logout, null, tint = Color(0xFFEF5350)) },
+            icon = { Icon(Icons.AutoMirrored.Filled.Logout, null, tint = statusColors().danger) },
             title = { Text("Bloquear o app?") },
             text = { Text("Você voltará à tela de PIN. Sua conta e seus dados continuam salvos no aparelho.") },
             confirmButton = {
@@ -603,7 +664,7 @@ private fun SecurityTab(onLogout: () -> Unit) {
                         showLogoutConfirm = false
                         onLogout()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF5350))
+                    colors = ButtonDefaults.buttonColors(containerColor = statusColors().danger)
                 ) { Text("Bloquear") }
             },
             dismissButton = { TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancelar") } }
@@ -647,7 +708,7 @@ private fun SystemTab() {
                         Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar servidor")
                     }
                     if (serverSaved) {
-                        Text("✅ Servidor salvo.", style = MaterialTheme.typography.labelMedium, color = Color(0xFF4CAF50))
+                        Text("✅ Servidor salvo.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
                     }
                 }
             }

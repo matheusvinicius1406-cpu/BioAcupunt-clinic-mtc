@@ -24,4 +24,11 @@ class AndroidAiConfigManager(
     override suspend fun setPreferredModel(modelId: String?) {
         prefs.edit().putString("preferred_model", modelId).apply()
     }
+
+    // Default false: offline-first. Cloud only runs after the doctor flips this in
+    // Ajustes > IA AND provides an API key.
+    override suspend fun isCloudEnabled(): Boolean = prefs.getBoolean("cloud_ai_enabled", false)
+    override suspend fun setCloudEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("cloud_ai_enabled", enabled).apply()
+    }
 }

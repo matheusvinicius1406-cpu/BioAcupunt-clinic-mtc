@@ -26,7 +26,6 @@ import com.bioacupunt.patient.data.repository.PatientRepositoryImpl
 import com.bioacupunt.patient.domain.repository.PatientRepository
 import com.bioacupunt.patient.domain.usecase.CreatePatient
 import com.bioacupunt.patient.domain.usecase.GetPatients
-import com.bioacupunt.patient.presentation.PatientsViewModelFactory
 import com.bioacupunt.security.AuthThrottle
 import com.bioacupunt.security.SecurePreferences
 import com.bioacupunt.sync.SyncScheduler
@@ -299,9 +298,9 @@ object AppContainer {
     val createPatient: CreatePatient by lazy { CreatePatient(patientRepository) }
 
     // ── ViewModel Factories ────────────────────────────────
-    val patientsViewModelFactory: PatientsViewModelFactory by lazy {
-        PatientsViewModelFactory(getPatients, createPatient, syncScheduler)
-    }
+    // (patientsViewModelFactory removido: a PatientsScreen que o consumia era órfã,
+    //  substituída pela CrmScreen. GetPatients/CreatePatient seguem no container —
+    //  createPatient ainda é usado no seeding.)
     val prontuarioViewModelFactory: com.bioacupunt.prontuario.presentation.ProntuarioViewModelFactory by lazy {
         com.bioacupunt.prontuario.presentation.ProntuarioViewModelFactory(
             cases = com.bioacupunt.prontuario.domain.usecase.ProntuarioUseCases(
@@ -420,15 +419,32 @@ object AppContainer {
         com.bioacupunt.ai.data.provider.LocalLlmProvider(appContext, localModelManager)
     }
 
+    /**
+     * Provider de nuvem OPCIONAL. DESLIGADO por padrão (offline-first). Fica sempre
+     * registrado, mas `isAvailable()` só é verdadeiro quando a médica habilita a nuvem
+     * em Ajustes > IA E existe uma chave de API. Serve apenas o fallback livre e o RAG
+     * grounded — nunca a segurança clínica (R1) e sempre depois do gate R2.
+     */
+    val cloudAiProvider: com.bioacupunt.ai.data.provider.CloudAiProvider by lazy {
+        com.bioacupunt.ai.data.provider.CloudAiProvider(
+            configManager = aiConfigManager,
+            secretsProvider = aiSecretsProvider,
+        )
+    }
+
     private val aiOrchestrator: com.bioacupunt.ai.orchestrator.AiOrchestrator by lazy {
         com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
             providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
                 kotlinx.coroutines.runBlocking {
-                    // IA 100% local: o único provider é o Gemma no dispositivo. Sem
-                    // nuvem, sem Gemini — dado clínico nunca sai do aparelho. Reporta
-                    // isAvailable() == false até o modelo ser baixado; nesse meio-tempo o
-                    // orquestrador devolve "IA não configurada" (degrada, não quebra).
+                    // Offline-first: o Gemma no dispositivo é o provider padrão. Reporta
+                    // isAvailable() == false até o modelo ser baixado E verificado (R3);
+                    // nesse meio-tempo o orquestrador devolve "IA não configurada"
+                    // (degrada, não quebra) — a menos que a nuvem opcional esteja ligada.
                     registry.register(localLlmProvider)
+                    // Nuvem opcional, sempre registrada mas desligada por padrão: só entra
+                    // no roteamento quando a médica habilita + fornece chave (LGPD). Dado
+                    // clínico não sai do aparelho sem esse consentimento explícito.
+                    registry.register(cloudAiProvider)
                     // MockProvider is deliberately NOT registered.
                     //
                     // It answers every prompt with "Mock resposta para: <prompt>"
@@ -446,7 +462,22 @@ object AppContainer {
                     // directly — it does not need to be in the app's graph.
                 }
             },
-            healthRegistry = com.bioacupunt.ai.health.DefaultHealthRegistry()
+            healthRegistry = com.bioacupunt.ai.health.DefaultHealthRegistry(),
+            // Local-first scorer: whenever the on-device model is a candidate it wins,
+            // so the cloud is a genuine fallback, never the default. Both providers only
+            // reach scoring after passing isAvailable(), so this simply orders the ones
+            // that qualified. Keeping patient data on the device is the tie-breaker.
+            scoreProvider = { _, scores ->
+                scores
+                    .map { s ->
+                        if (s.providerId == com.bioacupunt.ai.data.provider.LocalLlmProvider.PROVIDER_ID) {
+                            s.copy(score = s.score + 1000.0)
+                        } else {
+                            s
+                        }
+                    }
+                    .sortedByDescending { it.score }
+            },
         )
     }
     val aiRepository: com.bioacupunt.ai.core.AiRepository by lazy {

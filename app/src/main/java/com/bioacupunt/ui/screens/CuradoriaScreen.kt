@@ -31,6 +31,7 @@ import com.bioacupunt.core.util.AppJson
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.theme.Accent
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.statusColors
 import kotlinx.serialization.encodeToString
 
 /**
@@ -317,9 +318,10 @@ private fun ReviewQueueFilters(
 
 @Composable
 private fun ProvenanceBadge(provenance: Provenance) {
+    val status = statusColors()
     val (color, label) = when (provenance) {
-        Provenance.VERIFICAVEL -> Pair(Color(0xFF2E7D32) /* verde escuro */, "VERIFICÁVEL")
-        Provenance.RASCUNHO -> Pair(Color(0xFFE65100) /* laranja escuro */, "RASCUNHO")
+        Provenance.VERIFICAVEL -> Pair(status.success, "VERIFICÁVEL")
+        Provenance.RASCUNHO -> Pair(status.warning, "RASCUNHO")
     }
     Box(
         Modifier.clip(RoundedCornerShape(50))
@@ -353,11 +355,12 @@ private fun StagedCard(
                 Text(title, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), modifier = Modifier.weight(1f))
                 ProvenanceBadge(meta.provenance)
                 Spacer(Modifier.width(6.dp))
+                val pendingColor = statusColors().warning
                 Box(
-                    Modifier.clip(RoundedCornerShape(50)).background(Color(0xFFFFA000).copy(alpha = 0.15f))
+                    Modifier.clip(RoundedCornerShape(50)).background(pendingColor.copy(alpha = 0.15f))
                         .padding(horizontal = 8.dp, vertical = 2.dp),
                 ) {
-                    Text("Pendente", style = MaterialTheme.typography.labelSmall, color = Color(0xFFB8860B))
+                    Text("Pendente", style = MaterialTheme.typography.labelSmall, color = pendingColor)
                 }
             }
             Text(category, style = MaterialTheme.typography.labelSmall, color = Primary)

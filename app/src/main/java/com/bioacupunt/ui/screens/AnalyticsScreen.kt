@@ -16,7 +16,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import com.bioacupunt.ui.theme.CatAmber
+import com.bioacupunt.ui.theme.CatBlue
+import com.bioacupunt.ui.theme.CatGreen
+import com.bioacupunt.ui.theme.CatOrange
+import com.bioacupunt.ui.theme.CatTeal
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.statusColors
 
 @Composable
 fun AnalyticsScreen(onBack: (() -> Unit)? = null) {
@@ -89,9 +95,9 @@ fun AnalyticsScreen(onBack: (() -> Unit)? = null) {
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                KpiCard(Modifier.weight(1f), "Receita", "R$ 6.4k", "+12%", true, Color(0xFF4CAF50))
-                KpiCard(Modifier.weight(1f), "Consultas", "42", "+8%", true, Color(0xFF64B5F6))
-                KpiCard(Modifier.weight(1f), "Novos", "7", "-2%", false, Color(0xFFFF8A65))
+                KpiCard(Modifier.weight(1f), "Receita", "R$ 6.4k", "+12%", true, CatGreen)
+                KpiCard(Modifier.weight(1f), "Consultas", "42", "+8%", true, CatBlue)
+                KpiCard(Modifier.weight(1f), "Novos", "7", "-2%", false, CatOrange)
             }
         }
 
@@ -116,10 +122,10 @@ fun AnalyticsScreen(onBack: (() -> Unit)? = null) {
             AnalyticsCard("Sessões por Tipo", Icons.Default.PieChart) {
                 val types = listOf(
                     "Acupuntura" to 45f to Primary,
-                    "Retorno" to 25f to Color(0xFF64B5F6),
-                    "1ª Consulta" to 15f to Color(0xFF81C784),
-                    "Moxibustão" to 10f to Color(0xFFFFB300),
-                    "Outros" to 5f to Color(0xFFFF8A65)
+                    "Retorno" to 25f to CatBlue,
+                    "1ª Consulta" to 15f to CatGreen,
+                    "Moxibustão" to 10f to CatAmber,
+                    "Outros" to 5f to CatOrange
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     types.forEach { (pair, color) ->
@@ -169,11 +175,11 @@ fun AnalyticsScreen(onBack: (() -> Unit)? = null) {
         item {
             AnalyticsCard("Funil de Retenção", Icons.Default.FilterAlt) {
                 val funnel = listOf(
-                    "1ª Consulta" to 1f to Color(0xFF64B5F6),
+                    "1ª Consulta" to 1f to CatBlue,
                     "Retornou" to 0.78f to Primary,
-                    "5+ sessões" to 0.55f to Color(0xFF81C784),
-                    "10+ sessões" to 0.32f to Color(0xFFFFB300),
-                    "Fidelizado" to 0.18f to Color(0xFF4CAF50)
+                    "5+ sessões" to 0.55f to CatGreen,
+                    "10+ sessões" to 0.32f to CatAmber,
+                    "Fidelizado" to 0.18f to CatTeal
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     funnel.forEach { (pair, color) ->
@@ -199,6 +205,8 @@ fun AnalyticsScreen(onBack: (() -> Unit)? = null) {
 
 @Composable
 private fun KpiCard(modifier: Modifier, title: String, value: String, change: String, positive: Boolean, color: Color) {
+    val status = statusColors()
+    val trend = if (positive) status.success else status.danger
     Card(modifier = modifier, elevation = CardDefaults.cardElevation(2.dp)) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -207,9 +215,9 @@ private fun KpiCard(modifier: Modifier, title: String, value: String, change: St
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     if (positive) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown,
-                    null, tint = if (positive) Color(0xFF4CAF50) else Color(0xFFEF5350), modifier = Modifier.size(14.dp)
+                    null, tint = trend, modifier = Modifier.size(14.dp)
                 )
-                Text(change, style = MaterialTheme.typography.labelSmall.copy(color = if (positive) Color(0xFF4CAF50) else Color(0xFFEF5350)))
+                Text(change, style = MaterialTheme.typography.labelSmall.copy(color = trend))
             }
         }
     }

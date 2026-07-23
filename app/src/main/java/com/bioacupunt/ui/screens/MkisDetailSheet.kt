@@ -275,17 +275,17 @@ private fun KnowledgeTypeEmoji(type: String): String = when (type) {
 
 private fun KnowledgeTypeColor(type: String): Color = when (type) {
     "artigo" -> Primary
-    "revisao" -> Color(0xFF7B1FA2) // roxo
-    "ensaio_clinico" -> Color(0xFF1565C0) // azul
-    "guideline" -> Color(0xFF2E7D32) // verde
-    "capitulo" -> Color(0xFFE65100) // laranja
-    "livro" -> Color(0xFF4E342E) // marrom
-    "tese" -> Color(0xFF6A1B9A) // roxo escuro
-    "caso_clinico" -> Color(0xFF00838F) // ciano
-    "protocolo" -> Color(0xFF37474F) // azul cinza
-    "nota" -> Color(0xFFF57F17) // amarelo escuro
-    "relatorio" -> Color(0xFF004D40) // verde escuro
-    "educacional" -> Color(0xFFF06292) // rosa
+    "revisao" -> CatPurple // roxo
+    "ensaio_clinico" -> CatBlue // azul
+    "guideline" -> CatGreen // verde
+    "capitulo" -> CatOrange // laranja
+    "livro" -> CatBrown // marrom
+    "tese" -> CatIndigo // roxo escuro
+    "caso_clinico" -> CatCyan // ciano
+    "protocolo" -> CatBlueGrey // azul cinza
+    "nota" -> CatAmber // amarelo escuro
+    "relatorio" -> CatTeal // verde escuro
+    "educacional" -> CatPink // rosa
     else -> Primary
 }
 

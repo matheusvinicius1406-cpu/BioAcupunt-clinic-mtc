@@ -26,6 +26,7 @@ import com.bioacupunt.crm.domain.model.PatientStage
 import com.bioacupunt.crm.presentation.uiColor
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.interactiveCard
+import com.bioacupunt.ui.theme.statusColors
 import com.bioacupunt.ui.theme.TextMuted
 
 @Composable
@@ -195,7 +196,7 @@ private fun PatientCrmCard(
             title = { Text("Remover paciente?") },
             text = { Text("Essa ação não pode ser desfeita.") },
             confirmButton = {
-                TextButton(onClick = { onDelete(); confirmDelete = false }) { Text("Remover", color = Color(0xFFEF5350)) }
+                TextButton(onClick = { onDelete(); confirmDelete = false }) { Text("Remover", color = statusColors().danger) }
             },
             dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("Cancelar") } }
         )
@@ -218,7 +219,7 @@ private fun PatientCrmCard(
                         ) {
                             Text(candidate.emoji, modifier = Modifier.width(28.dp))
                             Text(candidate.label, modifier = Modifier.weight(1f))
-                            if (candidate == stage) Icon(Icons.Default.Check, null, tint = Color(0xFF4CAF50))
+                            if (candidate == stage) Icon(Icons.Default.Check, null, tint = statusColors().success)
                         }
                     }
                 }

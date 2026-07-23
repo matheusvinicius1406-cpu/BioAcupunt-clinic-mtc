@@ -1,5 +1,7 @@
 package com.bioacupunt.ui.theme
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 // ── BioAcupunt "Supremo" palette ─────────────────────────────
@@ -48,3 +50,68 @@ val DarkOnSurfaceVariant = Color(0xFFBFB8AA) // --text-secondary
 val DarkOutline = Color(0xFF3D3830)
 val DarkError = Color(0xFFF87171)            // --danger-fg
 val DarkErrorBg = Color(0xFF3D1A1A)          // --danger-bg
+
+// ── Status colors — semantic feedback (success / info / warning / danger)
+// that Material's colorScheme has no dedicated slot for. These previously lived
+// as `Color(0xFF...)` literals scattered across the screens, so they never
+// tracked the light/dark toggle and read wrong in dark mode. Read them through
+// [statusColors()] inside a @Composable instead: the light variants are deepened
+// for contrast on the cream surface, the dark variants lightened for contrast on
+// the charcoal one.
+@Immutable
+class StatusColorScheme(
+    val success: Color,
+    val info: Color,
+    val warning: Color,
+    val danger: Color,
+    val gold: Color,
+)
+
+private val LightStatusColors = StatusColorScheme(
+    success = Color(0xFF2E7D32),
+    info = Color(0xFF1565C0),
+    warning = Color(0xFFE65100),
+    danger = Color(0xFFD32F2F),
+    gold = Color(0xFFB8860B),
+)
+
+private val DarkStatusColors = StatusColorScheme(
+    success = Color(0xFF81C784),
+    info = Color(0xFF64B5F6),
+    warning = Color(0xFFFFB74D),
+    danger = Color(0xFFEF9A9A),
+    gold = Color(0xFFD4B87A),
+)
+
+/** Theme-aware semantic status colors. Follows the ThemeController toggle. */
+@Composable
+fun statusColors(): StatusColorScheme =
+    if (ThemeController.dark.value) DarkStatusColors else LightStatusColors
+
+// ── Categorical palette — fixed, mutually distinct hues for charts, pipeline
+// stages, knowledge-type tags and report badges. Deliberately NOT theme-swapped:
+// the job is to stay distinguishable from one another, and these mid-tones stay
+// legible on both the cream and the charcoal surfaces.
+val CatGreen = Color(0xFF66BB6A)
+val CatBlue = Color(0xFF42A5F5)
+val CatOrange = Color(0xFFFF8A65)
+val CatRed = Color(0xFFEF5350)
+val CatPurple = Color(0xFF9575CD)
+val CatAmber = Color(0xFFFFB300)
+val CatCyan = Color(0xFF26C6DA)
+val CatBrown = Color(0xFF8D6E63)
+val CatBlueGrey = Color(0xFF78909C)
+val CatPink = Color(0xFFEC7FA9)
+val CatIndigo = Color(0xFF5C6BC0)
+val CatTeal = Color(0xFF26A69A)
+
+// ── Brand-fixed accent — Google's mark keeps its own blue regardless of theme.
+val GoogleBlue = Color(0xFF4285F4)
+
+// ── Flashcard surface — an intentionally always-dark "study card" in both
+// themes (dark-green felt with white text), like a physical flashcard. Its
+// foreground colors stay fixed & bright so they read on that dark surface.
+val FlashcardFront = listOf(Color(0xFF1B2F1A), Color(0xFF2D4E2C))
+val FlashcardBack = listOf(Color(0xFF0D1F0C), Color(0xFF1A3019))
+val FlashcardGold = Color(0xFFFFD700)
+val FlashcardGreen = Color(0xFF66BB6A)

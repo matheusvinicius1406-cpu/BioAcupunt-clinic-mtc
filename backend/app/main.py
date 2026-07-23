@@ -34,10 +34,17 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, lambda request, exc: _rate_limit_handler(request, exc))
 app.add_middleware(SlowAPIMiddleware)
 
+# The CORS spec forbids the wildcard origin `*` together with credentials, and
+# Starlette silently drops the CORS headers when you ask for that combination —
+# so `["*"] + allow_credentials=True` would leave the browser with no CORS
+# headers at all. The web client authenticates with a Bearer token in the
+# Authorization header (not cookies), so credentials are never required. Only
+# enable them when the origins are listed explicitly; keep them off for `*`.
+_allow_all_origins = settings.cors_origins == ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_credentials=True,
+    allow_credentials=not _allow_all_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

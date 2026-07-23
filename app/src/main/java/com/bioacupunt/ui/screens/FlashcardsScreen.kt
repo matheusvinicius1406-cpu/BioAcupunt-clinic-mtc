@@ -21,7 +21,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import com.bioacupunt.ui.theme.FlashcardBack
+import com.bioacupunt.ui.theme.FlashcardFront
+import com.bioacupunt.ui.theme.FlashcardGold
+import com.bioacupunt.ui.theme.FlashcardGreen
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.statusColors
 
 private data class Flashcard(
     val frente: String,
@@ -56,6 +61,7 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
     var showAiGen by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
+    val status = statusColors()
     val categories = cards.map { it.categoria }.distinct()
     val filteredCards = if (selectedCategory == null) cards
     else cards.filter { it.categoria == selectedCategory }
@@ -93,12 +99,12 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Icon(Icons.Default.Check, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(16.dp))
-                    Text("$knownCount", style = MaterialTheme.typography.labelMedium, color = Color(0xFF4CAF50))
+                    Icon(Icons.Default.Check, null, tint = status.success, modifier = Modifier.size(16.dp))
+                    Text("$knownCount", style = MaterialTheme.typography.labelMedium, color = status.success)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Icon(Icons.Default.Close, null, tint = Color(0xFFEF5350), modifier = Modifier.size(16.dp))
-                    Text("$unknownCount", style = MaterialTheme.typography.labelMedium, color = Color(0xFFEF5350))
+                    Icon(Icons.Default.Close, null, tint = status.danger, modifier = Modifier.size(16.dp))
+                    Text("$unknownCount", style = MaterialTheme.typography.labelMedium, color = status.danger)
                 }
             }
             IconButton(onClick = { showAiGen = true }) {
@@ -146,9 +152,9 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
 
             // Difficulty badge
             val diffColor = when (card.dificuldade) {
-                "fácil" -> Color(0xFF4CAF50)
-                "difícil" -> Color(0xFFEF5350)
-                else -> Color(0xFFFFB300)
+                "fácil" -> status.success
+                "difícil" -> status.danger
+                else -> status.warning
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 AssistChip(
@@ -180,7 +186,7 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
                         if (safeIndex < filteredCards.size - 1) currentIndex++ else currentIndex = 0
                     },
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF5350))
+                    colors = ButtonDefaults.buttonColors(containerColor = status.danger)
                 ) {
                     Icon(Icons.Default.Close, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
@@ -195,7 +201,7 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
                         if (safeIndex < filteredCards.size - 1) currentIndex++ else currentIndex = 0
                     },
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                    colors = ButtonDefaults.buttonColors(containerColor = status.success)
                 ) {
                     Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
@@ -264,8 +270,8 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
             .clip(RoundedCornerShape(20.dp))
             .background(
                 androidx.compose.ui.graphics.Brush.verticalGradient(
-                    if (showFront) listOf(Color(0xFF1B2F1A), Color(0xFF2D4E2C))
-                    else listOf(Color(0xFF0D1F0C), Color(0xFF1A3019))
+                    if (showFront) FlashcardFront
+                    else FlashcardBack
                 )
             )
             .clickable(onClick = onClick),
@@ -315,7 +321,7 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
                 ) {
                     Icon(
                         Icons.Default.Lightbulb, null,
-                        tint = Color(0xFFFFD700), modifier = Modifier.size(32.dp)
+                        tint = FlashcardGold, modifier = Modifier.size(32.dp)
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
@@ -329,7 +335,7 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
                     Spacer(Modifier.height(16.dp))
                     Text(
                         "Resposta ✓",
-                        style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF4CAF50))
+                        style = MaterialTheme.typography.labelSmall.copy(color = FlashcardGreen)
                     )
                 }
             }

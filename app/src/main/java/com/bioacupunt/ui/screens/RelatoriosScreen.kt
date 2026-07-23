@@ -18,8 +18,15 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.di.AppContainer
+import com.bioacupunt.ui.theme.CatAmber
+import com.bioacupunt.ui.theme.CatBlue
+import com.bioacupunt.ui.theme.CatBlueGrey
+import com.bioacupunt.ui.theme.CatGreen
+import com.bioacupunt.ui.theme.CatOrange
+import com.bioacupunt.ui.theme.CatPurple
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.premiumShadow
+import com.bioacupunt.ui.theme.statusColors
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -71,13 +78,13 @@ fun RelatoriosScreen(
 private fun ReportTemplatesTab(onGenerate: (com.bioacupunt.relatorios.domain.model.Report) -> Unit) {
     val templates = listOf(
         ReportTemplate("evo", "Nota de Evolução", "Registro de cada sessão clínica com pontos, observações e plano", Icons.Default.EditNote, Primary, aiPowered = true),
-        ReportTemplate("first", "Avaliação Inicial MTC", "Anamnese completa, diagnóstico energético e plano terapêutico", Icons.Default.AssignmentInd, Color(0xFF64B5F6), aiPowered = true),
-        ReportTemplate("discharge", "Relatório de Alta", "Síntese do tratamento, resultados e orientações pós-alta", Icons.Default.TaskAlt, Color(0xFF81C784), aiPowered = true),
-        ReportTemplate("monthly", "Relatório Mensal Clínico", "Resumo mensal de atendimentos e evolução dos casos", Icons.Default.CalendarViewMonth, Color(0xFFFFB300)),
-        ReportTemplate("financial", "Relatório Financeiro", "Receitas, pagamentos pendentes e análise por período", Icons.Default.AccountBalance, Color(0xFF9575CD)),
-        ReportTemplate("referral", "Encaminhamento Médico", "Carta de encaminhamento para outros profissionais", Icons.Default.LocalHospital, Color(0xFFFF8A65), aiPowered = true),
-        ReportTemplate("consent", "Termo de Consentimento", "TCLE para acupuntura e técnicas de MTC", Icons.Default.Gavel, Color(0xFF78909C)),
-        ReportTemplate("anamnese", "Ficha de Anamnese", "Formulário de histórico completo do paciente", Icons.Default.Description, Color(0xFF4CAF50))
+        ReportTemplate("first", "Avaliação Inicial MTC", "Anamnese completa, diagnóstico energético e plano terapêutico", Icons.Default.AssignmentInd, CatBlue, aiPowered = true),
+        ReportTemplate("discharge", "Relatório de Alta", "Síntese do tratamento, resultados e orientações pós-alta", Icons.Default.TaskAlt, CatGreen, aiPowered = true),
+        ReportTemplate("monthly", "Relatório Mensal Clínico", "Resumo mensal de atendimentos e evolução dos casos", Icons.Default.CalendarViewMonth, CatAmber),
+        ReportTemplate("financial", "Relatório Financeiro", "Receitas, pagamentos pendentes e análise por período", Icons.Default.AccountBalance, CatPurple),
+        ReportTemplate("referral", "Encaminhamento Médico", "Carta de encaminhamento para outros profissionais", Icons.Default.LocalHospital, CatOrange, aiPowered = true),
+        ReportTemplate("consent", "Termo de Consentimento", "TCLE para acupuntura e técnicas de MTC", Icons.Default.Gavel, CatBlueGrey),
+        ReportTemplate("anamnese", "Ficha de Anamnese", "Formulário de histórico completo do paciente", Icons.Default.Description, CatGreen)
     )
 
     LazyColumn(
@@ -271,7 +278,7 @@ private fun FinancialReportTab(
                     } else {
                         state.recentTransactions.forEach { t ->
                             val isPaid = t.status == com.bioacupunt.financeiro.domain.model.TransactionStatus.PAID.name
-                            val color = if (isPaid) Color(0xFF4CAF50) else Color(0xFFFF8A65)
+                            val color = if (isPaid) statusColors().success else statusColors().warning
                             Row(
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -307,7 +314,7 @@ private fun FinancialReportTab(
                                 }
                                 Spacer(Modifier.height(4.dp))
                                 Box(modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surfaceVariant)) {
-                                    Box(modifier = Modifier.fillMaxWidth(r.fraction.coerceIn(0f, 1f)).height(6.dp).clip(RoundedCornerShape(20.dp)).background(Brush.horizontalGradient(listOf(Primary, Color(0xFFC9A96E)))))
+                                    Box(modifier = Modifier.fillMaxWidth(r.fraction.coerceIn(0f, 1f)).height(6.dp).clip(RoundedCornerShape(20.dp)).background(Brush.horizontalGradient(listOf(Primary, MaterialTheme.colorScheme.secondary))))
                                 }
                             }
                         }

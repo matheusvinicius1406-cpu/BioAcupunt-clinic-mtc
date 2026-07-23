@@ -1,5 +1,9 @@
 # Deploy do backend BioAcupunt
 
+> **Novo destino: Vercel + Neon.** O guia atual e recomendado está em
+> [`../DEPLOY.md`](../DEPLOY.md) (raiz do repositório). As opções Render abaixo
+> ficam como referência/legado.
+
 Guia para publicar o backend online e conectar o app Android a ele.
 
 ## Opção A — Render (recomendada, tudo num lugar)

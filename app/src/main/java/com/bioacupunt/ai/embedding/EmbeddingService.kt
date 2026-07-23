@@ -112,7 +112,14 @@ class EmbeddingService(
                     return@runCatching
                 }
             } else {
-                AppLogger.w(TAG, "Modelo ${model.id} não tem SHA-256 fixado. Pulando verificação.")
+                // R3 — falha FECHADA, não aberta. Um modelo de embedding também é um blob
+                // executado por runtime nativo (TFLite/LiteRT); sem SHA-256 fixado não há
+                // como provar os bytes. Antes isto logava um aviso e CARREGAVA mesmo assim
+                // (fail-open). Agora degrada para Unavailable — a busca cai para FTS5 só,
+                // honestamente, em vez de entregar bytes não verificados ao código nativo.
+                AppLogger.w(TAG, "Modelo ${model.id} não tem SHA-256 fixado. Embedding desabilitado (fail-closed).")
+                _state.value = State.Unavailable
+                return@runCatching
             }
 
             // Carregar o TFLite interpreter

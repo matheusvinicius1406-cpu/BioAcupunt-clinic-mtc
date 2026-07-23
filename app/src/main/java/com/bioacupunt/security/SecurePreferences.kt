@@ -124,6 +124,19 @@ class SecurePreferences(context: Context) {
         get() = prefs.getBoolean("dark_mode_enabled", false)
         set(value) = edit { it.putBoolean("dark_mode_enabled", value) }
 
+    /** Minutos de inatividade (app em background) até exigir novo desbloqueio.
+     * Default 5. O gate real vive na MainActivity (onStop grava o carimbo de
+     * tempo; onStart compara). 0 desativaria — mas o slider da UI é 1..30. */
+    var autoLockMinutes: Int
+        get() = prefs.getInt("auto_lock_minutes", 5)
+        set(value) = edit { it.putInt("auto_lock_minutes", value) }
+
+    /** Epoch millis de quando o app foi para background pela última vez. Usado
+     * junto de [autoLockMinutes] para decidir se re-travar ao voltar. */
+    var lastBackgroundedAt: Long
+        get() = prefs.getLong("last_backgrounded_at", 0L)
+        set(value) = edit { it.putLong("last_backgrounded_at", value) }
+
     /** CSV of [com.bioacupunt.prontuario.domain.safety.Technique] names the practitioner
      * has enabled. Blank means "all enabled" (the default, before she's touched this). */
     var enabledTechniquesCsv: String

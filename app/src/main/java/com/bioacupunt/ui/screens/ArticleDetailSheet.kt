@@ -30,6 +30,7 @@ import com.bioacupunt.biblioteca.domain.model.MtcArticle
 import com.bioacupunt.biblioteca.domain.model.MtcCategory
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.TextMuted
+import com.bioacupunt.ui.theme.statusColors
 
 /**
  * Página de detalhe de um artigo da Biblioteca — full screen via bottom sheet expandido
@@ -178,9 +179,10 @@ private fun ProvenanceSection(article: MtcArticle, provenance: Provenance?) {
 /** Mesmo padrão visual do badge de proveniência de CuradoriaScreen.kt. */
 @Composable
 private fun ProvenanceBadge(provenance: Provenance) {
+    val status = statusColors()
     val (color, label) = when (provenance) {
-        Provenance.VERIFICAVEL -> Pair(Color(0xFF2E7D32) /* verde escuro */, "VERIFICÁVEL")
-        Provenance.RASCUNHO -> Pair(Color(0xFFE65100) /* laranja escuro */, "RASCUNHO")
+        Provenance.VERIFICAVEL -> Pair(status.success, "VERIFICÁVEL")
+        Provenance.RASCUNHO -> Pair(status.warning, "RASCUNHO")
     }
     Box(
         Modifier.clip(RoundedCornerShape(50))

@@ -18,6 +18,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.crm.domain.model.PatientStage
+import com.bioacupunt.ui.theme.CatBlue
+import com.bioacupunt.ui.theme.CatGreen
+import com.bioacupunt.ui.theme.CatOrange
+import com.bioacupunt.ui.theme.CatPurple
+import com.bioacupunt.ui.theme.CatRed
+import com.bioacupunt.ui.theme.Primary
 
 @Composable
 fun PipelineTab(
@@ -80,12 +86,12 @@ private fun PipelineColumn(
     onMoveAll: (PatientStage) -> Unit
 ) {
     val stageColor = when (stage) {
-        PatientStage.ACTIVE, PatientStage.TREATMENT -> Color(0xFF4CAF50)
-        PatientStage.MAINTENANCE -> Color(0xFF64B5F6)
-        PatientStage.INACTIVE -> Color(0xFFFF8A65)
-        PatientStage.CHURNED -> Color(0xFFEF5350)
-        PatientStage.LEAD -> Color(0xFF9575CD)
-        PatientStage.FIRST_CONTACT -> Color(0xFF87B344)
+        PatientStage.ACTIVE, PatientStage.TREATMENT -> CatGreen
+        PatientStage.MAINTENANCE -> CatBlue
+        PatientStage.INACTIVE -> CatOrange
+        PatientStage.CHURNED -> CatRed
+        PatientStage.LEAD -> CatPurple
+        PatientStage.FIRST_CONTACT -> Primary
     }
     Card(
         modifier = Modifier.fillMaxWidth(),

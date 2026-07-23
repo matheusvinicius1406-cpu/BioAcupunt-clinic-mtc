@@ -16,7 +16,10 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import com.bioacupunt.ui.theme.CatBlue
+import com.bioacupunt.ui.theme.CatPurple
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.statusColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -158,7 +161,7 @@ private fun SimuladorMenu(onStartQuiz: () -> Unit, onStartCase: () -> Unit) {
             icon = Icons.Default.Cases,
             title = "Casos Clínicos",
             description = "Analise casos clínicos reais e pratique o diagnóstico diferencial em MTC.",
-            color = Color(0xFF64B5F6),
+            color = CatBlue,
             onClick = onStartCase
         )
 
@@ -166,7 +169,7 @@ private fun SimuladorMenu(onStartQuiz: () -> Unit, onStartCase: () -> Unit) {
             icon = Icons.Default.AutoAwesome,
             title = "Caso Gerado por IA",
             description = "A IA cria um caso clínico personalizado para você praticar. Requer o modelo local (Ajustes > IA).",
-            color = Color(0xFF9575CD),
+            color = CatPurple,
             onClick = {}
         )
     }
@@ -210,6 +213,7 @@ private fun QuizMode(state: SimMode.Quiz, onUpdate: (SimMode.Quiz) -> Unit, onBa
 
     val question = quizBank[state.index]
     val progress = (state.index.toFloat() / quizBank.size)
+    val status = statusColors()
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         // Progress
@@ -247,14 +251,14 @@ private fun QuizMode(state: SimMode.Quiz, onUpdate: (SimMode.Quiz) -> Unit, onBa
             val isCorrect  = i == question.correctIndex
             val bgColor = when {
                 !state.showExplanation       -> if (isSelected) Primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                isCorrect                    -> Color(0xFF4CAF50).copy(alpha = 0.15f)
-                isSelected && !isCorrect     -> Color(0xFFEF5350).copy(alpha = 0.15f)
+                isCorrect                    -> status.success.copy(alpha = 0.15f)
+                isSelected && !isCorrect     -> status.danger.copy(alpha = 0.15f)
                 else                         -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
             }
             val borderColor = when {
                 !state.showExplanation       -> if (isSelected) Primary.copy(alpha = 0.6f) else Color.Transparent
-                isCorrect                    -> Color(0xFF4CAF50)
-                isSelected && !isCorrect     -> Color(0xFFEF5350)
+                isCorrect                    -> status.success
+                isSelected && !isCorrect     -> status.danger
                 else                         -> Color.Transparent
             }
 
@@ -278,8 +282,8 @@ private fun QuizMode(state: SimMode.Quiz, onUpdate: (SimMode.Quiz) -> Unit, onBa
                     Text(option, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                     if (state.showExplanation) {
                         when {
-                            isCorrect -> Icon(Icons.Default.CheckCircle, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(20.dp))
-                            isSelected -> Icon(Icons.Default.Cancel, null, tint = Color(0xFFEF5350), modifier = Modifier.size(20.dp))
+                            isCorrect -> Icon(Icons.Default.CheckCircle, null, tint = status.success, modifier = Modifier.size(20.dp))
+                            isSelected -> Icon(Icons.Default.Cancel, null, tint = status.danger, modifier = Modifier.size(20.dp))
                         }
                     }
                 }

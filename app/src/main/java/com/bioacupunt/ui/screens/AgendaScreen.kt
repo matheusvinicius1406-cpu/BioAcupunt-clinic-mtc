@@ -18,9 +18,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import com.bioacupunt.ui.theme.CatBlue
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.TextMuted
 import com.bioacupunt.ui.theme.premiumShadow
+import com.bioacupunt.ui.theme.statusColors
 import com.bioacupunt.agenda.domain.model.Appointment
 import com.bioacupunt.agenda.domain.model.AppointmentStatus
 import com.bioacupunt.agenda.domain.model.AppointmentType
@@ -145,8 +147,8 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null, onOpenAtendimento: (Long) -
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Text("$total consultas", style = MaterialTheme.typography.labelMedium, color = Primary)
-                        Text("$confirmed confirmadas", style = MaterialTheme.typography.labelMedium, color = Color(0xFF64B5F6))
-                        Text("R$ %.0f recebidos".format(revenue), style = MaterialTheme.typography.labelMedium, color = Color(0xFF81C784))
+                        Text("$confirmed confirmadas", style = MaterialTheme.typography.labelMedium, color = CatBlue)
+                        Text("R$ %.0f recebidos".format(revenue), style = MaterialTheme.typography.labelMedium, color = statusColors().success)
                     }
                 }
                 items(dayAppointments, key = { it.id }) { appt ->
@@ -403,7 +405,7 @@ private fun AppointmentCard(appt: Appointment, onStatusChange: (AppointmentStatu
                         }
                     }
                 }
-                if (appt.valueBrl > 0) Text("R$ %.0f".format(appt.valueBrl), style = MaterialTheme.typography.labelSmall, color = if (appt.paid) Color(0xFF4CAF50) else Color(0xFFFF8A65))
+                if (appt.valueBrl > 0) Text("R$ %.0f".format(appt.valueBrl), style = MaterialTheme.typography.labelSmall, color = if (appt.paid) statusColors().success else statusColors().warning)
             }
         }
     }
