@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -73,7 +76,7 @@ fun CuradoriaScreen(onBack: () -> Unit = {}) {
             TopAppBar(
                 title = { Text("Curadoria da Biblioteca") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Voltar") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar") }
                 },
             )
         },
@@ -112,7 +115,7 @@ fun CuradoriaScreen(onBack: () -> Unit = {}) {
                                 onClick = { showBuiltinPacks.value = !showBuiltinPacks.value },
                                 modifier = Modifier.weight(1f),
                             ) {
-                                Icon(Icons.Default.LibraryBooks, null, modifier = Modifier.size(18.dp))
+                                Icon(Icons.AutoMirrored.Filled.LibraryBooks, null, modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(6.dp))
                                 Text(if (showBuiltinPacks.value) "Ocultar pacotes" else "Pacotes embutidos")
                             }
@@ -383,7 +386,7 @@ private fun StagedCard(
                     contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
                     modifier = Modifier.height(28.dp),
                 ) {
-                    Icon(Icons.Default.OpenInNew, null, tint = Primary, modifier = Modifier.size(14.dp))
+                    Icon(Icons.AutoMirrored.Filled.OpenInNew, null, tint = Primary, modifier = Modifier.size(14.dp))
                     Spacer(Modifier.width(4.dp))
                     Text("Abrir fonte", style = MaterialTheme.typography.labelSmall, color = Primary)
                 }

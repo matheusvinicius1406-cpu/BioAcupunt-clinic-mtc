@@ -58,7 +58,6 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
     var isFlipped by remember { mutableStateOf(false) }
     var knownCount by remember { mutableIntStateOf(0) }
     var unknownCount by remember { mutableIntStateOf(0) }
-    var showAiGen by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     val status = statusColors()
@@ -106,9 +105,6 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
                     Icon(Icons.Default.Close, null, tint = status.danger, modifier = Modifier.size(16.dp))
                     Text("$unknownCount", style = MaterialTheme.typography.labelMedium, color = status.danger)
                 }
-            }
-            IconButton(onClick = { showAiGen = true }) {
-                Icon(Icons.Default.AutoAwesome, "Gerar com IA", tint = Primary)
             }
         }
 
@@ -232,16 +228,6 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
             }
         }
     }
-
-    if (showAiGen) {
-        AiFlashcardDialog(
-            onDismiss = { showAiGen = false },
-            onGenerated = { newCards ->
-                cards = cards + newCards
-                showAiGen = false
-            }
-        )
-    }
 }
 
 @Composable
@@ -341,56 +327,4 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
             }
         }
     }
-}
-
-@Composable
-private fun AiFlashcardDialog(onDismiss: () -> Unit, onGenerated: (List<Flashcard>) -> Unit) {
-    var topic by remember { mutableStateOf("") }
-    var count by remember { mutableIntStateOf(5) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Default.AutoAwesome, null, tint = Primary) },
-        title = { Text("Gerar Flashcards com IA") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("A IA criará flashcards didáticos de MTC automaticamente.", style = MaterialTheme.typography.bodySmall)
-                OutlinedTextField(
-                    value = topic, onValueChange = { topic = it },
-                    label = { Text("Tópico (ex: Meridianos, Pulso, Ba Gang)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    leadingIcon = { Icon(Icons.Default.School, null) }
-                )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Quantidade: $count", modifier = Modifier.weight(1f))
-                    Slider(
-                        value = count.toFloat(),
-                        onValueChange = { count = it.toInt() },
-                        valueRange = 3f..15f, steps = 11,
-                        modifier = Modifier.weight(2f),
-                        colors = SliderDefaults.colors(thumbColor = Primary, activeTrackColor = Primary)
-                    )
-                }
-                Text(
-                    "⚠️ Requer o modelo local baixado em Ajustes > IA.",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    // Demo: generate placeholder cards
-                    val demo = List(minOf(count, 3)) { i ->
-                        Flashcard("Card IA sobre $topic #${i+1}", "Resposta gerada pela IA para '$topic'", topic.ifBlank { "Geral" })
-                    }
-                    onGenerated(demo)
-                },
-                enabled = topic.isNotBlank(),
-                colors = ButtonDefaults.buttonColors(containerColor = Primary)
-            ) { Icon(Icons.Default.AutoAwesome, null); Spacer(Modifier.width(4.dp)); Text("Gerar") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
-    )
 }

@@ -12,7 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -168,7 +168,7 @@ private fun ProvenanceSection(article: MtcArticle, provenance: Provenance?) {
                 contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
                 modifier = Modifier.height(32.dp),
             ) {
-                Icon(Icons.Default.OpenInNew, null, tint = Primary, modifier = Modifier.size(14.dp))
+                Icon(Icons.AutoMirrored.Filled.OpenInNew, null, tint = Primary, modifier = Modifier.size(14.dp))
                 Spacer(Modifier.width(4.dp))
                 Text("Abrir fonte", style = MaterialTheme.typography.labelSmall, color = Primary)
             }
@@ -217,6 +217,6 @@ private fun RelatedArticleRow(article: MtcArticle, onClick: () -> Unit) {
                 Text(article.summary, style = MaterialTheme.typography.labelSmall, color = TextMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         }
-        Icon(Icons.Default.OpenInNew, null, tint = TextMuted, modifier = Modifier.size(16.dp))
+        Icon(Icons.AutoMirrored.Filled.OpenInNew, null, tint = TextMuted, modifier = Modifier.size(16.dp))
     }
 }
