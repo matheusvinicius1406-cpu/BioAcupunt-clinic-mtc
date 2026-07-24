@@ -33,7 +33,7 @@ fun FinanceiroScreen(
     vm: com.bioacupunt.financeiro.presentation.FinanceiroViewModel = viewModel(factory = AppContainer.financeiroViewModelFactory),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
-    val brl = { v: Double -> java.text.NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(v) }
+    val brl = { v: Double -> java.text.NumberFormat.getCurrencyInstance(Locale.Builder().setLanguage("pt").setRegion("BR").build()).format(v) }
     val cs = MaterialTheme.colorScheme
 
     LazyColumn(

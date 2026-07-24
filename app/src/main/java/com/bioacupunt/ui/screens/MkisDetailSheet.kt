@@ -328,6 +328,6 @@ private fun SpecialtyLabel(specialty: String): String = when (specialty) {
     else -> specialty.replace("_", " ").replaceFirstChar { it.uppercase() }
 }
 
-private val DATE_FMT = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale("pt", "BR"))
+private val DATE_FMT = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.Builder().setLanguage("pt").setRegion("BR").build())
 
 private fun formatTimestamp(millis: Long): String = DATE_FMT.format(java.util.Date(millis))

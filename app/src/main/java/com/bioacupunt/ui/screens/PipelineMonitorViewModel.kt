@@ -157,7 +157,7 @@ class PipelineMonitorViewModel(
     }
 
     companion object {
-        private val DATE_FMT = java.text.SimpleDateFormat("dd/MM HH:mm", java.util.Locale("pt", "BR"))
+        private val DATE_FMT = java.text.SimpleDateFormat("dd/MM HH:mm", java.util.Locale.Builder().setLanguage("pt").setRegion("BR").build())
 
         val PROCESSING_STATES = setOf(
             "baixando", "escanando", "ocr_na_fila", "ocr_rodando",

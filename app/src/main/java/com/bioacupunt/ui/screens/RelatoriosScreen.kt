@@ -196,7 +196,7 @@ private fun ReportTemplateCard(tpl: ReportTemplate, onGenerate: (com.bioacupunt.
 
 @Composable
 private fun GeneratedReportsTab(reports: List<com.bioacupunt.relatorios.domain.model.Report>) {
-    val fmt = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy", java.util.Locale("pt", "BR"))
+    val fmt = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy", java.util.Locale.Builder().setLanguage("pt").setRegion("BR").build())
     val context = androidx.compose.ui.platform.LocalContext.current
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -253,7 +253,7 @@ private fun FinancialReportTab(
     vm: com.bioacupunt.financeiro.presentation.FinanceiroViewModel = viewModel(factory = AppContainer.financeiroViewModelFactory),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
-    val brl = { v: Double -> java.text.NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(v) }
+    val brl = { v: Double -> java.text.NumberFormat.getCurrencyInstance(Locale.Builder().setLanguage("pt").setRegion("BR").build()).format(v) }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {

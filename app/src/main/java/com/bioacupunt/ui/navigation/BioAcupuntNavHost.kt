@@ -304,7 +304,7 @@ private fun SupremoHeader(onAvatarClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
     val userName = remember { AppContainer.authRepository.getCurrentUser()?.name.orEmpty() }
     val today = remember {
-        LocalDate.now().format(DateTimeFormatter.ofPattern("EEE., d 'de' MMMM", Locale("pt", "BR")))
+        LocalDate.now().format(DateTimeFormatter.ofPattern("EEE., d 'de' MMMM", Locale.Builder().setLanguage("pt").setRegion("BR").build()))
     }
     val dark by ThemeController.dark
 

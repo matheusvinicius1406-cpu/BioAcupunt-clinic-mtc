@@ -29,7 +29,7 @@ class AppContextBuilder(
             try {
                 val now = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern(
-                    "EEEE, d 'de' MMMM 'às' HH:mm", Locale("pt", "BR")
+                    "EEEE, d 'de' MMMM 'às' HH:mm", Locale.Builder().setLanguage("pt").setRegion("BR").build()
                 )
                 appendLine("📅 Agora: ${now.format(formatter)}")
             } catch (_: Exception) {

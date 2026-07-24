@@ -277,7 +277,7 @@ private fun ReviewQueueFilters(
                 value = categoryFilter?.let { name -> MtcCategory.entries.find { it.name == name }?.label ?: name } ?: "Todas as categorias",
                 onValueChange = {},
                 readOnly = true,
-                modifier = Modifier.fillMaxWidth().menuAnchor(),
+                modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 label = { Text("Categoria") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryMenuExpanded) },
                 textStyle = MaterialTheme.typography.bodySmall,

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Debug
-import android.provider.Settings
 import androidx.biometric.BiometricManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,7 +42,6 @@ object AppHardening {
                     || Build.MODEL.contains("VirtualBox")
                     || Build.MANUFACTURER.contains("Genymotion")
                     || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-                    || Settings.Secure.getInt(contentResolver, Settings.Secure.ADB_ENABLED, 0) == 1
         } catch (e: Exception) { false }
         val hasBinary = paths.any { java.io.File(it).exists() }
         val hasRuntimeRoot: Boolean = try {

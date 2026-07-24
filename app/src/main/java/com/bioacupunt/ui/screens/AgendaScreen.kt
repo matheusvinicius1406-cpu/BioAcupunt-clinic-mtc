@@ -119,7 +119,7 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null, onOpenAtendimento: (Long) -
             val dayAppointments = state.appointments
             item {
                 Text(
-                    if (selectedDate == LocalDate.now()) "HOJE" else selectedDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("pt", "BR")).uppercase() + " · ${selectedDate.dayOfMonth}",
+                    if (selectedDate == LocalDate.now()) "HOJE" else selectedDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.Builder().setLanguage("pt").setRegion("BR").build()).uppercase() + " · ${selectedDate.dayOfMonth}",
                     style = MaterialTheme.typography.labelMedium,
                     color = TextMuted,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
@@ -185,7 +185,7 @@ private fun DayHeader(date: LocalDate, onPrev: () -> Unit, onNext: () -> Unit) {
     ) {
         IconButton(onClick = onPrev) { Icon(Icons.Default.ChevronLeft, null) }
         Text(
-            date.format(java.time.format.DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", Locale("pt", "BR")))
+            date.format(java.time.format.DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", Locale.Builder().setLanguage("pt").setRegion("BR").build()))
                 .replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
         )
@@ -226,7 +226,7 @@ private fun MonthCalendarCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onPrevMonth, modifier = Modifier.size(28.dp)) { Icon(Icons.Default.ChevronLeft, null, modifier = Modifier.size(18.dp)) }
                 Text(
-                    month.month.getDisplayName(TextStyle.FULL, Locale("pt", "BR")).replaceFirstChar { it.uppercase() } + " ${month.year}",
+                    month.month.getDisplayName(TextStyle.FULL, Locale.Builder().setLanguage("pt").setRegion("BR").build()).replaceFirstChar { it.uppercase() } + " ${month.year}",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
                 )
                 IconButton(onClick = onNextMonth, modifier = Modifier.size(28.dp)) { Icon(Icons.Default.ChevronRight, null, modifier = Modifier.size(18.dp)) }
@@ -326,7 +326,7 @@ private fun WeekStrip(selectedDate: LocalDate, onDateSelected: (LocalDate) -> Un
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale("pt", "BR")).take(3),
+                        date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.Builder().setLanguage("pt").setRegion("BR").build()).take(3),
                         style = MaterialTheme.typography.labelSmall,
                         color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                     )

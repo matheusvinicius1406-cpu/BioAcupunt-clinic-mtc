@@ -511,10 +511,10 @@ private fun openWhatsApp(context: android.content.Context, phone: String) {
 }
 
 private fun brl(value: Double): String =
-    java.text.NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(value)
+    java.text.NumberFormat.getCurrencyInstance(Locale.Builder().setLanguage("pt").setRegion("BR").build()).format(value)
 
 private fun brlCompact(value: Double): String = when {
-    value >= 1_000_000 -> "R$%.1fM".format(Locale("pt", "BR"), value / 1_000_000)
-    value >= 1_000 -> "R$%.1fk".format(Locale("pt", "BR"), value / 1_000)
-    else -> "R$%.0f".format(Locale("pt", "BR"), value)
+    value >= 1_000_000 -> "R$%.1fM".format(Locale.Builder().setLanguage("pt").setRegion("BR").build(), value / 1_000_000)
+    value >= 1_000 -> "R$%.1fk".format(Locale.Builder().setLanguage("pt").setRegion("BR").build(), value / 1_000)
+    else -> "R$%.0f".format(Locale.Builder().setLanguage("pt").setRegion("BR").build(), value)
 }

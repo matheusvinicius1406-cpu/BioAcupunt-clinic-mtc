@@ -251,7 +251,7 @@ class VecKnowledgeNodeRepository(private val db: SupportSQLiteDatabase) {
         """.trimIndent()
 
         return try {
-            val cursor = db.query(sql, arrayOf(ftsQuery, limit))
+            val cursor = db.query(sql, arrayOf<Any>(ftsQuery, limit))
             cursor.use { parseFts5Results(it) }
         } catch (e: Exception) {
             android.util.Log.e("VecRepository", "Falha ao buscar FTS5", e)
