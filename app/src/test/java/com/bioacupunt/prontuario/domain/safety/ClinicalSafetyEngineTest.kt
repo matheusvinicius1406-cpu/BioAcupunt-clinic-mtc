@@ -5,6 +5,7 @@ import com.bioacupunt.prontuario.domain.model.MtcAssessment
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -263,5 +264,105 @@ class ClinicalSafetyEngineTest {
             assessment(flags = setOf(ClinicalFlag.PREGNANCY)),
         )
         assertTrue("Uma regra quebrada não pode derrubar as demais", verdict.isBlocked)
+    }
+
+    @Test
+    fun aFailingRuleDoesNotSwallowOtherRulesFindings() {
+        // Stronger than the crash test above: a rule that throws must not cost us the
+        // findings of the rules that ran fine. The exploding rule is placed BETWEEN two
+        // real ones to prove isolation is per-rule, not "everything after the throw".
+        val exploding = SafetyRule { _, _ -> error("boom") }
+        val resilient = ClinicalSafetyEngine(
+            rules = listOf(PregnancyRule, exploding, PacemakerRule),
+        )
+
+        val verdict = resilient.evaluate(
+            TreatmentProposal(
+                points = listOf(li4),
+                techniques = setOf(Technique.ELECTROACUPUNCTURE),
+            ),
+            assessment(flags = setOf(ClinicalFlag.PREGNANCY, ClinicalFlag.PACEMAKER)),
+        )
+        // Both the rule before AND the rule after the throwing one must still fire.
+        assertTrue(verdict.blocking.any { it.flag == ClinicalFlag.PREGNANCY })
+        assertTrue(verdict.blocking.any { it.flag == ClinicalFlag.PACEMAKER })
+    }
+
+    // -- Simultaneous flags & override independence -------------------------
+
+    @Test
+    fun pregnancyAndAnticoagulant_bothContributeOnBloodletting() {
+        // Two flags, one proposal: anticoagulation FORBIDS bloodletting while pregnancy
+        // adds its own CAUTION for the same technique. Neither may mask the other.
+        val verdict = engine.evaluate(
+            TreatmentProposal(techniques = setOf(Technique.BLOODLETTING)),
+            assessment(flags = setOf(ClinicalFlag.PREGNANCY, ClinicalFlag.ANTICOAGULANTS)),
+        )
+        assertTrue(verdict.isBlocked)
+        assertTrue(
+            "Anticoagulação deve vetar a sangria",
+            verdict.blocking.any { it.flag == ClinicalFlag.ANTICOAGULANTS },
+        )
+        assertTrue(
+            "Gestação deve manter sua cautela para técnica sangrenta",
+            verdict.cautions.any { it.flag == ClinicalFlag.PREGNANCY },
+        )
+    }
+
+    @Test
+    fun overrideFieldsDoNotClearTheEngineVeto() {
+        // The chart can carry an audited override (reason/user/time), but the engine is
+        // pure decision *support*: it must keep surfacing the veto. Clearing it is a
+        // downstream act by the licensed professional, never a silent engine behaviour.
+        val overridden = MtcAssessment(
+            patientId = 1L,
+            flags = setOf(ClinicalFlag.PACEMAKER),
+            overrideReason = "Cardiologista consultado; paciente ciente do risco.",
+            overrideBy = "Dra. Fulana",
+            overrideAt = "2026-07-23T10:00:00Z",
+        )
+        val verdict = engine.evaluate(
+            TreatmentProposal(techniques = setOf(Technique.ELECTROACUPUNCTURE)),
+            overridden,
+        )
+        assertTrue("Override registrado não pode limpar o veto no motor", verdict.isBlocked)
+        assertEquals(ClinicalFlag.PACEMAKER, verdict.blocking.first().flag)
+    }
+
+    // -- Pending licensed-doctor sign-off (R4) ------------------------------
+    // The flags below currently yield only a generic CAUTION regardless of the proposed
+    // technique. Whether any should ESCALATE to FORBIDDEN for a specific technique is a
+    // CLINICAL decision requiring the licensed doctor's sign-off (CLAUDE.md R4). These
+    // are @Ignore placeholders naming the exact open question — do NOT resolve them by
+    // inventing the threshold in code. Un-ignore only after the doctor confirms.
+
+    @Ignore(
+        "R4 — needs licensed-doctor sign-off: should SEVERE_CARDIOPATHY FORBID " +
+            "electroacupuncture (as PREGNANCY and PACEMAKER do) instead of merely " +
+            "cautioning? Engine currently returns CAUTION, so this asserts isBlocked " +
+            "and fails on purpose until a doctor decides.",
+    )
+    @Test
+    fun pending_severeCardiopathy_electroacupuncture_severityUnconfirmed() {
+        val verdict = engine.evaluate(
+            TreatmentProposal(techniques = setOf(Technique.ELECTROACUPUNCTURE)),
+            assessment(flags = setOf(ClinicalFlag.SEVERE_CARDIOPATHY)),
+        )
+        assertTrue(verdict.isBlocked)
+    }
+
+    @Ignore(
+        "R4 — needs licensed-doctor sign-off: should UNCONTROLLED_HYPERTENSION FORBID " +
+            "electroacupuncture / strong stimulation instead of merely cautioning? " +
+            "Engine currently returns CAUTION; asserts isBlocked and fails on purpose " +
+            "until a doctor decides.",
+    )
+    @Test
+    fun pending_uncontrolledHypertension_electroacupuncture_severityUnconfirmed() {
+        val verdict = engine.evaluate(
+            TreatmentProposal(techniques = setOf(Technique.ELECTROACUPUNCTURE)),
+            assessment(flags = setOf(ClinicalFlag.UNCONTROLLED_HYPERTENSION)),
+        )
+        assertTrue(verdict.isBlocked)
     }
 }

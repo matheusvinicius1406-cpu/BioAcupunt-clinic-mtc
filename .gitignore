@@ -46,4 +46,8 @@ venv/
 __pycache__/
 *.pyc
 
-
+# Agent-orchestration residue (claude-flow daemon state + nested worktrees).
+# Same pattern as legacy/agent-framework-residue/ above: an external tool's
+# working state, not project source. Worktrees can be 100+ MB; never commit them.
+/.claude-flow
+/.claude/worktrees
