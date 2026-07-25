@@ -1,5 +1,16 @@
 import logging
+import os
+import sys
 from contextlib import asynccontextmanager
+
+# When Vercel imports this module as `backend.app.main:app` (via
+# pyproject.toml's [tool.vercel] entrypoint), only the repo root is on
+# sys.path — not `backend/` itself. The `from app.xxx import ...` statements
+# below rely on `app` being resolvable as a top-level package (it lives
+# inside `backend/`), so we must add `backend/` to sys.path first.
+_backend_path = os.path.join(os.path.dirname(__file__), '..')
+if _backend_path not in sys.path:
+    sys.path.insert(0, _backend_path)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
