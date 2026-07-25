@@ -215,11 +215,11 @@ commitadas** — só no working tree, aguardando revisão antes de virar commit.
   Robolectric cobre hoje); revisão da médica sobre o rebuild (ela não viu a tela
   nova ainda); os `@Ignore` de R4 e os 7/18 `ClinicalFlag` sem regra continuam
   parados, sem relação com esta sessão; `GoogleSignIn` deprecado idem.
-- **Nada commitado ainda** — 5 arquivos modificados
-  (`MtcRetriever.kt`, `AppDatabase.kt`, `AppContainer.kt`, `DatabaseModule.kt`,
-  `FlashcardsScreen.kt`) + `core/util/MarkdownSections.kt` novo + o pacote
-  `educacao/` inteiro (domain/data/presentation) + os 6 arquivos de teste, todos
-  só no working tree.
+- **Commitado em `5d8a36a`** (só local — nada empurrado pro GitHub ainda): 5
+  arquivos modificados (`MtcRetriever.kt`, `AppDatabase.kt`, `AppContainer.kt`,
+  `DatabaseModule.kt`, `FlashcardsScreen.kt`) + `core/util/MarkdownSections.kt`
+  novo + o pacote `educacao/` inteiro (domain/data/presentation) + os 6 arquivos
+  de teste.
 
 ### Onde parei (2026-07-24) — leia antes de continuar
 
