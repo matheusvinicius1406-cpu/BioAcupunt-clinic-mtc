@@ -6,8 +6,10 @@
 # `config.pipfile` key). Keep it slim: only what the request path imports.
 #
 # Deliberately NOT here:
-#   - uvicorn        -> the ASGI server is not used in serverless; Mangum bridges
-#                       the Lambda event straight into the FastAPI ASGI app.
+#   - uvicorn        -> not used in serverless; Vercel's Python builder runs the
+#                       FastAPI ASGI app natively (see api/index.py).
+#   - mangum         -> only needed for the old AWS-Lambda-event-bridge shape;
+#                       Vercel now detects and runs a top-level `app` directly.
 #   - alembic        -> migrations are run manually against Neon from a dev
 #                       machine (see DEPLOY.md), never inside the lambda.
 #   - passlib/bcrypt -> auth_service hashes with argon2 (see app/core/security.py),
@@ -25,5 +27,4 @@ pydantic-settings>=2.6
 python-jose[cryptography]>=3.3
 argon2-cffi>=23.1
 slowapi>=0.1.9
-mangum>=0.17
 greenlet>=3.0
