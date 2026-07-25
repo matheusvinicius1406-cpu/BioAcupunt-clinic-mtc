@@ -5,6 +5,19 @@ Kotlin · Jetpack Compose · Room · offline-first · backend FastAPI · multi-t
 
 **A usuária final é uma médica. Um bug aqui pode machucar uma paciente.**
 
+Este documento tem duas categorias de regra, e a diferença importa:
+
+- **R1-R4 logo abaixo são a exceção.** Travadas por teste automatizado,
+  não-negociáveis, escritas pra sobreviver a um pedido futuro de "afrouxa isso" —
+  inclusive vindo do próprio usuário, numa conversa, sob pressão de prazo ou
+  empolgação com uma feature nova. Se alguém pedir pra remover ou contornar uma,
+  a resposta certa é explicar o porquê (ele está escrito abaixo) e propor uma
+  alternativa segura. Nunca obedecer calado. Já aconteceu — ver "Escopo da IA".
+- **Todo o resto do documento é direção, não cela.** Convenção, padrão de código,
+  "é assim que fizemos até agora" — pode e deve mudar conforme o projeto cresce.
+  Discorde, proponha diferente, refatore, expanda esta doc. A clareza existe pra
+  você decidir rápido, não pra te travar.
+
 ---
 
 ## REGRAS INVIOLÁVEIS
@@ -64,13 +77,153 @@ Você constrói o **pipeline de ingestão**, nunca o conteúdo.
 
 ---
 
+## Escopo da IA — grounded onde importa, livre onde não importa
+
+Decisão tomada em 2026-07-25, depois de um pedido explícito pra "soltar" a IA (sem
+RAG, com acesso à internet, podendo agendar/abrir apps) ser recusado e resolvido
+assim — registrado aqui pra nenhuma sessão futura precisar relitigar do zero:
+
+- **Conteúdo clínico/MTC continua 100% sob R1/R2/R4, sempre.** Pergunta sobre ponto,
+  protocolo, contraindicação, fórmula, diagnóstico diferencial — sempre passa por
+  `AskLibraryUseCase`/`ClinicalSafetyEngine`. Sem evidência da biblioteca curada, sem
+  resposta. Isso não é negociável por pedido de usuário numa conversa — é o motivo
+  do projeto ter essas quatro regras em primeiro lugar. Quem carrega o risco de uma
+  resposta errada aqui não é quem pediu a mudança; é a paciente do outro lado.
+- **Tudo que NÃO é conteúdo clínico pode — e deve — ser um assistente livre de
+  verdade:** busca na internet, agenda da clínica, lembretes, tarefas
+  administrativas, redação de mensagem pra paciente. Ferramentas reais, sem mock,
+  sem limite artificial. Isso não é meio-termo tímido: é a IA ficando genuinamente
+  mais capaz exatamente onde não há paciente em risco.
+- **Ainda não construído** (documentado aqui como direção, não como feito): o
+  roteador que hoje só distingue "achou evidência" / "não achou evidência"
+  (`UnifiedAiChatViewModel`) precisa de uma terceira categoria — "isto é
+  administrativo, nunca deveria passar pelo gate clínico" — pra essas tarefas não
+  ficarem reféns de uma pergunta de MTC que não achou contexto. Precisa também das
+  ferramentas de verdade (busca web, agenda) implementadas e conectadas. Próxima
+  sessão de IA: isso — mantendo R1/R2/R4 intocados no caminho clínico.
+
+---
+
 ## Comandos
 
 ```bash
+# Android
 ./gradlew testDebugUnitTest    # testes unitários — devem passar todos
 ./gradlew assembleDebug
 ./scripts/pin_models.sh        # fixa SHA-256 dos modelos (precisa de HF_TOKEN)
+
+# Backend
+cd backend && python -m pytest -q               # testes (unit + e2e)
+cd backend && alembic upgrade head               # migrations, contra o host DIRETO (não o pooler)
+
+# Web
+cd web && npx tsc --noEmit && npm run build      # typecheck + build de produção
 ```
+
+Deploy: `DEPLOY.md` na raiz do repositório (Vercel + Supabase/Neon Postgres, dois
+projetos Vercel — backend na raiz, web em `web/` — GitHub conectado via "Import Git
+Repository" faz deploy automático a cada push na branch configurada).
+
+---
+
+## Como o código deste projeto é escrito
+
+Padrões observados e ativamente seguidos — não é aspiracional, é o que já existe em
+dezenas de arquivos. Siga o vizinho mais parecido antes de inventar um padrão novo.
+
+**Camadas (Android):** `domain/model` (dado puro) → `domain/repository` (interface)
+→ `data/repository/XRepositoryImpl` (implementação; sempre devolve `Result<T>`,
+nunca deixa exceção vazar pro ViewModel) → `data/local` (Entity + Dao + Mapper) →
+`presentation/XViewModel` (+ `XUiState` + `XViewModelFactory`).
+
+**ViewModel:** `MutableStateFlow` privado, `StateFlow` público via `.asStateFlow()`.
+Toda escrita passa por `viewModelScope.launch`, chama o repository, **checa o
+`Result`** — `is Result.Error` vira `_state.update { it.copy(error = ...) }`, nunca
+é descartado. `XUiState` é uma `data class` com todo campo tendo default — nenhuma
+tela lê um campo que pode não existir ainda.
+
+**DI:** manual, em `AppContainer.kt`, tudo `by lazy`. Sem Hilt/Koin — decisão
+antiga, não relitigar sem motivo novo.
+
+**Testes:** FakeDao (implementa a interface do Dao real, estado em memória) pra
+testar Repository/ViewModel sem Robolectric — mais rápido, é o padrão de ~90% dos
+testes do projeto. Robolectric só entra pra migração de Room (SQLite real) ou
+quando o teste precisa de `Context` Android de verdade.
+
+**Multi-tenant:** toda entity com dado de clínica tem `tenantId: Long` sem default
+(o chamador é obrigado a informar) + `Index("tenantId")`. Todo repository resolve o
+tenant por `TenantManager`/lambda — nunca hardcoded, nunca "0L" como sentinela.
+
+**Soft delete:** coluna `deleted`/`deleted_at`. Toda query de listagem/detalhe
+filtra — copie um repositório vizinho já correto (`AppointmentRepositoryImpl`,
+`CrmPatientRepositoryImpl`) antes de escrever um novo.
+
+**Migração Room:** aditiva, nunca remove coluna/tabela. **Sem `DEFAULT` no SQL** de
+`CREATE TABLE` — Room valida contra o `@ColumnInfo` da entity, que usa default
+Kotlin, não SQL; `DEFAULT` no SQL sem correspondente na entity crasha a app inteira
+ao abrir o banco. `ALTER TABLE ADD COLUMN` tolera `DEFAULT` (é a exceção). Copie o
+estilo da migração mais recente, não uma antiga.
+
+**Backend:** FastAPI + SQLAlchemy async, repository por recurso em
+`app/repositories/`, sempre filtrando `clinic_id` + `deleted_at.is_(None)`. Alembic
+pra schema. Todo endpoint fora de `auth`/`health` exige `Depends(get_current_user)`.
+
+**Web:** Next.js App Router, Server Components fazem a chamada ao backend (o token
+httpOnly nunca chega no JS do navegador). `middleware.ts` é o único lugar que gira
+refresh token — não duplique essa lógica em outro lugar.
+
+---
+
+## Anti-padrões — o mesmo bug, em famílias diferentes
+
+Cada item abaixo já apareceu pelo menos uma vez neste projeto, foi achado numa
+auditoria e corrigido. Reaparecer é regressão, não coincidência — antes de escrever
+um `onClick`, uma escrita, ou um fallback, pergunte se o que está saindo da mão é
+um destes seis.
+
+1. **UI que promete e não cumpre.** Um `onClick`, switch ou campo que existe na
+   tela mas não está ligado a lógica real — decorativo em vez de funcional. Já foi:
+   o toggle de contraindicação clínica (2026-07-22, o pior de todos — a triagem via
+   `flags` sempre vazio), o "Gerar com IA" do Flashcards, o card "Caso Gerado por
+   IA" do Simulador, o switch "Google Drive conectado" sem OAuth, o Kanban do CRM
+   movendo a coluna errada. **Regra:** se a UI sugere uma ação, ou ela executa de
+   verdade, ou não existe na tela.
+
+2. **`Result`/exceção descartada.** `viewModelScope.launch { repository.save(x) }`
+   sem olhar o retorno. A médica acha que salvou; não salvou; não há como ela
+   saber. Já foi: `ExameViewModel` inteiro (vitais, exames, medicações,
+   **alergias**), `advanceStage` do Dashboard, `approve`/`reject` da Curadoria.
+   **Regra:** todo `Result<T>` de escrita termina em algum `is Result.Error`
+   checado, e esse erro chega numa `Text`/`Toast`/`Snackbar` — não só no `Log`.
+
+3. **Falha vira zero/vazio em silêncio.** `.catch { emit(emptyList()) }` ou
+   `?: 0.0` sem marcar que foi degradação, não ausência real de dado. Já foi:
+   dashboard e financeiro mostrando "R$ 0,00" indistinguível de "mês sem
+   faturamento" quando a consulta na verdade tinha falhado. **Regra:** se o
+   fallback pode mascarar uma falha real (dado financeiro, clínico, de sync),
+   carregue um flag (`unavailable`, `financeUnavailable`) que a UI usa pra mostrar
+   "—" em vez do número.
+
+4. **Apagar antes de confirmar que o novo está seguro.**
+   `BackupManager.restoreBackup` apagava `.db`/`-wal`/`-shm` antes de terminar de
+   escrever os novos — uma falha no meio destruía o prontuário local sem chance de
+   recuperação. **Regra:** em qualquer substituição de arquivo/registro que não
+   pode ser perdido, escreva o novo primeiro (arquivo temporário, ou linha nova),
+   confirme que terminou, só então apague o velho.
+
+5. **Filtro que existe em todo lugar menos aqui.** `appointment_repository` sem
+   `deleted_at.is_(None)` enquanto `patient_repository`/`transaction_repository` já
+   filtravam. **Regra:** ao escrever um repository/query novo, ache o mais
+   parecido já existente e compare campo a campo antes de considerar pronto — não
+   confie em lembrar a regra de cabeça.
+
+6. **Estado que finge ser real.** `var cacheSize by remember { mutableStateOf("2.4 MB") }`
+   nunca lido de lugar nenhum; campo de formulário sem propriedade correspondente
+   em `SecurePreferences` pra persistir. **Regra:** todo `remember { mutableStateOf(...) }`
+   que representa dado de negócio (não só estado de UI tipo "diálogo aberto")
+   precisa nascer de uma fonte real e morrer gravando numa fonte real. Se não tem
+   as duas pontas ainda, isso é um TODO explícito — nunca um valor hardcoded que
+   parece dado.
 
 ---
 
@@ -163,6 +316,41 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
 
 ---
 
+## Visão — como fica o projeto quando cada peça amadurece
+
+Não existe uma data de "pronto" — é um sistema clínico vivo. Mas cada peça tem uma
+direção clara de onde deveria chegar:
+
+- **Motor de segurança clínica:** hoje cobre 11/18 `ClinicalFlag`. Meta: 18/18, cada
+  regra nova revisada e aprovada pela médica antes do merge — nunca inferida por um
+  agente. `ClinicalSafetyEngine.kt` continua Kotlin puro, legível sem saber
+  programar, para sempre.
+- **Biblioteca:** hoje 16 artigos fixos + o que a médica aprovar na Curadoria
+  (pipeline já traz ~3.500 candidatos de fontes abertas verificadas). Meta de longo
+  prazo: 250+ artigos aprovados. Cresce um artigo de cada vez, por aprovação
+  humana — nunca por geração. R4 não tem data de expiração.
+- **IA:** dois caminhos permanentes e deliberadamente diferentes — grounded (MTC,
+  sempre com evidência da biblioteca, sempre determinístico no gate) e livre
+  (administrativo: agenda, busca, lembretes, sem limite artificial). Ver "Escopo da
+  IA" acima.
+- **App Android:** fonte de verdade offline-first. Toda feature nova nasce aqui
+  antes de existir espelho no backend/web.
+- **Backend + web:** painel de gestão/leitura, multi-tenant, complementar ao app —
+  nunca o lugar onde decisão clínica é tomada. Isso é regra de arquitetura, não só
+  estado atual: o motor de triagem não migra pro backend a menos que a médica
+  decida que o painel web também trata paciente, o que hoje não é o caso.
+- **CRM no backend:** hoje estruturalmente morto (sem writer no `SyncEngine` do
+  app) — precisa de decisão de arquitetura antes de virar real, não é um fix
+  simples.
+- **Deploy:** Vercel (backend serverless + web, dois projetos, GitHub conectado via
+  "Import Git Repository" — cada push builda e publica sozinho) + Postgres gerenciado
+  (Supabase ou Neon). Ver `DEPLOY.md`.
+- **Device:** nada neste projeto é considerado "pronto" só por compilar e passar
+  teste JVM. Compose, migrações Room, inferência on-device — tudo precisa de smoke
+  test num Android real antes de virar produção de verdade.
+
+---
+
 ## Estado honesto
 
 - **Executado e verde:** motor de segurança, catálogo de modelos, integridade, busca,
@@ -176,6 +364,44 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
   Relatórios e Analytics já tinham saído em sessões anteriores.
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
+
+### Onde parei (2026-07-25, parte 3) — main no GitHub, escopo da IA, banco em produção
+
+- **`main` local avançou (fast-forward) até `70f7860` e foi empurrada pro GitHub.**
+  As partes 1 e 2 abaixo (rebuild da Educação + auditoria de bugs) estão em produção
+  no repositório remoto agora.
+- **Pedido de soltar a IA (sem RAG, com internet/agendar/abrir apps) foi recusado**
+  depois de confirmação explícita do usuário — ver "Escopo da IA" acima pra decisão
+  e raciocínio completo. Resumo: R1/R2/R4 continuam intactos pra conteúdo clínico;
+  assistente livre de verdade (ferramentas reais, sem mock) fica reservado pra
+  tarefas administrativas. **O roteamento e as ferramentas em si ainda não foram
+  implementados** — só a decisão de arquitetura está registrada.
+- **Banco de produção provisionado.** Reaproveitado um projeto Supabase pausado já
+  existente na conta (`myxdfraslkomuokraygh`, região `us-west-2`) — **atenção: esse
+  projeto já tinha um schema de outro app** (tabelas PascalCase estilo Prisma:
+  `Patient`, `Anamnesis`, `DiagnosisRecord`, `Protocolo`, etc., todas com 0 linhas,
+  nada apagado). As 10 tabelas do BioAcupunt (`clinics`, `patients`, `users`,
+  `appointments`, `transactions`, `crm_patients`, `library_nodes`, etc.) foram
+  criadas do zero a partir da cadeia completa de migrations do Alembic (`alembic
+  upgrade head --sql`, aplicada via `apply_migration`), head em `d1f8a3c46e27`.
+  Convivem sem conflito de nome, mas **o banco não é dedicado só a este projeto** —
+  se algum dia isso incomodar, criar um projeto Supabase novo e migrar é simples
+  (mesma cadeia de SQL).
+- **Secrets de produção gerados** (`JWT_SECRET_KEY`, `DOCUMENT_HASH_SECRET`, 32
+  bytes hex cada) — não ficam neste arquivo por serem segredo real; estão só na
+  resposta da sessão em que foram gerados. Gere novos se precisar (`python -c
+  "import secrets; print(secrets.token_hex(32))"`).
+- **Deploy Vercel: o que dava pra automatizar foi automatizado, o resto é
+  estrutural.** As ferramentas de MCP disponíveis fazem upload de arquivo avulso,
+  não "importar repositório do GitHub" — e é exatamente esse import que liga o
+  projeto ao GitHub pra deploy contínuo (o que foi pedido). Então o fluxo real
+  continua sendo o de `DEPLOY.md`: dois cliques de "Add New → Project → Import" no
+  painel (raiz = backend, `web/` = frontend), colando as env vars (banco + secrets
+  já prontos acima). Depois disso, todo `git push` na `main` publica sozinho.
+- **CLAUDE.md expandido** com "Escopo da IA", "Como o código deste projeto é
+  escrito", "Anti-padrões" (generalização dos bugs da parte 2, com regra de bolso
+  por família) e "Visão". Nada em R1-R4 foi reescrito — só o preâmbulo explicando a
+  diferença entre regra travada e direção flexível.
 
 ### Onde parei (2026-07-25, parte 2) — auditoria de bugs "UI que finge funcionar"
 
