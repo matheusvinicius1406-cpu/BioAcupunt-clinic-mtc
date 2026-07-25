@@ -175,7 +175,39 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
 
-### Onde parei (2026-07-23) — leia antes de continuar
+### Onde parei (2026-07-24) — leia antes de continuar
+
+Branch `fix/clinic-audit-phases`, 4 commits novos locais (nada empurrado pro GitHub):
+
+- **`5ed3768` — 4 arquivos de teste órfãos recuperados** de worktrees abandonadas em
+  `.claude/worktrees/` (sobra de agentes paralelos): portão R2 testado no use case com
+  espião contando chamadas ao modelo (`AskLibraryUseCaseTest`), invariante do perfil de
+  risco permanente (`MtcAssessmentRepositoryStandingFlagsTest`), regressão do override
+  persistido (`SupremoViewModelTest`), resiliência do motor + **2 testes `@Ignore` R4**
+  nomeando a pergunta clínica exata (cardiopatia grave / hipertensão não controlada ×
+  eletroacupuntura) — un-ignore só com aval da médica. Worktrees e branches
+  `worktree-agent-*` removidas após a extração; `.claude-flow/` e `.claude/worktrees/`
+  agora no .gitignore (as "métricas de auditoria" do claude-flow eram stub, não achado real).
+- **`8028091`** — `MasterKeys`→`MasterKey.Builder` em `SecurePreferences` (arquivo guarda
+  token+hash do PIN — fazer smoke test de login em device antes de confiar 100%), 9
+  ícones→`Icons.AutoMirrored`, e **remoção do "Gerar com IA" falso do Flashcards** (não
+  chamava IA nenhuma; fabricava texto placeholder fingindo exigir o modelo local).
+- **`1b0214b`** — 15× `Locale("pt","BR")`→`Locale.Builder()`, checagem `ADB_ENABLED`
+  inerte removida do `AppHardening` (API bloqueada para apps normais desde a API 17 —
+  sempre caía no catch), `menuAnchor(MenuAnchorType.PrimaryNotEditable)`, `arrayOf<Any>`
+  no `VecKnowledgeNodeDao`. **Único warning de depreciação restante no app:**
+  `GoogleSignIn` em `GoogleDriveClient.kt` — migrar para Credential Manager muda o fluxo
+  de auth de verdade; só com device conectado.
+- Suite: **116 testes (2 skipped de propósito), 0 falhas**. Correção de percepção:
+  **Agenda NÃO é mais rasa** (tela completa, picker de paciente vindo do CRM real);
+  **Educação/Flashcards É rasa** — 12 cards fixos no código, progresso zera ao sair.
+- **Plano completo do rebuild da Educação salvo em `docs/plano-educacao-flashcards.md`**
+  (não aprovado, não implementado — sessão encerrada a pedido antes do ExitPlanMode):
+  união builtins+cards da médica (sem seed), Leitner-lite determinístico, criação
+  assistida a partir de artigo aprovado com confirmação obrigatória (R4), migração
+  Room v18→19 com DDL pronto, testes por camada. Próxima sessão: retomar por esse doc.
+
+### Onde parei (2026-07-23)
 
 Branch `fix/clinic-audit-phases`. Tudo compila (`compileDebugKotlin`), Kotlin verde
 (`testDebugUnitTest`), backend verde (`50 passed`), web verde (`tsc` + `next build`).
