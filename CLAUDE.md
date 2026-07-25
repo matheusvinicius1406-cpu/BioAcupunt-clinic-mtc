@@ -177,6 +177,52 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
 
+### Onde parei (2026-07-25, parte 2) — auditoria de bugs "UI que finge funcionar"
+
+Depois do rebuild da Educação (parte 1, abaixo), rodei uma auditoria em 3 frentes
+(Android UI/ViewModel wiring, silent failures, paridade backend/web) atrás do mesmo
+padrão de bug já achado antes (triagem clínica inerte em 07-22, "Gerar com IA" falso
+do Flashcards). Achou ~19 problemas reais. **12 corrigidos e commitados
+(`4c5af4c`)** — mecânicos, sem ambiguidade de produto: CRM Kanban movendo a coluna
+inteira em vez de 1 paciente (dado real sendo corrompido), `ExameViewModel`
+descartando `Result` em toda escrita (inclusive alergias), card de IA morto no
+Simulador, cache/endereço falsos em Ajustes, dashboard/financeiro zerando em
+silêncio no erro, `LibraryReviewViewModel` engolindo falha de aprovar/rejeitar,
+`BackupManager.restoreBackup` não-atômico (apagava o banco antes de terminar de
+escrever o novo — risco real de perda total do prontuário local numa restauração
+que falha no meio), tombstone de agendamento vazando no backend web, cookie de
+sessão web durando mais que o JWT (derrubava a médica do painel com sessão ainda
+válida), `/crm`+`/analytics` fora do guard de refresh do middleware, componente
+órfão removido. 151 testes Kotlin + 63 backend (3 novos) + `tsc`/`next build` web,
+tudo verde.
+
+**Ficaram de fora de propósito — cada um é decisão de produto ou toca a superfície
+clínica, não bug mecânico:**
+- **`RelatoriosScreen`**: botão "Gerar" em templates "com IA" cria um relatório
+  vazio (`status=READY`, sem `body`), sem chamar IA nenhuma, descartando o nome do
+  paciente digitado. Mesmo padrão do Flashcards falso, mas aqui não dá pra só
+  remover o botão sem decidir o que "Gerar" deveria fazer de verdade.
+- **`AjustesScreen`**: switch "Google Drive" fica "Conectado" sem OAuth nenhum, e
+  "Fazer backup agora" desse caminho falha em silêncio — é um segundo caminho
+  paralelo e quebrado pro mesmo backup que já funciona direito no `BackupCard` da
+  aba Segurança. Precisa decidir: remover o duplicado ou consertar o OAuth.
+- **Backend CRM (`/api/v1/crm`)**: estruturalmente morto em produção — a tabela
+  `crm_patients` do servidor nunca recebe uma linha porque não existe
+  `SyncEntityType.CRM_PATIENT` nem writer no `SyncEngine` do app. A tela web
+  (`/crm`) sempre vai mostrar "nenhum contato" mesmo com pacientes reais no app.
+  É trabalho de arquitetura (schema de sync + writer + endpoint), não um fix.
+- **Semanas de gestação**: `ClinicalSafetyEngine` já tem a regra testada pro
+  primeiro trimestre, mas nenhuma tela chama `SupremoViewModel.updateGestationalWeeks`
+  — o alerta é logicamente inatingível. Mesmo padrão do bug de `toggleFlag` (2026-07-22),
+  mas fica de fora por tocar a superfície clínica direto — precisa de aval antes.
+- **`BibliotecaViewModel`**: busca híbrida MKIS inteira (`toggleSearchMode`,
+  `performHybridSearch`, `MkisDetailSheet`) sem nenhum ponto de entrada na UI —
+  feature construída e nunca ligada a um botão. Não decidido se vale ligar ou é
+  código morto pra remover.
+- Docstrings contraditórias entre `patient.py` e `crm_patient.py` sobre qual tabela
+  é "a" contraparte do app — cosmético, mas é o sintoma da causa raiz do item CRM
+  acima.
+
 ### Onde parei (2026-07-25) — leia antes de continuar
 
 Branch `fix/clinic-audit-phases` (== `main` local == `origin/main`, todos em
