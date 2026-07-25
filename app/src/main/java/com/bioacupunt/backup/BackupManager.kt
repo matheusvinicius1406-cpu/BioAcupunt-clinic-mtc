@@ -102,13 +102,28 @@ class BackupManager(
             runCatching { database.close() }
 
             val dbDir = DatabaseModule.databaseFile(context).parentFile
-            // Remove sidecars antigos para não misturar um -wal velho com um .db novo.
-            dbFiles().forEach { runCatching { it.delete() } }
-            map.forEach { (name, bytes) ->
-                if (name == BackupArchive.MANIFEST_NAME) return@forEach
-                val target = File(dbDir, name)
-                target.outputStream().use { it.write(bytes) }
+
+            // Escreve tudo em arquivos temporários primeiro. Os originais só são apagados
+            // depois que TODO o conteúdo novo já está seguro em disco — se a escrita falhar
+            // no meio (disco cheio, IO interrompido), o prontuário original continua intacto
+            // em vez de ter sido apagado antes da cópia terminar.
+            val staged = mutableListOf<Pair<File, File>>() // (temp, destino final)
+            try {
+                map.forEach { (name, bytes) ->
+                    if (name == BackupArchive.MANIFEST_NAME) return@forEach
+                    val temp = File(dbDir, "$name.restoring")
+                    temp.outputStream().use { it.write(bytes) }
+                    staged += temp to File(dbDir, name)
+                }
+            } catch (e: Exception) {
+                staged.forEach { (temp, _) -> runCatching { temp.delete() } }
+                throw e
             }
+
+            // Todo o conteúdo novo está gravado — só agora é seguro trocar.
+            dbFiles().forEach { runCatching { it.delete() } }
+            staged.forEach { (temp, target) -> temp.renameTo(target) }
+
             manifest
         }.onFailure { AppLogger.e("BackupManager", "restoreBackup falhou", it) }
     }

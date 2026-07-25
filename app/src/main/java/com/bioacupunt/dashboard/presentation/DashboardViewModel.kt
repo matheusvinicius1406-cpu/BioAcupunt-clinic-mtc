@@ -75,9 +75,12 @@ data class DashboardUiState(
     val nextAppointment: Appointment? = null,
     val monthReceivedBrl: Double = 0.0,
     val monthPendingBrl: Double = 0.0,
+    /** true quando a consulta financeira falhou — os totais acima são 0.0 por default, não porque o mês está vazio. */
+    val financeUnavailable: Boolean = false,
     val insights: List<DashInsight> = emptyList(),
     val reengage: List<ReengagePatient> = emptyList(),
     val kanban: List<KanbanColumn> = emptyList(),
+    val kanbanError: String? = null,
     val isLoading: Boolean = true,
 )
 
@@ -129,9 +132,16 @@ class DashboardViewModel(
         viewModelScope.launch {
             val start = today.withDayOfMonth(1).toString()
             val end = today.toString()
-            val received = (transacaoRepository.sumPayments(tenantId, start, end) as? Result.Success)?.data ?: 0.0
-            val pending = (transacaoRepository.sumPending(tenantId, start, end) as? Result.Success)?.data ?: 0.0
-            _state.update { it.copy(monthReceivedBrl = received, monthPendingBrl = pending) }
+            val receivedResult = transacaoRepository.sumPayments(tenantId, start, end)
+            val pendingResult = transacaoRepository.sumPending(tenantId, start, end)
+            val failed = receivedResult is Result.Error || pendingResult is Result.Error
+            _state.update {
+                it.copy(
+                    monthReceivedBrl = (receivedResult as? Result.Success)?.data ?: 0.0,
+                    monthPendingBrl = (pendingResult as? Result.Success)?.data ?: 0.0,
+                    financeUnavailable = failed,
+                )
+            }
         }
     }
 
@@ -143,9 +153,14 @@ class DashboardViewModel(
             val stage = runCatching { PatientStage.valueOf(current.data.stage) }.getOrDefault(PatientStage.FIRST_CONTACT)
             val stages = PatientStage.entries
             val next = stages.getOrNull(stage.ordinal + 1) ?: return@launch
-            updateCrmStage(patientId, next)
+            val result = updateCrmStage(patientId, next)
+            if (result is Result.Error) {
+                _state.update { it.copy(kanbanError = result.kind.userMessage) }
+            }
         }
     }
+
+    fun clearKanbanError() = _state.update { it.copy(kanbanError = null) }
 
     private fun observeCoreData() {
         viewModelScope.launch {

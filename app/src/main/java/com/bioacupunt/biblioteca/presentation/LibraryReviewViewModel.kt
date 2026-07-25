@@ -67,12 +67,18 @@ class LibraryReviewViewModel(
     private fun now() = System.currentTimeMillis()
 
     fun approve(id: String) = viewModelScope.launch {
-        repo.approve(id, now())
-        onContentChanged?.invoke()
+        if (repo.approve(id, now())) {
+            onContentChanged?.invoke()
+        } else {
+            _feedback.value = "Não foi possível aprovar este item — ele pode ter sido removido ou tem um registro corrompido."
+        }
     }
     fun reject(id: String) = viewModelScope.launch {
-        repo.reject(id, now())
-        onContentChanged?.invoke()
+        if (repo.reject(id, now())) {
+            onContentChanged?.invoke()
+        } else {
+            _feedback.value = "Não foi possível rejeitar este item — ele pode ter sido removido ou tem um registro corrompido."
+        }
     }
 
     /**

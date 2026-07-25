@@ -171,6 +171,10 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("clinic_name", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("clinic_name") } else edit { it.putString("clinic_name", value) }
 
+    var clinicAddress: String
+        get() = prefs.getString("clinic_address", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("clinic_address") } else edit { it.putString("clinic_address", value) }
+
     var clinicWorkStart: String
         get() = prefs.getString("clinic_work_start", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("clinic_work_start") } else edit { it.putString("clinic_work_start", value) }

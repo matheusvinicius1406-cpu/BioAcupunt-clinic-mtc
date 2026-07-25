@@ -209,7 +209,7 @@ private fun ClinicTab() {
     val scope = rememberCoroutineScope()
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     var clinicName by remember { mutableStateOf(securePrefs.clinicName.ifBlank { "Clínica BioAcupunt" }) }
-    var address by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf(securePrefs.clinicAddress) }
     var sessionPrice by remember { mutableStateOf(securePrefs.sessionPriceBrl.ifBlank { "150" }) }
     var firstPrice by remember { mutableStateOf(securePrefs.firstConsultPriceBrl.ifBlank { "250" }) }
     var workStart by remember { mutableStateOf(securePrefs.clinicWorkStart.ifBlank { "08:00" }) }
@@ -356,6 +356,7 @@ private fun ClinicTab() {
                     securePrefs.tcleText = tcleText.trim()
                     securePrefs.enabledTechniquesCsv = enabledTechniques.joinToString(",")
                     securePrefs.clinicName = clinicName.trim()
+                    securePrefs.clinicAddress = address.trim()
                     securePrefs.clinicWorkStart = workStart.trim()
                     securePrefs.clinicWorkEnd = workEnd.trim()
                     securePrefs.clinicWorkDaysCsv = workDays.joinToString(",")
@@ -676,13 +677,20 @@ private fun SecurityTab(onLogout: () -> Unit) {
 @Composable
 private fun SystemTab() {
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
+    val cacheManager = remember { com.bioacupunt.di.AppContainer.cacheManager }
+    val scope = rememberCoroutineScope()
     var darkMode by remember { mutableStateOf(false) }
     var notificationsEnabled by remember { mutableStateOf(true) }
     var reminderMin by remember { mutableIntStateOf(30) }
-    var cacheSize by remember { mutableStateOf("2.4 MB") }
+    var cacheKb by remember { mutableStateOf(0L) }
     var language by remember { mutableStateOf("Português (Brasil)") }
     var serverUrl by remember { mutableStateOf(securePrefs.serverUrl) }
     var serverSaved by remember { mutableStateOf(false) }
+
+    fun refreshCacheSize() {
+        cacheKb = cacheManager.memoryUsageKb().toLong() + cacheManager.diskUsageKb()
+    }
+    LaunchedEffect(Unit) { refreshCacheSize() }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { SectionHeader("Servidor") }
@@ -748,13 +756,20 @@ private fun SystemTab() {
 
         item { SectionHeader("Cache & Armazenamento") }
         item {
+            val cacheLabel = if (cacheKb >= 1024) "%.1f MB".format(cacheKb / 1024.0) else "$cacheKb KB"
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                        Text("Cache de IA"); Text(cacheSize, color = Primary)
+                        Text("Cache de IA"); Text(cacheLabel, color = Primary)
                     }
                     Spacer(Modifier.height(8.dp))
-                    OutlinedButton(onClick = { cacheSize = "0 KB" }, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick = {
+                            cacheManager.clearMemory()
+                            scope.launch { cacheManager.clearDisk(); refreshCacheSize() }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
                         Icon(Icons.Default.DeleteSweep, null); Spacer(Modifier.width(8.dp)); Text("Limpar Cache")
                     }
                 }

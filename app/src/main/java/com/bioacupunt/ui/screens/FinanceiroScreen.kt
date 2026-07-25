@@ -45,15 +45,25 @@ fun FinanceiroScreen(
             Text("Financeiro", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold))
         }
 
+        if (state.unavailable) {
+            item {
+                Text(
+                    "Não foi possível carregar os dados financeiros agora. Os valores abaixo podem estar desatualizados.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = com.bioacupunt.ui.theme.SemanticError,
+                )
+            }
+        }
+
         item {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    FinStat(Modifier.weight(1f), "Recebido/mês", brl(state.monthReceivedBrl))
-                    FinStat(Modifier.weight(1f), "Pendente/mês", brl(state.monthPendingBrl))
+                    FinStat(Modifier.weight(1f), "Recebido/mês", if (state.unavailable) "—" else brl(state.monthReceivedBrl))
+                    FinStat(Modifier.weight(1f), "Pendente/mês", if (state.unavailable) "—" else brl(state.monthPendingBrl))
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     FinStat(Modifier.weight(1f), "Consultas pagas", "${state.paidCount}")
-                    FinStat(Modifier.weight(1f), "Ticket médio", brl(state.ticketMedioBrl))
+                    FinStat(Modifier.weight(1f), "Ticket médio", if (state.unavailable) "—" else brl(state.ticketMedioBrl))
                 }
             }
         }

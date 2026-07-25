@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import com.bioacupunt.ui.theme.CatBlue
-import com.bioacupunt.ui.theme.CatPurple
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.statusColors
 import kotlinx.coroutines.delay
@@ -163,14 +162,6 @@ private fun SimuladorMenu(onStartQuiz: () -> Unit, onStartCase: () -> Unit) {
             description = "Analise casos clínicos reais e pratique o diagnóstico diferencial em MTC.",
             color = CatBlue,
             onClick = onStartCase
-        )
-
-        SimModeCard(
-            icon = Icons.Default.AutoAwesome,
-            title = "Caso Gerado por IA",
-            description = "A IA cria um caso clínico personalizado para você praticar. Requer o modelo local (Ajustes > IA).",
-            color = CatPurple,
-            onClick = {}
         )
     }
 }

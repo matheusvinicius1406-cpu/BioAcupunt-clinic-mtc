@@ -23,6 +23,8 @@ data class FinanceiroUiState(
     val ticketMedioBrl: Double = 0.0,
     val recentTransactions: List<Transacao> = emptyList(),
     val revenueByCategory: List<RevenueByCategory> = emptyList(),
+    /** true quando o stream de transações falhou — os totais acima são 0.0 por default, não porque não há transação. */
+    val unavailable: Boolean = false,
 )
 
 class FinanceiroViewModel(
@@ -36,7 +38,7 @@ class FinanceiroViewModel(
     init {
         viewModelScope.launch {
             observeTransactions() // tenantId será extraído do TenantManager quando necessário
-                .catch { emit(emptyList()) }
+                .catch { _state.update { it.copy(unavailable = true) } }
                 .collect { all ->
                     val monthKey = today.toString().take(7) // yyyy-MM
                     val thisMonth = all.filter { it.date.take(7) == monthKey }
@@ -60,6 +62,7 @@ class FinanceiroViewModel(
                             revenueByCategory = byCategory.map { (cat, amount) ->
                                 RevenueByCategory(cat, amount, (amount / total).toFloat())
                             },
+                            unavailable = false,
                         )
                     }
                 }

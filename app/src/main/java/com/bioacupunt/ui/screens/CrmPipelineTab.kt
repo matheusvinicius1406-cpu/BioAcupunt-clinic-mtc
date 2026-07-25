@@ -40,11 +40,9 @@ fun PipelineTab(
             val stagePatients = stageMap[stage.name].orEmpty()
             val show = stagePatients.isNotEmpty() || stage == PatientStage.TREATMENT
             if (show) {
-                PipelineColumn(stage, stagePatients) { targetStage ->
-                    stagePatients.forEach { p ->
-                        if (p.stage != targetStage.name) {
-                            viewModel.updateStage(p.id, targetStage)
-                        }
+                PipelineColumn(stage, stagePatients) { patient, targetStage ->
+                    if (patient.stage != targetStage.name) {
+                        viewModel.updateStage(patient.id, targetStage)
                     }
                 }
             }
@@ -83,7 +81,7 @@ fun CrmReportsTab(summary: Map<String, Any>) {
 private fun PipelineColumn(
     stage: PatientStage,
     patients: List<CrmPatient>,
-    onMoveAll: (PatientStage) -> Unit
+    onMovePatient: (CrmPatient, PatientStage) -> Unit
 ) {
     val stageColor = when (stage) {
         PatientStage.ACTIVE, PatientStage.TREATMENT -> CatGreen
@@ -142,7 +140,7 @@ private fun PipelineColumn(
                                 PatientStage.entries.filter { it != stage }.forEach { target ->
                                     DropdownMenuItem(
                                         text = { Text("${target.emoji} Mover para ${target.label}") },
-                                        onClick = { onMoveAll(target); showMenu = -1 }
+                                        onClick = { onMovePatient(p, target); showMenu = -1 }
                                     )
                                 }
                             }

@@ -9,7 +9,14 @@ export const ACCESS_COOKIE = "ba_access";
 export const REFRESH_COOKIE = "ba_refresh";
 
 // O access token do backend expira em 15 min; o refresh em 30 dias.
-const ACCESS_MAX_AGE = 60 * 60; // 1h de folga no cookie; o refresh renova o access
+//
+// O cookie tem que expirar JUNTO com o JWT (não depois): o middleware.ts só
+// tenta renovar quando o cookie de access está AUSENTE — ele não decodifica o
+// JWT para checar se já venceu. Um MaxAge de cookie maior que o exp do JWT
+// (era 60 min aqui) cria uma janela onde o cookie ainda existe, o middleware
+// deixa passar, mas o JWT lá dentro já expirou — o backend responde 401 e o
+// usuário é jogado pro login mesmo tendo um refresh token válido por 30 dias.
+const ACCESS_MAX_AGE = 15 * 60; // casa com o exp do JWT de acesso (15 min) — ver middleware.ts
 const REFRESH_MAX_AGE = 60 * 60 * 24 * 30; // 30 dias
 
 function cookieOptions(maxAge: number) {

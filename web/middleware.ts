@@ -17,6 +17,8 @@ const PROTECTED_PREFIXES = [
   "/financeiro",
   "/relatorios",
   "/biblioteca",
+  "/crm",
+  "/analytics",
 ];
 
 function isProtected(pathname: string): boolean {

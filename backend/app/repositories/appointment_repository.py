@@ -29,13 +29,19 @@ async def create_appointment(
 
 
 async def list_appointments(db: AsyncSession, *, clinic_id: int) -> list[Appointment]:
-    result = await db.execute(select(Appointment).where(Appointment.clinic_id == clinic_id))
+    result = await db.execute(
+        select(Appointment).where(Appointment.clinic_id == clinic_id, Appointment.deleted_at.is_(None))
+    )
     return list(result.scalars().all())
 
 
 async def get_appointment(db: AsyncSession, *, clinic_id: int, appointment_id: int) -> Appointment | None:
     result = await db.execute(
-        select(Appointment).where(Appointment.id == appointment_id, Appointment.clinic_id == clinic_id)
+        select(Appointment).where(
+            Appointment.id == appointment_id,
+            Appointment.clinic_id == clinic_id,
+            Appointment.deleted_at.is_(None),
+        )
     )
     return result.scalar_one_or_none()
 

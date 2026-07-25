@@ -9,6 +9,7 @@ import com.bioacupunt.prontuario.domain.model.LabExam
 import com.bioacupunt.prontuario.domain.model.Medication
 import com.bioacupunt.prontuario.domain.model.ProntuarioDocument
 import com.bioacupunt.prontuario.domain.model.VitalSign
+import com.bioacupunt.core.util.Result
 import com.bioacupunt.prontuario.domain.usecase.ExameUseCases
 import com.bioacupunt.prontuario.domain.usecase.ProntuarioDocumentUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,54 +55,59 @@ class ExameViewModel(
         }
     }
 
+    /** Toda escrita passa por aqui — falha vira erro visível na tela, nunca desaparece em silêncio. */
+    private fun reportIfError(result: Result<*>) {
+        if (result is Result.Error) _state.update { it.copy(error = result.kind.userMessage) }
+    }
+
     fun addVital(label: String, value: String) {
         if (label.isBlank() || value.isBlank()) return
         viewModelScope.launch {
             val now = java.time.LocalDate.now().toString()
-            exameUseCases.saveVital(VitalSign(patientId = patientId, label = label.trim(), value = value.trim(), recordedAt = now))
+            reportIfError(exameUseCases.saveVital(VitalSign(patientId = patientId, label = label.trim(), value = value.trim(), recordedAt = now)))
         }
     }
 
-    fun deleteVital(id: Long) = viewModelScope.launch { exameUseCases.deleteVital(id) }
+    fun deleteVital(id: Long) = viewModelScope.launch { reportIfError(exameUseCases.deleteVital(id)) }
 
     fun addExam(name: String, date: String, resultTag: ExamResultTag) {
         if (name.isBlank()) return
         viewModelScope.launch {
-            exameUseCases.saveExam(LabExam(patientId = patientId, name = name.trim(), date = date, resultTag = resultTag))
+            reportIfError(exameUseCases.saveExam(LabExam(patientId = patientId, name = name.trim(), date = date, resultTag = resultTag)))
         }
     }
 
-    fun deleteExam(id: Long) = viewModelScope.launch { exameUseCases.deleteExam(id) }
+    fun deleteExam(id: Long) = viewModelScope.launch { reportIfError(exameUseCases.deleteExam(id)) }
 
     fun addMedication(name: String, info: String) {
         if (name.isBlank()) return
         viewModelScope.launch {
-            exameUseCases.saveMedication(Medication(patientId = patientId, name = name.trim(), info = info.trim()))
+            reportIfError(exameUseCases.saveMedication(Medication(patientId = patientId, name = name.trim(), info = info.trim())))
         }
     }
 
-    fun deleteMedication(id: Long) = viewModelScope.launch { exameUseCases.deleteMedication(id) }
+    fun deleteMedication(id: Long) = viewModelScope.launch { reportIfError(exameUseCases.deleteMedication(id)) }
 
     fun addAllergy(description: String) {
         if (description.isBlank()) return
         viewModelScope.launch {
-            exameUseCases.saveAllergy(Allergy(patientId = patientId, description = description.trim()))
+            reportIfError(exameUseCases.saveAllergy(Allergy(patientId = patientId, description = description.trim())))
         }
     }
 
-    fun deleteAllergy(id: Long) = viewModelScope.launch { exameUseCases.deleteAllergy(id) }
+    fun deleteAllergy(id: Long) = viewModelScope.launch { reportIfError(exameUseCases.deleteAllergy(id)) }
 
     fun addDocument(name: String, uri: String, mimeType: String, sizeBytes: Long) {
         if (name.isBlank() || uri.isBlank()) return
         viewModelScope.launch {
             val now = java.time.Instant.now().toString()
-            documentUseCases.saveDocument(
+            reportIfError(documentUseCases.saveDocument(
                 ProntuarioDocument(patientId = patientId, name = name, uri = uri, mimeType = mimeType, sizeBytes = sizeBytes, addedAt = now)
-            )
+            ))
         }
     }
 
-    fun deleteDocument(id: Long) = viewModelScope.launch { documentUseCases.deleteDocument(id) }
+    fun deleteDocument(id: Long) = viewModelScope.launch { reportIfError(documentUseCases.deleteDocument(id)) }
 
     fun clearError() = _state.update { it.copy(error = null) }
 }

@@ -120,14 +120,16 @@ class LibraryStagingRepository(
                 else toArticle(e, meta) to meta
             }
 
-    suspend fun approve(id: String, now: Long) = transition(id, ReviewStatus.APPROVED, now)
-    suspend fun reject(id: String, now: Long) = transition(id, ReviewStatus.REJECTED, now)
+    /** @return false se o item não existe mais ou o metadata está corrompido — nada foi persistido. */
+    suspend fun approve(id: String, now: Long): Boolean = transition(id, ReviewStatus.APPROVED, now)
+    suspend fun reject(id: String, now: Long): Boolean = transition(id, ReviewStatus.REJECTED, now)
 
-    private suspend fun transition(id: String, status: ReviewStatus, now: Long) {
-        val entity = dao.getById(id) ?: return
-        val meta = metaOf(entity) ?: return
+    private suspend fun transition(id: String, status: ReviewStatus, now: Long): Boolean {
+        val entity = dao.getById(id) ?: return false
+        val meta = metaOf(entity) ?: return false
         val updated = entity.copy(metadata = AppJson.encodeToString(meta.copy(status = status, reviewedAt = now)))
         dao.insertAll(listOf(updated))
+        return true
     }
 
     data class StagedArticle(val article: MtcArticle, val meta: ReviewMeta)

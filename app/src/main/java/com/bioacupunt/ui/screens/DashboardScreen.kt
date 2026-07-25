@@ -72,6 +72,16 @@ fun DashboardScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    LaunchedEffect(state.kanbanError) {
+        val msg = state.kanbanError
+        if (!msg.isNullOrBlank()) {
+            if (context is android.app.Activity) {
+                android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
+            }
+            vm.clearKanbanError()
+        }
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
@@ -83,8 +93,8 @@ fun DashboardScreen(
                 DashMetric(Icons.Default.Today, "Hoje", "${state.todayCount}", Primary),
                 DashMetric(Icons.Default.Group, "Ativos", "${state.activeCount}", SemanticInfo),
                 DashMetric(Icons.Default.PeopleAlt, "Pacientes", "${state.totalPatients}", Accent),
-                DashMetric(Icons.Default.AttachMoney, "Recebido/mês", brlCompact(state.monthReceivedBrl), SemanticSuccess),
-                DashMetric(Icons.Default.HourglassBottom, "Pendente/mês", brlCompact(state.monthPendingBrl), SemanticWarning),
+                DashMetric(Icons.Default.AttachMoney, "Recebido/mês", if (state.financeUnavailable) "—" else brlCompact(state.monthReceivedBrl), SemanticSuccess),
+                DashMetric(Icons.Default.HourglassBottom, "Pendente/mês", if (state.financeUnavailable) "—" else brlCompact(state.monthPendingBrl), SemanticWarning),
                 DashMetric(Icons.Default.NotificationImportant, "Ausentes 30d+", "${state.overdueCount}", SemanticError),
                 DashMetric(Icons.Default.EventBusy, "Sem retorno", "${state.noNextCount}", TextMuted),
             )

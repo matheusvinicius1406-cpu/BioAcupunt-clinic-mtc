@@ -556,10 +556,21 @@ private fun PlanoTab(
 @Composable
 private fun ExamesTab(vm: ExameViewModel) {
     val state by vm.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     var addVital by remember { mutableStateOf(false) }
     var addExam by remember { mutableStateOf(false) }
     var addMed by remember { mutableStateOf(false) }
     var addAllergy by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.error) {
+        val msg = state.error
+        if (!msg.isNullOrBlank()) {
+            if (context is android.app.Activity) {
+                android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
+            }
+            vm.clearError()
+        }
+    }
 
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -745,6 +756,16 @@ private fun SessionFormDialog(entry: ProntuarioEntry?, onDismiss: () -> Unit, on
 private fun DocumentosTab(vm: ExameViewModel) {
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    LaunchedEffect(state.error) {
+        val msg = state.error
+        if (!msg.isNullOrBlank()) {
+            if (context is android.app.Activity) {
+                android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
+            }
+            vm.clearError()
+        }
+    }
 
     val pickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
