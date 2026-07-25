@@ -78,10 +78,7 @@ class MtcRetriever(
      * conter a resposta — contexto que parece evidência e não é.
      */
     private fun extractBestSection(hit: RetrievedArticle, terms: Set<String>): String {
-        val sections = hit.content
-            .split(SECTION_HEADING)
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
+        val sections = com.bioacupunt.core.util.MarkdownSections.split(hit.content)
 
         if (sections.isEmpty()) return hit.summary.take(MAX_SECTION_CHARS)
 
@@ -94,7 +91,6 @@ class MtcRetriever(
 
     companion object {
         private const val MAX_SECTION_CHARS = 1200
-        private val SECTION_HEADING = Regex("(?m)^#{1,3} ")
 
         /**
          * The system prompt. Note what it does *not* do: it does not try to make the

@@ -4,13 +4,14 @@ import androidx.compose.animation.core.*
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,64 +22,37 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bioacupunt.biblioteca.domain.model.MtcArticle
+import com.bioacupunt.core.util.MarkdownSections
+import com.bioacupunt.educacao.domain.model.Flashcard
+import com.bioacupunt.educacao.presentation.FlashcardsUiState
+import com.bioacupunt.educacao.presentation.FlashcardsViewModel
 import com.bioacupunt.ui.theme.FlashcardBack
 import com.bioacupunt.ui.theme.FlashcardFront
 import com.bioacupunt.ui.theme.FlashcardGold
 import com.bioacupunt.ui.theme.FlashcardGreen
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.StatusColorScheme
 import com.bioacupunt.ui.theme.statusColors
-
-private data class Flashcard(
-    val frente: String,
-    val verso: String,
-    val categoria: String,
-    val dificuldade: String = "médio"
-)
-
-private val builtInFlashcards = listOf(
-    Flashcard("O que é o De Qi?", "Sensação de peso, distensão, dormência ou formigamento ao redor do ponto durante o agulhamento, indicando que o Qi chegou.", "Técnicas"),
-    Flashcard("Quais são os Oito Princípios (Ba Gang)?", "Yin/Yang, Interior/Exterior, Frio/Calor, Deficiência/Excesso. São a base do diagnóstico diferencial em MTC.", "Ba Gang"),
-    Flashcard("Qual a função principal do Fígado em MTC?", "Promover o livre fluxo do Qi (疏泄). Também armazena o Sangue, controla tendões e abre para os olhos.", "Órgãos"),
-    Flashcard("Localização do Zusanli (E36)?", "4 cun abaixo da patela, 1 cun lateral à crista da tíbia. Principal ponto de tonificação geral.", "Pontos"),
-    Flashcard("Qual o horário de pico do meridiano do Fígado?", "1h às 3h da manhã (hora do Boi). Ideal para tratar condições do Fígado com moxibustão neste horário.", "Meridianos"),
-    Flashcard("O que indica uma língua vermelha sem saburra?", "Deficiência de Yin com calor vazio. Comum em deficiência de Yin do Rim ou Fígado.", "Semiologia"),
-    Flashcard("Quais são os Cinco Elementos e seus órgãos?", "Madeira→Fígado/VB, Fogo→Coração/ID, Terra→Baço/E, Metal→Pulmão/IG, Água→Rim/B", "Cinco Elementos"),
-    Flashcard("O que é o pulso Xian (弦)?", "Pulso tenso como corda de arco. Indica estagnação de Qi do Fígado, dor, ou presença de Fleuma.", "Pulso"),
-    Flashcard("O que são os pontos Yuan-Fonte?", "Pontos que acumulam Yuan Qi (Qi Original). Usados para diagnosticar e tratar os órgãos internos correspondentes.", "Pontos Especiais"),
-    Flashcard("Qual o Mu do Fígado?", "F14 - Qimen, localizado no 6° espaço intercostal, na linha medioclavicular. Tratar diretamente o Fígado.", "Pontos Especiais"),
-    Flashcard("Diferença entre Qi e Sangue (Xue)?", "Qi é Yang, impalpável, move e transforma. Sangue é Yin, nutre e umidifica. O Qi move o Sangue; o Sangue é a mãe do Qi.", "Teoria"),
-    Flashcard("O que é o Shen?", "O Espírito/Mente armazenado no Coração. Controla a consciência, cognição, memória e sono. Reflete-se nos olhos.", "Teoria")
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
-    var cards by remember { mutableStateOf(builtInFlashcards) }
-    var currentIndex by remember { mutableIntStateOf(0) }
+fun FlashcardsScreen(onBack: (() -> Unit)? = null, viewModel: FlashcardsViewModel? = null) {
+    val vm = viewModel ?: viewModel(factory = com.bioacupunt.di.AppContainer.flashcardsViewModelFactory)
+    val state by vm.state.collectAsStateWithLifecycle()
     var isFlipped by remember { mutableStateOf(false) }
-    var knownCount by remember { mutableIntStateOf(0) }
-    var unknownCount by remember { mutableIntStateOf(0) }
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    // Vira a carta de novo sempre que a fila avança ou é reconstruída.
+    LaunchedEffect(state.queueIndex, state.queue) { isFlipped = false }
 
     val status = statusColors()
-    val categories = cards.map { it.categoria }.distinct()
-    val filteredCards = if (selectedCategory == null) cards
-    else cards.filter { it.categoria == selectedCategory }
-
-    val safeIndex = if (filteredCards.isEmpty()) 0 else currentIndex.coerceIn(0, filteredCards.size - 1)
-    val card = if (filteredCards.isNotEmpty()) filteredCards[safeIndex] else null
+    val categories = state.deck.map { it.card.category }.distinct()
+    val filteredDeck = state.deckForCategory()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Progress bar
-        if (filteredCards.isNotEmpty()) {
-            LinearProgressIndicator(
-                progress = { (safeIndex + 1f) / filteredCards.size },
-                modifier = Modifier.fillMaxWidth(),
-                color = Primary
-            )
-        }
-
-        // Header stats
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,28 +61,34 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (onBack != null) {
-                IconButton(onClick = onBack, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = onBack, modifier = Modifier.size(44.dp)) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar", modifier = Modifier.size(20.dp))
                 }
             }
-            Text(
-                "${safeIndex + 1} / ${filteredCards.size}",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            AssistChip(
+                onClick = {},
+                label = { Text("${state.dueCount} para revisar hoje") },
+                leadingIcon = { Icon(Icons.Default.Schedule, null, modifier = Modifier.size(16.dp)) },
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Icon(Icons.Default.Check, null, tint = status.success, modifier = Modifier.size(16.dp))
-                    Text("$knownCount", style = MaterialTheme.typography.labelMedium, color = status.success)
+            Box {
+                IconButton(onClick = { menuExpanded = true }, modifier = Modifier.size(44.dp)) {
+                    Icon(Icons.Default.Add, "Novo card")
                 }
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Icon(Icons.Default.Close, null, tint = status.danger, modifier = Modifier.size(16.dp))
-                    Text("$unknownCount", style = MaterialTheme.typography.labelMedium, color = status.danger)
+                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                    DropdownMenuItem(
+                        text = { Text("Novo card") },
+                        leadingIcon = { Icon(Icons.Default.EditNote, null) },
+                        onClick = { menuExpanded = false; vm.openNewCardEditor() }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Criar de artigo") },
+                        leadingIcon = { Icon(Icons.AutoMirrored.Filled.LibraryBooks, null) },
+                        onClick = { menuExpanded = false; vm.startCreateFromArticle() }
+                    )
                 }
             }
         }
 
-        // Category chips
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -116,115 +96,257 @@ fun FlashcardsScreen(onBack: (() -> Unit)? = null) {
         ) {
             item {
                 FilterChip(
-                    selected = selectedCategory == null,
-                    onClick = { selectedCategory = null; currentIndex = 0; isFlipped = false },
-                    label = { Text("Todos (${cards.size})") }
+                    selected = state.selectedCategory == null,
+                    onClick = { vm.onCategorySelected(null) },
+                    label = { Text("Todos (${state.deck.size})") }
                 )
             }
             items(categories) { cat ->
                 FilterChip(
-                    selected = selectedCategory == cat,
-                    onClick = { selectedCategory = cat; currentIndex = 0; isFlipped = false },
+                    selected = state.selectedCategory == cat,
+                    onClick = { vm.onCategorySelected(cat) },
                     label = { Text(cat) }
                 )
             }
         }
 
-        // Card display
-        if (card == null) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Nenhum card disponível.")
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            when {
+                filteredDeck.isEmpty() -> EmptyState(
+                    icon = Icons.Default.Inbox,
+                    title = "Nenhum card disponível",
+                    subtitle = "Crie um card novo ou a partir de um artigo aprovado.",
+                )
+
+                state.sessionComplete -> SessionSummary(state = state, onRestart = vm::restartSession)
+
+                state.queue.isEmpty() -> NothingDueState(
+                    nextDueAtEpochMs = state.nextDueAtEpochMs,
+                    onStudyAnyway = vm::studyAnyway,
+                )
+
+                else -> StudyArea(
+                    state = state,
+                    status = status,
+                    isFlipped = isFlipped,
+                    onFlip = { isFlipped = !isFlipped },
+                    onAnswer = { remembered ->
+                        if (!isFlipped) isFlipped = true else vm.onAnswer(remembered)
+                    },
+                    onEdit = vm::openEditCardEditor,
+                    onDelete = vm::deleteCard,
+                )
             }
+        }
+    }
+
+    state.editor?.let { draft ->
+        FlashcardEditorDialog(
+            draft = draft,
+            onFrontChange = { front -> vm.updateEditor { it.copy(front = front) } },
+            onBackChange = { back -> vm.updateEditor { it.copy(back = back) } },
+            onCategoryChange = { category -> vm.updateEditor { it.copy(category = category) } },
+            onConfirm = vm::confirmEditor,
+            onCancel = vm::cancelEditor,
+        )
+    }
+
+    state.createFromArticle?.let { picker ->
+        if (picker.selectedArticle == null) {
+            ArticlePickerDialog(
+                articles = picker.articles,
+                isLoading = picker.isLoading,
+                onSelect = vm::selectArticleForCreate,
+                onDismiss = vm::cancelCreateFromArticle,
+            )
         } else {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                FlipCard(card = card, isFlipped = isFlipped, onClick = { isFlipped = !isFlipped })
-            }
+            SectionPickerDialog(
+                articleTitle = picker.selectedArticle.title,
+                sections = picker.sections,
+                onSelect = vm::selectSectionForCreate,
+                onDismiss = vm::cancelCreateFromArticle,
+            )
+        }
+    }
 
-            // Difficulty badge
-            val diffColor = when (card.dificuldade) {
-                "fácil" -> status.success
-                "difícil" -> status.danger
-                else -> status.warning
-            }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                AssistChip(
-                    onClick = {},
-                    label = { Text(card.categoria) },
-                    colors = AssistChipDefaults.assistChipColors(containerColor = Primary.copy(0.1f))
+    state.message?.let { msg ->
+        LaunchedEffect(msg) {
+            kotlinx.coroutines.delay(3000)
+            vm.dismissMessage()
+        }
+        Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.BottomCenter) {
+            Snackbar { Text(msg) }
+        }
+    }
+}
+
+@Composable
+private fun EmptyState(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, subtitle: String) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(icon, null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(16.dp))
+        Text(title, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+        Spacer(Modifier.height(4.dp))
+        Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
+private fun NothingDueState(nextDueAtEpochMs: Long?, onStudyAnyway: () -> Unit) {
+    val nextDateText = remember(nextDueAtEpochMs) {
+        nextDueAtEpochMs?.let {
+            val date = java.time.Instant.ofEpochMilli(it).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+            date.format(
+                java.time.format.DateTimeFormatter.ofPattern(
+                    "dd/MM/yyyy",
+                    java.util.Locale.Builder().setLanguage("pt").setRegion("BR").build()
                 )
+            )
+        }
+    }
+    Column(
+        modifier = Modifier.fillMaxSize().padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(Icons.Default.EventAvailable, null, modifier = Modifier.size(48.dp), tint = FlashcardGreen)
+        Spacer(Modifier.height(16.dp))
+        Text("Nenhum card vencido", style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+        Spacer(Modifier.height(4.dp))
+        Text(
+            if (nextDateText != null) "Próxima revisão em $nextDateText" else "Tudo em dia por aqui.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(24.dp))
+        OutlinedButton(onClick = onStudyAnyway) { Text("Estudar mesmo assim") }
+    }
+}
+
+@Composable
+private fun SessionSummary(state: FlashcardsUiState, onRestart: () -> Unit) {
+    val status = statusColors()
+    Column(
+        modifier = Modifier.fillMaxSize().padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(48.dp), tint = status.success)
+        Spacer(Modifier.height(16.dp))
+        Text("Sessão concluída", style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(16.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("${state.knownCount}", style = MaterialTheme.typography.headlineMedium, color = status.success)
+                Text("Sei", style = MaterialTheme.typography.labelMedium)
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("${state.unknownCount}", style = MaterialTheme.typography.headlineMedium, color = status.danger)
+                Text("Não sei", style = MaterialTheme.typography.labelMedium)
+            }
+        }
+        Spacer(Modifier.height(24.dp))
+        Button(onClick = onRestart) { Text("Reiniciar") }
+    }
+}
+
+@Composable
+private fun StudyArea(
+    state: FlashcardsUiState,
+    status: StatusColorScheme,
+    isFlipped: Boolean,
+    onFlip: () -> Unit,
+    onAnswer: (Boolean) -> Unit,
+    onEdit: (Flashcard) -> Unit,
+    onDelete: (Long) -> Unit,
+) {
+    val studyCard = state.currentCard ?: return
+    Column(modifier = Modifier.fillMaxSize()) {
+        LinearProgressIndicator(
+            progress = { (state.queueIndex + 1f) / state.queue.size },
+            modifier = Modifier.fillMaxWidth(),
+            color = Primary
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "${state.queueIndex + 1} / ${state.queue.size}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Icon(Icons.Default.Check, null, tint = status.success, modifier = Modifier.size(16.dp))
+                    Text("${state.knownCount}", style = MaterialTheme.typography.labelMedium, color = status.success)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Icon(Icons.Default.Close, null, tint = status.danger, modifier = Modifier.size(16.dp))
+                    Text("${state.unknownCount}", style = MaterialTheme.typography.labelMedium, color = status.danger)
+                }
+            }
+        }
+
+        Box(
+            modifier = Modifier.weight(1f).fillMaxWidth().padding(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            FlipCard(card = studyCard.card, isFlipped = isFlipped, onClick = onFlip)
+        }
+
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            AssistChip(onClick = {}, label = { Text(studyCard.card.category) })
+            Spacer(Modifier.width(8.dp))
+            AssistChip(
+                onClick = {},
+                label = { Text("Caixa ${studyCard.progress?.box ?: 0}") },
+                colors = AssistChipDefaults.assistChipColors(containerColor = Primary.copy(0.1f))
+            )
+            if (studyCard.card.builtin) {
                 Spacer(Modifier.width(8.dp))
-                AssistChip(
-                    onClick = {},
-                    label = { Text(card.dificuldade) },
-                    colors = AssistChipDefaults.assistChipColors(containerColor = diffColor.copy(0.1f))
-                )
-            }
-
-            // Action buttons
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Não sei
-                Button(
-                    onClick = {
-                        if (!isFlipped) { isFlipped = true; return@Button }
-                        unknownCount++
-                        isFlipped = false
-                        if (safeIndex < filteredCards.size - 1) currentIndex++ else currentIndex = 0
-                    },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = status.danger)
-                ) {
-                    Icon(Icons.Default.Close, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Não sei")
+                AssistChip(onClick = {}, label = { Text("fixo") })
+            } else {
+                Spacer(Modifier.width(8.dp))
+                IconButton(onClick = { onEdit(studyCard.card) }, modifier = Modifier.size(36.dp)) {
+                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(18.dp))
                 }
-                // Sei
-                Button(
-                    onClick = {
-                        if (!isFlipped) { isFlipped = true; return@Button }
-                        knownCount++
-                        isFlipped = false
-                        if (safeIndex < filteredCards.size - 1) currentIndex++ else currentIndex = 0
-                    },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = status.success)
+                IconButton(
+                    onClick = { studyCard.card.userRowId?.let(onDelete) },
+                    modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Sei!")
+                    Icon(Icons.Default.Delete, "Apagar", modifier = Modifier.size(18.dp), tint = status.danger)
                 }
             }
+        }
 
-            // Navigation
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Button(
+                onClick = { onAnswer(false) },
+                modifier = Modifier.weight(1f).heightIn(min = 44.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = status.danger)
             ) {
-                TextButton(
-                    onClick = { if (safeIndex > 0) { currentIndex--; isFlipped = false } },
-                    enabled = safeIndex > 0
-                ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null); Text("Anterior") }
-
-                TextButton(onClick = { currentIndex = 0; knownCount = 0; unknownCount = 0; isFlipped = false }) {
-                    Text("Reiniciar")
-                }
-
-                TextButton(
-                    onClick = { if (safeIndex < filteredCards.size - 1) { currentIndex++; isFlipped = false } },
-                    enabled = safeIndex < filteredCards.size - 1
-                ) { Text("Próximo"); Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
+                Icon(Icons.Default.Close, null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("Não sei")
+            }
+            Button(
+                onClick = { onAnswer(true) },
+                modifier = Modifier.weight(1f).heightIn(min = 44.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = status.success)
+            ) {
+                Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("Sei!")
             }
         }
     }
@@ -237,94 +359,181 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
         animationSpec = tween(500, easing = FastOutSlowInEasing),
         label = "flip"
     )
-
-    // Mostrar frente (0°-90°) ou verso (90°-180°)
     val showFront = rotation < 90f
-    // A face do verso precisa estar espelhada para ser legível após a rotação
-    val effectiveRotation = rotation
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1.4f)
             .graphicsLayer {
-                rotationY = effectiveRotation
+                rotationY = rotation
                 cameraDistance = 12f * density
-                // Suavizar visibilidade durante a transição
-                alpha = if (effectiveRotation in 10f..170f) 1f else 1f
             }
             .clip(RoundedCornerShape(20.dp))
             .background(
                 androidx.compose.ui.graphics.Brush.verticalGradient(
-                    if (showFront) FlashcardFront
-                    else FlashcardBack
+                    if (showFront) FlashcardFront else FlashcardBack
                 )
             )
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        // Frente
         AnimatedVisibility(
             visible = showFront,
             enter = fadeIn(animationSpec = tween(200)),
             exit = fadeOut(animationSpec = tween(100))
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(24.dp)
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.Help, null,
-                    tint = Primary, modifier = Modifier.size(32.dp)
-                )
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
+                Icon(Icons.AutoMirrored.Filled.Help, null, tint = Primary, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    card.frente,
+                    card.front,
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
+                        color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center
                     )
                 )
                 Spacer(Modifier.height(16.dp))
-                Text(
-                    "Toque para revelar",
-                    style = MaterialTheme.typography.labelSmall.copy(color = Color.White.copy(alpha = 0.5f))
-                )
+                Text("Toque para revelar", style = MaterialTheme.typography.labelSmall.copy(color = Color.White.copy(alpha = 0.5f)))
             }
         }
 
-        // Verso (espelhado para legibilidade)
         AnimatedVisibility(
             visible = !showFront,
             enter = fadeIn(animationSpec = tween(200)),
             exit = fadeOut(animationSpec = tween(100))
         ) {
             Box(modifier = Modifier.graphicsLayer { rotationY = 180f }) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(24.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Lightbulb, null,
-                        tint = FlashcardGold, modifier = Modifier.size(32.dp)
-                    )
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
+                    Icon(Icons.Default.Lightbulb, null, tint = FlashcardGold, modifier = Modifier.size(32.dp))
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        card.verso,
+                        card.back,
                         style = MaterialTheme.typography.bodyLarge.copy(
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Center
+                            color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center
                         )
                     )
                     Spacer(Modifier.height(16.dp))
-                    Text(
-                        "Resposta ✓",
-                        style = MaterialTheme.typography.labelSmall.copy(color = FlashcardGreen)
-                    )
+                    Text("Resposta ✓", style = MaterialTheme.typography.labelSmall.copy(color = FlashcardGreen))
                 }
             }
         }
     }
+}
+
+@Composable
+private fun FlashcardEditorDialog(
+    draft: Flashcard,
+    onFrontChange: (String) -> Unit,
+    onBackChange: (String) -> Unit,
+    onCategoryChange: (String) -> Unit,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text(if (draft.userRowId == null) "Novo card" else "Editar card") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (draft.sourceArticleId.isNotEmpty()) {
+                    Text(
+                        "De: ${draft.sourceSection}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                OutlinedTextField(
+                    value = draft.front,
+                    onValueChange = onFrontChange,
+                    label = { Text("Frente") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 2,
+                )
+                OutlinedTextField(
+                    value = draft.back,
+                    onValueChange = onBackChange,
+                    label = { Text("Verso") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                )
+                OutlinedTextField(
+                    value = draft.category,
+                    onValueChange = onCategoryChange,
+                    label = { Text("Categoria") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = onConfirm) { Text("Salvar") } },
+        dismissButton = { TextButton(onClick = onCancel) { Text("Cancelar") } },
+    )
+}
+
+@Composable
+private fun ArticlePickerDialog(
+    articles: List<MtcArticle>,
+    isLoading: Boolean,
+    onSelect: (MtcArticle) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Criar de artigo — escolha o artigo") },
+        text = {
+            when {
+                isLoading -> Box(Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+                articles.isEmpty() -> Text("Nenhum artigo aprovado na biblioteca ainda.")
+                else -> LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
+                    items(articles) { article ->
+                        Text(
+                            article.title,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onSelect(article) }
+                                .padding(vertical = 12.dp),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        HorizontalDivider()
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } },
+    )
+}
+
+@Composable
+private fun SectionPickerDialog(
+    articleTitle: String,
+    sections: List<String>,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(articleTitle) },
+        text = {
+            if (sections.isEmpty()) {
+                Text("Este artigo não tem seções demarcadas (#/##/###).")
+            } else {
+                LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
+                    items(sections) { section ->
+                        Text(
+                            MarkdownSections.titleOf(section),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onSelect(section) }
+                                .padding(vertical = 12.dp),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        HorizontalDivider()
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } },
+    )
 }

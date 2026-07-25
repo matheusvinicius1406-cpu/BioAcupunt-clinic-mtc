@@ -9,7 +9,7 @@ import com.bioacupunt.data.local.model.AuditTrailEntity
 import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
 
 /**
- * BIOACUPUNT SUPREMO — DATABASE (v18)
+ * BIOACUPUNT SUPREMO — DATABASE (v19)
  *
  * v18 adiciona as tabelas do MKIS on-device:
  * - knowledge_nodes expandido (enums canônicos, scores, governança)
@@ -19,6 +19,10 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
  * - vec_knowledge_nodes (sqlite-vec virtual table, criada via migration)
  * - knowledge_fts (FTS5 virtual table, criada via migration)
  *
+ * v19 adiciona as tabelas de Educação/Flashcards:
+ * - flashcards (cards autorais da médica; os 12 fixos ficam em BuiltinFlashcards.kt)
+ * - flashcard_progress (repetição espaçada Leitner-lite, por cardKey)
+ *
  * ## Migrações
  * As migrações são gerenciadas centralizadamente em [DatabaseModule].
  * Cada migração é ADDITIVE: nunca remove colunas ou tabelas existentes.
@@ -27,6 +31,7 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
  * v1-16: Migrações anteriores (ver DatabaseModule)
  * v17: tenantId em transacoes + override do veto clínico
  * v18: MKIS on-device (knowledge_nodes expandido + ingestion_jobs + purge_certificates + audit_trail + sqlite-vec + FTS5)
+ * v19: Educação/Flashcards (flashcards + flashcard_progress)
  */
 @Database(
     entities = [
@@ -56,8 +61,10 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
         com.bioacupunt.sync.data.local.SyncStateEntity::class,
         com.bioacupunt.sync.data.local.SyncConflictEntity::class,
         com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity::class,
+        com.bioacupunt.educacao.data.local.FlashcardEntity::class,
+        com.bioacupunt.educacao.data.local.FlashcardProgressEntity::class,
     ],
-    version = 18,
+    version = 19,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -84,4 +91,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun syncStateDao(): com.bioacupunt.sync.data.local.SyncStateDao
     abstract fun syncConflictDao(): com.bioacupunt.sync.data.local.SyncConflictDao
     abstract fun articleSearchDao(): com.bioacupunt.biblioteca.data.local.dao.ArticleSearchDao
+    abstract fun flashcardDao(): com.bioacupunt.educacao.data.local.FlashcardDao
 }

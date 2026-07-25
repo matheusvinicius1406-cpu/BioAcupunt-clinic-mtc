@@ -171,9 +171,55 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
 - **Nunca testado:** inferência on-device (só roda em Android real).
 - **MediaPipe está em modo manutenção** — migrar para LiteRT-LM. O raio de explosão
   está confinado ao `LocalLlmProvider` de propósito.
-- **Rasas ainda:** Agenda, CRM, Financeiro, Relatórios, Analytics, Educação.
+- **Rasas ainda:** nenhuma feature principal — Educação/Flashcards saiu da lista em
+  2026-07-25 (rebuild completo, ver handoff abaixo). Agenda, CRM, Financeiro,
+  Relatórios e Analytics já tinham saído em sessões anteriores.
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
+
+### Onde parei (2026-07-25) — leia antes de continuar
+
+Branch `fix/clinic-audit-phases` (== `main` local == `origin/main`, todos em
+`c119402` — a fase anterior já foi mergeada e empurrada pro GitHub num momento não
+documentado entre a sessão de 07-24 e esta). **Mudanças desta sessão ainda não
+commitadas** — só no working tree, aguardando revisão antes de virar commit.
+
+- **Rebuild completo da Educação/Flashcards**, implementado exatamente pelo plano
+  salvo em `docs/plano-educacao-flashcards.md` (nenhum desvio de design não
+  documentado): união dos 12 cards fixos (`educacao/data/BuiltinFlashcards.kt`,
+  movidos verbatim da tela antiga) com cards autorais da médica (tabela `flashcards`,
+  Room v18→19), progresso persistido em `flashcard_progress` via Leitner-lite
+  determinístico (`LeitnerScheduler`, caixas 0-4, intervalos 1/3/7/14 dias — sem IA),
+  e criação assistida a partir de artigo aprovado com extração **verbatim** de seção
+  + confirmação obrigatória antes de salvar (R4: zero geração por LLM, a médica é
+  sempre autora de registro).
+- **`MtcRetriever.extractBestSection` refatorado** para delegar em
+  `core/util/MarkdownSections.kt` (novo) — a regex de split de heading que antes
+  vivia duplicada como `SECTION_HEADING` privada agora tem uma fonte só, reusada
+  pela extração de flashcards. `retrieve()` e o gate R2 (`if (!hasEvidence)`)
+  **não foram tocados**.
+- **Migração `MIGRATION_18_19`** em `DatabaseModule.kt` (aditiva, sem `DEFAULT` no
+  SQL, sem FK — `flashcards`/`flashcard_progress` não dependem de nenhuma tabela
+  existente), `DB_VERSION` e `AppDatabase` version → 19. Coberta por
+  `FlashcardsMigrationTest` (Robolectric + SQLite real): tabelas existem pós-
+  migração, insert funciona, índice único `(tenantId, cardKey)` rejeita duplicata
+  no mesmo tenant e aceita a mesma key em tenant diferente.
+- **Suite: 151 testes (2 skipped de propósito, os `@Ignore` R4 de 07-24), 0
+  falhas** — 116 anteriores + 35 novos (`MarkdownSectionsTest` 8,
+  `LeitnerSchedulerTest` 6, `BuiltinFlashcardsTest` 4, `FlashcardRepositoryTest` 7,
+  `FlashcardsViewModelTest` 6, `FlashcardsMigrationTest` 4). `assembleDebug` verde,
+  **nenhum warning novo** (o único warning restante continua sendo o `GoogleSignIn`
+  de `GoogleDriveClient.kt`, pré-existente).
+- **Ainda não feito:** nada testado em device (a migração real v18→19 num
+  `bioacupunt_db` de verdade fica para quando houver device conectado — só o
+  Robolectric cobre hoje); revisão da médica sobre o rebuild (ela não viu a tela
+  nova ainda); os `@Ignore` de R4 e os 7/18 `ClinicalFlag` sem regra continuam
+  parados, sem relação com esta sessão; `GoogleSignIn` deprecado idem.
+- **Nada commitado ainda** — 5 arquivos modificados
+  (`MtcRetriever.kt`, `AppDatabase.kt`, `AppContainer.kt`, `DatabaseModule.kt`,
+  `FlashcardsScreen.kt`) + `core/util/MarkdownSections.kt` novo + o pacote
+  `educacao/` inteiro (domain/data/presentation) + os 6 arquivos de teste, todos
+  só no working tree.
 
 ### Onde parei (2026-07-24) — leia antes de continuar
 

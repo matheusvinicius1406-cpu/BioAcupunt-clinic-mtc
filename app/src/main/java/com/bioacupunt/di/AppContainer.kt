@@ -275,6 +275,25 @@ object AppContainer {
         )
     }
 
+    // ── Educação: Flashcards ────────────────────────────────
+    val flashcardDao: com.bioacupunt.educacao.data.local.FlashcardDao by lazy { database.flashcardDao() }
+    val flashcardRepository: com.bioacupunt.educacao.domain.repository.FlashcardRepository by lazy {
+        com.bioacupunt.educacao.data.repository.FlashcardRepositoryImpl(
+            dao = flashcardDao,
+            tenantId = { tenantManager.requireTenantId() },
+        )
+    }
+    val flashcardsViewModelFactory: com.bioacupunt.educacao.presentation.FlashcardsViewModelFactory by lazy {
+        com.bioacupunt.educacao.presentation.FlashcardsViewModelFactory(
+            repository = flashcardRepository,
+            // União baseline+aprovados, mesmo padrão do FtsSearchService (R4: só o que
+            // já passou por revisão humana entra como fonte de flashcard).
+            sourceArticles = {
+                com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles + libraryStagingRepository.approvedArticles()
+            },
+        )
+    }
+
     // ── Financeiro ─────────────────────────────────────────
     val transacaoRepository: com.bioacupunt.financeiro.domain.repository.TransacaoRepository by lazy {
         com.bioacupunt.financeiro.data.repository.TransacaoRepositoryImpl(transacaoDao, tenantManager)

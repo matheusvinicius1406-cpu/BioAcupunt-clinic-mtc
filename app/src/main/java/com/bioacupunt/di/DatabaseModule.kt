@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 18
+    private const val DB_VERSION = 19
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -147,6 +147,7 @@ object DatabaseModule {
         if (current >= 16) migrations.add(MIGRATION_15_16)
         if (current >= 17) migrations.add(MIGRATION_16_17)
         if (current >= 18) migrations.add(MIGRATION_17_18)
+        if (current >= 19) migrations.add(MIGRATION_18_19)
         return migrations
     }
 
@@ -698,6 +699,59 @@ object DatabaseModule {
             // do zero no Passo 1. Dados antigos (se houverem) são perdidos
             // intencionalmente: o schema antigo era incompatível (type→knowledge_type,
             // version INTEGER→TEXT) e não havia dados clínicos reais na tabela.
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // v19 — Educação: Flashcards
+    //
+    // Duas tabelas novas, sem relação com nenhuma tabela existente (sem FK):
+    // 1. flashcards — cards autorais da médica (os 12 fixos ficam em código,
+    //    BuiltinFlashcards.kt, nunca nesta tabela)
+    // 2. flashcard_progress — repetição espaçada Leitner-lite, chaveada por
+    //    cardKey (`builtin_*` ou `user_<id>`), cobrindo as duas populações
+    //
+    // Sem DEFAULT no SQL — mesma regra da v18: as entities usam defaults do
+    // Kotlin, não @ColumnInfo(defaultValue); Room 2.7 valida o schema ao abrir
+    // e crasha se o SQL declarar DEFAULT que a entity não tem.
+    // ═════════════════════════════════════════════════════════════════════
+    private val MIGRATION_18_19 = object : androidx.room.migration.Migration(18, 19) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS `flashcards` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `tenantId` INTEGER NOT NULL,
+                    `front` TEXT NOT NULL,
+                    `back` TEXT NOT NULL,
+                    `category` TEXT NOT NULL,
+                    `sourceArticleId` TEXT NOT NULL,
+                    `sourceSection` TEXT NOT NULL,
+                    `createdAt` TEXT NOT NULL,
+                    `updatedAt` TEXT NOT NULL
+                )
+            """.trimIndent())
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_flashcards_tenantId` ON `flashcards` (`tenantId`)")
+
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS `flashcard_progress` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `tenantId` INTEGER NOT NULL,
+                    `cardKey` TEXT NOT NULL,
+                    `box` INTEGER NOT NULL,
+                    `dueAtEpochMs` INTEGER NOT NULL,
+                    `lastReviewedAtEpochMs` INTEGER NOT NULL,
+                    `totalReviews` INTEGER NOT NULL,
+                    `totalLapses` INTEGER NOT NULL
+                )
+            """.trimIndent())
+            database.execSQL(
+                "CREATE UNIQUE INDEX IF NOT EXISTS `index_flashcard_progress_tenantId_cardKey` " +
+                    "ON `flashcard_progress` (`tenantId`, `cardKey`)"
+            )
+            database.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_flashcard_progress_tenantId_dueAtEpochMs` " +
+                    "ON `flashcard_progress` (`tenantId`, `dueAtEpochMs`)"
+            )
         }
     }
 
