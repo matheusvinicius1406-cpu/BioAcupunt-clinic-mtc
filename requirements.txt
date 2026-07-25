@@ -1,22 +1,8 @@
 # =============================================================================
-# Runtime dependencies for the Vercel serverless function (api/index.py).
-#
-# The @vercel/python builder installs THIS file (it looks for `requirements.txt`
-# at the project root — NOT requirements-vercel.txt, and it does not support a
-# `config.pipfile` key). Keep it slim: only what the request path imports.
-#
-# Deliberately NOT here:
-#   - uvicorn        -> not used in serverless; Vercel's Python builder runs the
-#                       FastAPI ASGI app natively (see api/index.py).
-#   - mangum         -> only needed for the old AWS-Lambda-event-bridge shape;
-#                       Vercel now detects and runs a top-level `app` directly.
-#   - alembic        -> migrations are run manually against Neon from a dev
-#                       machine (see DEPLOY.md), never inside the lambda.
-#   - passlib/bcrypt -> auth_service hashes with argon2 (see app/core/security.py),
-#                       so only argon2-cffi is needed.
-#
-# Local dev / tests still use backend/requirements.txt (which keeps uvicorn +
-# alembic).
+# Legacy — kept for local dev reference.
+# Vercel now reads pyproject.toml (root) for dependencies via `uv`.
+# Root pyproject.toml is the single source of truth for Vercel deploys.
+# backend/requirements.txt still used for local dev + tests.
 # =============================================================================
 
 fastapi>=0.115
