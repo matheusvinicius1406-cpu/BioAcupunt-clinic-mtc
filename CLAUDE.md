@@ -376,17 +376,15 @@ direção clara de onde deveria chegar:
   assistente livre de verdade (ferramentas reais, sem mock) fica reservado pra
   tarefas administrativas. **O roteamento e as ferramentas em si ainda não foram
   implementados** — só a decisão de arquitetura está registrada.
-- **Banco de produção provisionado.** Reaproveitado um projeto Supabase pausado já
-  existente na conta (`myxdfraslkomuokraygh`, região `us-west-2`) — **atenção: esse
-  projeto já tinha um schema de outro app** (tabelas PascalCase estilo Prisma:
-  `Patient`, `Anamnesis`, `DiagnosisRecord`, `Protocolo`, etc., todas com 0 linhas,
-  nada apagado). As 10 tabelas do BioAcupunt (`clinics`, `patients`, `users`,
-  `appointments`, `transactions`, `crm_patients`, `library_nodes`, etc.) foram
-  criadas do zero a partir da cadeia completa de migrations do Alembic (`alembic
-  upgrade head --sql`, aplicada via `apply_migration`), head em `d1f8a3c46e27`.
-  Convivem sem conflito de nome, mas **o banco não é dedicado só a este projeto** —
-  se algum dia isso incomodar, criar um projeto Supabase novo e migrar é simples
-  (mesma cadeia de SQL).
+- **Banco de produção: trocado de Supabase pra Neon (`sa-east-1`, São Paulo)** —
+  o usuário criou o projeto e passou a connection string na sequência. Rodado
+  `alembic upgrade head` de verdade (não offline) contra o host **direto**
+  (`ep-spring-recipe-acmrem1k.sa-east-1.aws.neon.tech`). 10 tabelas + `alembic_version`
+  confirmadas, head em `d1f8a3c46e27`, banco limpo e dedicado só a este projeto
+  (bem melhor que o Supabase reaproveitado antes, que tinha schema de outro app
+  dentro — esse projeto Supabase ficou órfão, sem uso; pode ser pausado/ignorado).
+  Vercel usa o host **pooler** (`ep-spring-recipe-acmrem1k-pooler.sa-east-1.aws.neon.tech`)
+  pra `DATABASE_URL`; migrations futuras rodam contra o host direto.
 - **Secrets de produção gerados** (`JWT_SECRET_KEY`, `DOCUMENT_HASH_SECRET`, 32
   bytes hex cada) — não ficam neste arquivo por serem segredo real; estão só na
   resposta da sessão em que foram gerados. Gere novos se precisar (`python -c
