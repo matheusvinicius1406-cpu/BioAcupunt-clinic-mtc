@@ -36,9 +36,16 @@ class Settings(BaseSettings):
         # the asyncpg driver. Rewrite the scheme so the same env var works
         # unchanged in the cloud.
         if v.startswith("postgres://"):
-            return "postgresql+asyncpg://" + v[len("postgres://"):]
-        if v.startswith("postgresql://"):
-            return "postgresql+asyncpg://" + v[len("postgresql://"):]
+            v = "postgresql+asyncpg://" + v[len("postgres://"):]
+        elif v.startswith("postgresql://"):
+            v = "postgresql+asyncpg://" + v[len("postgresql://"):]
+
+        # Neon and most managed Postgres enforce TLS by default, and
+        # ?sslmode=require in the query string is NOT supported by asyncpg
+        # through SQLAlchemy (it passes it verbatim to connect() which
+        # doesn't accept that keyword). Strip it — SSL is on anyway.
+        if "?sslmode=require" in v:
+            v = v.replace("?sslmode=require", "")
         return v
 
     @property
