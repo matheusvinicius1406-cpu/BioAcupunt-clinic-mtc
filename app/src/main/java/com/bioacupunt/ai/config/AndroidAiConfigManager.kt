@@ -25,9 +25,15 @@ class AndroidAiConfigManager(
         prefs.edit().putString("preferred_model", modelId).apply()
     }
 
-    // Default false: offline-first. Cloud only runs after the doctor flips this in
-    // Ajustes > IA AND provides an API key.
-    override suspend fun isCloudEnabled(): Boolean = prefs.getBoolean("cloud_ai_enabled", false)
+    // Default true: Gemini is the app's definitive AI out of the box, on every fresh
+    // install — a deliberate product decision (2026-07-26), not an accidental flip. The
+    // doctor can still turn it off in Ajustes > IA for a 100% offline posture; when she
+    // does, the on-device model (when downloaded) keeps working as before. This does not
+    // touch R1 (ClinicalSafetyEngine never calls any LLM) or R2 (AskLibraryUseCase's
+    // `if (!grounding.hasEvidence) return NoEvidence` gate runs before any provider,
+    // cloud or local, is even considered) — it only changes which provider answers once
+    // a question has already passed those gates.
+    override suspend fun isCloudEnabled(): Boolean = prefs.getBoolean("cloud_ai_enabled", true)
     override suspend fun setCloudEnabled(enabled: Boolean) {
         prefs.edit().putBoolean("cloud_ai_enabled", enabled).apply()
     }
