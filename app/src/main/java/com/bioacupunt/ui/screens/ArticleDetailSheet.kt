@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -69,14 +70,17 @@ fun ArticleDetailSheet(
         ) {
             // ── Categoria ──
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(
+                Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(50))
                         .background(Primary.copy(alpha = 0.10f))
                         .padding(horizontal = 10.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
+                    Icon(category?.icon() ?: Icons.AutoMirrored.Filled.Article, null, tint = Primary, modifier = Modifier.size(14.dp))
                     Text(
-                        "${category?.emoji ?: "📄"}  ${category?.label ?: article.category}",
+                        category?.label ?: article.category,
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                         color = Primary,
                     )
@@ -108,7 +112,7 @@ fun ArticleDetailSheet(
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             // ── Conteúdo completo, sem limite de altura ──
-            Text(article.content, style = MaterialTheme.typography.bodyMedium)
+            MarkdownText(article.content)
 
             // ── Tags ──
             if (article.tags.isNotEmpty()) {

@@ -11,6 +11,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -19,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -60,14 +65,17 @@ fun MkisDetailSheet(
         ) {
             // ── Status bar: tipo + badge de score ──────────
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(
+                Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(50))
                         .background(KnowledgeTypeColor(node.knowledge_type).copy(alpha = 0.12f))
                         .padding(horizontal = 10.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
+                    Icon(KnowledgeTypeIcon(node.knowledge_type), null, tint = KnowledgeTypeColor(node.knowledge_type), modifier = Modifier.size(14.dp))
                     Text(
-                        "${KnowledgeTypeEmoji(node.knowledge_type)} ${KnowledgeTypeLabel(node.knowledge_type)}",
+                        KnowledgeTypeLabel(node.knowledge_type),
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                         color = KnowledgeTypeColor(node.knowledge_type),
                     )
@@ -103,7 +111,7 @@ fun MkisDetailSheet(
             if (node.content.isNotBlank()) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
                 // ── Conteúdo ──
-                Text(node.content, style = MaterialTheme.typography.bodyMedium)
+                MarkdownText(node.content)
             }
 
             // ── Tags ──
@@ -258,20 +266,20 @@ private fun KnowledgeTypeLabel(type: String): String = when (type) {
     else -> type.replace("_", " ").replaceFirstChar { it.uppercase() }
 }
 
-private fun KnowledgeTypeEmoji(type: String): String = when (type) {
-    "artigo" -> "📄"
-    "revisao" -> "📚"
-    "ensaio_clinico" -> "🔬"
-    "guideline" -> "📋"
-    "capitulo" -> "📖"
-    "livro" -> "📕"
-    "tese" -> "🎓"
-    "caso_clinico" -> "🩺"
-    "protocolo" -> "📝"
-    "nota" -> "📌"
-    "relatorio" -> "📊"
-    "educacional" -> "🎯"
-    else -> "📄"
+private fun KnowledgeTypeIcon(type: String): ImageVector = when (type) {
+    "artigo" -> Icons.AutoMirrored.Filled.Article
+    "revisao" -> Icons.AutoMirrored.Filled.MenuBook
+    "ensaio_clinico" -> Icons.Default.Science
+    "guideline" -> Icons.AutoMirrored.Filled.Assignment
+    "capitulo" -> Icons.Default.Bookmarks
+    "livro" -> Icons.Default.Book
+    "tese" -> Icons.Default.School
+    "caso_clinico" -> Icons.Default.MedicalServices
+    "protocolo" -> Icons.Default.Rule
+    "nota" -> Icons.Default.PushPin
+    "relatorio" -> Icons.Default.Assessment
+    "educacional" -> Icons.Default.Lightbulb
+    else -> Icons.AutoMirrored.Filled.Article
 }
 
 private fun KnowledgeTypeColor(type: String): Color = when (type) {
