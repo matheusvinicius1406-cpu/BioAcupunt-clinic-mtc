@@ -1,4 +1,5 @@
 from functools import lru_cache
+from urllib.parse import parse_qsl, urlencode
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -40,13 +41,32 @@ class Settings(BaseSettings):
         elif v.startswith("postgresql://"):
             v = "postgresql+asyncpg://" + v[len("postgresql://"):]
 
-        # Neon and most managed Postgres enforce TLS by default, and
-        # ?sslmode=require in the query string is NOT supported by asyncpg
-        # through SQLAlchemy (it passes it verbatim to connect() which
-        # doesn't accept that keyword). Strip it — SSL is on anyway.
-        if "?sslmode=require" in v:
-            v = v.replace("?sslmode=require", "")
-        return v
+        # Neon (and most managed Postgres) append libpq-style query params —
+        # sslmode, channel_binding — that asyncpg does not accept as connect()
+        # kwargs (TLS negotiates fine without them). A previous version of this
+        # validator only ever string-replaced the exact substring
+        # "?sslmode=require", which silently mangled the URL the moment Neon's
+        # console appended a second param after it: "?sslmode=require&channel_
+        # binding=require" left a dangling "&channel_binding=require" glued
+        # onto the database name with no "?", so asyncpg tried to connect to a
+        # database literally named "neondb&channel_binding=require" and failed
+        # with InvalidCatalogNameError.
+        #
+        # Only touch the query string, never the scheme/host/path: an earlier
+        # attempt at this fix round-tripped the whole URL through
+        # urlsplit/urlunsplit, which silently drops a "/" from host-less URLs
+        # like the test suite's "sqlite+aiosqlite:///:memory:" (urlunsplit only
+        # emits "//" before a non-empty netloc). Splitting on the literal "?"
+        # instead leaves everything before it untouched.
+        if "?" not in v:
+            return v
+        base, _, query = v.partition("?")
+        kept = [
+            (key, value)
+            for key, value in parse_qsl(query, keep_blank_values=True)
+            if key not in {"sslmode", "channel_binding"}
+        ]
+        return f"{base}?{urlencode(kept)}" if kept else base
 
     @property
     def is_production(self) -> bool:
