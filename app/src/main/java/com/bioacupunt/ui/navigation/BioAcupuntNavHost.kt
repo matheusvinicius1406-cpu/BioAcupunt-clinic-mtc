@@ -257,7 +257,7 @@ fun BioAcupuntNavHost(
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Simulador.route)   { SimuladorScreen() }
-            composable(Screen.AiAssistant.route) { InteligenciaScreen(onNavigateToCRM = { navigateTab(Screen.CRM.route) }) }
+            composable(Screen.AiAssistant.route) { InteligenciaScreen() }
             composable(Screen.Relatorios.route)  { RelatoriosScreen() }
         }
     }
