@@ -126,6 +126,11 @@ class UnifiedAiChatViewModel(
      * Chamado exclusivamente depois que [askLibrary] já devolveu [AskLibraryUseCase.Answer.NoEvidence]
      * — ou seja, depois que o gate R2 já rejeitou o caminho RAG para esta pergunta. Não é um atalho
      * paralelo: é o que acontece DEPOIS que o portão já fechou essa porta.
+     *
+     * `allowWebSearch = true` deixa o provider de nuvem (Gemini, quando habilitado pela médica em
+     * Ajustes > IA) buscar no Google de verdade antes de responder — grounding nativo da própria
+     * API, sem chave/serviço extra. O provider local (Gemma on-device) simplesmente ignora a flag,
+     * já que não tem acesso à internet; a busca é só um recurso a mais, nunca uma dependência.
      */
     private suspend fun runFallback(question: String): UnifiedChatTurn {
         val request = AiRequest(
@@ -135,6 +140,7 @@ class UnifiedAiChatViewModel(
             maxTokens = 1024,
             preferLocal = true,
             taskHint = "general-chat",
+            allowWebSearch = true,
         )
         return generateAiResponse(request).fold(
             onSuccess = { result -> UnifiedChatTurn(UnifiedChatRole.ASSISTANT, result.text) },
@@ -174,6 +180,8 @@ class UnifiedAiChatViewModel(
         appendLine("- Rascunhar mensagens ADMINISTRATIVAS para a paciente: horário, confirmação, remarcação,")
         appendLine("  cancelamento, orientações não-clínicas (o que trazer, como chegar). Escreva um rascunho que a")
         appendLine("  médica revisa e envia; nunca inclua conteúdo clínico, diagnóstico ou orientação de tratamento.")
+        appendLine("- Você pode buscar no Google em tempo real quando precisar de informação atual para uma")
+        appendLine("  pergunta administrativa/geral (não-clínica) — cite a fonte quando usar um resultado de busca.")
         appendLine()
         appendLine("O QUE VOCÊ NUNCA FAZ (tipo (b) e afins) — parede inviolável:")
         appendLine("- NUNCA dê diagnóstico, tratamento, prescrição de pontos/fórmulas, ou interpretação de sintomas")

@@ -376,6 +376,7 @@ private fun AiApisTab() {
     val cacheManager = remember { com.bioacupunt.di.AppContainer.cacheManager }
     val configManager = remember { com.bioacupunt.di.AppContainer.aiConfigManager }
     val secretsProvider = remember { com.bioacupunt.di.AppContainer.aiSecretsProvider }
+    val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     val scope = rememberCoroutineScope()
 
     // Toggle + chave da IA na nuvem são estado REAL, lidos/escritos no AiConfigManager
@@ -386,14 +387,48 @@ private fun AiApisTab() {
     var apiKey by remember { mutableStateOf("") }
     var keyRevealed by remember { mutableStateOf(false) }
     var keySaved by remember { mutableStateOf(false) }
+    var modelUrl by remember { mutableStateOf("") }
+    var modelUrlSaved by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         cloudEnabled = configManager.isCloudEnabled()
         apiKey = secretsProvider.apiKeyFor("gemini").orEmpty()
+        modelUrl = securePrefs.localModelUrl
     }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { SectionHeader("📱 IA local (offline)") }
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "Avançado: hospede o arquivo do modelo (.task) você mesmo (S3, R2, CDN de sua escolha) " +
+                            "e informe a URL de download abaixo. O app verifica o SHA-256 fixado no código antes " +
+                            "de confiar no arquivo — uma URL errada ou um arquivo adulterado falha a verificação " +
+                            "e nunca é aceito.",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    OutlinedTextField(
+                        value = modelUrl,
+                        onValueChange = { modelUrl = it; modelUrlSaved = false },
+                        label = { Text("URL de download do modelo") },
+                        placeholder = { Text("https://…/gemma-3-1b-it-int4.task") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Button(
+                        onClick = { securePrefs.localModelUrl = modelUrl.trim(); modelUrlSaved = true },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar URL do modelo")
+                    }
+                    if (modelUrlSaved) {
+                        Text("✅ URL salva.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
+                    }
+                }
+            }
+        }
         item { LocalModelCard() }
 
         item { SectionHeader("☁️ IA na nuvem (opcional)") }
@@ -405,7 +440,7 @@ private fun AiApisTab() {
                 Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(20.dp))
                     Text(
-                        "Ao ligar, o texto das suas conversas com a IA é enviado a um servidor externo (Google Gemini) — deixa de ser 100% offline. Não use com dados clínicos sensíveis sem consentimento (LGPD). A IA local continua sendo o padrão e tem prioridade quando disponível.",
+                        "Ao ligar, o texto das suas conversas com a IA é enviado a um servidor externo (Google Gemini) — deixa de ser 100% offline. Não use com dados clínicos sensíveis sem consentimento (LGPD). A IA local continua sendo o padrão e tem prioridade quando disponível. Com a nuvem ligada, o assistente livre (perguntas administrativas/gerais, nunca clínicas) também pode buscar no Google em tempo real usando a mesma chave — sem cadastro adicional.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
                     )
@@ -449,7 +484,7 @@ private fun AiApisTab() {
                 ) { Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar chave") }
             }
             if (keySaved) {
-                item { Text("✅ Chave salva. A IA na nuvem será usada como fallback.", style = MaterialTheme.typography.labelMedium, color = statusColors().success) }
+                item { Text("✅ Chave salva. A IA na nuvem e a busca no Google ficam disponíveis no chat.", style = MaterialTheme.typography.labelMedium, color = statusColors().success) }
             }
         }
 
@@ -705,7 +740,7 @@ private fun SystemTab() {
                         value = serverUrl,
                         onValueChange = { serverUrl = it; serverSaved = false },
                         label = { Text("URL do servidor") },
-                        placeholder = { Text("https://bioacupunt-api.onrender.com") },
+                        placeholder = { Text("https://bio-acupunt-clinic-mtc.vercel.app") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )

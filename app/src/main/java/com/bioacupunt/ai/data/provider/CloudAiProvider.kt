@@ -101,7 +101,7 @@ class CloudAiProvider(
         AiModelDescriptor(
             id = MODEL_ID,
             providerId = PROVIDER_ID,
-            displayName = "Gemini 2.5 Flash",
+            displayName = "Gemini Flash",
             capabilities = setOf(AiCapability.Chat),
             contextTokens = MAX_CONTEXT_TOKENS,
             isLocal = false,
@@ -129,16 +129,29 @@ class CloudAiProvider(
                     ?: error("Chave de API da nuvem não configurada em Ajustes > IA.")
 
                 val started = System.currentTimeMillis()
-                val text = withTimeout(REQUEST_TIMEOUT_MS) {
-                    callGemini(apiKey, request)
-                }.trim()
-                check(text.isNotEmpty()) { "A nuvem devolveu resposta vazia." }
+                val (rawText, sources) = withTimeout(REQUEST_TIMEOUT_MS) {
+                    // Grounding with Google Search is billed separately from plain chat —
+                    // a key/project without it enabled gets a normal chat completion but a
+                    // 429 the instant `tools: [google_search]` is attached, even though the
+                    // exact same prompt without the tool succeeds. That would take down the
+                    // *entire* administrative fallback just because search grounding isn't
+                    // provisioned. Degrade instead: retry once, without the tool, so the
+                    // doctor still gets an answer — just without live web results.
+                    runCatching { callGemini(apiKey, request) }
+                        .getOrElse {
+                            if (!request.allowWebSearch) throw it
+                            callGemini(apiKey, request.copy(allowWebSearch = false))
+                        }
+                }
+                val text = (rawText.trim() + buildSourcesBlock(sources))
+                check(rawText.isNotBlank()) { "A nuvem devolveu resposta vazia." }
 
                 AiResult(
                     text = text,
                     providerId = PROVIDER_ID,
                     modelId = MODEL_ID,
                     capabilitiesUsed = setOf(AiCapability.Chat),
+                    toolsUsed = if (sources.isNotEmpty()) listOf("google_search") else emptyList(),
                     latencyMs = System.currentTimeMillis() - started,
                     decisionReason = "Executado na nuvem (habilitado pela médica). Texto saiu do aparelho.",
                     metadata = mapOf(
@@ -149,7 +162,8 @@ class CloudAiProvider(
             }.onFailure { if (it is CancellationException) throw it }
         }
 
-    private fun callGemini(apiKey: String, request: AiRequest): String {
+    /** Returns the model text plus any Google Search grounding sources it cited. */
+    private fun callGemini(apiKey: String, request: AiRequest): Pair<String, List<Pair<String, String>>> {
         val url = "$ENDPOINT/$MODEL_ID:generateContent?key=$apiKey"
 
         val body = JSONObject().apply {
@@ -171,6 +185,14 @@ class CloudAiProvider(
                     ),
                 )
             }
+            // Native Google Search grounding — only for the administrative/free-chat
+            // fallback (never set on the RAG/clinical path, see AiRequest.allowWebSearch).
+            // Gemini itself decides whether a search would help, runs it, and returns
+            // groundingMetadata with the sources it actually used; no separate search API
+            // or key is needed beyond the one already configured for this provider.
+            if (request.allowWebSearch) {
+                put("tools", JSONArray().put(JSONObject().put("google_search", JSONObject())))
+            }
             put(
                 "generationConfig",
                 JSONObject().apply {
@@ -190,8 +212,26 @@ class CloudAiProvider(
             check(response.isSuccessful) {
                 "Falha na nuvem: HTTP ${response.code}${extractApiError(payload)?.let { " — $it" } ?: ""}"
             }
-            return parseText(payload)
+            return parseText(payload) to parseGroundingSources(payload)
         }
+    }
+
+    private fun parseGroundingSources(payload: String): List<Pair<String, String>> = runCatching {
+        val chunks = JSONObject(payload).optJSONArray("candidates")
+            ?.optJSONObject(0)
+            ?.optJSONObject("groundingMetadata")
+            ?.optJSONArray("groundingChunks")
+            ?: return emptyList()
+        (0 until chunks.length()).mapNotNull { i ->
+            val web = chunks.getJSONObject(i).optJSONObject("web") ?: return@mapNotNull null
+            val uri = web.optString("uri").takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            uri to web.optString("title", uri)
+        }
+    }.getOrDefault(emptyList())
+
+    private fun buildSourcesBlock(sources: List<Pair<String, String>>): String {
+        if (sources.isEmpty()) return ""
+        return "\n\nFontes (busca na web): " + sources.joinToString(", ") { (uri, title) -> "$title ($uri)" }
     }
 
     private fun buildUserText(request: AiRequest): String = buildString {
@@ -225,7 +265,13 @@ class CloudAiProvider(
 
     companion object {
         const val PROVIDER_ID = "cloud-gemini"
-        const val MODEL_ID = "gemini-2.5-flash"
+
+        // "gemini-2.5-flash" was retired ("no longer available to new users" — verified
+        // live against the API on 2026-07-26, HTTP 404). Pinning to a specific dated model
+        // here is exactly what breaks silently when Google retires it; "-latest" is Google's
+        // own rolling alias for the current flash model, so this provider tracks whatever
+        // Gemini is current instead of going stale again.
+        const val MODEL_ID = "gemini-flash-latest"
 
         private const val ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models"
         private val JSON = "application/json; charset=utf-8".toMediaType()
