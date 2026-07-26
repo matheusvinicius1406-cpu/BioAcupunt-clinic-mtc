@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -53,7 +54,7 @@ fun BibliotecaScreen(
             Text("Biblioteca", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold))
             Spacer(Modifier.height(2.dp))
             Text(
-                "Conhecimento Ativo · ${MtcKnowledgeCount.totalArticles} artigos revisados",
+                "Conhecimento Ativo · ${state.allArticles.size} artigos revisados",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -223,13 +224,17 @@ fun BibliotecaScreen(
 
         // ── Stats row ──────────────────────────────────────
         item {
+            // Sempre computado sobre state.allArticles (fixos + aprovados via Curadoria,
+            // já reativo no ViewModel) — nunca sobre MtcKnowledgeBase.articles sozinho,
+            // que só enxerga os 16 fixos e nunca mudava quando a médica aprovava algo novo.
             val favCount = state.favoriteIds.size
-            val categoryCount = MtcKnowledgeBaseCategories.usedCategories.size
+            val categoryCount = state.allArticles.map { it.category }.distinct().size
+            val totalTags = state.allArticles.flatMap { it.tags }.distinct().size
             val stats = listOf(
-                "${MtcKnowledgeCount.totalArticles}" to "Artigos",
+                "${state.allArticles.size}" to "Artigos",
                 "$categoryCount" to "Categorias",
                 "$favCount" to "Favoritos",
-                "${MtcKnowledgeCount.totalTags}" to "Tags",
+                "$totalTags" to "Tags",
             )
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                 stats.forEach { (value, label) ->
@@ -255,7 +260,7 @@ fun BibliotecaScreen(
             MtcCategory.entries.chunked(3).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
                     row.forEach { cat ->
-                        val count = MtcKnowledgeBaseCategories.countFor(cat)
+                        val count = state.allArticles.count { it.category == cat.name }
                         val selected = state.category == cat.name
                         Column(
                             modifier = Modifier
@@ -267,7 +272,7 @@ fun BibliotecaScreen(
                                 .padding(vertical = 16.dp, horizontal = 4.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Text(cat.emoji, style = MaterialTheme.typography.titleMedium)
+                            Icon(cat.icon(), null, tint = if (selected) Primary else TextMuted, modifier = Modifier.size(20.dp))
                             Spacer(Modifier.height(4.dp))
                             Text(cat.label, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), textAlign = androidx.compose.ui.text.style.TextAlign.Center, maxLines = 2, color = MaterialTheme.colorScheme.onSurface)
                             Text("$count artigo${if (count == 1) "" else "s"}", style = MaterialTheme.typography.labelSmall, color = TextMuted)
@@ -417,7 +422,7 @@ private fun ArticleCard(article: MtcArticle, isFavorite: Boolean, onOpen: () -> 
                 modifier = Modifier.size(32.dp).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(category?.emoji ?: "📄", style = MaterialTheme.typography.titleSmall)
+                Icon(category?.icon() ?: Icons.AutoMirrored.Filled.Article, null, tint = Primary, modifier = Modifier.size(18.dp))
             }
             Text(article.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
             IconButton(onClick = onToggleFavorite, modifier = Modifier.size(28.dp)) {
@@ -450,13 +455,3 @@ private fun FlowRowCompat(tags: List<String>) {
     }
 }
 
-/** Small real-data helpers over the 16 reviewed articles — no fabricated numbers. */
-private object MtcKnowledgeCount {
-    val totalArticles: Int get() = com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.size
-    val totalTags: Int get() = com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.flatMap { it.tags }.distinct().size
-}
-
-private object MtcKnowledgeBaseCategories {
-    val usedCategories: Set<String> get() = com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.map { it.category }.toSet()
-    fun countFor(category: MtcCategory): Int = com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles.count { it.category == category.name }
-}
