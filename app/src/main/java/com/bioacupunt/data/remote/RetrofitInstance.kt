@@ -18,7 +18,7 @@ object RetrofitInstance {
     // users can override it in Settings > Sistema > Servidor (e.g. point at a
     // local backend during development), and HostSelectionInterceptor rewrites
     // each request's host/scheme/port accordingly without a rebuild.
-    private const val DEFAULT_SERVER_URL = "https://bioacupunt-api.onrender.com/"
+    private const val DEFAULT_SERVER_URL = "https://bio-acupunt-clinic-mtc.vercel.app/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
