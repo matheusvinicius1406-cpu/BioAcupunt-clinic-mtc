@@ -1,0 +1,425 @@
+{
+ "source": "PubMed — busca aberta E-utilities (esearch/efetch, db=pubmed) sobre MTC/acupuntura, rodada 5 de expansão, categoria LINGUA, 2026 (resumos/abstracts públicos, revisados manualmente para relevância temática e para excluir duplicatas das rodadas anteriores)",
+ "items": [
+  {
+   "id": "pubmed-30949431",
+   "title": "Advances in automated tongue diagnosis techniques.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis can be an effective, noninvasive method to perform an auxiliary diagnosis any time anywhere, which can support the global need in the primary healthcare system. This work reviews the recent advances in tongue diagnosis, which is a significant constituent of traditional oriental medicinal technology...",
+   "content": "Tongue diagnosis can be an effective, noninvasive method to perform an auxiliary diagnosis any time anywhere, which can support the global need in the primary healthcare system. This work reviews the recent advances in tongue diagnosis, which is a significant constituent of traditional oriental medicinal technology, and explores the literature to evaluate the works done on the various aspects of computerized tongue diagnosis, namely preprocessing, tongue detection, segmentation, feature extraction, tongue analysis, especially in traditional Chinese medicine (TCM). In spite of huge volume of work done on automatic tongue diagnosis (ATD), there is a lack of adequate survey, especially to combine it with the current diagnosis trends. This paper studies the merits, capabilities, and associated research gaps in current works on ATD systems. After exploring the algorithms used in tongue diagnosis, the current trend and global requirements in health domain motivates us to propose a conceptual framework for the automated tongue diagnostic system on mobile enabled platform. This framework will be able to connect tongue diagnosis with the future point-of-care health system.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:30949431, Tania MH et al., 2019, Integrative medicine research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30949431/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-29691189",
+   "title": "A historical evaluation of Chinese tongue diagnosis in the treatment of septicemic plague in the pre-antibiotic era, and as a new direction for revolutionary clinical research applications.",
+   "category": "LINGUA",
+   "summary": "Chinese tongue diagnosis was initially developed to quickly and efficiently diagnose and prescribe medicine, while at the same time allowing the doctor to have minimal contact with the patient. At the time of its compiling, the spread of Yersinia pestis, often causing septicaemia and gangrene of the extremities, may...",
+   "content": "Chinese tongue diagnosis was initially developed to quickly and efficiently diagnose and prescribe medicine, while at the same time allowing the doctor to have minimal contact with the patient. At the time of its compiling, the spread of Yersinia pestis, often causing septicaemia and gangrene of the extremities, may have discouraged doctors to come in direct contact with their patients and take the pulse. However, in recent decades, modern developments in the field of traditional Chinese medicine, as well as the spread of antibiotics in conjunction with the advancements of microbiology, have overshadowed the original purpose of this methodology. Nevertheless, the fast approaching post-antibiotic era and the development of artificial intelligence may hold new applications for tongue diagnosis. This article focuses on the historical development of what is the world's earliest tongue diagnosis monograph, and discusses the directions that such knowledge may be used in future clinical research.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:29691189, Solos I et al., 2018, Journal of integrative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29691189/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-24716178",
+   "title": "Breast cancer index: a perspective on tongue diagnosis in traditional chinese medicine.",
+   "category": "LINGUA",
+   "summary": "Breast cancer (BC) ranks second in the cancer fatality rate among females worldwide. Mammogram, ultrasound, magnetic resonance imaging (MRI), blood testing, and fine needle aspiration biopsy are usually applied to discriminate BC patients from normal persons. False-negative results, undetectable calcifications...",
+   "content": "Breast cancer (BC) ranks second in the cancer fatality rate among females worldwide. Mammogram, ultrasound, magnetic resonance imaging (MRI), blood testing, and fine needle aspiration biopsy are usually applied to discriminate BC patients from normal persons. False-negative results, undetectable calcifications, movement-incurred blurry image, infection, and sampling error are commonly associated with these traditional means of diagnosis. Traditional Chinese medicine (TCM) covers a broad range of medical practices sharing common theoretical concepts. Tongue diagnosis plays an important role in TCM. Organ conditions, properties, and variation of pathogens can be revealed through observation of tongue. In light of this observation, this paper investigates discriminating tongue features to distinguish between BC patients and normal people, and establishes differentiating index to facilitate the non-invasive detection of BC. The tongue features for 60 BC patients and 70 normal persons were extracted by the Automatic Tongue Diagnosis System (ATDS). The Mann-Whitney test showed that the amount of tongue fur (P = 0.007), tongue fur in the spleen-stomach area, maximum covering area of tongue fur, thin tongue fur, the number of tooth marks, the number of red dots, red dot in the spleen-stomach area, red dot in the liver-gall-left area, red dot in the liver-gall-right area, and red dot in the heart-lung area demonstrated significant differences (P < 0.05). The tongue features of the testing group were employed to test the power of significant tongue features identified in predicting BC. An accuracy of 80% was reached by applying the seven significant tongue features obtained through Mann-Whitney test. To the best of our knowledge, this is the first attempt in applying TCM tongue diagnosis to the discrimination of BC patients and normal persons.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:24716178, Lo LC et al., 2013, Journal of traditional and complementary medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24716178/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-21641515",
+   "title": "Association between tongue appearance in Traditional Chinese Medicine and effective response in treatment of rheumatoid arthritis.",
+   "category": "LINGUA",
+   "summary": "Explore the associations between the tongue appearances in Traditional Chinese Medicine (TCM) and effective response (ACR20 response based on American College of Rheumatology) in rheumatoid arthritis (RA) patients treated with Chinese medicine (CM) and western biomedical combination therapy (WM).\nMETHODS: This study...",
+   "content": "OBJECTIVE: Explore the associations between the tongue appearances in Traditional Chinese Medicine (TCM) and effective response (ACR20 response based on American College of Rheumatology) in rheumatoid arthritis (RA) patients treated with Chinese medicine (CM) and western biomedical combination therapy (WM).\nMETHODS: This study used the data from a previous multi-center randomized-controlled clinical trial. Data pertaining to tongue coating and tongue body color were collected. In order to simplify the tongue diagnosis for easily understood by biomedical professionals, only two typical tongue coating (white and yellow) and four typical tongue body colors (purple, pink, pale and red) were identified for this analysis. 170 cases with clear tongue coating and 198 cases with clear tongue body color in TCM treatment (Glucosidorum Tripterygll Totorum tablets and Yishen Juanbi tablets) group, 181 cases with identified tongue coating and 189 cases with identified tongue body color in WM treatment (diclofenec, methotrexate and sulfasalazine) group were included for the analysis. The ACR20 response at 12 weeks and 24 weeks were used as an outcome measure of efficacy. The effective rates in patients with different tongue appearances were analyzed with Chi-square method and the association between the changes of tongue coating/body color and the ACR20 response was analyzed with a repeated measures logistic regression analysis.\nRESULTS: At 12 weeks, the ACR20 responses in the patients treated with CM and WM therapy were 33.6% and 53.0%, respectively, and at 24 weeks, they were 57.9% and 84.3%, respectively. RA patients with white tongue coating showed higher effective rate than those patients with yellow tongue coating in the treatment with WM intervention (p<0.05), and there was no difference in the patients with CM intervention. Further association analysis showed that TCM would be less effective for the patients with pale tongue body (p=0.0323), and WM would be less effective for the patients with purple or red tongue body (p=0.0291 and 0.0027, respectively).\nCONCLUSION: TCM was less effective for the patients with pale tongue body, and WM was be less effective for the patients with purple or red tongue body, or white tongue coating. The results suggest that tongue coating and body color might be used to help identify a subset of RA patients both for CM and WM interventions.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:21641515, Jiang M et al., 2011, Complementary therapies in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21641515/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-30478535",
+   "title": "Tongue coating microbiome as a potential biomarker for gastritis including precancerous cascade.",
+   "category": "LINGUA",
+   "summary": "The development of gastritis is associated with an increased risk of gastric cancer. Current invasive gastritis diagnostic methods are not suitable for monitoring progress. In this work based on 78 gastritis patients and 50 healthy individuals, we observed that the variation of tongue-coating microbiota was associated...",
+   "content": "The development of gastritis is associated with an increased risk of gastric cancer. Current invasive gastritis diagnostic methods are not suitable for monitoring progress. In this work based on 78 gastritis patients and 50 healthy individuals, we observed that the variation of tongue-coating microbiota was associated with the occurrence and development of gastritis. Twenty-one microbial species were identified for differentiating tongue-coating microbiomes of gastritis and healthy individuals. Pathways such as microbial metabolism in diverse environments, biosynthesis of antibiotics and bacterial chemotaxis were up-regulated in gastritis patients. The abundance of Campylobacter concisus was found associated with the gastric precancerous cascade. Furthermore, Campylobacter concisus could be detected in tongue coating and gastric fluid in a validation cohort containing 38 gastritis patients. These observations provided biological evidence of tongue diagnosis in traditional Chinese medicine, and indicated that tongue-coating microbiome could be a potential non-invasive biomarker, which might be suitable for long-term monitoring of gastritis.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:30478535, Cui J et al., 2019, Protein & cell",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30478535/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-41112009",
+   "title": "Beyond biomarkers: An integrated traditional Chinese medicine-machine learning approach predicts hepatic steatosis in high metabolic risk populations.",
+   "category": "LINGUA",
+   "summary": "Tian et al present a timely machine learning (ML) model integrating biochemical and novel traditional Chinese medicine (TCM) indicators (tongue edge redness, greasy coating) to predict hepatic steatosis in high metabolic risk patients. Their prospective cohort design and dual-feature selection (LASSO + RFE)...",
+   "content": "Tian et al present a timely machine learning (ML) model integrating biochemical and novel traditional Chinese medicine (TCM) indicators (tongue edge redness, greasy coating) to predict hepatic steatosis in high metabolic risk patients. Their prospective cohort design and dual-feature selection (LASSO + RFE) culminating in an interpretable XGBoost model (area under the curve: 0.82) represent a significant methodological advance. The inclusion of TCM diagnostics addresses metabolic dysfunction-associated fatty liver disease (MAFLD's) multisystem heterogeneity-a key strength that bridges holistic medicine with precision analytics and underscores potential cost savings over imaging-dependent screening. However, critical limitations impede clinical translation. First, the model's single-center validation (n = 711) lacks external/generalizability testing across diverse populations, risking bias from local demographics. Second, MAFLD subtyping (e.g., lean MAFLD, diabetic MAFLD) was omitted despite acknowledged disease heterogeneity; this overlooks distinct pathophysiologies and may limit utility in stratified care. Third, while TCM features ranked among the top predictors in SHAP analysis, their clinical interpretability remains nebulous without mechanistic links to metabolic dysregulation. To resolve these gaps, we propose external validation in multiethnic cohorts using the published feature set (e.g., aspartate aminotransferase/alanine aminotransferase, low-density lipoprotein cholesterol, TCM tongue markers) to assess robustness. Subtype-specific modeling to capture MAFLD heterogeneity, potentially enhancing accuracy in high-risk subgroups. Probing TCM microbiome/metabolomic correlations to ground tongue phenotypes in biological pathways, elevating model credibility. Despite shortcomings, this work pioneers a low-cost screening paradigm. Future iterations addressing these issues could revolutionize early MAFLD detection in resource-limited settings.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:41112009, Guo YC et al., 2025, World journal of gastroenterology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41112009/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38163136",
+   "title": "Distinct microbiome of tongue coating and gut in type 2 diabetes with yellow tongue coating.",
+   "category": "LINGUA",
+   "summary": "The gut microbiome plays a critical role in the pathogenesis of type 2 diabetes mellitus (T2DM). However, the inconvenience of obtaining fecal samples hinders the clinical application of gut microbiome analysis. In this study, we hypothesized that tongue coating color is associated with the severity of T2DM...",
+   "content": "The gut microbiome plays a critical role in the pathogenesis of type 2 diabetes mellitus (T2DM). However, the inconvenience of obtaining fecal samples hinders the clinical application of gut microbiome analysis. In this study, we hypothesized that tongue coating color is associated with the severity of T2DM. Therefore, we aimed to compare tongue coating, gut microbiomes, and various clinical parameters between patients with T2DM with yellow (YC) and non-yellow tongue coatings (NYC). Tongue coating and gut microbiomes of 27 patients with T2DM (13 with YC and 14 with NYC) were analyzed using 16S rDNA gene sequencing technology. Additionally, we measured glycated hemoglobin (HbA1c), random blood glucose (RBG), fasting blood glucose (FBG), postprandial blood glucose (PBG), insulin (INS), glucagon (GC), body mass index (BMI), and homeostasis model assessment of β-cell function (HOMA-β) levels for each patient. The correlation between tongue coating and the gut microbiomes was also analyzed. Our findings provide evidence that the levels of Lactobacillus spp. are significantly higher in both the tongue coating and the gut microbiomes of patients with YC. Additionally, we observed that elevated INS and GC levels, along with decreased BMI and HOMA-β levels, were indicative of a more severe condition in patients with T2DM with YC. Moreover, our results suggest that the composition of the tongue coating may reflect the presence of Lactobacillus spp. in the gut. These results provide insights regarding the potential relationship between tongue coating color, the gut microbiome, and T2DM.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:38163136, Wang Y et al., 2024, Heliyon",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38163136/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33252275",
+   "title": "Metabolome and microbiome alterations in tongue coating of gastric precancerous lesion patients.",
+   "category": "LINGUA",
+   "summary": "Objective: This paper seeks to provide mechanistic insight into the pathological transition through the analysis of metabolites and microorganisms in the tongue coating of gastric precancerous lesions (GPL) patients.Methods: GC-TOF-MS and UHPLC-QE-MS metabolomics, combined with 16S rRNA microbiome techniques, were...",
+   "content": "Objective: This paper seeks to provide mechanistic insight into the pathological transition through the analysis of metabolites and microorganisms in the tongue coating of gastric precancerous lesions (GPL) patients.Methods: GC-TOF-MS and UHPLC-QE-MS metabolomics, combined with 16S rRNA microbiome techniques, were performed to explore the changes in metabolites and microorganisms in the tongue coating of GPL patients.Results: When compared with 15 controls, 133 metabolites were found to be differentially expressed in 60 GPL cases, of which could be divided into ten categories. Among them, most of the differentially expressed metabolites identified were lipids or lipid-like molecules. These metabolites were implicated in 6 metabolic pathways including glycine, serine and threonine metabolism, arginine and proline metabolism, sphingolipid metabolism, valine, leucine and isoleucine degradation, arachidonic acid metabolism, and tyrosine metabolism. The relative abundances of Alloprevotella, Solobacterium, Rothia, Eikenella, and Aggregatibacter in the GPL group increased significantly relative to the controls and were associated with lipids and lipid-like molecules, organic nitrogen compounds, organic oxygen compounds, phenylpropanoids and polyketides, and organoheterocyclic compounds, respectively.Conclusions: Compared with healthy people, the changes of tongue coating metabolites in GPL patients were mainly characterized by alterations in lipid metabolism and were associated with localized changes in the microbiome.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:33252275, Hao Y et al., 2021, Expert review of gastroenterology & hepatology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33252275/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40350439",
+   "title": "Characteristics of tongue images and tongue coating bacteria in patients with colorectal cancer.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis can assess the physiological functions and pathological conditions of colorectal cancer (CRC).\nOBJECTIVE: To investigate the characteristics of tongue images and the bacteria composition of tongue coating in patients with CRC.\nMETHODS: A total of 59 CRC patients were enrolled and underwent tongue...",
+   "content": "BACKGROUND: Tongue diagnosis can assess the physiological functions and pathological conditions of colorectal cancer (CRC).\nOBJECTIVE: To investigate the characteristics of tongue images and the bacteria composition of tongue coating in patients with CRC.\nMETHODS: A total of 59 CRC patients were enrolled and underwent tongue image analysis using a diagnostic instrument. Third-generation sequencing technique was used to determine tongue coating bacteria. The relationships among tongue images, tongue coating bacteria and clinical information (age, gender, and location) were further analyzed. Statistical analyses were performed to investigate the potential associations between tongue coating microbiota and two key variables (tongue images and age).\nRESULTS: CRC patients typically present with four distinct tongue images, including yellow greasy coating, petechiae, white greasy coating, and red tongue with little coating. Notably, the microbiota composition of tongue coatings demonstrates a statistically significant correlation with both tongue diagnostic features and patient age compared to other clinical parameters. Alloprevotella rava may be primary contributors to the formation of yellow greasy coating, while Prevotella intermedia appears to be associated with the development of white greasy coating. Furthermore, Streptococcus parasanguinis might emerged as a potential biomarker for CRC patients under 62 years of age, whereas Prevotella sp. 000163055 appears to be a predominant species in the tongue coating microbiota of CRC patients over 62 years.\nCONCLUSION: Overall, this study emphasizes the variations in the community structure and diversity of tongue coating bacteria in CRC patients through different tongue images. The findings provide novel insights that could enhance the predictive capacity of tongue diagnosis for clinical progression monitoring and contribute to the development of early intervention strategies in CRC management.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:40350439, Zheng W et al., 2025, BMC microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40350439/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-23226834",
+   "title": "Integrating next-generation sequencing and traditional tongue diagnosis to determine tongue coating microbiome.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis is a unique method in traditional Chinese medicine (TCM). This is the first investigation on the association between traditional tongue diagnosis and the tongue coating microbiome using next-generation sequencing. The study included 19 gastritis patients with a typical white-greasy or yellow-dense...",
+   "content": "Tongue diagnosis is a unique method in traditional Chinese medicine (TCM). This is the first investigation on the association between traditional tongue diagnosis and the tongue coating microbiome using next-generation sequencing. The study included 19 gastritis patients with a typical white-greasy or yellow-dense tongue coating corresponding to TCM Cold or Hot Syndrome respectively, as well as eight healthy volunteers. An Illumina paired-end, double-barcode 16S rRNA sequencing protocol was designed to profile the tongue-coating microbiome, from which approximately 3.7 million V6 tags for each sample were obtained. We identified 123 and 258 species-level OTUs that were enriched in patients with Cold/Hot Syndromes, respectively, representing \"Cold Microbiota\" and \"Hot Microbiota\". We further constructed the tongue microbiota-imbalanced networks associated with Cold/Hot Syndromes. The results reveal an important connection between the tongue-coating microbiome and traditional tongue diagnosis, and illustrate the potential of the tongue-coating microbiome as a novel holistic biomarker for characterizing patient subtypes.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:23226834, Jiang B et al., 2012, Scientific reports",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23226834/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-42015788",
+   "title": "Tongue-coating microbiome as a predictor of solid tumors: an updated scoping review of clinical studies.",
+   "category": "LINGUA",
+   "summary": "This study explores the potential of tongue coating microbiota as a non-invasive biomarker for cancer and precancerous lesions by integrating insights from multi-omics technologies and Traditional Chinese Medicine (TCM) tongue diagnosis. By bridging modern molecular research with TCM diagnostic principles, this study...",
+   "content": "This study explores the potential of tongue coating microbiota as a non-invasive biomarker for cancer and precancerous lesions by integrating insights from multi-omics technologies and Traditional Chinese Medicine (TCM) tongue diagnosis. By bridging modern molecular research with TCM diagnostic principles, this study systematically reviewed the relationship between tongue microbiota and oncological conditions, identifying 18 eligible studies through searches in PubMed, Embase, and Web of Science. The analysis reveals significant differences in microbial diversity, abundance, metabolic pathways, and functional characteristics, which enable the partial differentiation of cancer patients from healthy individuals. However, existing research remains constrained by limited sample sizes, inconsistent analytical approaches, and a lack of integrated multi-dimensional datasets. This review highlights the promising diagnostic potential of the tongue coating microbiota in cancer detection, while suggesting that future studies should focus on standardizing methodologies and employing integrated multi-omics approaches to elucidate underlying mechanisms and advance clinical applications.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:42015788, Kexin LI et al., 2026, Journal of traditional Chinese medicine = Chung i tsa chih ying wen pan",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42015788/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40330867",
+   "title": "Correlation of tongue coating thickness with microinflammatory state and oral microbiome in maintenance hemodialysis patients.",
+   "category": "LINGUA",
+   "summary": "This study investigated the correlation between tongue coating thickness (TCT), micro-inflammatory state (MIS), and oral microbiome in maintenance hemodialysis (MHD) patients.\nMETHODS: Forty MHD patients (20 thin-tongue coating [BTZ], 20 thick-tongue coating [HTZ]) and 15 healthy controls (DZZ) were enrolled. Blood...",
+   "content": "AIM: This study investigated the correlation between tongue coating thickness (TCT), micro-inflammatory state (MIS), and oral microbiome in maintenance hemodialysis (MHD) patients.\nMETHODS: Forty MHD patients (20 thin-tongue coating [BTZ], 20 thick-tongue coating [HTZ]) and 15 healthy controls (DZZ) were enrolled. Blood microinflammatory markers were analyzed in all patients. Saliva samples from 15 HTZ, 15 BTZ, and 15 DZZ underwent 16S rRNA sequencing.\nRESULTS: HTZ patients exhibited higher microinflammatory marker levels than BTZ. Oral microbiome species richness in DZZ surpassed that of the MHD groups, with distinct structural differences, particularly between HTZ and DZZ. HTZ showed higher abundances of Actinobacillus, Peptostreptococcus, and Lachnospiraceae NK4A136 group than BTZ. Correlation analysis revealed a positive correlation between the levels of IL-6 and TNF-α and the abundance of Fusobacterium, but a negative correlation with Streptococcus. Additionally, the TNF-α level positively correlated with Campylobacter.\nCONCLUSION: Thick tongue coating in MHD patients is associated with elevated microinflammation and altered oral microbiome, suggesting a link between inflammation and microbial dysbiosis.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:40330867, Zhu Y et al., 2025, Journal of oral microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40330867/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36085010",
+   "title": "Microbiological characteristics of different tongue coatings in adults.",
+   "category": "LINGUA",
+   "summary": "Tongue coating is an important health indicator in traditional Chinese medicine (TCM). The tongue coating microbiome can distinguish disease patients from healthy controls. To study the relationship between different types of tongue coatings and health, we analyzed the species composition of different types of tongue...",
+   "content": "BACKGROUND: Tongue coating is an important health indicator in traditional Chinese medicine (TCM). The tongue coating microbiome can distinguish disease patients from healthy controls. To study the relationship between different types of tongue coatings and health, we analyzed the species composition of different types of tongue coatings and the co-occurrence relationships between microorganisms in Chinese adults. From June 2019 to October 2020, 158 adults from Hangzhou and Shaoxing City, Zhejiang Province, were enrolled. We classified the TCM tongue coatings into four different types: thin white tongue fur (TWF), thin yellow tongue fur (TYF), white greasy tongue fur (WGF), and yellow greasy tongue fur (YGF). Tongue coating specimens were collected and used for 16S rRNA gene sequencing using the Illumina MiSeq system. Wilcoxon rank-sum and permutational multivariate analysis of variance tests were used to analyze the data. The microbial networks in the four types of tongue coatings were inferred independently using sparse inverse covariance estimation for ecological association inference.\nRESULTS: The microbial composition was similar among the different tongue coatings; however, the abundance of microorganisms differed. TWF had a higher abundance of Fusobacterium periodonticum and Neisseria mucosa, the highest α-diversity, and a highly connected community (average degree = 3.59, average closeness centrality = 0.33). TYF had the lowest α-diversity, but the most species in the co-occurrence network diagram (number of nodes = 88). The platelet-to-lymphocyte ratio (PLR) was associated with tongue coating (P = 0.035), and the YGF and TYF groups had higher PLR values. In the co-occurrence network, Aggregatibacter segnis was the \"driver species\" of the TWF and TYF groups and correlated with C-reactive protein (P < 0.05). Streptococcus anginosus was the \"driver species\" in the YGF and TWF groups and was positively correlated with body mass index and weight (P < 0.05).\nCONCLUSION: Different tongue coatings have similar microbial compositions but different abundances of certain bacteria. The co-occurrence of microorganisms in the different tongue coatings also varies. The significance of different tongue coatings in TCM theory is consistent with the characteristics and roles of the corresponding tongue-coating microbes. This further supports considering tongue coating as a risk factor for disease.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:36085010, He C et al., 2022, BMC microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36085010/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-24026106",
+   "title": "Tongue coating microbiome regulates the changes in tongue texture and coating in patients with post-menopausal osteoporosis of Gan-shen deficiency syndrome type.",
+   "category": "LINGUA",
+   "summary": "Tongue inspection is a unique and important method of diagnosis in traditional Chinese medicine (TCM). It is a diagnostic approach which involves observing the changes in the tongue proper and tongue coating in order to understand the physiological functions and pathological changes of the body. However, the...",
+   "content": "Tongue inspection is a unique and important method of diagnosis in traditional Chinese medicine (TCM). It is a diagnostic approach which involves observing the changes in the tongue proper and tongue coating in order to understand the physiological functions and pathological changes of the body. However, the biological basis of TCM tongue diagnosis remains to be poorly understood and lacks systematic investigation at the molecular level. In this study, we evaluated the effects of tongue coating microbiome on changes in the tongue texture and coating in patients with post-menopausal osteoporosis (PMO) of Gan‑shen deficiency syndrome type. Our aim was to delineate the mechanisms of tongue coating microbiome-induced changes in the tongue texture and coating by investigating the histomorphological changes and performing a bacterial analysis of the tongue coating. We found that the number of intermediate cells in the red tongue with a thin coating was higher, while the number of superficial cells in the red tongue with a thin coating was lower. The maturation value (MV) of tongue exfoliated cells in the red tongue with a thin coating decreased, compared with that in the pale red tongue with a thin white coating. Furthermore, the total bacterial count, oral streptococcus, Gram‑positive (G+) and Gram‑negative (G-) anaerobic bacteria in the red tongue with a thin coating was significantly decreased compared with the pale red tongue with a thin white coating. The results of ultrastructural examination demonstrated that the number of epithelial cells and bacteria in the red tongue with a thin coating decreased compared with that in the pale red tongue with a thin white coating. These observations indicate that the tongue coating microbiome may be an important factor contributing to changes in the tongue in patients with PMO of Gan‑shen deficiency syndrome type.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:24026106, Liang W et al., 2013, International journal of molecular medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24026106/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34490384",
+   "title": "Oral, Tongue-Coating Microbiota, and Metabolic Disorders: A Novel Area of Interactive Research.",
+   "category": "LINGUA",
+   "summary": "Interactions between colonizing microbiota and the host have been fully confirmed, among which the tongue-coating microbiota have a moderate rate of renewal and disease sensitivity and are easily obtained, making them an ideal research subject. Oral microbiota disorders are related to diabetes, obesity, cardiovascular...",
+   "content": "Interactions between colonizing microbiota and the host have been fully confirmed, among which the tongue-coating microbiota have a moderate rate of renewal and disease sensitivity and are easily obtained, making them an ideal research subject. Oral microbiota disorders are related to diabetes, obesity, cardiovascular disease, cancer, and other systemic diseases. As an important part of the oral cavity, tongue-coating microbiota can promote gastritis and digestive system tumors, affecting the occurrence and development of multiple chronic diseases. Common risk factors include diet, age, and immune status, among others. Metabolic regulatory mechanisms may be similar between the tongue and gut microbiota. Tongue-coating microbiota can be transferred to the respiratory or digestive tract and create a new balance with local microorganisms, together with the host epithelial cells forming a biological barrier. This barrier is involved in the production and circulation of nitric oxide (NO) and the function of taste receptors, forming the oral-gut-brain axis (similar to the gut-brain axis). At present, the disease model and mechanism of tongue-coating microbiota affecting metabolism have not been widely studied, but they have tremendous potential.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:34490384, Li Y et al., 2021, Frontiers in cardiovascular medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34490384/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40671079",
+   "title": "Tongue-coating microbiota as a predictive biomarker of washed microbiota transplantation efficacy in pediatric autism: integration with clinical features.",
+   "category": "LINGUA",
+   "summary": "Alterations in both oral and gut microbiota have been identified in children with autism spectrum disorder (ASD), but the interaction between these microbiota and their potential to predict outcomes of fecal microbiota transplantation (FMT) remain poorly understood.\nMETHODS: This study investigated the structure and...",
+   "content": "BACKGROUND: Alterations in both oral and gut microbiota have been identified in children with autism spectrum disorder (ASD), but the interaction between these microbiota and their potential to predict outcomes of fecal microbiota transplantation (FMT) remain poorly understood.\nMETHODS: This study investigated the structure and function of the tongue-coating microbiota in children with ASD and explored its correlation with ASD symptoms and gut microbiota. Germ-free ASD mice, colonized with healthy gut microbiota, and children with ASD treated with washed microbiota transplantation (WMT) were assessed for changes in autism symptoms and microbiota composition. Predictive models were also developed based on pre-treatment tongue-coating microbiota and clinical features to forecast WMT outcomes.\nRESULTS: Significant alterations were detected in the tongue-coating microbiota of children with ASD, with several bacterial species showing associations with ASD symptoms and gut microbiota composition. Following WMT, both mice and children exhibited substantial improvements in autism-related behaviors, alongside marked shifts in their gut and tongue-coating microbiota. A significant decrease in Haemophilus in the tongue-coating microbiota, which positively correlated with ASD severity, was observed. Additionally, a reduction in chemoheterotrophic and fermentation functions in the tongue-coating microbiota was identified. Predictive models utilizing pre-treatment tongue-coating microbiota and clinical data demonstrated comparable accuracy to those based on gut microbiota for forecasting WMT outcomes.\nCONCLUSIONS: These findings highlight a significant interaction between gut and tongue-coating microbiota in ASD, which may play a pivotal role in treatment outcomes. Predictive models integrating pre-treatment microbiota and clinical features could improve precision treatment strategies for children with ASD undergoing WMT.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:40671079, Zhong HJ et al., 2025, Journal of translational medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40671079/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39895585",
+   "title": "Alterations in the Tongue Coating Microbiome in Patients With Diarrhea-Predominant Irritable Bowel Syndrome: A Cross-Sectional Study.",
+   "category": "LINGUA",
+   "summary": "The gut microbiota plays a critical role in the occurrence and development of IBS-D, however, IBS-D-associated tongue coating microbiome dysbiosis has not yet been clearly defined. To address this, we analyzed the structure and composition of the tongue coating microbiome in 23 IBS-D patients and 12 healthy controls...",
+   "content": "The gut microbiota plays a critical role in the occurrence and development of IBS-D, however, IBS-D-associated tongue coating microbiome dysbiosis has not yet been clearly defined. To address this, we analyzed the structure and composition of the tongue coating microbiome in 23 IBS-D patients and 12 healthy controls using 16S rRNA high-throughput sequencing analysis. The 16S rRNA sequencing results revealed that the overall observed OTUs of tongue coating microbiome in IBS-D patients exhibited a significant decrease compared with the healthy controls. Alpha diversity analysis showed that the diversity and community richness were significantly reduced in IBS-D patients, and PCoA revealed a distinct clustering of tongue coating microbiome between the IBS-D patients and healthy controls. Microbial comparisons at the genus level showed that the abundance of Veillonella, Prevotella in IBS-D patients was higher than those in healthy controls, while Streptococcus, Haemophilus, Granulicatella, and Rothia were significantly reduced compared with the healthy volunteers. Functional analysis results showed significant differences in 88 functional metabolic pathways between the IBS-D patients and the healthy controls, including fatty acid biosynthesis. These findings identified the structure, composition, functionality of tongue coating microbiome in IBS-D patients, and hold promise the potential for therapeutic targets during IBS-D management.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:39895585, Li Y et al., 2025, APMIS : acta pathologica, microbiologica, et immunologica Scandinavica",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39895585/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-35433494",
+   "title": "Relationships Between Diurnal Changes of Tongue Coating Microbiota and Intestinal Microbiota.",
+   "category": "LINGUA",
+   "summary": "The oral cavity and the intestine are the main distribution locations of human digestive bacteria. Exploring the relationships between the tongue coating and gut microbiota, the influence of the diurnal variations of the tongue coating microbiota on the intestinal microbiota can provide a reference for the development...",
+   "content": "The oral cavity and the intestine are the main distribution locations of human digestive bacteria. Exploring the relationships between the tongue coating and gut microbiota, the influence of the diurnal variations of the tongue coating microbiota on the intestinal microbiota can provide a reference for the development of the disease diagnosis and monitoring, as well as the medication time. In this work, a total of 39 healthy college students were recruited. We collected their tongue coating microbiota which was collected before and after sleep and fecal microbiota. The diurnal variations of tongue coating microbiota are mainly manifested on the changes in diversity and relative abundance. There are commensal bacteria in the tongue coating and intestines, especially Prevotella which has the higher proportion in both sites. The relative abundance of Prevotella in the tongue coating before sleep has a positive correlation with intestinal Prevotella; the r is 0.322 (p < 0.05). Bacteroides in the intestine had the most bacteria associated with the tongue coating and had the highest correlation coefficient with Veillonella in the oral cavity, which was 0.468 (p < 0.01). These results suggest that the abundance of the same flora in the two sites may have a common change trend. The SourceTracker results show that the proportion of intestinal bacteria sourced from tongue coating is less than 1%. It indicates that oral flora is difficult to colonize in the intestine in healthy people. This will provide a reference for the study on the oral and intestinal microbiota in diseases.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:35433494, Guo XJ et al., 2022, Frontiers in cellular and infection microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35433494/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36643409",
+   "title": "Relationship between thick or greasy tongue-coating microbiota and tongue diagnosis in patients with primary liver cancer.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis is a unique aspect of traditional Chinese medicine for diagnosing diseases before determining proper means of treatment, but it also has the disadvantage of relying on the subjective experience of medical practitioners and lack objective basis. The purpose of this article is to elucidate...",
+   "content": "Tongue diagnosis is a unique aspect of traditional Chinese medicine for diagnosing diseases before determining proper means of treatment, but it also has the disadvantage of relying on the subjective experience of medical practitioners and lack objective basis. The purpose of this article is to elucidate tongue-coating microbiota and metabolic differences in primary liver cancer (PLC) patients with thick or greasy tongue coatings. Tongue-coating samples were analyzed in 60 PLC patients (30 PLC with thick or greasy tongue-coating patients and 30 PLC with tongue-coating neither thick nor greasy) and 25 healthy controls (HC) using 16S rRNA gene sequencing technology. As compared to healthy individuals, tongue coatings of patients with PLC had elevated levels of Firmicutes and Actinobacteria. The abundance of Fusobacteria, SR1_Absconditabacteria_, and Spirochaete were higher in tongue coatings of healthy controls compared to samples in patients with PLC. In addition to site-specific differences, higher abundances of Fusobacteria and Actinobacteria were observed in thick or greasy tongue-coating patients as compared to non-thick and greasy tongue-coating patients. The inferred metagenomic pathways enriched in the PLC tongue-coating patients were mainly those involved in replication, recombination, and repair of protein. We also identify a tongue-coating microbiome signature to discriminate HC and PLC, including 15 variables on genus level. The prediction performance of the signature showed well in the training and validation cohorts. This research illustrates specific clinical features and bacterial structures in PLC patients with different tongue coatings, which facilitates understanding of the traditional tongue diagnosis.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:36643409, Zhang Y et al., 2022, Frontiers in microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36643409/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-41089330",
+   "title": "Thick vs. thin tongue coatings in hemodialysis patients: unveiling gut microbiome dysregulation and systemic health implications.",
+   "category": "LINGUA",
+   "summary": "Gastrointestinal (GI) disturbances are prevalent in maintenance hemodialysis (MHD) patients and are closely associated with gut microbiota dysregulation. Tongue coating thickness, a key diagnostic feature in traditional Chinese medicine, may reflect systemic and microbial health. This study aimed to explore the...",
+   "content": "BACKGROUND: Gastrointestinal (GI) disturbances are prevalent in maintenance hemodialysis (MHD) patients and are closely associated with gut microbiota dysregulation. Tongue coating thickness, a key diagnostic feature in traditional Chinese medicine, may reflect systemic and microbial health. This study aimed to explore the relationship between tongue coating phenotype and gut microbiota composition in MHD patients.\nMETHODS: A matched case-control study was conducted involving 30 MHD patients divided into thick (HTZ, n = 15) and thin (BTZ, n = 15) tongue coating groups, along with 15 healthy controls (DZZ). Fecal samples were analyzed via 16S rRNA sequencing to assess microbial diversity, taxonomic profiles, and predicted functional pathways.\nRESULTS: Alpha-diversity indices were significantly lower in BTZ than in DZZ (q < 0.05), while no difference was found between HTZ and BTZ. Beta-diversity showed closer clustering between HTZ and BTZ than with DZZ. Compared to DZZ, both HTZ and BTZ exhibited reduced levels of genera typically associated with health or commensal functions (Romboutsia, Subdoligranulum) and increased abundances of taxa often linked to inflammation or disease (Escherichia-Shigella, Ruminococcus gnavus). Functional predictions indicated that HTZ was enriched in pathways related to disease processes and showed diminished cellular and metabolic functions.\nCONCLUSION: Tongue coating thickness in MHD patients reflects underlying gut microbial composition. Thick tongue coatings indicate a state of dysbiosis with potential health implications, whereas thin coatings are associated with a microbiota profile that may be more favorable. These findings support the potential use of tongue coating thickness as a noninvasive biomarker for gut health assessment in clinical nephrology.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:41089330, Wang Y et al., 2025, Frontiers in cellular and infection microbiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41089330/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36994526",
+   "title": "Microbial community structure of different tongue fur types in patients with chronic gastritis.",
+   "category": "LINGUA",
+   "summary": "To explore the correlation between tongue and oral microbiota, we studied the microbial community structure of different tongue coating types in patients with chronic gastritis.\nMETHODS: 16S rDNA gene sequencing and bioinformatics analysis were used to study the dynamic changes and correlation of microbial flora in...",
+   "content": "OBJECTIVE: To explore the correlation between tongue and oral microbiota, we studied the microbial community structure of different tongue coating types in patients with chronic gastritis.\nMETHODS: 16S rDNA gene sequencing and bioinformatics analysis were used to study the dynamic changes and correlation of microbial flora in patients with chronic gastritis, healthy people, and patients with different tongue fur. In addition, it was also discussed between the severity of gastritis and the microflora of tongue fur.\nRESULTS: The microbial diversity of tongue fur in patients with chronic gastritis was significantly different from healthy controls. There were significant changes in bacterial communities' diversity and relative abundance between extra tongue fur in patients but not in healthy people. Oral bacteria with relative abundance > 1% and < 0.05 among different tongue fur flora were dominant bacteria, including 12 phyla such as and , and 256 genera such as and .\nCONCLUSIONS: The changes in oral flora in patients with chronic gastritis were related to tongue fur. Therefore, the significant microbiota might enlighten further study on the correlation between tongue inspection and oral microbiota in patients with chronic gastritis.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:36994526, Yanan W et al., 2023, Journal of traditional Chinese medicine = Chung i tsa chih ying wen pan",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36994526/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-37724302",
+   "title": "Digital tongue image analyses for health assessment.",
+   "category": "LINGUA",
+   "summary": "Traditional Chinese Medicine (TCM), as an effective alternative medicine, utilizes tongue diagnosis as a major method to assess the patient's health status by examining the tongue's color, shape, and texture. Tongue images can also give the pre-disease indications without any significant disease symptoms, which...",
+   "content": "Traditional Chinese Medicine (TCM), as an effective alternative medicine, utilizes tongue diagnosis as a major method to assess the patient's health status by examining the tongue's color, shape, and texture. Tongue images can also give the pre-disease indications without any significant disease symptoms, which provides a basis for preventive medicine and lifestyle adjustment. However, traditional tongue diagnosis has limitations, as the process may be subjective and inconsistent. Hence, computer-aided tongue diagnoses have a great potential to provide more consistent and objective health assessments. This paper reviewed the current trends in TCM tongue diagnosis, including tongue image acquisition hardware, tongue segmentation, feature extraction, color correction, tongue classification, and tongue diagnosis system. We also present a case of TCM constitution classification based on tongue images.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:37724302, Xie J et al., 2021, Medical review (2021)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37724302/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-41883546",
+   "title": "Intelligent tongue and facial image analysis for noninvasive prediction of glucolipid metabolic disorders.",
+   "category": "LINGUA",
+   "summary": "Glucolipid metabolic disorders is a disorder characterized by derangement of glucose and lipid metabolism, which is involved in multiple factors. Since the emergence of accelerated technological evolution, it has progressively evolved into a significant concern in contemporary medicine. Therefore, early screening and...",
+   "content": "BACKGROUND: Glucolipid metabolic disorders is a disorder characterized by derangement of glucose and lipid metabolism, which is involved in multiple factors. Since the emergence of accelerated technological evolution, it has progressively evolved into a significant concern in contemporary medicine. Therefore, early screening and diagnosis are crucial. This study aims to explore the possibility of early noninvasive diagnosis of glucolipid metabolic disorders using facial and tongue image indicators.\nMETHOD: In this study, we constructed a tongue-face segmentation model based on Deeplabv3 + for extracting tongue and facial indicators. The study collected information of 614 participants, including 296 patients with GLMD and 318 healthy controls. After baseline comparison, we respectively conducted intergroup comparison of laboratory biochemical indicators and correlation analysis of facial indicators and tongue image indicators for two groups. We also attempted to build machine learning diagnostic models for glycolipid metabolic diseases based on SVM, Random Forest, KNN, Naive Bayes, XGBoost, and AdaBoost by separately applying facial images and tongue images, and used Shapley to evaluate the contribution of each indicator in the model.\nRESULT: The results show that there is a statistically significant difference in the facial and lip color indicators and tongue color indicators. The facial, lip and tongue brightness indicators have a higher correlation coefficient with LDL-C, TG, and CHO, among which F-L is most correlated with LDL-C. Then, six classical machine learning models for predicting GLMD were constructed based on facial and tongue image indicators, and XGBoost performed the best with an AUC of 0.946, accuracy of 0.861, among which the color indicators TB-Y, TB-S, and TB-G are the top three indicators in terms of contribution.\nCONCLUSION: The GLMD diagnostic model combined with tongue-facial indicators can achieve disease classification, and through modern information-based TCM diagnosis technology, the accuracy of noninvasive diagnosis of glucose-lipid metabolism diseases can be further improved.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:41883546, Liu S et al., 2026, Digital health",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41883546/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-17920813",
+   "title": "Classification of hyperspectral medical tongue images for tongue diagnosis.",
+   "category": "LINGUA",
+   "summary": "Human tongue is one of the important organs of the body, which carries abound of information of the health status. The images of the human tongue that are used in computerized tongue diagnosis of traditional Chinese medicine (TCM) are all RGB color images captured with color CCD cameras currently. However, this...",
+   "content": "Human tongue is one of the important organs of the body, which carries abound of information of the health status. The images of the human tongue that are used in computerized tongue diagnosis of traditional Chinese medicine (TCM) are all RGB color images captured with color CCD cameras currently. However, this conversional method impedes the accurate analysis on the subjects of tongue surface because of the influence of illumination and tongue pose. To address this problem, this paper presents a novel approach to analyze the tongue surface information based on hyperspectral medical tongue images with support vector machines. The experimental results based on chronic Cholecystitis patients and healthy volunteers illustrate its effectiveness.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:17920813, Zhi L et al., 2007, Computerized medical imaging and graphics : the official journal of the Computerized Medical Imaging Society",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17920813/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-35836832",
+   "title": "Research of the Distribution of Tongue Features of Diabetic Population Based on Unsupervised Learning Technology.",
+   "category": "LINGUA",
+   "summary": "The prevalence of diabetes increases year by year, posing a severe threat to human health. Current treatments are difficult to prevent the progression of diabetes and its complications. It is imperative to carry out individualized treatment of diabetes, but current diagnostic methods are difficult to specify an...",
+   "content": "BACKGROUND: The prevalence of diabetes increases year by year, posing a severe threat to human health. Current treatments are difficult to prevent the progression of diabetes and its complications. It is imperative to carry out individualized treatment of diabetes, but current diagnostic methods are difficult to specify an individualized treatment plan.\nOBJECTIVE: Clarify the distribution law of tongue features of the diabetic population, and provide the diagnostic basis for individualized treatment of traditional Chinese medicine (TCM) in the treatment of diabetes.\nMETHODS: We use the TFDA-1 tongue diagnosis instrument to collect tongue images of people with diabetes and accurately calculate the color features, texture features, and tongue coating ratio features through the Tongue Diagnosis Analysis System (TDAS). Then, we used K-means and Self-organizing Maps (SOM) networks to analyze the distribution of tongue features in diabetic people. Statistical analysis of TDAS features was used to identify differences between clusters.\nRESULTS: The silhouette coefficient of the K-means clustering result is 0.194, and the silhouette coefficient of the SOM clustering result is 0.127. SOM Cluster 3 and Cluster 4 are derived from K-means Cluster 1, and the intersections account for (76.7% 97.5%) and (22.3% and 70.4%), respectively. K-means Cluster 2 and SOM Cluster 1 are highly overlapping, and the intersection accounts for the ratios of 66.9% and 95.0%. K-means Cluster 3 and SOM Cluster 2 are highly overlaid, and the intersection ratio is 94.1% and 82.1%. For the clustering results of K-means, TB-a and TC-a of Cluster 3 are the highest (P < 0.001), TB-a of Cluster 2 is the lowest (P < 0.001), and TB-a of Cluster 1 is between Cluster 2 and Cluster 3 (P < 0.001). Cluster 1 has the highest TB-b and TC-b (P < 0.001), Cluster 2 has the lowest TB-b and TC-b (P < 0.001), and TB-b and TC-b of Cluster 3 are between Cluster 1 and Cluster 2 (P < 0.001). Cluster 1 has the highest TB-ASM and TC-ASM (P < 0.001), Cluster 3 has the lowest TB-ASM and TC-ASM (P < 0.001), and TB-ASM and TC-ASM of Cluster 2 are between the Cluster 1 and Cluster 3 (P < 0.001). CON, ENT, and MEAN show the opposite trend. Cluster 2 had the highest Per-all (P < 0.001). SOM divides K-means Cluster 1 into two categories. There is almost no difference in texture features between Cluster 3 and Cluster 4 in the SOM clustering results. Cluster 3's TB-L, TC-L, and Per-all are lower than Cluster 4 (P < 0.001), Cluster 3's TB-a, TC-a, TB-b, TC-b, and Per-part are higher than Cluster 4 (P < 0.001).\nCONCLUSIONS: The precise tongue image features calculated by TDAS are the basis for characterizing the disease state of diabetic people. Unsupervised learning technology combined with statistical analysis is an important means to discover subtle changes in the tongue features of diabetic people. The machine vision analysis method based on unsupervised machine learning technology realizes the classification of the diabetic population based on fine tongue features. It provides a diagnostic basis for the designated diabetes TCM treatment plan.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:35836832, Li J et al., 2022, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35836832/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-35473350",
+   "title": "Mining intrinsic information of convalescent patients after suffering coronavirus disease 2019 in Wuhan.",
+   "category": "LINGUA",
+   "summary": "To summarize the potential characteristics of convalescent patients with coronavirus disease 2019 (COVID-19) in China based on emerging clinical tongue data and guide the treatment and recovery of COVID-19 patients from the perspective of Traditional Chinese Medicine tongue diagnosis.\nMETHODS: In this study, we...",
+   "content": "OBJECTIVE: To summarize the potential characteristics of convalescent patients with coronavirus disease 2019 (COVID-19) in China based on emerging clinical tongue data and guide the treatment and recovery of COVID-19 patients from the perspective of Traditional Chinese Medicine tongue diagnosis.\nMETHODS: In this study, we developed and validated radiomics-based and lab-based methods as a novel approach to provide individualized pretreatment evaluation by analyzing different features to mine the orderliness behind tongue data of convalescent patients. In addition, this study analyzed the tongue features of convalescent patients from clinical tongue qualitative values, including thick and thin, fur, peeling, fat and lean, tooth marks and cracked, and greasy and putrid fur.\nRESULTS: We included 2164 tongue images in total (34% from day 0, 35.4% from day 14 and 30.6% from day 28) from convalescent patients. The significance results are shown as follows. Firstly, as the recovery time prolongs, the L average values of tongue and coat decrease from 60.21 to 57.18 and from 60.06 to 57.03 respectively. Secondly, the decrease of abnormality rate of tongue coat, included greasy tongue fur, putrid fur, teeth-mark, thick-thin fur, are of significant statistical difference ( < 0.05). Thirdly, the average value of gray-level co-occurrence matrices increases from 0.173 to 0.194, the average value of entropy increases from 0.606 to 0.665, the average value of inverse difference normalized decrease from 0.981 to 0.979, and the average value of dissimilarity decrease from 0.1576 to 0.1828. The details of other radiomics features are describe in results section.\nCONCLUSIONS: Our experiment shows that patients in different recovery periods have a relationship with quantitative values of tongue images, including L color space of the tongue and coat radiomics features analysis. This relationship can help clinical doctors master the recovery and health of patients as soon as possible and improve their understanding of the potential mechanisms underlying the dynamic changes and mechanisms underlying COVID-19.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:35473350, Shixing Y et al., 2022, Journal of traditional Chinese medicine = Chung i tsa chih ying wen pan",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35473350/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36388160",
+   "title": "Machine Learning-Based Technique for the Severity Classification of Sublingual Varices according to Traditional Chinese Medicine.",
+   "category": "LINGUA",
+   "summary": "Tongue diagnosis, a noninvasive examination, is an essential step for syndrome differentiation and treatment in traditional Chinese medicine (TCM). Sublingual vein (SV) is examined to determine the presence of blood stasis and blood stasis syndrome. Many studies have shown that the degree of SV stasis positively...",
+   "content": "Tongue diagnosis, a noninvasive examination, is an essential step for syndrome differentiation and treatment in traditional Chinese medicine (TCM). Sublingual vein (SV) is examined to determine the presence of blood stasis and blood stasis syndrome. Many studies have shown that the degree of SV stasis positively correlates with disease severity. However, the diagnoses of SV examination are often subjective because they are influenced by factors such as physicians' experience and color perception, resulting in different interpretations. Therefore, objective and scientific diagnostic approaches are required to determine the severity of sublingual varices. This study aims at developing a computer-assisted system based on machine learning (ML) techniques for diagnosing the severity of sublingual varicose veins. We conducted a comparative study of the performance of several supervised ML models, including the support vendor machine, K-neighbor, decision tree, linear regression, and Ridge classifier and their variants. The main task was to differentiate sublingual varices into mild and severe by using images of patients' SVs. To improve diagnostic accuracy and to accelerate the training process, we proposed using two model reduction techniques, namely, the principal component analysis in conjunction with the slice inverse regression and the convolution neural network (CNN), to extract valuable features during the preprocessing of data. Our results showed that these two extraction methods can reduce the training time for the ML methods, and the Ridge-CNN method can achieve an accuracy rate as high as 87.5%, which is similar to that of experienced TCM physicians. This computer-aided tool can be used for reference clinical diagnosis. Furthermore, it can be employed by junior physicians to learn and to use in clinical settings.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:36388160, Lu PH et al., 2022, Computational and mathematical methods in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36388160/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-42372470",
+   "title": "Differential regional textural attributes of tongue in normal and acidity patients in the light of traditional Chinese medicine.",
+   "category": "LINGUA",
+   "summary": "In Traditional Chinese Medicine (TCM), tongue diagnosis plays an important role. Besides shape, colour and textural attributes of tongue regions have significance due to their association with different organs (viz. heart, lung, kidney-bladder, liver-gallbladder and stomach-spleen) in health and disease. Although...",
+   "content": "INTRODUCTION: In Traditional Chinese Medicine (TCM), tongue diagnosis plays an important role. Besides shape, colour and textural attributes of tongue regions have significance due to their association with different organs (viz. heart, lung, kidney-bladder, liver-gallbladder and stomach-spleen) in health and disease. Although numerous quantitative methods have been proposed to reduce inter and intra observer variability in tongue diagnosis, almost all of them considered only global colour/textural features i.e. from entire body of tongue. In this exploratory work, regional colour and texture information of tongue have been analysed for 16 healthy subjects (NOM) and 18 patients suffering from chronic acidity and indigestion (ACD).\nMETHODS: Tongue boundaries are marked manually in each image and the tongue body is automatically partitioned into five regions linked with said internal organs. Rough assessments of region boundaries are obtained from literature. The boundaries are fine-tuned according to experts' advice. Several first and second order statistical features based on grey scale intensities and a∗ values of LAB colour space (indicative of redness) have been extracted from five different regions of tongue images. Intragroup analysis using Wilcoxon signed rank test compared different regions within individual study groups. Additionally, intergroup analysis, using Wilcoxon rank sum test, compared tongues of NOM with ACD for each region separately. p values were adjusted using the Benjamini-Hochberg false discovery rate procedure with q = 0.05.\nRESULTS: Intragroup analysis reveals a∗ values are statistically different (p ≤ 0.05) between stomach-spleen and liver-gallbladder regions for ACD while no significant change of a∗ are noted between these regions of normal tongue. It was found from intergroup analysis that correlation (one of the second order texture features extracted from grey scale images) of heart region has significantly decreased while correlation of kidney, liver-gallbladder and stomach-spleen regions significantly increased from NOM to ACD.\nCONCLUSION: This exploratory study sheds light on importance of inclusion of regional textural analysis of tongue in quantitative studies and can be applied to automated tongue diagnosis for other diseases.",
+   "tags": [
+    "diagnóstico pela língua",
+    "microbioma da saburra lingual",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:42372470, Bakshi D et al., 2026, Computers in biology and medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42372470/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

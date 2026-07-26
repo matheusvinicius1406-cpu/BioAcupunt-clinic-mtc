@@ -1,0 +1,140 @@
+{
+ "source": "PubMed — busca aberta E-utilities (esearch/efetch, db=pubmed) sobre MTC/acupuntura, rodada 5 de expansão, categoria PULSO, 2026 (resumos/abstracts públicos, revisados manualmente para relevância temática e para excluir duplicatas das rodadas anteriores)",
+ "items": [
+  {
+   "id": "pubmed-23384544",
+   "title": "How to standardize the pulse-taking method of traditional Chinese medicine pulse diagnosis.",
+   "category": "PULSO",
+   "summary": "The aim of this report is to propose standard pulse taking procedure of Traditional Chinese Medicine Pulse Diagnosis. In order to acquire full information from taking a wrist pulse, this proposal adopts a tactile sensor with 12 sensing points at one sensing position, such as Cun, Guan, or Chi. Simultaneously Palpation...",
+   "content": "The aim of this report is to propose standard pulse taking procedure of Traditional Chinese Medicine Pulse Diagnosis. In order to acquire full information from taking a wrist pulse, this proposal adopts a tactile sensor with 12 sensing points at one sensing position, such as Cun, Guan, or Chi. Simultaneously Palpation (SP) and Pressing with One Finger (PWOF) are adopted to explore their differences of the detected pulse signals. According to vertical dynamic characteristics, the results of a Pearson product moment reveal that the correlation coefficients of PWOF and SP are highly correlated from Fu to Chen. In addition, according to unique characteristics of body state, the results of a paired samples t test reveal that the SP and PWOF are indifferent at a specific pulse taking depth. Hence, if using the pulse-taking instrument with tactile sensors, it is concluded that pulse signals taken by familiar SP and PWOF methods are shown in statistical indifferences among seven parameters (Vppmean,Vppmax, HR, LENGTH, WIDTH, AS, and DS).",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:23384544, Chung YF et al., 2013, Computers in biology and medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23384544/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-22322251",
+   "title": "Syndrome differentiation in modern research of traditional Chinese medicine.",
+   "category": "PULSO",
+   "summary": "Syndrome differentiation (Bian Zheng) in traditional Chinese medicine (TCM) is the comprehensive analysis of clinical information gained by the four main diagnostic TCM procedures: observation, listening, questioning, and pulse analysis, and it is used to guide the choice of treatment either by acupuncture and/or TCM...",
+   "content": "Syndrome differentiation (Bian Zheng) in traditional Chinese medicine (TCM) is the comprehensive analysis of clinical information gained by the four main diagnostic TCM procedures: observation, listening, questioning, and pulse analysis, and it is used to guide the choice of treatment either by acupuncture and/or TCM herbal formulae, that is, Fufang. TCM syndrome differentiation can be used for further stratification of the patients' conditions with certain disease, identified by orthodox medical diagnosis, which could help the improvement of efficacy of the selected intervention. In modern TCM research it is possible to integrate syndrome differentiation with orthodox medical diagnosis leading to new scientific findings in overall medical diagnosis and treatment. In this review, the focus is to screen published evidence on the role of syndrome differentiation in modern TCM research with particular emphasis on basic and clinical research as well as, pharmacological evaluation of TCM herbal formulary for drug discovery.",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:22322251, Jiang M et al., 2012, Journal of ethnopharmacology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22322251/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38867942",
+   "title": "Wearable multichannel-active pressurized pulse sensing platform.",
+   "category": "PULSO",
+   "summary": "With the modernization of traditional Chinese medicine (TCM), creating devices to digitalize aspects of pulse diagnosis has proved to be challenging. The currently available pulse detection devices usually rely on external pressure devices, which are either bulky or poorly integrated, hindering their practical...",
+   "content": "With the modernization of traditional Chinese medicine (TCM), creating devices to digitalize aspects of pulse diagnosis has proved to be challenging. The currently available pulse detection devices usually rely on external pressure devices, which are either bulky or poorly integrated, hindering their practical application. In this work, we propose an innovative wearable active pressure three-channel pulse monitoring device based on TCM pulse diagnosis methods. It combines a flexible pressure sensor array, flexible airbag array, active pressure control unit, advanced machine learning approach, and a companion mobile application for human-computer interaction. Due to the high sensitivity (460.1 kPa-1), high linearity (R 2 > 0.999) and flexibility of the flexible pressure sensors, the device can accurately simulate finger pressure to collect pulse waves (Cun, Guan, and Chi) at different external pressures on the wrist. In addition, by measuring the change in pulse wave amplitude at different pressures, an individual's blood pressure status can be successfully predicted. This enables truly wearable, actively pressurized, continuous wireless dynamic monitoring of wrist pulse health. The innovative and integrated design of this pulse monitoring platform could provide a new paradigm for digitizing aspects of TCM and other smart healthcare systems.",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:38867942, Zhao Y et al., 2024, Microsystems & nanoengineering",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38867942/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-30295608",
+   "title": "A Wearable Multifunctional Pulse Monitor Using Thermosensation-Based Flexible Sensors.",
+   "category": "PULSO",
+   "summary": "This study proposes a novel wearable pulse monitoring system, which can realize the synchronous measurements of pulse wave, skin, temperature, and pulse wave velocity (PWV).\nMETHODS: A flexible sensor based on thermosensation is used to detect pressure and temperature stimuli simultaneously. A total of two sensors are...",
+   "content": "OBJECTIVE: This study proposes a novel wearable pulse monitoring system, which can realize the synchronous measurements of pulse wave, skin, temperature, and pulse wave velocity (PWV).\nMETHODS: A flexible sensor based on thermosensation is used to detect pressure and temperature stimuli simultaneously. A total of two sensors are integrated to detect pulse transit along two specific points of the artery, e.g., Cun and Chi at a wrist, the data of which are subsequently used to figure out the PWV by using a tailor-designed algorithm conducted in a microprocessor. Calibration experiments and application cases are conducted to validate the effectiveness of the monitor.\nRESULTS: The developed monitor detects the physiological signals of pulse wave, PWV, and skin temperature simultaneously. In addition, the monitor can measure the pulse changes before and after exercises and track skin temperature variations when warming and cooling. Moreover, the monitor can be also used to detect the local PWV at the wrist.\nCONCLUSION: The synchronous measurements of pulse wave, skin temperature, and PWV using a wearable monitor are feasible.\nSIGNIFICANCE: The monitor is small, simple-structured, with multifunction, and thus provides a promising auxiliary approach for traditional Chinese medicine pulse diagnosis.",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:30295608, Fu Y et al., 2019, IEEE transactions on bio-medical engineering",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30295608/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40800731",
+   "title": "Fusing wrist pulse and ECG data for enhanced identification of coronary heart disease and its complications.",
+   "category": "PULSO",
+   "summary": "This study aimed to explore the potential of synchronously acquiring wrist pressure pulse wave (PPW) and limb lead electrocardiogram (ECG) signals for the development of an identification model for coronary heart disease (CHD) and its associated comorbidities.\nMETHODS: A custom-designed device equipped with pressure...",
+   "content": "OBJECTIVES: This study aimed to explore the potential of synchronously acquiring wrist pressure pulse wave (PPW) and limb lead electrocardiogram (ECG) signals for the development of an identification model for coronary heart disease (CHD) and its associated comorbidities.\nMETHODS: A custom-designed device equipped with pressure and ECG sensors, was utilized to synchronously collect wrist PPW and limb-lead ECG signals from 748 participants (463 for modeling and 285 for external validation). Features were extracted from these two types of physiological signals to form distinct datasets, and RF models were built based on different datasets. The top-performing RF model was then selected and compared against the Feature-Selected (FS-RF), Support Vector Machine (SVM) and Bagged Decision Tree (BDT) models. Ultimately, the optimal model for predicting coronary heart disease (CHD) and its comorbidity was determined based on evaluation metrics.\nRESULTS: The RF model that integrated both PPW and ECG features demonstrated significantly higher effectiveness compared to the RF model that relied on a single physiological signal. Furthermore, when benchmarked against the feature-selected RF(FS-RF), SVM and DBT models, the FS-RF model demonstrated the best performance, achieving an accuracy of 76.32%, an average precision of 75.82%, an average recall of 76.11%, and an average F1-score of 75.88%, all of which were higher than those of other models. Notably, the selected feature by FS-RF encompassed both PPW and ECG features.\nCONCLUSION: This study highlights the importance of synchronously acquiring of PPW and ECG signal, along with feature selection, in enhancing the performance of the FS-RF model for identifying CHD and its associated conditions. These findings provide a scientific basis for the application of wearable devices in clinical settings, highlighting their potential to aid in the early detection and management of cardiovascular disease.",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:40800731, Hong LX et al., 2025, Frontiers in physiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40800731/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-29972011",
+   "title": "[Investigation on Qidong in Qidongzeyou in Book of Pulse (Maishu), the bamboo slips of Han Dynasty in Zhangjiashan].",
+   "category": "PULSO",
+   "summary": "Qidong ( qi change) in Qidongzeyou (（）, pulse change indicates the abnormal changes inside body) in the Book of Pulse (Maishu), the Bamboo Slips of Han Dynasty in Zhangjiashan is related to the classical thought on qi and the theory on meridians at early era. The connotation of qidong was explored in views of...",
+   "content": "Qidong ( qi change) in Qidongzeyou (（）, pulse change indicates the abnormal changes inside body) in the Book of Pulse (Maishu), the Bamboo Slips of Han Dynasty in Zhangjiashan is related to the classical thought on qi and the theory on meridians at early era. The connotation of qidong was explored in views of interdisciplinary perspectives, such as Chinese medicine, philology and qi philosophy in the ancient time. It refers to the pulse changes as mentioned in ancient medical books, indicating the abnormal changes in the body. Before the ancient medical canonization marked as sphygmology, the ancient medical scholar focused on qi monism. Based on the thinking mode as analogy and detecting the root from the phenomenon, it is believed that qidong refers to the imbalance of qi activity inside the body, manifested with the abnormal pulse change at relevant pulse region on the body surface. Accordingly, the disorders inside the body are detected by palpation.",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:29972011, Du F et al., 2018, Zhongguo zhen jiu = Chinese acupuncture & moxibustion",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29972011/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-24696757",
+   "title": "Sphygmology of ibn sina, a message for future.",
+   "category": "PULSO",
+   "summary": "Sphygmology is a 2000-year-old method that is still used in some traditional medicine systems, mainly Iranian, Chinese and Ayurveda. Ibn Sina is one of the most popular physicians in the history of Sphygmology, who had made great contributions to this method, but few meticulous studies have been made on his concepts...",
+   "content": "Sphygmology is a 2000-year-old method that is still used in some traditional medicine systems, mainly Iranian, Chinese and Ayurveda. Ibn Sina is one of the most popular physicians in the history of Sphygmology, who had made great contributions to this method, but few meticulous studies have been made on his concepts. In this article, his standpoints on Pulsology are studied. Ibn Sina has mentioned 10 parameters for pulse palpation, and 13 compound pulses, as well. Besides, some pulse patterns applicable for differentiating similar diseases have been introduced. Nowadays some concepts on pulse patterns, such as pulse change in sleep and pregnancy have been studied; but unfortunately many of the ideas on Pulsology have not yet been examined. Sphygmology, as an accessible and inexpensive means, having a substantial diagnosis yield, has been accepted by the people since its rise, and its development over centuries ago. Although some new instruments have been innovated, which can measure different parameters of pulse, yet sphygmology can be one of the most commonly usable diagnostic methods in future, not only applicable by cardiologists but also by all the physicians.",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:24696757, Zarshenas MM et al., 2013, Heart views : the official journal of the Gulf Heart Association",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24696757/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38544476",
+   "title": "Objective Evaluation of Pulse Width Using an Array Pulse Diagram.",
+   "category": "PULSO",
+   "summary": "Pulse width, which can reflect qi, blood excess, and deficiency, has been used for diagnosing diseases and determining the prognosis in traditional Chinese medicine (TCM). This study aimed to devise an objective method to measure the pulse width based on an array pulse diagram for objective diagnosis.\nMETHODS: The...",
+   "content": "BACKGROUND: Pulse width, which can reflect qi, blood excess, and deficiency, has been used for diagnosing diseases and determining the prognosis in traditional Chinese medicine (TCM). This study aimed to devise an objective method to measure the pulse width based on an array pulse diagram for objective diagnosis.\nMETHODS: The channel 6, the region wherein the pulse wave signal is the strongest, is located in the middle of the pulse sensor array and at the guan position of cunkou during data collection. Therefore, the main wave (h1) time of the pulse wave was collected from the channel 6 through calculation. The left h1 time was collected from the remaining 11 channels. The amplitudes at these time points were extracted as the h1 amplitudes for each channel. However, the pulse width could not be calculated accurately at 12 points. Consequently, a bioharmonic spline interpolation algorithm was used to interpolate the h1 amplitude data obtained from the horizontal and vertical points, yielding 651 (31 × 21) h1 amplitude data. The 651 data points were converted into a heat map to intuitively calculate the pulse width. The pulse width was calculated by multiplying the number of grids on the vertical axis with the unit length of the grid. The pulse width was determined by TCM doctors to verify the pulse width measurement accuracy. Meanwhile, a color Doppler ultrasound examination of the volunteers' radial arteries was performed and the intravascular meridian widths of the radial artery compared with the calculated pulse widths to determine the reliability.\nRESULTS: The pulse width determined using the maximal h1 amplitude method was comparable with the radial artery intravascular meridian widths measured using color Doppler ultrasound. The h1 amplitude was higher in the high blood pressure group and the pulse width was greater.\nCONCLUSIONS: The pulse width determined using the maximal h1 amplitude was objective and accurate. Comparison between the pulse widths of the normal and high blood pressure groups verified the reliability of the method.",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:38544476, Bi ZJ et al., 2024, Journal of evidence-based integrative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38544476/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-24280474",
+   "title": "Regression analysis of radial artery pulse palpation as a potential tool for traditional Chinese medicine training education.",
+   "category": "PULSO",
+   "summary": "Pulse palpation was an important part of the traditional Chinese medicine (TCM) vascular examination. It is challenging for new physicians to learn to differentiate between palpations of various pulse types, due to limited comparative learning time with established masters, and so normally it takes many years to...",
+   "content": "Pulse palpation was an important part of the traditional Chinese medicine (TCM) vascular examination. It is challenging for new physicians to learn to differentiate between palpations of various pulse types, due to limited comparative learning time with established masters, and so normally it takes many years to master the art. The purpose of this study was to introduce an offline TCM skill evaluation and comparison system that makes available learning of palpation without the master's presence. We record patient's radial artery pulse using an existing pressure-based pulse acquisition system, then annotate it with teachers' evaluation when palpating the same patient, assigned as likelihood of it being each pulse type, e.g. wiry, slippery, hesitant. These training data were separated into per-doctor and per-skill databases for evaluation and comparison purposes, using the following novel procedure: each database was used as training data to a panel of time-series data-mining algorithms, driven by two validation tests, with the created training models evaluated in mean-squared-error. Each validation of the panel and training data yielded an array of error terms, and we chose one to quantitatively evaluate palpation techniques, giving way to compute self consistency and mutual-similarity across different practitioners and techniques. Our experiment of two practitioners and 396 per-processing samples yielded the following: one of the physicians has much higher value of self-consistency for all tested pulse types. Also, the two physicians have high similarity in how they palpate the slipper pulse (P) type, but very dissimilar for hesitant (H) type. This system of skill comparisons may be more broadly applied in places where supervised learning algorithms can detect and use meaningful features in the data; we chose a panel of algorithms previously shown to be effective for many time-series types, but specialized algorithms may be added to improve feature-specific aspect of evaluation.",
+   "tags": [
+    "diagnóstico pelo pulso",
+    "esfigmologia",
+    "MTC"
+   ],
+   "citation": "PubMed PMID:24280474, Huang PY et al., 2013, Complementary therapies in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24280474/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

@@ -1,0 +1,95 @@
+{
+ "source": "PubMed — busca aberta E-utilities (esearch/efetch, db=pubmed) sobre MTC/acupuntura, rodada 5 de expansão, categoria BA_GANG, 2026 (resumos/abstracts públicos, revisados manualmente para relevância temática e para excluir duplicatas das rodadas anteriores)",
+ "items": [
+  {
+   "id": "pubmed-42011627",
+   "title": "[TCM understanding and classical formula treatment strategies for type 2 diabetes mellitus].",
+   "category": "BA_GANG",
+   "summary": "Type 2 diabetes mellitus(T2DM) is a major metabolic disease with high prevalence in China, and its multisystem complications involving the heart, brain, kidneys, and eyes pose a serious threat to public health. According to 2023 data from the International Diabetes Federation(IDF), the prevalence of diabetes among...",
+   "content": "Type 2 diabetes mellitus(T2DM) is a major metabolic disease with high prevalence in China, and its multisystem complications involving the heart, brain, kidneys, and eyes pose a serious threat to public health. According to 2023 data from the International Diabetes Federation(IDF), the prevalence of diabetes among Chinese adults has reached 12.4%, with approximately 140 million patients, over 90% of whom have T2DM. Although western hypoglycemic therapies can effectively control blood glucose, they remain limited in improving insulin resistance, regulating constitution, and preventing and treating complications. In TCM, T2DM falls under &quot;spleen heat&quot; and &quot;consumptive thirst&quot;, with core pathogenesis characterized by disordered body fluid metabolism and imbalance of Qi, blood, Yin, and Yang, primarily affecting the liver, spleen(stomach), and kidneys. Based on the evolutionary pattern of pathogenesis, this study proposes six syndrome classifications, i.e., Yuke(depression-thirst), Reke(heat-thirst), Shike(dampness-thirst), Tanke(phlegm-thirst), Yuke(stasis-thirst), and Xuke(deficiency-thirst). Yuke(depression-thirst) presents with chest and hypochondriac distension and elevated blood glucose during emotional fluctuations. Reke features the typical &quot;three excesses and one loss&quot; with Yangming exuberant heat. Shike centers on dry mouth without desire to drink, obesity, and greasy tongue coating. Tanke exhibits dizziness, chest oppression, and excessive phlegm on the basis of Shike. Yuke(stasis-thirst) is marked by dark-purplish tongue and fixed pain. Xuke is differentiated according to the degree of Qi, Yin, Yang, or essence deficiency. Classical formulas are applied correspondingly as follows: Dachaihu Decoction for Yuke(depression-thirst), Baihu Jia Renshen Decoction for Reke, Gegen Qinlian Decoction and Wuling Powder for Shike, Banxia Xiexin Decoction for Tanke, Guizhi Fuling Pills for Yuke(stasis-thirst), and Jingui Shenqi Pills, Shengmai Powder, or Zuogui Pills for Xuke, with flexible combinations for comorbid conditions. Following the integrated TCM-western medicine approach of aligning formula with syndrome and combining pathogenesis, pathology, drug properties, and pharmacology, this study emphasizes pathogenesis-centered application of classical formulas integrated with modern pharmacology to construct a &quot;syndrome differentiation-disease differentiation-target differentiation&quot; trinity treatment model, providing a new TCM strategy for precise prevention and treatment of T2DM and its complications, especially in intervening in insulin resistance and regulating intestinal flora.",
+   "tags": [
+    "oito princípios",
+    "bagang",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:42011627, Deng YS et al., 2026, Zhongguo Zhong yao za zhi = Zhongguo zhongyao zazhi = China journal of Chinese materia medica",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42011627/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-15719747",
+   "title": "[Primary discussion on the classification of the TCM patterns and measurable diagnosis of 760 cases of protracted abstinent syndrome by heroin-addiction].",
+   "category": "BA_GANG",
+   "summary": "To discuss the TCM pattern classification and measurable diagnosis criterion of the protracted symptoms of heroin-addiction abstinence (PSHAA).\nMETHODS: Through literature review and clinical study, the concept of TCM patterns and diagnostic standard were established, and a TCM pattern scale for quantitatively...",
+   "content": "OBJECTIVE: To discuss the TCM pattern classification and measurable diagnosis criterion of the protracted symptoms of heroin-addiction abstinence (PSHAA).\nMETHODS: Through literature review and clinical study, the concept of TCM patterns and diagnostic standard were established, and a TCM pattern scale for quantitatively analysis of PSHAA was formulated. The scale were used on the clinical investigation on the abuser for 5 times on day 15, 30, 60, 90 and 120 after abstinence. Then the TCM patterns of PSHAA was classified using methods of DME and quantitative diagnosis, to create a corresponding scale of diagnostic indexes referring maximum likelihood method.\nRESULTS: (1) The TCM patterns of PSHAA commonly seen were Toxin-stasis accumulation (TSA) with Qi-blood insufficiency, TSA with Qi-yin deficiency, TSA with Yin-deficiency and Fire-excess and TSA with Yin-Yang deficiency. (2) The retrospective and prospective verification of the scale of diagnostic indexes showed it has high sensitivity and speciality, with low rates of misdiagnosis and of missed diagnosis.\nCONCLUSION: It is feasible to develop measurable diagnosis on the TCM patterns of PASAA using DME method and measurable diagnostic methods. The scale of diagnostic indexes formulated with the maximum likelihood method of quantified diagnosis has a certain clinical practicability.",
+   "tags": [
+    "oito princípios",
+    "bagang",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:15719747, Song SL et al., 2005, Zhongguo Zhong xi yi jie he za zhi Zhongguo Zhongxiyi jiehe zazhi = Chinese journal of integrated traditional and Western medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/15719747/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-19249997",
+   "title": "An investigation into the reliability of Chinese medicine diagnosis according to Eight Guiding Principles and Zang-Fu Theory in Australians with hypercholesterolemia.",
+   "category": "BA_GANG",
+   "summary": "Chinese medicine distinguishes itself from Western medicine in the differentiation of diseases according to underlying patterns of disharmony, or Chinese medicine (CM) syndromes. CM has its own clinical endpoints that are used as evidence of change in the body. Yet, relatively little is known about the reliability of...",
+   "content": "BACKGROUND: Chinese medicine distinguishes itself from Western medicine in the differentiation of diseases according to underlying patterns of disharmony, or Chinese medicine (CM) syndromes. CM has its own clinical endpoints that are used as evidence of change in the body. Yet, relatively little is known about the reliability of CM diagnostic techniques, the final diagnosis of a CM syndrome, or the organizing principles used to reach a CM diagnosis such as the Eight Guiding Principles. Information about reliability of CM diagnosis has important implications for clinical practice and research, particularly if CM diagnostic variables or CM syndromes are to be incorporated into study designs.\nDESIGN: An inter-rater reliability study was conducted with three CM practitioners to investigate the reproducibility of CM diagnosis according to the Eight Guiding Principles and Zang-Fu Theory. Forty-five (45) adults with mild hypercholesterolemia but who were otherwise healthy participated in the study.\nRESULTS: Our results suggest that there is a reasonably good level of agreement between at least two practitioners on the dimensions of the Eight Guiding Principles. Level of agreement between at least two practitioners on CM syndrome diagnosis according to Zang-Fu Theory was very good for one syndrome only, that of Spleen qi deficiency.\nCONCLUSIONS: Further investigations are needed into the reliability of the CM diagnostic processes from the initial stage of data collection to the final CM syndrome diagnosis.",
+   "tags": [
+    "oito princípios",
+    "bagang",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:19249997, O'Brien KA et al., 2009, Journal of alternative and complementary medicine (New York, N.Y.)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19249997/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36880233",
+   "title": "[Distribution characteristics of traditional Chinese medicine syndromes in 4 367 adult influenza patients: a Meta-analysis].",
+   "category": "BA_GANG",
+   "summary": "To systematically evaluate the distribution characteristics of traditional Chinese medicine (TCM) syndromes in adult influenza patients and to provide a basis for the TCM syndrome differentiation of influenza.\nMETHODS: The CNKI, CBM, Wanfang, VIP, PubMed, Embase, Cochrane Library databases were searched to collect...",
+   "content": "OBJECTIVE: To systematically evaluate the distribution characteristics of traditional Chinese medicine (TCM) syndromes in adult influenza patients and to provide a basis for the TCM syndrome differentiation of influenza.\nMETHODS: The CNKI, CBM, Wanfang, VIP, PubMed, Embase, Cochrane Library databases were searched to collect cross-sectional studies on the distribution pattern of TCM syndromes in adult patients with influenza. The risk of bias assessment tool for cross-sectional studies developed by the Joanna Briggs Institute (JBI) evidence-based health care center was used to evaluate the literature quality, and the Stata 15.1 software was used to conduct a Meta-analysis of the pooled effect sizes of the included studies.\nRESULTS: A total of 11 studies with 4 367 influenza patients were included. Quality assessment results of JBI showed that the risk bias was higher in the sample size calculation, and the description of sampling modalities and response rate was unclear. There were 17 influenza syndromes after specification, and a single group rate Meta-analysis was performed of the syndromes with ≥ 50 incident cases showed that there were 9 syndromes with an incidence ≥ 10% and statistical significance, the top 5 syndromes were syndrome of wind and heat invading the defense [n = 1 583, RATE = 34.3%, 95% confidence interval (95%CI) was 22.2%-46.3%], syndrome of exterior cold and interior heat (n = 1 122, RATE = 36.1%, 95%CI was 21.2%-51.1%), syndrome of wind-cold fettering the exterior (n = 860, RATE = 19.4%, 95%CI was 10.7%-28.0%), syndrome of heat and toxin in the lung (n = 217, RATE = 17.1%, 95%CI was 9.1%-25.0%), and syndrome of disease involving both defense phase and qi phase (n = 184, RATE = 38.8%, 95%CI was 14.2%-63.5%). The results of the subgroup analysis in different geographical regions showed that the frequency of distribution of syndrome of wind and heat invading the defense and heat and toxin in the lung was higher in the South (RATE: 36.5%, 18.6%) than in the North (RATE: 30.9%, 15.4%), and the frequency of distribution of syndrome of wind-cold fettering the exterior and exterior cold and interior heat in the North (RATE: 23.8%, 40.1%) was higher than that in the South (RATE: 15.7%, 32.3%).\nCONCLUSIONS: There are 9 common TCM syndromes of influenza, including wind and heat invading the defense syndrome, exterior cold and interior heat syndrome, wind-cold fettering the exterior syndrome, heat and toxin in the lung syndrome, disease involving both defense phase and qi phase syndrome, wind and heat complicated by dampnessinvading the surface syndrome, wind and cold complicated by dampnessinvading the surface syndrome, defense phase syndrome and dampness and heatinvading the surface syndrome, which can provide a reference for the TCM syndrome differentiation and treatment of influenza.",
+   "tags": [
+    "oito princípios",
+    "bagang",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:36880233, Lei S et al., 2023, Zhonghua wei zhong bing ji jiu yi xue",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36880233/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-21595217",
+   "title": "[Rapid diagnosis of TCM syndrome based on spectrometry].",
+   "category": "BA_GANG",
+   "summary": "Tongue color provides important information in traditional Chinese medicine (TCM) diagnosis, but in the process of TCM inspection, the various surrounding environment and subjective effect of doctors will influence the correctness of diagnosis. The present article put forward a brand new thought to study TCM...",
+   "content": "Tongue color provides important information in traditional Chinese medicine (TCM) diagnosis, but in the process of TCM inspection, the various surrounding environment and subjective effect of doctors will influence the correctness of diagnosis. The present article put forward a brand new thought to study TCM objectivity, that is to research the essence message of tongue from perspective of spectrum, study the continuous spectrum to replace the observation of tongue color. The experiment used near infrared spectrum to collect reflection spectrum data of tongue among 53 exterior cold and interior heat patients, 37 healthy people and 21 wind chill suffers. Used matlab for data pretreatment, minitab for statistics modeling and prediction used partial least squares, the accuracy of prediction is 85.6%, but however, the spectrum of near infrared fail to distinguish exterior cold and interior heat patients from wind chill sufferers. The article provides a brand new way to implement the objectivity of tongue diagnosis in TCM, and also offers data support for the study of TCM syndrome.",
+   "tags": [
+    "oito princípios",
+    "bagang",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:21595217, Lin L et al., 2011, Guang pu xue yu guang pu fen xi = Guang pu",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21595217/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-7950184",
+   "title": "[Clinical observation on 80 cases with duodenal bulbar ulcer treated with kuiyangqing pill].",
+   "category": "BA_GANG",
+   "summary": "80 patients with duodenal bulbar ulcer were divided into two groups: one was the group of ulcer with Excess-Heat Syndrome (EHS); the other was that with Deficiency-Cold Syndrome (DCS). Both groups of patients were treated with Kuiyangqing Pill (KYQP) for observation, 32 cases treated with bismuth aluminate tablets as...",
+   "content": "UNLABELLED: 80 patients with duodenal bulbar ulcer were divided into two groups: one was the group of ulcer with Excess-Heat Syndrome (EHS); the other was that with Deficiency-Cold Syndrome (DCS). Both groups of patients were treated with Kuiyangqing Pill (KYQP) for observation, 32 cases treated with bismuth aluminate tablets as control.\nRESULTS: The therapeutical effect of EHS was better than that of the control. The recovery rate was 91.5%. The effective rate was 97.9% (P < 0.05). While the curative effect of DCS group was not so good as that of the control.",
+   "tags": [
+    "oito princípios",
+    "bagang",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:7950184, Yang ZW et al., 1994, Zhongguo Zhong xi yi jie he za zhi Zhongguo Zhongxiyi jiehe zazhi = Chinese journal of integrated traditional and Western medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/7950184/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

@@ -1,0 +1,275 @@
+{
+ "source": "PubMed — busca aberta E-utilities (esearch/efetch, db=pubmed) sobre MTC/acupuntura, rodada 5 de expansão, categoria PONTOS, 2026 (resumos/abstracts públicos, revisados manualmente para relevância temática e para excluir duplicatas das rodadas anteriores)",
+ "items": [
+  {
+   "id": "pubmed-40270014",
+   "title": "Acupoint massage: a comprehensive descriptive review of its forms, applications, and underlying mechanisms.",
+   "category": "PONTOS",
+   "summary": "Acupoint massage is a non-invasive traditional therapy that has demonstrated reliable clinical outcomes in pain management, mental health relief, sleep disorder regulation, gastrointestinal treatment, and as an adjunct therapy for cancer. Its convenience and cost-effectiveness further enhance its appeal. However, the...",
+   "content": "Acupoint massage is a non-invasive traditional therapy that has demonstrated reliable clinical outcomes in pain management, mental health relief, sleep disorder regulation, gastrointestinal treatment, and as an adjunct therapy for cancer. Its convenience and cost-effectiveness further enhance its appeal. However, the existing English literature lacks a systematic review that encompasses the various forms of acupoint massage. The acupoint massage forms adaptability is particularly notable when considering the diverse conditions, it addresses, as well as its applicability across different age groups and gender differences. Providing a comprehensive understanding, it is crucial to outline common practices and explore specific applications in key areas. The comprehensive understanding can create opportunities for effective collaboration between preclinical and clinical studies. Defining and categorizing different forms of acupoint massage is essential, alongside investigating the neural circuits involved in touch sensation. Future efforts should enhance collaboration with modern biology, facilitating the transition from empirical to evidence-based practice. This review summarizes forms, applications, and mechanisms of mainstream acupoint massage and provides insights for future research and applications, promoting deeper integration into healthcare.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:40270014, Yao C et al., 2025, Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40270014/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-35095910",
+   "title": "Anti-Inflammatory Effects of Acupuncture at ST36 Point: A Literature Review in Animal Studies.",
+   "category": "PONTOS",
+   "summary": "So far, a number of acupuncture studies have shown anti-inflammatory effects of acupuncture treatment, mostly known at specific point ST36. However, there is no literature that oversaw the inflammation-regulatory effects of acupuncture in each tissue. Therefore, we investigated how acupuncture at specific acupoint...",
+   "content": "So far, a number of acupuncture studies have shown anti-inflammatory effects of acupuncture treatment, mostly known at specific point ST36. However, there is no literature that oversaw the inflammation-regulatory effects of acupuncture in each tissue. Therefore, we investigated how acupuncture at specific acupoint ST36 regulates inflammation and its underlying mechanisms. We searched literatures on PubMed until July 2021 using the keywords \"animal, acupuncture, ST36, inflammation, immune,\" and 292 literatures were searched. We ultimately selected 69 studies to determine the anti-inflammatory actions of acupuncture at ST36 and classified the changes of inflammatory mediators according to target regions. Forty-three studies were included in body fluids, 27 studies in the digestive system, 17 studies in the nervous system, and 30 studies in other tissues or organs. In this review, we found that acupuncture at ST36 has clinical benefits in relieving inflammation through several mechanisms such as vagus nerve activation, toll-like receptor 4 (TLR4)/NF-κB signaling, macrophage polarization, mitogen-activated protein kinase (MAPK) signaling pathway, and cholinergic anti-inflammatory pathway. We expect that these data will inform further studies related to ST36 acupuncture on inflammation.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:35095910, Oh JE et al., 2021, Frontiers in immunology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35095910/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33371816",
+   "title": "Acupuncture Medical Therapy and its Underlying Mechanisms: A Systematic Review.",
+   "category": "PONTOS",
+   "summary": "As a traditional Chinese alternative health care approach, acupuncture is gaining increasing attention and reputation in China and overseas. While becoming increasingly popular globally, some consumers and professionals still know little about the therapy and underlying mechanisms of acupuncture. Due to local...",
+   "content": "As a traditional Chinese alternative health care approach, acupuncture is gaining increasing attention and reputation in China and overseas. While becoming increasingly popular globally, some consumers and professionals still know little about the therapy and underlying mechanisms of acupuncture. Due to local superiority, there are large numbers of both clinical applications and mechanistic studies performed in China compared to countries overseas. Herein, this review attempts to give a comprehensive profile of the development, application, and mechanisms of acupuncture in treating major diseases. The number of clinical publications concerning acupuncture-treated neurological diseases, endocrine and metabolic diseases, circulatory diseases, respiratory diseases, etc. is first counted, and then, the application and therapeutic mechanisms of acupuncture on the predominant diseases in each category, including obesity, facial paralysis, sciatica, depression, hypertension, asthma, etc., are specifically discussed in this paper. The evolution of acupuncture tools and the rationality of acupoints are also discussed. This review not only summarizes the mechanisms of acupuncture but also provides useful information, such as specific acupoints and acupuncture procedures, for treating common diseases. Therefore, the current study provides useful information for both investigators and acupuncturists.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:33371816, Wen J et al., 2021, The American journal of Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33371816/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36570846",
+   "title": "The autonomic nervous system: A potential link to the efficacy of acupuncture.",
+   "category": "PONTOS",
+   "summary": "The autonomic nervous system (ANS) is a diffuse network that regulates physiological systems to maintain body homeostasis by integrating inputs from the internal and external environment, including the sympathetic, parasympathetic, and enteric nervous systems (ENS). Recent evidence suggests that ANS is one of the key...",
+   "content": "The autonomic nervous system (ANS) is a diffuse network that regulates physiological systems to maintain body homeostasis by integrating inputs from the internal and external environment, including the sympathetic, parasympathetic, and enteric nervous systems (ENS). Recent evidence suggests that ANS is one of the key neural pathways for acupuncture signal transduction, which has attracted worldwide attention in the acupuncture field. Here, we reviewed the basic and clinical research published in PubMed over the past 20 years on the effects of acupuncture on ANS regulation and homeostasis maintenance. It was found that acupuncture effectively alleviates ANS dysfunction-associated symptoms in its indications, such as migraine, depression, insomnia, functional dyspepsia, functional constipation. Acupuncture stimulation on some specific acupoints activates sensory nerve fibers, the spinal cord, and the brain. Using information integration and efferents from a complex network of autonomic nuclei of the brain, such as the insular cortex (IC), prefrontal cortex, anterior cingulate cortex (ACC), amygdala (AMG), hypothalamus, periaqueductal gray (PAG), nucleus tractus solitarius (NTS), ventrolateral medulla (VLM), nucleus ambiguus (AMB), acupuncture alleviates visceral dysfunction, inflammation via efferent autonomic nerves, and relieves pain and pain affect. The modulating pattern of sympathetic and parasympathetic nerves is associated with acupuncture stimulation on specific acupoints, intervention parameters, and disease models, and the relationships among them require further exploration. In conclusion, ANS is one of the therapeutic targets for acupuncture and mediates acupuncture's actions, which restores homeostasis. A systemic study is needed to determine the rules and mechanisms underlying the effects of acupoint stimulation on corresponding organs mediated by specific central nervous networks and the efferent ANS.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:36570846, Li YW et al., 2022, Frontiers in neuroscience",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36570846/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-25975413",
+   "title": "What is the Acupoint? A preliminary review of Acupoints.",
+   "category": "PONTOS",
+   "summary": "According to traditional Chinese medicine (TCM) theory, acupoints are specifically chosen sites of acupuncture manipulation, and also the basis for studying the mechanism of acupuncture. Stimulating different acupoints on the body surface could provide various therapeutic benefits. However, what is the acupoint? This...",
+   "content": "BACKGROUND: According to traditional Chinese medicine (TCM) theory, acupoints are specifically chosen sites of acupuncture manipulation, and also the basis for studying the mechanism of acupuncture. Stimulating different acupoints on the body surface could provide various therapeutic benefits. However, what is the acupoint? This question is not clear.\nREVIEW SUMMARY: We focuse on examining the function of acupoints from different perspectives, including the local and the systemic effects of stimulating acupoints. For example, acupoints may release certain substances or incur some changes, which could adjust the function of organs, maintain homeostasis. Furthermore, the therapeutic effects of verum acupoints versus sham acupoints were discussed. However, due to insufficience in evidence and in current methodologies, research into mechanisms of acupuncture is still incomplete.\nCONCLUSION: This review might explain, to some extent, what an acupoint is. Further research into the identity of acupoints is warranted, and multidisciplinary methods using novel technologies may yield significant advances over existing knowledge.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:25975413, Li F et al., 2015, Pain medicine (Malden, Mass.)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25975413/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-34992414",
+   "title": "The Anti-Inflammatory Actions and Mechanisms of Acupuncture from Acupoint to Target Organs via Neuro-Immune Regulation.",
+   "category": "PONTOS",
+   "summary": "Inflammation plays a significant role in the occurrence and development of multiple diseases. This study comprehensively reviews and presents literature from the last five years, showing that acupuncture indeed exerts strong anti-inflammatory effects in multiple biological systems, namely, the immune, digestive...",
+   "content": "Inflammation plays a significant role in the occurrence and development of multiple diseases. This study comprehensively reviews and presents literature from the last five years, showing that acupuncture indeed exerts strong anti-inflammatory effects in multiple biological systems, namely, the immune, digestive, respiratory, nervous, locomotory, circulatory, endocrine, and genitourinary systems. It is well known that localized acupuncture-mediated anti-inflammatory effects involve the regulation of multiple populations and functions of immune cells, including macrophages, granulocytes, mast cells, and T cells. In acupuncture stimulation, macrophages transform from the M1 to the M2 phenotype and the negative TLR4 regulator PPARγ is activated to inhibit the intracellular TLR/MyD88 and NOD signaling pathways. The downstream IκBα/NF-κB and P38 MAPK pathways are subsequently inhibited by acupuncture, followed by suppressed production of inflammasome and proinflammatory mediators. Acupuncture also modulates the balance of helper T cell populations. Furthermore, it inhibits oxidative stress by enhancing SOD activity via the Nrf2/HO-1 pathway and eliminates the generation of oxygen free radicals, thereby preventing inflammatory cell infiltration. The anti-inflammatory effects of acupuncture on different biological systems are also specific to individual organ microenvironments. As part of its anti-inflammatory action, acupuncture deforms connective tissue and upregulates the secretion of various molecules in acupoints, further activating the NF-κB, MAPK, and ERK pathways in mast cells, fibroblasts, keratinocytes, and monocytes/macrophages. The somatic afferents present in acupuncture-activated acupoints also convey sensory signals to the spinal cord, brainstem, and hypothalamic neurons. Upon information integration in the brain, acupuncture further stimulates multiple neuro-immune pathways, including the cholinergic anti-inflammatory, vagus-adrenal medulla-dopamine, and sympathetic pathways, as well as the hypothalamus-pituitary-adrenal axis, ultimately acting immune cells via the release of crucial neurotransmitters and hormones. This review provides a scientific and reliable basis and viewpoints for the clinical application of acupuncture in various inflammatory conditions.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:34992414, Li N et al., 2021, Journal of inflammation research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34992414/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-27924794",
+   "title": "Are Oxygen and Related Compounds the Mechanisms Underlying Acupoint Function? A Review of Acupoint Oxygen Specificity Studies.",
+   "category": "PONTOS",
+   "summary": "Oxygen specificity of acupoints has been studied for nearly 30 years. Studies have considered oxygen partial pressure, nitric oxide, carbon dioxide, and other factors. The results of the experiments have shown that the content of oxygen and oxygen-related compounds is statistically significantly different between...",
+   "content": "Oxygen specificity of acupoints has been studied for nearly 30 years. Studies have considered oxygen partial pressure, nitric oxide, carbon dioxide, and other factors. The results of the experiments have shown that the content of oxygen and oxygen-related compounds is statistically significantly different between acupoint and non-acupoint tissues. Despite certain differences in the methods and results across studies, including some contradictory experimental data, most reports agree that metabolic activity, utilization of oxygen, and activity of oxygen-related compounds were higher in acupoint tissues than in non-acupoint tissues. The characteristics of an acupoint may be based on the anatomical structure of the surrounding tissue. Modern sensor needle technology has been widely applied in the study of acupoint oxygen specificity, providing scientific and objective evidence. However, the study of acupoint oxygen specificity has not been without controversy. In order to give practical significance to this research, study design, repeatability of experimental conditions, and homogeneity of subjects should be considered more precisely. Also, more attention should be paid to clinical relevance, i.e., by inclusion of clinical cases and observation of the de-qi effect and clinical responses in the future.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:27924794, Shu Q et al., 2016, Forschende Komplementarmedizin (2006)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27924794/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32723234",
+   "title": "Does the Acupoint Specificity Exist? Evidence from Functional Neuroimaging Studies.",
+   "category": "PONTOS",
+   "summary": "Using functional neuroimaging techniques to explore the central mechanism of acupoint specificity, the key of acupuncture theory and clinical practice, has attracted increasing attention worldwide. This review aimed to investigate the current status of functional neuroimaging studies on acupoint specificity and...",
+   "content": "BACKGROUND: Using functional neuroimaging techniques to explore the central mechanism of acupoint specificity, the key of acupuncture theory and clinical practice, has attracted increasing attention worldwide. This review aimed to investigate the current status of functional neuroimaging studies on acupoint specificity and explore the potential influencing factors for the expression of acupoint specificity in neuroimaging studies.\nMETHODS: PubMed database was searched from January 1st, 1995 to December 31st, 2016 with the language restriction in English. Data including basic information, methodology and study results were extracted and analyzed from the eligible records.\nRESULTS: Seventy-nine studies were finally enrolled. 65.8% of studies were performed in China, 73.4% of studies were conducted with healthy subjects, 77.2% of studies chose manual acupuncture as the intervention, 86.1% of studies focused on the instant efficacy and 89.9% of studies used functional magnetic resonance imaging as scanning technique. The average sample size was 16 per group. The comparison of verum acupoints and sham acupoints were the main body of acupoint specificity researches. 93.7% of studies obtained the positive results and favored the existence of acupoint specificity.\nCONCLUSION: This review affirmed the existence of acupoint specificity and deemed that the acupoint specificity was relative. Multiple factors such as participants, sample size, acupoint combinations, treatment courses, and types of acupoint could influence the expression of acupoint specificity.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:32723234, Qiu K et al., 2020, Current medical imaging",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32723234/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38847703",
+   "title": "A comprehensive practical review of acupoint embedding as a semi-permanent acupuncture: A mini review.",
+   "category": "PONTOS",
+   "summary": "Since ancient times, acupuncture has been utilized in the treatment of lots of diseases, as a part of Traditional Chinese Medicine. Acupoint embedding (AEM) therapy, known as catgut embedding, is a development of acupuncture that consists of inserting catgut or surgical threads into specific acupoints to produce...",
+   "content": "Since ancient times, acupuncture has been utilized in the treatment of lots of diseases, as a part of Traditional Chinese Medicine. Acupoint embedding (AEM) therapy, known as catgut embedding, is a development of acupuncture that consists of inserting catgut or surgical threads into specific acupoints to produce continuous acupoint stimulation based on the theory of Traditional Chinese Medicine. The remaining thread in the acupoint works as a semi-permanent acupuncture needle that results in decreasing the total time of the treatment which is required for continuous manual acupuncture sessions and increasing the treatment efficacy and patients' satisfaction. In each session of AEM about twenty 1 to 2 cm-long threads-natural origin, synthetic polymer, or bioactive threads-will be inserted at the target acupoints and this process will be repeated every 3 to 4 weeks. Indications of AEM are somehow similar to manual acupuncture including obesity, pain, musculoskeletal inflammations, infertility, etc, and it cannot be performed on pregnant women and pediatrics. AEM demonstrates its therapeutic effects via modulating immune system function, alleviating body inflammatory conditions, affecting the neurohormonal system, and other mechanisms. Subcutaneous indurations, redness, bleeding, hematoma, and bruising are some adverse events reported following the AEM. In conclusion, the scientific literature suggests that AEM is a relatively safe and convenient therapy if performed by a professional skilled practitioner.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:38847703, Kazemi AH et al., 2024, Medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38847703/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-30426006",
+   "title": "Acupoint Therapy on Diabetes Mellitus and Its Common Chronic Complications: A Review of Its Mechanisms.",
+   "category": "PONTOS",
+   "summary": "Acupoint therapy is one of the therapeutic means in Traditional Chinese Medicine (TCM) concerning acupoints and meridians, including manual acupuncture, electroacupuncture, moxibustion, external application, acupoint injection, and catgut embedding. In the treatment of diabetes and its common chronic complications...",
+   "content": "Acupoint therapy is one of the therapeutic means in Traditional Chinese Medicine (TCM) concerning acupoints and meridians, including manual acupuncture, electroacupuncture, moxibustion, external application, acupoint injection, and catgut embedding. In the treatment of diabetes and its common chronic complications, acupoint therapy has proved to have specific curative effect and notable advantages. Single or combined with western medicine, it has superior efficacy and less side effects than western medicine alone. Studying its mechanism can provide experimental basis for clinical treatment. Relevant researches in the recent 5 years mainly focused on the mechanism of electroacupuncture, point injection, catgut embedding, etc. in the treatment of diabetes and common diabetic complications such as neuropathy, nephropathy, and hepatopathy. The possible theories involve the regulation of nerve conduction, signal pathways, hormone level, protein expression, oxidative stress level, structure restoration, etc. The most studied acupoints are Zusanli (ST36), Shenshu (BL23), Sanyinjiao (SP6), Yishu (EX-B3), and Zhongwan (CV12). However, most of the studies have been based on diabetes model rats rather than clinical trials. Moreover, the mechanism of acupoint therapy treating other chronic complications like diabetic retinopathy and that of other effective methods like pressing ear with beans, auricular points plaster therapy, and external application remain unclear. Therefore, this aspect still awaits further research.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:30426006, Feng Y et al., 2018, BioMed research international",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30426006/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-18460551",
+   "title": "Demystifying acupuncture.",
+   "category": "PONTOS",
+   "summary": "Acupuncture refers to the insertion of fine needles into the body at specific points for a therapeutic effect. The term comes from the Latin words 'acus' (needle) and 'punctura' (to puncture). The technique has been practiced in the Far East for at least 3000 yrs but it is only in the last 30 yrs that interest has...",
+   "content": "Acupuncture refers to the insertion of fine needles into the body at specific points for a therapeutic effect. The term comes from the Latin words 'acus' (needle) and 'punctura' (to puncture). The technique has been practiced in the Far East for at least 3000 yrs but it is only in the last 30 yrs that interest has developed in the West underpinned by increasing scientific research. One of the main uses of acupuncture has been to treat musculoskeletal pain and this article will review the evidence base and outline the main theories of mechanisms of action.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:18460551, Pyne D et al., 2008, Rheumatology (Oxford, England)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18460551/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33859708",
+   "title": "Resting-State fMRI in Studies of Acupuncture.",
+   "category": "PONTOS",
+   "summary": "Research exploring the mechanism of acupuncture has been a hot topic in medicine. Resting-state functional magnetic resonance imaging (rs-fMRI) research is a noninvasive and extensive method, which is aimed at the research of the mechanism of acupuncture. Researchers use fMRI technologies to inspect the acupuncture...",
+   "content": "Research exploring the mechanism of acupuncture has been a hot topic in medicine. Resting-state functional magnetic resonance imaging (rs-fMRI) research is a noninvasive and extensive method, which is aimed at the research of the mechanism of acupuncture. Researchers use fMRI technologies to inspect the acupuncture process. The authors reviewed the application of rs-fMRI in acupuncture research in recent 10 years from the aspects of studying acupoints, subjects, acupuncture methods, and intensities. The results found that the application of rs-fMRI in acupuncture research mainly includes research on the onset mechanism of acupuncture treatment; visual evidence of diagnosis and treatment of dominant diseases; efficacy assessments; physiological mechanism of acupoint stimulation; and specific visualization of acupoints.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:33859708, Li X et al., 2021, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33859708/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32420752",
+   "title": "Acupuncture for Pain Management: Molecular Mechanisms of Action.",
+   "category": "PONTOS",
+   "summary": "Acupuncture reduces pain by activating specific areas called acupoints on the patient's body. When these acupoints are fully activated, sensations of soreness, numbness, fullness, or heaviness called De qi or Te qi are felt by clinicians and patients. There are two kinds of acupuncture, manual acupuncture and...",
+   "content": "Acupuncture reduces pain by activating specific areas called acupoints on the patient's body. When these acupoints are fully activated, sensations of soreness, numbness, fullness, or heaviness called De qi or Te qi are felt by clinicians and patients. There are two kinds of acupuncture, manual acupuncture and electroacupuncture (EA). Compared with non-acupoints, acupoints are easily activated on the basis of their special composition of blood vessels, mast cells, and nerve fibers that mediate the acupuncture signals. In the spinal cord, EA can inhibit glial cell activation by down-regulating the chemokine CX3CL1 and increasing the anti-inflammatory cytokine interleukin-10. This inhibits P38 mitogen-activated protein kinase and extracellular signal-regulated kinase pathways, which are associated with microglial activation of the C-Jun N-terminal kinase signaling pathway and subsequent astrocyte activation. The inactivation of spinal microglia and astrocytes mediates the immediate and long-term analgesic effects of EA, respectively. A variety of pain-related substances released by glial cells such as the proinflammatory cytokines tumor necrosis factor [Formula: see text], interleukin-1[Formula: see text], interleukin-6, and prostaglandins such as prostaglandins E2 can also be reduced. The descending pain modulation system in the brain, including the anterior cingulated cortex, the periaqueductal gray, and the rostral ventromedial medulla, plays an important role in EA analgesia. Multiple transmitters and modulators, including endogenous opioids, cholecystokinin octapeptide, 5-hydroxytryptamine, glutamate, noradrenalin, dopamine, [Formula: see text]-aminobutyric acid, acetylcholine, and orexin A, are involved in acupuncture analgesia. Finally, the \"Acupuncture [Formula: see text]\" strategy is introduced to help clinicians achieve better analgesic effects, and a newly reported acupuncture method called acupoint catgut embedding, which injects sutures made of absorbable materials at acupoints to achieve long-term effects, is discussed.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:32420752, Chen T et al., 2020, The American journal of Chinese medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32420752/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-29729027",
+   "title": "Acupuncture for hip osteoarthritis.",
+   "category": "PONTOS",
+   "summary": "Hip osteoarthritis (OA) is a major cause of pain and functional limitation. Few hip OA treatments have been evaluated for safety and effectiveness. Acupuncture is a traditional Chinese medical therapy which aims to treat disease by inserting very thin needles at specific points on the body.\nOBJECTIVES: To assess the...",
+   "content": "BACKGROUND: Hip osteoarthritis (OA) is a major cause of pain and functional limitation. Few hip OA treatments have been evaluated for safety and effectiveness. Acupuncture is a traditional Chinese medical therapy which aims to treat disease by inserting very thin needles at specific points on the body.\nOBJECTIVES: To assess the benefits and harms of acupuncture in patients with hip OA.\nSEARCH METHODS: We searched Cochrane CENTRAL, MEDLINE, and Embase all through March 2018.\nSELECTION CRITERIA: We included randomized controlled trials (RCTs) that compared acupuncture with sham acupuncture, another active treatment, or no specific treatment; and RCTs that evaluated acupuncture as an addition to another treatment. Major outcomes were pain and function at the short term (i.e. < 3 months after randomization) and adverse events.\nDATA COLLECTION AND ANALYSIS: We used standard methodological procedures expected by Cochrane.\nMAIN RESULTS: Six RCTs with 413 participants were included. Four RCTs included only people with OA of the hip, and two included a mix of people with OA of the hip and knee. All RCTs included primarily older participants, with a mean age range from 61 to 67 years, and a mean duration of hip OA pain from two to eight years. Approximately two-thirds of participants were women. Two RCTs compared acupuncture versus sham acupuncture; the other four RCTs were not blinded. All results were evaluated at short term (i.e. four to nine weeks after randomization).In the two RCTs that compared acupuncture to sham acupuncture, the sham acupuncture control interventions were judged believable, but each sham acupuncture intervention was also judged to have a risk of weak acupuncture-specific effects, due to placement of non-penetrating needles at the correct acupuncture points in one RCT, and the use of penetrating needles not inserted at the correct points in the other RCT. For these two sham-controlled RCTs, the risk of bias was low for all outcomes.The combined analysis of two sham-controlled RCTs gave moderate quality evidence of little or no effect in reduction in pain for acupuncture relative to sham acupuncture. Due to the small sample sizes in the studies, the confidence interval includes both the possibility of moderate benefit and the possibility of no effect of acupuncture (120 participants; Standardized Mean Difference (SMD) -0.13, (95% Confidence Interval (CI) -0.49 to 0.22); 2.1 points greater improvement with acupuncture compared to sham acupuncture on 100 point scale (i.e., absolute percent change -2.1% (95% CI -7.9% to 3.6%)); relative percent change -4.1% (95% CI -15.6% to 7.0%)). Estimates of effect were similar for function (120 participants; SMD -0.15, (95% CI -0.51 to 0.21)). No pooled estimate, representative of the two sham-controlled RCTs, could be calculated or reported for the quality of life outcome.The four other RCTs were unblinded comparative effectiveness RCTs, which compared (additional) acupuncture to four different active control treatments.There was low quality evidence that addition of acupuncture to the routine primary care that RCT participants were receiving from their physicians was associated with statistically significant and clinically relevant benefits, compared to the routine primary physician care alone, in pain (1 RCT; 137 participants; mean percent difference -22.9% (95% CI -29.2% to -16.6%); relative percent difference -46.5% (95% CI -59.3% to -33.7%)) and function (mean percent difference -19.0% (95% CI -24.41 to -13.59); relative percent difference -38.6% (95% CI -49.6% to -27.6%)). There was no statistically significant difference for mental quality of life and acupuncture showed a small, significant benefit for physical quality of life.The effects of acupuncture compared with either advice plus exercise or NSAIDs are uncertain.We are also uncertain whether acupuncture plus patient education improves pain, function, and quality of life, when compared to patient education alone.In general, the overall quality of the evidence for the four comparative effectiveness RCTs was low to very low, mainly due to the potential for biased reporting of patient-assessed outcomes due to lack of blinding and sparse data.Information on safety was reported in four RCTs. Two RCTs reported minor side effects of acupuncture, which were primarily minor bruising, bleeding, or pain at needle insertion sites. Four RCTs reported on adverse events, and none reported any serious adverse events attributed to acupuncture.\nAUTHORS' CONCLUSIONS: Acupuncture probably has little or no effect in reducing pain or improving function relative to sham acupuncture in people with hip osteoarthritis. Due to the small sample size in the studies, the confidence intervals include both the possibility of moderate benefits and the possibility of no effect of acupuncture. One unblinded trial found that acupuncture as an addition to routine primary physician care was associated with benefits on pain and function. However, these reported benefits are likely due at least partially to RCT participants' greater expectations of benefit from acupuncture. Possible side effects associated with acupuncture treatment were minor.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:29729027, Manheimer E et al., 2018, The Cochrane database of systematic reviews",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29729027/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40018358",
+   "title": "Possible antidepressant mechanism of acupuncture: targeting neuroplasticity.",
+   "category": "PONTOS",
+   "summary": "Major depressive disorder (MDD) is a highly prevalent and severely disabling psychiatric disorder that decreases quality of life and imposes substantial economic burden. Acupuncture has emerged as an effective adjunctive treatment for depression, it regulates neurotransmitters involved in mood regulation and modulates...",
+   "content": "Major depressive disorder (MDD) is a highly prevalent and severely disabling psychiatric disorder that decreases quality of life and imposes substantial economic burden. Acupuncture has emerged as an effective adjunctive treatment for depression, it regulates neurotransmitters involved in mood regulation and modulates the activity of specific brain regions associated with emotional processing, as evidenced by neuroimaging and biochemical studies. Despite these insights, the precise neuroplastic mechanisms through which acupuncture exerts its antidepressant effects remain not fully elucidated. This review aims to summarize the current knowledge on acupuncture's modulation of neuroplasticity in depression, with a focus on the neuroplasticity-based targets associated with acupuncture's antidepressant effects. We encapsulate two decades of research into the neurobiological mechanisms underpinning the efficacy of acupuncture in treating depression. Additionally, we detail the acupoints and electroacupuncture parameters used in the treatment of depression to better serve clinical application.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:40018358, Xu N et al., 2025, Frontiers in neuroscience",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40018358/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-24215922",
+   "title": "Acupuncture therapy for stroke patients.",
+   "category": "PONTOS",
+   "summary": "Acupuncture is one of the most important parts of Traditional Chinese Medicine, has been used for more than 3000 years as prevention and treatment for various diseases in China as well as in adjacent regions, and is widely accepted in western countries in recent years. More and more clinical trials revealed that...",
+   "content": "Acupuncture is one of the most important parts of Traditional Chinese Medicine, has been used for more than 3000 years as prevention and treatment for various diseases in China as well as in adjacent regions, and is widely accepted in western countries in recent years. More and more clinical trials revealed that acupuncture shows positive effect in stroke, not only as a complementary and alternative medicine for poststroke rehabilitation but also as a preventive strategy which could induce cerebral ischemic tolerance, especially when combined with modern electrotherapy. Acupuncture has some unique characteristics, which include acupoint specificity and parameter-dependent effect. It also involves complicated mechanism to exert the beneficial effect on stroke. Series of clinical trials have shown that acupuncture primarily regulates the release of neurochemicals, hemorheology, cerebral microcirculation, metabolism, neuronal activity, and the function of specific brain region. Animal studies showed that the effects of acupuncture therapy on stroke were possibly via inhibition of postischemic inflammatory reaction, stimulation of neurogenesis and angiogenesis, and influence on neural plasticity. Mechanisms for its preconditioning effect include activity enhancement of antioxidant, regulation of the endocannabinoid system, and inhibition of apoptosis. Although being controversial, acupuncture is a promising preventive and treatment strategy for stroke, but further high-quality clinical trials would be needed to provide more confirmative evidence.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:24215922, Li X et al., 2013, International review of neurobiology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24215922/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40001566",
+   "title": "The Mechanism of Acupuncture Regulating Autophagy: Progress and Prospect.",
+   "category": "PONTOS",
+   "summary": "Autophagy plays a crucial role in the physiopathological mechanisms of diseases by regulating cellular functions and maintaining cellular homeostasis, which has garnered extensive attention from researchers worldwide. The holistic regulation and bidirectional regulation effects of acupuncture can modulate cellular...",
+   "content": "Autophagy plays a crucial role in the physiopathological mechanisms of diseases by regulating cellular functions and maintaining cellular homeostasis, which has garnered extensive attention from researchers worldwide. The holistic regulation and bidirectional regulation effects of acupuncture can modulate cellular autophagy, promoting or restoring the homeostasis of the body's internal environment to achieve therapeutic outcomes. This paper systematically reviews the research progress on the use of acupuncture for treating various diseases via the autophagy pathway, summarizes signal pathways related to acupuncture regulating autophagy, and analyzes the deficiencies present in the existing research. The review results indicate that the mechanism of action of acupuncture on autophagy dysfunction is reflected in the changes in LC3, Beclin1, p53, and autophagy-associated (ATG) protein expression, and regulates signaling pathways and key proteins or genes. The regulatory effect of acupuncture on autophagy capacity is bidirectional: it inhibits the abnormal activation of autophagy to prevent exacerbation of injury and reduce apoptosis, while also activating or enhancing autophagy to promote the elimination of inflammation and reduce oxidative stress. Further analysis suggests that the mechanisms of acupuncture regulating autophagy are insufficiently explored. Future research should prioritize the development of more appropriate animal models, analyzing the accuracy of relevant pathways and the specificity of indicators, exploring the synergistic effects among targets and signaling pathways, clarifying the regulatory mechanisms of acupuncture at various stages of autophagy, and evaluating the efficacy of acupuncture in autophagy modulating. This paper offers valuable insights into the regulation of autophagy by acupuncture.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:40001566, He J et al., 2025, Biomolecules",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40001566/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-20363196",
+   "title": "Gastrointestinal motility disorders and acupuncture.",
+   "category": "PONTOS",
+   "summary": "During the last decades, numerous studies have been performed to investigate the effects and mechanisms of acupuncture or electroacupuncture (EA) on gastrointestinal motility and patients with functional gastrointestinal diseases. A PubMed search was performed on this topic and all available studies published in...",
+   "content": "During the last decades, numerous studies have been performed to investigate the effects and mechanisms of acupuncture or electroacupuncture (EA) on gastrointestinal motility and patients with functional gastrointestinal diseases. A PubMed search was performed on this topic and all available studies published in English have been reviewed and evaluated. This review is organized based on the gastrointestinal organ (from the esophagus to the colon), components of gastrointestinal motility and the functional diseases related to specific motility disorders. It was found that the effects of acupuncture or EA on gastrointestinal motility were fairly consistent and the major acupuncture points used in these studies were ST36 and PC6. Gastric motility has been mostly studied, whereas much less information is available on the effect of EA on small and large intestinal motility or related disorders. A number of clinical studies have been published, investigating the therapeutic effects of EA on a number of functional gastrointestinal diseases, such as gastroesophageal reflux, functional dyspepsia and irritable bowel syndrome. However, the findings of these clinical studies were inconclusive. In summary, acupuncture or EA is able to alter gastrointestinal motility functions and improve gastrointestinal motility disorders. However, more studies are needed to establish the therapeutic roles of EA in treating functional gastrointestinal diseases.",
+   "tags": [
+    "acupontos",
+    "mecanismo",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:20363196, Yin J et al., 2010, Autonomic neuroscience : basic & clinical",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/20363196/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

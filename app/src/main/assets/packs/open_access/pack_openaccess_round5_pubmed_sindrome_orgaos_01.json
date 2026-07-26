@@ -1,0 +1,470 @@
+{
+ "source": "PubMed — busca aberta E-utilities (esearch/efetch, db=pubmed) sobre MTC/acupuntura, rodada 5 de expansão, categoria SINDROME_ORGAOS, 2026 (resumos/abstracts públicos, revisados manualmente para relevância temática e para excluir duplicatas das rodadas anteriores)",
+ "items": [
+  {
+   "id": "pubmed-32186141",
+   "title": "Traditional Chinese Medicine syndrome elements of male infertility revealed by latent tree model analysis.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "To explore the features of Traditional Chinese Medicine (TCM) syndromes in male infertility using computer-based analyses.\nMETHODS: Latent class analysis was used to analyze the TCM syndrome data from 813 patients with male infertility and establish a latent tree model.\nRESULTS: A latent tree model with a Bayesian...",
+   "content": "OBJECTIVE: To explore the features of Traditional Chinese Medicine (TCM) syndromes in male infertility using computer-based analyses.\nMETHODS: Latent class analysis was used to analyze the TCM syndrome data from 813 patients with male infertility and establish a latent tree model.\nRESULTS: A latent tree model with a Bayesian information criterion score of -11 263 was created. This model revealed that the characteristics of basic TCM syndromes in patients with male infertility were kidney Yang deficiency, kidney Qi deficiency, spleen Yang deficiency, liver Qi stagnation, Qi stagnation and blood stasis, and dump-heat; moreover, most patients with male infertility had complex syndromes (spleen-kidney Yang deficiency and liver Qi stagnation) rather than simple single syndromes.\nCONCLUSION: The hidden tree model analysis revealed the objective and quantitative complex relationships between the TCM symptoms of male infertility, and obtained the quantification and objective evidence of TCM syndromes in male infertility.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:32186141, Zhang Z et al., 2018, Journal of traditional Chinese medicine = Chung i tsa chih ying wen pan",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32186141/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39421489",
+   "title": "Factor analysis of traditional Chinese medicine symptoms for identification of syndrome patterns associated with idiopathic short stature in children.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Diagnosing idiopathic short stature (ISS) in Traditional Chinese Medicine (TCM) remains challenging partly because the symptoms and syndrome patterns vary among ISS patients and studies. We aimed to use factor analysis of TCM symptoms to identify syndrome patterns associated with ISS in children on the basis of TCM...",
+   "content": "OBJECTIVES: Diagnosing idiopathic short stature (ISS) in Traditional Chinese Medicine (TCM) remains challenging partly because the symptoms and syndrome patterns vary among ISS patients and studies. We aimed to use factor analysis of TCM symptoms to identify syndrome patterns associated with ISS in children on the basis of TCM theory.\nMATERIALS AND METHODS: A cross-sectional study was conducted at Taipei Tzu Chi Hospital, New Taipei City, Taiwan, from October 1, 2014, to February 28, 2016. The study included 957 individuals who were newly diagnosed with ISS through simple random sampling. The outcome measures comprised 34 TCM symptoms related to children's growth, and these symptoms were assessed using a five-level self-report questionnaire, which was completed by children and their parents. A factor analysis was conducted for the extraction of underlying factors.\nRESULTS: A total of 26 symptoms had factor loadings higher than the exact threshold value (0.4), and five factors were extracted. Factor 1, comprising seven symptoms, was interpreted as \"yin deficiency and fire hyperactivity of kidney syndrome.\" Factor 2, which included eight symptoms, was interpreted as \"phlegm dampness stagnation of spleen syndrome.\" Factor 4, which included five symptoms, was interpreted as \"liver qi invading the spleen syndrome.\" Factor 5, which included four symptoms, was interpreted as \"spleen-stomach weakness syndrome.\" Factor 3, which included four symptoms, was uninterpretable. Factors 1-5 accounted for 10%, 9%, 8%, 7%, and 6% of the total variance.\nCONCLUSION: Four major TCM syndrome patterns, namely, \"yin deficiency and fire hyperactivity of kidney syndrome,\" \"phlegm dampness stagnation of spleen syndrome,\" \"Liver qi invading the spleen syndrome,\" and \"spleen-stomach weakness syndrome\" were identified and accounted for 40% of the total variance of the 34 TCM symptoms surveyed in children with ISS. Our findings may facilitate the diagnosis of ISS and the optimization of treatment strategies.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:39421489, Liao TS et al., 2024, Tzu chi medical journal",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39421489/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32353209",
+   "title": "A combination of depression and liver Qi stagnation and spleen deficiency syndrome using a rat model.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "A syndrome (Zheng in Chinese) plays a critical role in disease identification, diagnosis, and treatment in traditional Chinese medicine (TCM). Clinically, the liver Qi stagnation and spleen deficiency syndrome (LQSSDS) is one of the most common syndrome patterns. Over the past few decades, several animal models have...",
+   "content": "A syndrome (Zheng in Chinese) plays a critical role in disease identification, diagnosis, and treatment in traditional Chinese medicine (TCM). Clinically, the liver Qi stagnation and spleen deficiency syndrome (LQSSDS) is one of the most common syndrome patterns. Over the past few decades, several animal models have been developed to understand the potential mechanisms of LQSSDS, but until now, simulation of the syndrome is still unclear. Recently, several studies have confirmed that an animal model combining a disease and a syndrome is appropriate for simulating TCM syndromes. Overlapping previous studies have reported that depression is highly associated with LQSSDS; hence, we attempted to develop a rat model combining depression and LQSSDS. We exposed the rats to different durations of chronic unpredictable mild stress (CUMS). Subsequently, the evaluation indicators at macrolevel consisted of behavioral tests including open field test, sucrose preference test, and forced swim test, food intake, body weight, white adipose tissue, fecal water content, visceral hypersensitivity, and small bowel transit, and the evaluation indicators at microlevel included changes of hypothalamic-pituitary-adrenal axis. Serum D-xylose absorption was used to comprehensively confirm and assess whether the model was successful during the CUMS-induced process. The results showed that rats exposed to 6-week CUMS procedure exhibited significantly similar traits to the phenotypes of LQSSDS and depression. This study provided a new rat model for the LQSSDS and could potentially lead to a better understanding of the pathophysiology of LQSSDS and the development of new drugs for this syndrome.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:32353209, Li XJ et al., 2020, Anatomical record (Hoboken, N.J. : 2007)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32353209/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-30657351",
+   "title": "Markov Clustering Analysis-Based Validation for Traditional Chinese Medicine Syndrome Patterns of Poststroke Cognitive Impairment.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Objectives: Poststroke cognitive impairment (PSCI) has constituted a heavy public health burden worldwide. Traditional Chinese Medicine (TCM) has been widely used in treating PSCI. This study aimed at validating the TCM syndrome patterns of PSCI by using data mining methods. The findings will shed light on the TCM...",
+   "content": "Objectives: Poststroke cognitive impairment (PSCI) has constituted a heavy public health burden worldwide. Traditional Chinese Medicine (TCM) has been widely used in treating PSCI. This study aimed at validating the TCM syndrome patterns of PSCI by using data mining methods. The findings will shed light on the TCM pathogenesis theory of PSCI, and thus provide translation for optimization of syndrome-targeted treatment strategies of PSCI. Design: This is a registry study-based participant survey conducted in 14 medical centers in eastern China. Mutual information and Markov clustering analysis (MCL) were carried out to achieve syndrome patterns validation of PSCI. Results: Based on MCL, six syndrome patterns were extracted: heart and spleen qi deficiency, liver and kidney yin deficiency, phlegm-turbidity internal obstruction and spleen deficiency, blood stagnation, kidney yang deficiency, and hyperactivity of heart-liver fire (heat). Conclusions: Combination of qi deficiency, yin deficiency, phlegm turbidity, blood stasis, yang deficiency, and fire (heat) may play a key role in PSCI pathogenesis. Treatment strategies by TCM herbal prescriptions should thus be targeted to regulating qi, nourishing yin, resolving turbidity, activating blood, warming yang, clearing fire (heat), regulating kidney, regulating spleen, regulating liver, and regulating heart. Further studies are needed to verify the current findings.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:30657351, Liu Y et al., 2019, Journal of alternative and complementary medicine (New York, N.Y.)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30657351/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38045133",
+   "title": "Syndrome of liver depression and spleen deficiency is a primary TCM syndrome of response to entecavir + FuZheng HuaYu in patients with HBV-related liver fibrosis.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Although clinical studies have found that Chinese patent medicine FuZheng HuaYu tablet/capsule can promote the reversal of HBV-related liver fibrosis, not all sufferers have histopathological responses. This study aims to explore the correlation between traditional Chinese medicine (TCM) syndromes and response to...",
+   "content": "OBJECTIVE: Although clinical studies have found that Chinese patent medicine FuZheng HuaYu tablet/capsule can promote the reversal of HBV-related liver fibrosis, not all sufferers have histopathological responses. This study aims to explore the correlation between traditional Chinese medicine (TCM) syndromes and response to entecavir + FuZheng HuaYu (ETV + FZHY) in patients with HBV-related liver fibrosis.\nMETHODS: This a multi-center cross-sectional study. According to the different treatment strategies that sufferers have ever received, a total of 437 cases were included and divided into ETV + FZHY group and ETV + placebo group. And based on the relevant efficacy determination criteria, the two groups were subdivided into efficacy responders and non-responders. Then, TCM clinical questionnaire information of these patients were collected for subsequent analysis to acquire relevant syndrome elements and TCM syndromes.\nRESULTS: No matter what group was, the first three frequency of TCM pathological position in efficacy responders were as follows: Liver > Spleen > Stomach (TCM concepts). As for the ETV + FZHY group, the first three frequency of pathological nature was ranked as Qi deficiency > Dampness > Heat. Compared with the non-responders, the frequency of Spleen, Stomach, Qi deficiency, Heat, and Qi movement stagnation was significantly increased in the efficacy responders (P < 0.05). In terms of TCM syndromes, the frequency increase of Syndrome of liver depression and spleen deficiency (LDSD), in the efficacy responders, changed more obviously than the non-responders (Chi2 = 6.32, P = 0.0006).\nCONCLUSIONS: TCM syndrome elements of Spleen, Stomach, Qi deficiency, Heat, and Qi movement stagnation were closely associated with efficacy responders with HBV-related liver fibrosis in the ETV + FZHY group. Moreover, LDSD was a primary TCM syndrome in these responders.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:38045133, Dai YK et al., 2023, Heliyon",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38045133/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-17708604",
+   "title": "Syndrome differentiation in traditional Chinese medicine and E-cadherin/ICAM-1 gene protein expression in gastric carcinoma.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "To explore the syndrome differentiation in traditional Chinese medicine (TCM) and gene protein expression in gastric carcinoma.\nMETHODS: Preoperative data of gastric cancer cases were collected from the General Surgery Department and classified according to the criteria for syndrome differentiation in TCM. E-cadherin...",
+   "content": "AIM: To explore the syndrome differentiation in traditional Chinese medicine (TCM) and gene protein expression in gastric carcinoma.\nMETHODS: Preoperative data of gastric cancer cases were collected from the General Surgery Department and classified according to the criteria for syndrome differentiation in TCM. E-cadherin (E-cad) and ICAM-1 gene protein expressions were detected in postoperative specimens from these cases by the immunohistochemical EnVision two-step method.\nRESULTS: The E-cad positive expression rate was 90% in 100 cases of gastric carcinoma. The difference in E-cad expression was significant between the different syndrome differentiation types in TCM (P < 0.01). Further group-group comparison showed that there was a significant difference in E-cad expression between the stagnation of phlegm-damp type and the deficiency in both qi and blood and the deficiency-cold of stomach and spleen types, where E-cad expression was high. There was no significant difference between the internal obstruction of stagnant toxin type and the in-coordination between liver and stomach type, where E-cad expression was relatively low. The ICAM-1 positive expression rate was 58%, and there was no statistically significant difference between the two groups (c2 = 8.999, P > 0.05).\nCONCLUSION: E-cad expression is relatively low in the internal obstruction of stagnant toxin type and the in-coordination between liver and stomach type, where tumor development and metastasis may be associated with low E-cad expression, or with low homogeneous adhesiveness between tumor cells.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:17708604, Sun DZ et al., 2007, World journal of gastroenterology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17708604/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-35875101",
+   "title": "Chinese Medicine Syndrome Differentiation for Early Breast Cancer: A Multicenter Prospective Clinical Study.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Chinese medicine (CM) syndrome differentiation is one of the fundamental principles that guide the practice of Chinese herbal medicine (CHM). CHM has been widely used among breast cancer patients. Contemporary literature varies in syndrome diagnosis, and there is a need to standardize syndrome differentiation...",
+   "content": "BACKGROUND: Chinese medicine (CM) syndrome differentiation is one of the fundamental principles that guide the practice of Chinese herbal medicine (CHM). CHM has been widely used among breast cancer patients. Contemporary literature varies in syndrome diagnosis, and there is a need to standardize syndrome differentiation according to the different stages of breast cancer treatment. This multicenter clinical study aims to identify the CM syndromes and the clinical signs and symptoms in women with early breast cancer.\nMETHODS: Participants who met the inclusion and exclusion criteria were interviewed during the five treatment stages: preoperative, postoperative, chemotherapy, radiation therapy, and endocrine therapy. Patient demographic data and CM syndrome (as recorded by the treating CM clinicians in medical records) were gathered. Signs and symptoms were analyzed using descriptive statistics to derive the standardized CM syndromes using hierarchical cluster analysis.\nRESULTS: The analysis included 964 interviews with 620 participants enrolled between April 29, 2020 and May 30, 2021 from eight participating hospitals in China. The two most frequent syndromes recorded in medical records were dual deficiency of qi and blood, and dual deficiency of qi and yin during all but the preoperative stage. The symptoms of lassitude, lack of strength, and insomnia were common in all but the preoperative stage. Cluster analysis identified two clusters in the preoperative stage that most closely resembled the syndrome diagnoses of liver stagnation with congealing phlegm, and dual deficiency of the liver and kidney. Two clusters-dual deficiency of qi and blood, and dual deficiency of qi and yin-were common to multiple treatment stages. The syndrome cluster of spleen and stomach disharmony existed in both the postoperative and chemotherapy stages. Cluster analysis of the radiation therapy stage identified the unique syndrome of yin deficiency with fire toxin, while the endocrine therapy included the syndromes of liver depression and kidney deficiency.\nCONCLUSIONS: This multicenter clinical study showed consistency between results from cluster analysis and the most common syndromes recorded in the medical records. Findings from this clinical study will be further validated in a Delphi study to standardize CM syndromes for various stages of breast cancer treatment.\nCLINICAL TRIAL REGISTRATION: www.chictr.org.cn/index.aspx, identifier ChiCTR2000032497.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:35875101, Guo Q et al., 2022, Frontiers in oncology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35875101/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-28879751",
+   "title": "[Traditional Chinese medicine syndrome distribution and neuroendocrine mechanisms of irritable bowel syndrome: cross-sectional study].",
+   "category": "SINDROME_ORGAOS",
+   "summary": "In order to clarify the traditional Chinese medicine(TCM) syndrome distribution and pathogenesis of irritable bowel syndrome(IBS), the patients in the first affiliated hospital of Guangzhou university of Chinese medicine were enrolled for the cross-sectional study. The data of 12 sociological variables, 13 risk...",
+   "content": "In order to clarify the traditional Chinese medicine(TCM) syndrome distribution and pathogenesis of irritable bowel syndrome(IBS), the patients in the first affiliated hospital of Guangzhou university of Chinese medicine were enrolled for the cross-sectional study. The data of 12 sociological variables, 13 risk factors, 84 symptoms and signs variables(in 9 aspects), and 19 neuroendocrine indices were extracted for group-between analysis with one-way ANOVA, chi-square test and nonparametric test, and the relationship analysis between clinical symptoms and diseases sub-types was done with binary Logistic regression. In addition, the patterns of TCM syndromes were divided by several syndrome factors to analyze the difference in neuroendocrine indices between various patterns and syndrome factors. A total of 383 IBS patients were enrolled, including 353(92.2%) cases of diarrhea, 14(3.7%) cases of constipation and 16(4.1%) cases of mixed types. In IBS-diarrhea patients, there were 291(76.0%), 18(4.7%), 48(12.5%) and 26(6.8%)cases of syndrome of liver depression and spleen deficiency (sLDSD), syndrome of liver depression and qi stagnation (sLDQS), syndrome of dampness-heat in the spleen and stomach (sDHSS), and syndrome of spleen deficiency with dampness encumbrance (sSDDE) respectively. There was significant differences in blood groups between IBS-diarrhea patients, IBS-constipation patients and IBS-mixed types patients; their disease classification was significantly correlated with the allergies, drinking, irregular meals habits, no or less vacations, and other causes of morbidity (P<0.05, f<0.3). A total of 15 symptoms and signs variables (e.g., chills, facial abnormalities, epigastric fullness, etc.) had significant differences between different groups (P<0.05), and 5, 8, 5 variables were respective independent factors for IBS-diarrhea, constipation and mixed type. There was no significant difference in neuroendocrine indices between various groups. The sLDSD, sLDQS, sDHSS, sSDDE patients had significant differences in genders, living conditions and occupations, and the TCM syndrome type was significantly correlated with the drinking, smoking, no or less breakfast, less than 8 sleeping hours(P<0.05, f<0.3). Meanwhile, a total of 14 symptoms and signs variables (e.g., dysphoria heat, fatigue, stretching, etc.) had significant differences between various groups(P<0.05) and 3, 4, 6, 3 variables were respective independent factors for sLDSD, sLDQS, sDHSS, and sSDDE. There were significant differences in acetylcholine(Ach) and angiotensin Ⅱ(AT-Ⅱ) between the sLDSD group and sSDDE group. There were significant difference in Ach, AT-Ⅱ, adrenotrophin(ACTH) and estradiol (E2) in comparison between several pattern factors. This study preliminary identified the sociological characters, risk factors, syndromes distribution, diseases and subgroup mechanisms of this disease. More samples and multi-centers are required for future study to improve the scientificity and representativeness.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:28879751, Hou ZK et al., 2016, Zhongguo Zhong yao za zhi = Zhongguo zhongyao zazhi = China journal of Chinese materia medica",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/28879751/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-31781287",
+   "title": "Chaihu-Shugan-San Reinforces CYP3A4 Expression via Pregnane X Receptor in Depressive Treatment of Liver-Qi Stagnation Syndrome.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Backgrounds. Chaihu-Shugan-San (CSS) is a classic traditional Chinese herbal prescription for treating depression. However, the underlying mechanism of the Chinese syndrome-specific efficacy of CSS is poorly understood. Aim of the Study. From traditional Chinese medicine and pharmacogenetics perspectives, the present...",
+   "content": "Backgrounds. Chaihu-Shugan-San (CSS) is a classic traditional Chinese herbal prescription for treating depression. However, the underlying mechanism of the Chinese syndrome-specific efficacy of CSS is poorly understood. Aim of the Study. From traditional Chinese medicine and pharmacogenetics perspectives, the present study aimed to investigate the antidepressant effects of CSS on a mouse model of Liver-Qi Stagnation (LQS) syndrome and its underlying mechanisms. Methods and Materials. We used two main mouse models of depressive syndromes in the study, including LQS and liver stagnation and spleen deficiency (LSSD) syndrome. Tail suspension and forced swimming tests were used to evaluate the effects of CSS on animal behaviour. The expression level of the CYP450 enzyme from liver microsomes was analysed by western blot (WB) analysis and quantitative real-time polymerase chain reaction (qRT-PCR). More specifically, we analysed the key compounds of CSS that are responsible for CYP450 regulation via bioinformatics. Ultimately, luciferase assays were employed to confirm the prediction in vitro. Results. CSS remarkably reduced the immobile time in LQS rather than in LSSD mice. Although CSS significantly upregulated CYP2C9 in mice with both syndromes, activated translation of CYP3A4 induced by CSS was only observed in the LQS group. Bioinformatics analysis revealed that the unique regulation of CYP3A4 was responsible for the effects of glycyrrhetinic acid (GA) from CSS. Further luciferase assays confirmed the enhancement of CYP3A4 expression via the pregnane X receptor (PXR) pathway in vitro. Conclusions. CSS specifically upregulates the translation of CYP3A4 via the PXR pathway in depressed LQS mice. GA, a bioactive compound that originates from CSS, contributes to this activation. This work provides novel insight into Chinese syndrome-based therapy for depression.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:31781287, He Z et al., 2019, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31781287/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36604883",
+   "title": "[Comparison of therapeutic efficacy of Wuling Capsules prepared with different methods for rats with syndrome of liver Qi stagnation, spleen deficiency, and blood stasis].",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Wuling Capsules is one of the commonly used drugs for the clinical treatment of chronic hepatitis B with the syndrome of liver Qi stagnation, spleen deficiency, and blood stasis. However, the present preparation method of Wuling Capsules ignores some macromolecules like polysaccharides. In this study, the influences...",
+   "content": "Wuling Capsules is one of the commonly used drugs for the clinical treatment of chronic hepatitis B with the syndrome of liver Qi stagnation, spleen deficiency, and blood stasis. However, the present preparation method of Wuling Capsules ignores some macromolecules like polysaccharides. In this study, the influences of different ethanol concentrations in the preparation process on the extraction rates of macro-and micro-molecules were investigated. Further, the therapeutic efficacy of Wuling Capsules was evaluated with the reserpine-induced rat model of liver Qi stagnation, spleen deficiency, and blood stasis. When 50% ethanol was used for the last time of extraction, the concentrations of polysaccharides, salvianolic acid B, and schisandrin in the extract, as well as the dry extract yield, increased significantly compared with those of the original preparation method. However, the fingerprints of micro-molecules showed little difference between the two methods, with a similarity of 0.862. The study then set the 50% ethanol extraction as the new preparation method. The pharmacodynamics evaluation showed that the Wuling Capsules prepared with the original and new methods both significantly alleviated the emotional depression and metabolic disturbance in model rats, demonstrating good performance in protecting the rats against gastric mucosal injuries, modulating intestinal function, and activating blood circulation. The mechanism of action may be related to the regulation of gastrointestinal hormone secretion, reduction of inflammation, and promotion of dopamine synthesis in cortex and hippocampus. At the same dose, the Wuling Capsules prepared with the original and new methods showed roughly the same overall therapeutic efficacy. However, the Wuling Capsules prepared with the new method had stronger effect in activating blood circulation and modulating inflammation, but weaker effects in regulating gastrin and dopamine. The present study provides basis data for optimizing the preparation process of Wuling Capsules and deciphering the mechanism of its therapeutic effect on liver Qi stagnation, spleen deficiency, and blood stasis.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:36604883, Hui YJ et al., 2022, Zhongguo Zhong yao za zhi = Zhongguo zhongyao zazhi = China journal of Chinese materia medica",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36604883/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-30245731",
+   "title": "UPLC-QTOF/MS-Based Lipidomic Profiling of Liver Qi-Stagnation and Spleen-Deficiency Syndrome in Patients with Hyperlipidemia.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Hyperlipidemia is a common disease caused by abnormal plasma lipid metabolism. Lipidomics is a powerful and efficient technology to study the integration of disease and syndrome of Chinese medicine. This study investigated specific changes in lipid metabolites from hyperlipidemia patients with syndrome of liver...",
+   "content": "Hyperlipidemia is a common disease caused by abnormal plasma lipid metabolism. Lipidomics is a powerful and efficient technology to study the integration of disease and syndrome of Chinese medicine. This study investigated specific changes in lipid metabolites from hyperlipidemia patients with syndrome of liver qi-stagnation and spleen-deficiency (SLQSD). Lipid profiles in plasma samples from 29 hyperlipidemia patients including 10 SLQSD and 19 non-SLQSD and 26 healthy volunteers (NC) were tested by UPLC-QTOF/MS. PLS-DA analysis and database searching were performed to discover differentiating metabolites. Differences in lipid metabolites between hyperlipidemia and healthy people mainly include phosphatidylcholines, phosphatidylethanolamines, phosphatidylglycerols, and ceramides. Hyperlipidemia patients with SLQSD and non-SLQSD could be differentiated by using identified lipid metabolites including phosphatidylcholines, phosphatidylethanolamines, phosphatidylinositols, triglycerides, diacylglycerols, lysophosphatidylethanolamines, sphingomyelins, lysophosphatidylcholines, and lactosylceramides. There were significant differences of lipid metabolism between between different syndromes of the same disease such as hyperlipidemia which showed significant differences between SLQSD and non-SLQSD.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:30245731, Shenghua P et al., 2018, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30245731/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-20388473",
+   "title": "Syndrome characteristics of traditional Chinese medicine: summary of a clinical survey in 767 patients with gastric cancer.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "The present study is a summary of syndrome types of gastric cancer in order of priority based on clinical practical situations, routine clinical syndrome differentiation and a large-sample clinical survey in 767 patients with gastric cancer.\nMETHODS: Based on the six-type classification of gastric cancer in a previous...",
+   "content": "OBJECTIVE: The present study is a summary of syndrome types of gastric cancer in order of priority based on clinical practical situations, routine clinical syndrome differentiation and a large-sample clinical survey in 767 patients with gastric cancer.\nMETHODS: Based on the six-type classification of gastric cancer in a previous study, a bedside syndrome differentiation diagnosis was made simultaneously by two attending doctors of traditional Chinese medicine (TCM to avoid possible diagnostic bias. A clinical differentiation survey form designed under the direction of epidemiologists was filled out by patients with gastric cancer in multiple centers, and the results were digitally valued and statistically analyzed.\nRESULTS: The symptoms and signs in each syndrome type of gastric cancer were ranked in order of priority as follows: distended pain, stringy pulse, eructation, mood-related pain, susceptibility to anger, acid regurgitation, hiccup, fullness sensation or distension after eating just a little, dizziness, thin pulse, abdominal enlargement, obstruction sensation after eating, moving pain, and uneven pulse in disharmony between liver and stomach; dark red tongue with little fur or a smooth surface, burning pain, rapid pulse, associated burning heat in anus, dry mouth, fissured tongue, thin pulse, tidal fever in the afternoon, nausea and vomiting, and night sweating in impairment of yin due to stomach heat; slender tongue fur, obstruction after eating, slow pulse, moderate pulse, rapid and irregular pulse, normal mood, abdominal pain, diarrhea, cold extremities, lower-extremity edema, cold intolerance, pale complexion, dizziness, emaciation, hiccup, silence, nausea, uneven pulse, acid regurgitation, fullness sensation or distension after eating just a little, vomiting, and constipation in deficiency-cold in spleen and stomach; uneven pulse, stabbing pain, tortuous sublingual vein, blue or purplish tongue, fixed pain, tarry stool or dark red stool, vomiting of dark red fluid, pale complexion, dry mouth without desire to drink, stringy pulse, white tongue fur, nausea, thin tongue fur, colic pain, hiccup, dizziness, acid regurgitation, bitter taste in mouth, slow pulse, rapid and irregular pulse, thin pulse, and pain relief by pressing in interior retention of toxin stagnation; slippery pulse, greasy and thick tongue fur, dry mouth without desire to drink, vomiting of bilious fluid, nausea, bitter taste in mouth, fullness sensation or distension after eating just a little, colic pain, and hiccup in stagnation of phlegm-dampness; abdominal pain relief by pressing, map-like tongue, thin pulse, weakness, yellowish complexion, dizziness, spontaneous sweating, fissured tongue, epigastric discomfort, night sweating, emaciation, cold intolerance, constipation, nausea, and dry tongue in deficiency of both qi and blood.\nCONCLUSION: The summarized syndrome types of gastric cancer from this study are consistent with the clinical situations and would prove to be more referential for TCM syndrome differentiation diagnosis and treatment of gastric cancer.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:20388473, Sun DZ et al., 2010, Zhong xi yi jie he xue bao = Journal of Chinese integrative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/20388473/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-17498492",
+   "title": "[Metabonomic study of syndrome of liver qi stagnation and spleen deficiency in rats].",
+   "category": "SINDROME_ORGAOS",
+   "summary": "To determine the changes of the plasma metabolic phenotype in rats with chronic restraint stress (rats with syndrome of liver qi stagnation and spleen deficiency), so as to reveal the biological features of the syndrome of liver qi stagnation and spleen deficiency, and to examine potential application of metabonomic...",
+   "content": "OBJECTIVE: To determine the changes of the plasma metabolic phenotype in rats with chronic restraint stress (rats with syndrome of liver qi stagnation and spleen deficiency), so as to reveal the biological features of the syndrome of liver qi stagnation and spleen deficiency, and to examine potential application of metabonomic analysis in studies of syndromes in traditional Chinese medicine.\nMETHODS: Twenty-four male Sprague-Dawley rats were randomly divided into four groups: group A, 7 d normal control group; group B, 21 d normal control group; group C, 7 d stress group; and group D, 21 d stress group, with 6 rats in each group. Chronic restraint was used to induce stress in rats. Blood was collected from the cardio-ventricle under anesthesia on the 8th (groups A and C) or 22nd day (groups B and D) and detected by using the Fourier variable superconducting nuclear magnetic resonance (NMR) spectrometer (Varian UnityInova 600 M). Free induction decay signals were transferred into one-dimensional NMR spectrogram via 32 k Fourier transformation. Segmental integral calculus (0.04 ppm per segment) was performed from 4.5-0.5 ppm (Carr-Purcell-Meiboom-Gill, CPMG) or 6.0-0 ppm (longitudinal eddy-delay, LED) as defaulted 1H spectra values by using the VNMR software. Data were saved as text or excel files after normalization and then used for pattern recognition analyses. All the data were analyzed by principal component analysis (PCA) using the SIMCA-P 10.0 software (Umetrics AB, Umea, Sweden).\nRESULTS: The PCA analysis of rat plasma (1)H NMR spectra revealed different metabolic spectra between stress and control groups, which were consistent with alterations of in vivo metabolisms in rats under stress stimuli. Compared with the normal control group, rats with repeated stress displayed significant changes in spectral peak shapes of acetate, lactate, tyrosine, low-density lipoprotein, and unknown compounds (3.44 ppm). These altered metabolites can be used as biomarkers of syndrome of liver qi stagnation and spleen deficiency for further studies.\nCONCLUSION: The (1)H NMR spectra of metabolites in the rat blood are differentially changed after chronic stress. Specific, characteristic metabolic products can be identified by analyses of metabonomics, which lead to interpretation of biological feature of Chinese medicine syndromes. Therefore, metabonomic analysis is an approach with good development prospects to studies of TCM syndromes.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:17498492, Luo HG et al., 2007, Zhong xi yi jie he xue bao = Journal of Chinese integrative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17498492/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32233223",
+   "title": "[Distribution of traditional Chinese medicine syndrome types of male infertility in Chengdu area].",
+   "category": "SINDROME_ORGAOS",
+   "summary": "To explore the distribution characteristics of the traditional Chinese medicine (TCM) syndrome types of male infertility in Chengdu area, China, in order to provide some objective evidence for the clinical treatment and studies of male infertility.\nMETHODS: We collected the clinical data on 500 cases of male...",
+   "content": "OBJECTIVE: To explore the distribution characteristics of the traditional Chinese medicine (TCM) syndrome types of male infertility in Chengdu area, China, in order to provide some objective evidence for the clinical treatment and studies of male infertility.\nMETHODS: We collected the clinical data on 500 cases of male infertility treated in the outpatient and inpatient departments of the Affiliated Hospital of Chengdu University of Chinese Medicine and Chengdu Hospital for Reproduction, Women and Children from January to December 2017. Based on the results of examinations using the four diagnostic methods of TCM, namely, observation, auscultation and olfaction, interrogation, and palpation, we differentiated the TCM syndromes of the patients and analyzed the distribution characteristics of the syndrome types.\nRESULTS: Analysis of the baseline characteristics and the results of Chi-square test showed statistically significant differences in the distribution of the frequency of sexual intercourse, body mass index, history of urinary tract infection, testis volume, testicular texture, vas deferens and varicocele among the 500 patients (P < 0.05). As for the distribution of the TCM syndrome types, 115 cases (23.0%) were diagnosed with the unlicensed discernible type of syndrome, 109 (21.8%) with kidney-yang deficiency, 36 (7.2%) with kidney-essence deficiency, 30 (6.0%) with both kidney-yang deficiency and liver-qi stagnation, 30 (6.0%) with both kidney-yang deficiency and spleen-asthenia with excessive dampness, 28 (5.6%) with kidney-yin deficiency, 20 (4.0%) with spleen-asthenia and excessive dampness, 19 (3.8%) with liver-qi stagnation, 19 (3.8%) with phlegm dampness obstruction, 19 (3.8%) with kidney-yang and kidney-essence deficiency, 16 (3.2%) with downward damp-heat, 11 (2.2%) with both kidney-yin and kidney-yang deficiency, 10 (2.0%) with qi-stagnation and blood stasis, and 38 (7.6%) with other types of syndromes.\nCONCLUSIONS: The main TCM syndrome types of male infertility in Chengdu area include kidney-yang deficiency, kidney-yang deficiency with liver-qi stagnation, and kidney-yang deficiency with spleen-asthenia and excessive dampness. The distribution and influencing factors of the syndrome types need to be further explored and clarified by more large-sample and high-quality studies.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:32233223, Yu XJ et al., 2019, Zhonghua nan ke xue = National journal of andrology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32233223/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-22876433",
+   "title": "Development and evaluation of a traditional Chinese medicine syndrome questionnaire for measuring sub-optimal health status in China.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Sub-optimal health status (SHS), in which a person's mind and body exists in a low-quality state of being between disease and health, has become a public health problem that cannot be ignored in China. SHS measurement presents a challenge to the academic fields. We developed and evaluated a questionnaire from the...",
+   "content": "OBJECTIVE: Sub-optimal health status (SHS), in which a person's mind and body exists in a low-quality state of being between disease and health, has become a public health problem that cannot be ignored in China. SHS measurement presents a challenge to the academic fields. We developed and evaluated a questionnaire from the perspective of traditional Chinese medicine (TCM) that embodies the features of TCM syndrome diagnosis for measuring SHS in China.\nMETHODS: The construction of the theoretical framework of the questionnaire was based on a literature review, an expert questionnaire survey and group interviews. The subscales and questionnaire items were screened through a pilot study using statistical means and qualitative analysis. Reliability tests that were used included test-retest reliability, Cronbach's a coefficient, split-half reliability; validity tests included content validity, criterion validity, discrimination validity and construct validity.\nRESULTS: The final questionnaire, the SHSQ-50, included 50 five-class quantifiable items that encompassed nine subscales: liver stagnation syndrome, liver-Qi deficiency syndrome, spleen-Qi deficiency syndrome, liver-fire syndrome, heart-fire syndrome, stomach-fire syndrome, heart-Qi deficiency syndrome, lung-Qi deficiency syndrome and dampness syndrome. Questionnaires were completed by 268 of the 288 SHS subjects (93.0%) and by 86 of the 94 healthy subjects (91.5%). The Cronbach a coefficients, split-half coefficients and stability coefficients ranged from 0.70 to 0.95, 0.67 to 0.87 and 0.88 to 0.98, respectively, for the overall scores and subscales. The Wilcoxon rank test showed statistically significant differences in the subscales and overall scores between the SHS group and the healthy group (P < 0.01). Twelve factors with an eigenvalue greater than one were extracted by factor analysis and merged into nine factors, for which the cumulative contribution rate was 63.63%. The nine factors were corresponded to the overall structure of the questionnaire.\nCONCLUSION: The SHSQ-50 is a reliable and valid instrument for measuring TCM syndrome diagnosis of SHS in China.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:22876433, Zhao H et al., 2012, Journal of traditional Chinese medicine = Chung i tsa chih ying wen pan",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22876433/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32188231",
+   "title": "Traditional Chinese Medicine symptom pattern analysis for Parkinson's disease.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "To use the theory of Traditional Chinese Medicine to identify the major symptom patterns of Parkinson's disease.\nMETHODS: Journal databases were searched for relevant articles in the last 30 years. Articles were reviewed for symptom patterns of Parkinson's disease and analyzed using frequency analysis, cluster...",
+   "content": "OBJECTIVE: To use the theory of Traditional Chinese Medicine to identify the major symptom patterns of Parkinson's disease.\nMETHODS: Journal databases were searched for relevant articles in the last 30 years. Articles were reviewed for symptom patterns of Parkinson's disease and analyzed using frequency analysis, cluster analysis, and other methods of data extraction.\nRESULTS: The analyses indicated that the most frequent symptom patterns of Parkinson's disease are Yin deficiency of kidney and liver, deficiency of Qi and blood, phlegm heat and wind stirring, blood stasis and wind stirring, and deficiency of Yin and Yang.\nCONCLUSION: Taken together, the analyses identified the primary symptom patterns of Parkinson's disease as Yin deficiency of kidney and liver, deficiency of Qi and blood, phlegm heat and wind stirring, and blood stasis and wind stirring.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:32188231, Chen H et al., 2017, Journal of traditional Chinese medicine = Chung i tsa chih ying wen pan",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32188231/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32186069",
+   "title": "Traditional Chinese Medicine symptom patterns in patients with colorectal carcinoma.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "To observe the symptom patterns (or syndromes) according to Traditional Chinese Medicine (TCM) theory in patients with various stages of colorectal cancer, and to observe the dynamic evolution process of these TCM patterns.\nMETHODS: A prospective and cross-sectional questionnaire-based investigation was performed...",
+   "content": "OBJECTIVE: To observe the symptom patterns (or syndromes) according to Traditional Chinese Medicine (TCM) theory in patients with various stages of colorectal cancer, and to observe the dynamic evolution process of these TCM patterns.\nMETHODS: A prospective and cross-sectional questionnaire-based investigation was performed. Clinical data on TCM symptom patterns in patients with colorectal cancer in the perioperative period (210 cases) and adjuvant treatment period (160 cases) were collected. EPIData 3.1 together with frequency statistics and cluster analyses were performed to identify the TCM patterns based on symptom characteristics in patients with colorectal cancer, and to assess the dynamic changes in these patterns.\nRESULTS: In the perioperative period, from the first day of perioperative care to postoperative days 3, 7, and 10, the TCM pattern showed a process of dynamic change from blood deficiency to deficiency of both Qi and Yin and the pattern of dampness and hot accumulative knotting. In the adjuvant treatment period, the TCM pattern changed from Qi deficiency and Yin deficiency inner-heat with dampness to a deficiency pattern, primarily including Yin deficiency of the liver and kidney, deficiency of Qi and blood, and spleen deficiency.\nCONCLUSION: Our study confirmed that variations in the dynamic evolution of TCM symptom patterns exist in patients with colorectal cancer during different treatment periods. This information is of great value in the individualized management of colorectal cancer.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:32186069, Li Y et al., 2018, Journal of traditional Chinese medicine = Chung i tsa chih ying wen pan",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32186069/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-37819739",
+   "title": "Traditional Medicine Classification Based on the Nature and Location of Disease in Parkinson's Disease: A Clustering Study Using Pattern Identification Disassemble Presented in Clinical Studies.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Objectives: The purpose of this study was to investigate a traditional medicine (TM) classification based on the nature and location of disease for pattern identification (PI) in Parkinson's disease (PD). This study also aimed to present evidence regarding the pathogenesis of PD and provide a basis for establishment...",
+   "content": "Objectives: The purpose of this study was to investigate a traditional medicine (TM) classification based on the nature and location of disease for pattern identification (PI) in Parkinson's disease (PD). This study also aimed to present evidence regarding the pathogenesis of PD and provide a basis for establishment of individualized treatment strategies with TM. Methods: An electronic search was conducted in three core databases, three Korean databases, and four Chinese databases. A hierarchical clustering analysis was conducted based on the nature and location of the disease for PD, and the analysis findings were compared with PI in the existing literature. Results: A total of 79 different types of PI were confirmed in 189 PD cases. Cluster analysis using the nature and location of disease disassembled from PI identified 7 groups: group 1 (wind, blood stasis) comprised 15 studies; group 2 (fire-heat, phlegm-retained fluid) comprised 7 studies; group 3 (liver, Qi stagnation) comprised 5 studies; group 4 (kidney, Yang deficiency) comprised 10 studies; group 5 (liver-kidney, Yin deficiency) comprised 93 studies; group 6 (Qi deficiency, blood deficiency) comprised 18 studies; and group 7 (meridian and collateral) comprised 9 studies. Conclusions: The findings provide evidence for the pathogenesis of PD and have the potential to translate into more specific TM patterns for PD. The authors hope that their study results will be used as a foundation for development of traditional medical diagnostic methods and treatments tailored to PD.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:37819739, Jun P et al., 2024, Journal of integrative and complementary medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37819739/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40104195",
+   "title": "Literature study on traditional Chinese medicine syndromes after renal transplantation.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Kidney transplantation is the most effective means to treat patients with renal failure, but its postoperative problems such as rejection reactions, immunosuppressant poisoning, chronic transplant kidney nephropathy, etc. still have not been effectively solved. This study searched for literature on traditional Chinese...",
+   "content": "BACKGROUND: Kidney transplantation is the most effective means to treat patients with renal failure, but its postoperative problems such as rejection reactions, immunosuppressant poisoning, chronic transplant kidney nephropathy, etc. still have not been effectively solved. This study searched for literature on traditional Chinese medicine (TCM) syndromes after kidney transplantation in China, conducted statistical analysis of the results, and sought to identify the underlying patterns.\nAIM: To understand the TCM syndromes after renal transplantation and associated rules and provide a theoretical basis for further clinical research.\nMETHODS: The literature pertaining to TCM syndromes in renal transplantation, published in the China National Knowledge Infrastructure, Wanfang database, and WIP database from 1970 to 2021, was meticulously searched and comprehensively and statistically analyzed.\nRESULTS: Following the established inclusion and exclusion criteria, 13 studies were selected for analysis. Post-renal transplantation, no significant discrepancy was noted among the groups based on the location of TCM viscera. However, when categorized according to TCM pathogenic factors, the groups with spleen and kidney yang deficiency, as well as liver and kidney yin deficiency, exhibited a statistically significant difference in the frequency.\nCONCLUSION: Currently, the research on TCM syndromes pertaining to renal transplantation is in its nascent phase. It is imperative to conduct a multicentric, large-scale survey of TCM syndromes subsequent to renal transplantation in the ensuing years.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:40104195, Guo YP et al., 2025, World journal of transplantation",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40104195/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-37971455",
+   "title": "Correlation Between Traditional Chinese Medicine Evidence and Lipid Metabolism-Regulating Kinase in Elderly Patients with Osteoporosis.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Previous studies have indicated that an increase in the number of fat cells is associated with a decrease in bone density and bone mass. During this process, the differentiation of fat cells is closely related to the extracellular signal-regulated kinase (ERK) 1/2 signaling pathway. However, research on the...",
+   "content": "OBJECTIVE: Previous studies have indicated that an increase in the number of fat cells is associated with a decrease in bone density and bone mass. During this process, the differentiation of fat cells is closely related to the extracellular signal-regulated kinase (ERK) 1/2 signaling pathway. However, research on the characteristics of lipid metabolism-regulating kinase ERK1/2 expression in osteoporosis patients with different traditional Chinese medicine (TCM) patterns and their correlations is currently limited. Therefore, this study aims to explore the correlation between TCM patterns and lipid metabolism-regulating kinases in elderly osteoporosis patients.\nMETHODS: A total of 88 elderly osteoporosis patients with hip joint diseases who underwent total hip arthroplasty at our hospital from October 2017 to October 2022 were selected for this study, and all included patients met the complete inclusion criteria. The 88 patients were divided into groups according to TCM pattern differentiation, with 37 cases of liver and kidney deficiency pattern (Group A), 28 cases of spleen and kidney yang deficiency pattern (Group B), and 23 cases of qi stagnation and blood stasis pattern (Group C). On the second day of hospitalization, 5 ml of morning fasting venous blood was collected from patients in the three groups and used to detect and compare the differences in total cholesterol (TC), triglycerides (TG), high-density lipoprotein cholesterol (HDL-C), and low-density lipoprotein cholesterol (LDL-C) levels. Patients underwent 7 days of in-hospital conditioning before undergoing total hip arthroplasty. After surgery, bone specimens were collected from the femoral neck bone defect and preserved for testing. Western blot was used to detect the protein expression levels of ERK1/2 and p-ERK1/2 in bone specimens of patients with osteoporosis. Subsequently, the differences in ERK1/2 and p-ERK1/2 protein expression levels among the three groups were compared. Finally, multifactorial logistics regression analysis was used to determine the correlation between different TCM patterns and blood lipid indicators and lipid metabolism-regulating kinases.\nRESULTS: There was no significant difference in TC levels among osteoporosis patients with TCM patterns in the three groups (all, P > .05). TG levels in Group B osteoporosis patients were significantly higher than those in Group A and Group C (all, P < .05). HDL-C levels in Group A osteoporosis patients were significantly higher than those in Group B and Group C (all, P < .05). LDL-C levels in Group C osteoporosis patients were significantly lower than those in Group A and Group B (all, P < .05). There was no significant difference in ERK1/GAPDH and ERK2/GAPDH levels among osteoporosis patients with TCM patterns in the three groups (all, P > .05). The levels of p-ERK1 and p-ERK2 in bone specimens of osteoporosis patients in Group C were significantly higher than those in Group A and Group B (all, P < .05). The level of p-ERK2 in bone specimens of osteoporosis patients in Group A was significantly higher than that in Group B (P < .05). There was a significant positive correlation between TCM pattern and TG levels in patients in Group B (r = 0.221, P < .05) and a significant negative correlation with p-ERK1/2 values (r=-0.547, P < .05).\nCONCLUSION: Osteoporosis patients with different TCM patterns exhibit significant differences in blood lipid indicators and lipid metabolism-regulating kinase levels. Additionally, there is a close relationship between different TCM patterns of osteoporosis and lipid metabolism-regulating kinases.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:37971455, Gu C et al., 2024, Alternative therapies in health and medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37971455/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-38545129",
+   "title": "Wenyang-Tianjing-Jieyu Decoction Improves Depression Rats of Kidney Yang Deficiency Pattern by Regulating T Cell Homeostasis and Inflammation Level.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Chronic inflammation is one of the key mechanisms of depression. Wenyang-Tianjin-Jie Decoction (WTJD) is an effective antidepressant found in the course of diagnosis and treatment, but the mechanism of therapeutic effect is not clear. The study aimed to evaluate the efficacy of WTJD in the kidney yang deficiency (KYD)...",
+   "content": "PURPOSE: Chronic inflammation is one of the key mechanisms of depression. Wenyang-Tianjin-Jie Decoction (WTJD) is an effective antidepressant found in the course of diagnosis and treatment, but the mechanism of therapeutic effect is not clear. The study aimed to evaluate the efficacy of WTJD in the kidney yang deficiency (KYD) type of depression rats and reveal its mechanisms.\nMATERIALS AND METHODS: We selected forty 6-week-old male Sprague-Dawley rats for the study. We established a KYD [Phellodendron amurense Rupr (Huangbai) solution oral gavage and 4°C environments; 8 weeks] type of depression (chronic unpredictable mild stimulus; 6 weeks) rat model first. After successful modeling, we used WTJD or fluoxetine on rats for 3 weeks. Then we evaluated the depression and KYD behavior. Finally, we observed the expression of key inflammatory factors and proteins in peripheral blood and hippocampus, and further investigated the immune balance of Th17/Treg and Th1/Th2 cells and the activity of their main regulatory pathways JAK2/STAT3 and TLR4/TRAF6/NF-κB.\nRESULTS: The imbalance of Th17/Treg and Th1/Th2 cells in rats were related to KYD and depressive symptoms. Through this study, we found that WTJD can inhibit the activity of JAK2/STAT3 and TLR4/TRAF6/NF-κB pathways, balance Th17/Treg and Th1/Th2 cell homeostasis, regulate the levels of inflammatory factors in the hippocampus and peripheral blood, and reverse KYD and depression.\nCONCLUSION: This study confirmed that WTJD had a reliable effect on depression rats with KYD, and its mechanism was to regulate the immune homeostasis of hippocampal T cells and related inflammatory factors to improve KYD and depression symptoms in rats.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:38545129, Zhang T et al., 2024, Neuropsychiatric disease and treatment",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38545129/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-33775600",
+   "title": "Serum metabolic profiling of traditional Chinese medicine syndromes in patients with diarrhea-predominant irritable bowel syndrome.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "The clinical symptoms of diarrhea-predominant irritable bowel syndrome (IBS-D) can be effectively improved by traditional Chinese medicine (TCM) treatment, based on the usage of specific therapies for different TCM syndromes. However, in the stage of diagnosis, the standard criteria for the classification of TCM...",
+   "content": "OBJECTIVE: The clinical symptoms of diarrhea-predominant irritable bowel syndrome (IBS-D) can be effectively improved by traditional Chinese medicine (TCM) treatment, based on the usage of specific therapies for different TCM syndromes. However, in the stage of diagnosis, the standard criteria for the classification of TCM syndrome were still deficient. Through serum metabolic profiling, this study aimed to explore potential biomarkers in IBS-D patients with different TCM syndromes, which can assist in diagnosis of the disease.\nMETHODS: Serum samples were collected from healthy controls (30 cases), IBS-D patients with Liver-Stagnation and Spleen-Deficiency syndrome (LSSD, 30 cases), Yang Deficiency of Spleen and Kidney syndrome (YDSK, 11 cases) and Damp Abundance due to Spleen-Deficiency syndrome (DASD, 22 cases). Serum metabolic profiling was conducted by ultra-performance liquid chromatography coupled with quadrupole time-of-flight mass spectrometry. The potential biomarkers were screened by orthogonal partial least square-discriminate analysis, while metabolic pathways undergoing alterations were identified by pathway enrichment analysis in MetaboAnalyst 4.0.\nRESULTS: Overall, 34 potential biomarkers were identified in LSSD group, 36 in YDSK group and 31 in DASD group. And the 13 metabolites shared by three groups were determined as the potential biomarkers of IBS-D. Glycerophospholipid metabolism was disturbed significantly in IBS-D patients, which may play a role in IBS-D through inflammation. What's more, three TCM syndromes have the specific potential biomarkers in glycerophospholipid metabolism.\nCONCLUSION: The serum metabolomics revealed that different TCM syndrome types in IBS-D may have different metabolic patterns during disease progression and glycerophospholipid metabolism was one of the pathways, whose metabolism was disturbed differently among three TCM syndromes in IBS-D. Therefore, the specific potential biomarkers in glycerophospholipid metabolism of three TCM syndromes in IBS-D can serve as the objective indicators, which can facilitate the TCM-syndrome objective classification of IBS-D.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:33775600, Tang SQ et al., 2021, Journal of integrative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33775600/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-41475623",
+   "title": "Wenyang-Tianjing-Jieyu decoction ameliorates Kidney-Yang deficiency type depression-like behavior in Sprague-Dawley rats by enhancing neurogenesis via the FOXO signaling pathway.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Wenyang-Tianjing-Jieyu Decoction (WTJD) is a traditional Chinese herbal formula with a history of ethnopharmacological use for depression, specifically targeting the Kidney-Yang deficiency (KYD) subtype. Its therapeutic rationale is well-documented in classical Chinese materia medica. However, the molecular mechanisms...",
+   "content": "ETHNOPHARMACOLOGICAL RELEVANCE: Wenyang-Tianjing-Jieyu Decoction (WTJD) is a traditional Chinese herbal formula with a history of ethnopharmacological use for depression, specifically targeting the Kidney-Yang deficiency (KYD) subtype. Its therapeutic rationale is well-documented in classical Chinese materia medica. However, the molecular mechanisms underpinning its clinical efficacy remain largely unelucidated.\nAIM OF THE STUDY: This study aimed to investigate the therapeutic effects and elucidate the underlying molecular mechanisms of WTJD, a traditional herbal formula, in ameliorating KYD-type depression in a rat model.\nMATERIALS AND METHODS: The chemical profile of WTJD was characterized using UPLC-Q-Exactive/MS. Using a rat model of KYD-type depression established by combining Phellodendri chinensis Cortex decoction gavage, cold exposure, and chronic unpredictable mild stress (CUMS), we evaluated the therapeutic effects of WTJD. This randomized controlled study included five groups (n = 7/group): Control, Model, Fluoxetine, WTJD-Medium, and WTJD-High, with a 3-week intervention period. Furthermore, we integrated network pharmacology with hippocampal transcriptomics to identify key therapeutic targets, which converged on the FOXO signaling pathway. Finally, the predicted mechanism was validated by assessing key protein phosphorylation, nuclear translocation, hippocampal neurogenesis, and synaptic plasticity. Moreover, the regulatory mechanism was further corroborated in vitro using LPS-induced PC12 cells treated with WTJD-containing serum and the AKT inhibitor MK-2206.\nRESULTS: WTJD administration significantly ameliorated both the KYD phenotype and depressive-like behaviors in the rat model. Strikingly, both network pharmacology and hippocampal transcriptomic analyses converged on the FOXO signaling pathway as the central therapeutic target. Mechanistically, it was confirmed that WTJD activated the FOXO pathway by inhibiting AKT phosphorylation, which in turn promoted the nuclear translocation of FOXO4. Consistently, in vitro assays demonstrated that WTJD-containing serum protected PC12 cells and rescued downstream gene expression by modulating the FOXO signaling pathway, effects that were mimicked by AKT inhibition. This cascade of molecular events ultimately restored impaired adult hippocampal neurogenesis and synaptic plasticity.\nCONCLUSION: WTJD ameliorates KYD-type depression by modulating the hippocampal FOXO signaling pathway to restore neurogenesis and synaptic plasticity. These results validate the FOXO pathway as a high-value target for subtype-specific antidepressant drug design.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:41475623, Liu D et al., 2026, Journal of ethnopharmacology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41475623/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36893746",
+   "title": "Twelve-component pharmacokinetic study of rat plasma after oral administration of You-Gui-Wan in osteoporosis rats with kidney-yin deficiency and kidney-yang deficiency.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "You-Gui-Wan is a widely used traditional Chinese medicine preparation for the treatment of osteoporosis with kidney-yang deficiency, and is composed of both yang-invigorating and kidney-tonifying herbs, and yin-nourishing and kidney essence-replenishing herbs. Considering that the pharmacokinetics of drugs might...",
+   "content": "You-Gui-Wan is a widely used traditional Chinese medicine preparation for the treatment of osteoporosis with kidney-yang deficiency, and is composed of both yang-invigorating and kidney-tonifying herbs, and yin-nourishing and kidney essence-replenishing herbs. Considering that the pharmacokinetics of drugs might differ in different pathological conditions, it is necessary to study the pharmacokinetic characteristics of You-Gui-Wan under different osteoporotic conditions. In this study, the pharmacokinetic behaviors of You-Gui-Wan in osteoporosis rats with kidney-yin and kidney-yang deficiency were compared. The results showed that the absorption, metabolism, and disposition of You-Gui-Wan varied widely in animals with different types of osteoporosis. The active components belonging to the yang-invigorating herbs, such as aconitine, hypaconitine, mesaconitine, benzoylaconine, benzoylhypacoitine, benzoylmesaconine, chlorogenic acid and pinoresinol diglucoside, had a higher uptake and slower elimination in osteoporosis rats with kidney-yang deficiency, which corresponds to the opinion that You-Gui-Wan is used to treat kidney-yang deficiency syndrome, and indicates the scientific nature of Bian-Zheng-Lun-Zhi.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:36893746, Wang Y et al., 2023, Biomedical chromatography : BMC",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36893746/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-29955236",
+   "title": "Correlation Analysis between Traditional Chinese Medicine Syndromes and Gastrointestinal Bleeding after Percutaneous Coronary Intervention.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "To explore the characters of traditional Chinese medicine (TCM) syndromes after percutaneous coronary intervention (PCI) and to provide syndrome study theoretical evidence for TCM differentiation treatment after PCI through retrospective study.\nMETHODS: Patients with coronary heart disease (CHD) who underwent PCI in...",
+   "content": "OBJECTIVE: To explore the characters of traditional Chinese medicine (TCM) syndromes after percutaneous coronary intervention (PCI) and to provide syndrome study theoretical evidence for TCM differentiation treatment after PCI through retrospective study.\nMETHODS: Patients with coronary heart disease (CHD) who underwent PCI in Cardiovascular Intervention Center of Wangjing Hospital during Dec. 2012 to Dec. 2014 and met the inclusion criteria were enrolled. Retrospective study was then conducted based on patients' clinical document and angiography data to explore the distribution pattern of TCM syndromes.\nRESULTS: 801 patients were recruited in the study. TCM syndromes in descending order of their incidence were Qi deficiency and blood stasis syndrome, heart blood stasis syndrome, Qi and Yin deficiency syndrome, phlegm and blood stasis syndrome, Qi stagnation and blood stasis syndrome, Yang asthenia syndrome, heart and kidney yin deficiency syndrome to cold congeal, and blood stasis syndrome in a more to less order. Qi deficiency and blood stasis syndrome was in the most (occurring in 298 patients, 37.20%); Qi and Yin deficiency syndrome occurred in 163 patients (20.35%); heart blood stasis syndrome was shown in 126 patients (15.73%); phlegm and blood stasis syndrome was shown in 95 patients (11.86%).\nCONCLUSION: Qi deficiency and blood stasis syndrome was closely associated with post-PCI bleeding, implying that this syndrome might serve as a powerful predictor of GI bleeding as well as a potential supplement to the current predicting and scoring system of bleeding such as CRUSADE.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:29955236, Zhang C et al., 2018, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29955236/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-36550881",
+   "title": "Traditional Chinese medicine body constitution predicts new-onset diabetic albuminuria in patients with type 2 diabetes: Taichung diabetic body constitution prospective cohort study.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "This prospective cohort study explored whether body constitution (BC) independently predicts new-onset albuminuria in persons with type 2 diabetes mellitus (T2DM) enrolled in the diabetes care management program (DCMP) of a medical center, providing evidence of integrating traditional Chinese medicine into DCMP for...",
+   "content": "This prospective cohort study explored whether body constitution (BC) independently predicts new-onset albuminuria in persons with type 2 diabetes mellitus (T2DM) enrolled in the diabetes care management program (DCMP) of a medical center, providing evidence of integrating traditional Chinese medicine into DCMP for improving care quality. Persons with T2DM (n = 426) originally without albuminuria enrolled in DCMP were recruited in 2010 and were then followed up to 2015 for detecting new-onset albuminuria. The participants received urinalysis and blood test annually. Albuminuria was determined by an elevated urinary albumin/creatinine ratio (≥ 30 µg/mg), and poor glucose control was defined as Glycosylated hemoglobin above or equal to 7%. BC type (Yin deficiency, Yang deficiency, and phlegm stasis) was assessed using a well-validated body constitution questionnaire at baseline. Risk factors for albuminuria (sociodemographic factors, diabetes history, lifestyle behaviors, lipid profile, blood pressure, and kidney function) were also recorded. Hazard ratios (HR) of albuminuria for BC were estimated using multivariate Cox proportional hazards model. During the 4-year follow-up period, albuminuria occurred in 30.5% of participants (n = 130). The HR indicated that Yin deficiency was significantly associated with an increased risk of new-onset albuminuria in persons with T2DM and good glucose control after adjustment for other risk factors (HR = 2.09; 95% confidence interval = 1.05-4.17, P = .04), but not in those with poor glucose control. In persons with T2DM and poor glucose control, phlegm stasis was also significantly associated with a higher risk of albuminuria (2.26; 1.03-4.94, P = .04) after multivariate adjustment, but not in those with good glucose control. In addition to already-known risk factors, BC is an independent and significant factor associated with new-onset albuminuria in persons with T2DM. Our results imply Yin deficiency and phlegm stasis interacting with glucose control status may affect new-onset albuminuria in persons with T2DM.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:36550881, Lee CH et al., 2022, Medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36550881/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-21056843",
+   "title": "An evidence-based validation of traditional Chinese medicine syndromes.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "A standard description regarding the diagnosis of traditional Chinese medicine (TCM) syndromes based on validated evidence is needed for education, practice and evaluation of TCM syndrome-specific treatments. We studied whether an evidence-based four-step approach proposed for the validation of TCM syndromes could...",
+   "content": "OBJECTIVES: A standard description regarding the diagnosis of traditional Chinese medicine (TCM) syndromes based on validated evidence is needed for education, practice and evaluation of TCM syndrome-specific treatments. We studied whether an evidence-based four-step approach proposed for the validation of TCM syndromes could validate Kidney-Yin deficiency syndrome (KDS-Yin) and Kidney-Yang deficiency syndrome (KDS-Yang) in middle-aged women with menopausal symptoms.\nMETHODS: TCM classic and contemporary literature were reviewed for the symptoms and the domain changes of KDS-Yin and KDS-Yang. Factor analysis was used to explore whether these symptoms could be grouped according to their mutual relationships in a sample of women. Latent tree models were constructed based on the factor loadings and justifiability by the theory, and were tested by structural equation modelling on another sample of women.\nRESULTS: The symptoms and domain changes were reviewed from the TCM literature. Exploratory factor analysis (EFA) identified symptom patterns on a sample of 236 women. Based on the findings and the TCM literature, latent tree models of KDS-Yin and KDS-Yang, showing their domain changes and domain symptoms, were constructed and could be confirmed by structural equation modelling on a sample of 323 women.\nCONCLUSION: KDS-Yin and KDS-Yang in middle-aged women with menopausal symptoms were validated and the four-step approach may be used to validate TCM syndromes.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:21056843, Chen RQ et al., 2010, Complementary therapies in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21056843/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40441183",
+   "title": "Traditional Chinese medicine syndrome patterns in immune-related recurrent spontaneous abortion: A cross-sectional observational study based on cluster analysis.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Recurrent spontaneous abortion (RSA) arises from a multifactorial etiology, frequently associated with immune system irregularities. The immunopathological mechanisms underlying miscarriage differ, and immune-mediated abortion can be categorized into autoimmune RSA and alloimmune RSA. Traditional Chinese medicine...",
+   "content": "Recurrent spontaneous abortion (RSA) arises from a multifactorial etiology, frequently associated with immune system irregularities. The immunopathological mechanisms underlying miscarriage differ, and immune-mediated abortion can be categorized into autoimmune RSA and alloimmune RSA. Traditional Chinese medicine (TCM) has unique advantages in treating immune-related RSA, but currently lacks systematic studies on TCM syndrome differentiation. This study aims to explore the TCM syndrome characteristics of immune-related RSA patients using cluster analysis, revealing the clinical manifestations and features of different syndromes, to provide theoretical evidence for clinical TCM diagnosis and treatment. This study designed a TCM syndrome information collection form for immune-related RSA and conducted a clinical epidemiological survey of 244 immune-related RSA patients, collecting symptoms, tongue and pulse information, and performing frequency analysis. A hierarchical cluster analysis was performed on variables, using the between-groups linkage method and Squared Euclidean distance to identify distinct syndrome patterns. Based on the clustering results and TCM theory, relevant syndromes were summarized, and the relationship between syndrome distribution, age, and number of miscarriages was further analyzed. The results show that the distribution of syndromes in immune-related RSA is as follows: kidney deficiency and blood-stasis syndrome (57.4%), spleen-kidney yang deficiency syndrome (18.8%), kidney deficiency and internal heat syndrome (12.3%), and kidney deficiency with damp-heat syndrome (11.5%). As age advances, the prevalence of kidney deficiency and blood-stasis syndrome notably escalates. Similarly, an increase in the number of miscarriages correlates with a higher incidence of this syndrome, especially in patients who have experienced more than 3 miscarriages. This study identifies the TCM syndrome classification pattern for immune-related RSA, highlighting that \"deficiency,\" \"heat,\" and \"stasis\" are the primary etiological factors, with kidney deficiency and blood-stasis syndrome being the most prevalent. The results offer empirical support for clinical TCM syndrome differentiation and treatment, while also establishing a theoretical foundation for TCM-based therapeutic strategies for immune-related RSA.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:40441183, Jin H et al., 2025, Medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40441183/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-22899954",
+   "title": "The exploration of disease pattern, zheng, for differentiation of allergic rhinitis in traditional chinese medicine practice.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Pattern, or \"zheng,\" differentiation is the essential guide to treatment with traditional Chinese medicine (TCM). However, the considerable variability between TCM patterns complicates evaluations of TCM treatment effectiveness. The aim of this study was to explore and characterize the relationship between patterns...",
+   "content": "Pattern, or \"zheng,\" differentiation is the essential guide to treatment with traditional Chinese medicine (TCM). However, the considerable variability between TCM patterns complicates evaluations of TCM treatment effectiveness. The aim of this study was to explore and characterize the relationship between patterns and the core patterns of allergic rhinitis. We summarized 23 clinical trials of allergic rhinitis with mention of pattern differentiation; association rule mining was used to analyze TCM patterns of allergic rhinitis. A total of 205 allergic rhinitis patients seen at Chang Gung Memorial Hospital from March to June 2005 were included for comparison. Among the 23 clinical trials evaluated, lung qi deficiency and spleen qi deficiencies were the core patterns of allergic rhinitis, accounting for 29.50% and 28.98% of all patterns, respectively. A higher prevalence of lung or spleen qi deficiency (93.7%) was found in Taiwan. Additionally, patients with lung or spleen qi deficiency were younger (27.99 ± 12.94 versus 58.54 ± 12.96 years) and the severity of nasal stuffiness was higher than among patients with kidney qi deficiency (1.35 ± 0.89 versus 0.62 ± 0.65; P < 0.05). Lung and spleen qi deficiencies are the core patterns of allergic rhinitis and determining the severity of nasal stuffiness is helpful in differentiating the TCM patterns.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:22899954, Yang S et al., 2012, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22899954/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39429849",
+   "title": "Decreasing of Trimethylamine N-Oxide by Cecal Microbiota and Choline-Trimethylamine Lyase are Associated with Sishen Pill on Diarrhea with Kidney-Yang Deficiency Syndrome.",
+   "category": "SINDROME_ORGAOS",
+   "summary": "Sishen Pill (SSP) is a traditional Chinese medicine prescription commonly used to treat diarrhea with kidney-yang deficiency syndrome. The aim was to investigate the underlying mechanisms of SSP's therapeutic effects, providing experimental evidence for its mechanism of action.\nMETHODS: A mouse model of diarrhea with...",
+   "content": "BACKGROUND: Sishen Pill (SSP) is a traditional Chinese medicine prescription commonly used to treat diarrhea with kidney-yang deficiency syndrome. The aim was to investigate the underlying mechanisms of SSP's therapeutic effects, providing experimental evidence for its mechanism of action.\nMETHODS: A mouse model of diarrhea with kidney-yang deficiency syndrome was induced using adenine combined with Folium sennae. After successful model replication, SSP decoction was administered. CutC activity, TMAO, IL-6, TNF-α levels, and cecal content microbiota were measured.\nRESULTS: SSP significantly improved the general behavioral characteristics of diarrhea mice, and reduced CutC activity, TMAO and IL-6 levels. Sequencing results indicated significant changes at the phylum and genus levels. Correlation analysis revealed a positive correlation between CutC activity and Faecalibaculum (p<0.05) and Chryseobacterium (p<0.05), and a significant negative correlation with Prevotellaceae UCG-001, Rikenella (p<0.05), Acinetobacter (p<0.05), Parasutterella (p<0.05), and Lacticaseibacillus (p<0.05). TNF-α levels showed a significant negative correlation with Lacticaseibacillus (p<0.05), Prevotellaceae UCG-001 (p<0.01), Parasutterella (p<0.05), and Candidatus Saccharimonas (p<0.05). IL-6 levels exhibited a significant negative correlation with Rikenella (p<0.05), Acinetobacter (p<0.05), Prevotellaceae UCG-001 (p<0.05), Lacticaseibacillus (p<0.01), and Parasutterella (p<0.05), and a significant positive correlation with Faecalibaculum (p<0.05), Chryseobacterium (p<0.01), and A2. Serum TMAO levels showed a significant positive correlation with Faecalibaculum (p<0.05) and Chryseobacterium (p<0.01), and hepatic TMAO levels exhibited a significant positive correlation with Chryseobacterium (p<0.05).\nCONCLUSION: SSP significantly alleviated the symptoms of diarrhea with kidney-yang deficiency syndrome by modulating the cecal microbiota, downregulating CutC activity, and reducing TMAO and inflammatory factor levels. The cecal microbiota-CutC-TMAO-inflammatory cytokine axis may be a key mechanism underlying the therapeutic effects of SSP.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:39429849, Guo M et al., 2024, Journal of inflammation research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39429849/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-39177394",
+   "title": "[Pathogenesis of benign prostatic hyperplasia from the perspective of syndrome differentiation of viscera based on the neuro-endocrine-immune network].",
+   "category": "SINDROME_ORGAOS",
+   "summary": "According to the theory of traditional Chinese medicine (TCM), benign prostatic hyperplasia (BPH) belongs to the category of \"Jing Long\". Clinical management of BPH in TCM is root-aimed and kidney-targeted, in combination with the treatment of other viscera based on the syndrome differentiation of zang-fu organs. The...",
+   "content": "According to the theory of traditional Chinese medicine (TCM), benign prostatic hyperplasia (BPH) belongs to the category of \"Jing Long\". Clinical management of BPH in TCM is root-aimed and kidney-targeted, in combination with the treatment of other viscera based on the syndrome differentiation of zang-fu organs. The neuro-endocrine-immune network of modern medicine is similar to the holistic concept of TCM. Based on the study of the neuro-endocrine-immune network, with kidney deficiency as the root of pathogenesis, and starting from the classification of viscera, this review elucidates the etiologic mechanisms of BHP from the perspective of Chinese and Western medicine and provides some reference for medication.",
+   "tags": [
+    "zang-fu",
+    "síndrome de órgão",
+    "diferenciação de padrões"
+   ],
+   "citation": "PubMed PMID:39177394, Hu RL et al., 2024, Zhonghua nan ke xue = National journal of andrology",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39177394/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

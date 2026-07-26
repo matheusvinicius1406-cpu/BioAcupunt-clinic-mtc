@@ -1,0 +1,20 @@
+{
+ "source": "NCBI Bookshelf (NLM) — Database of Abstracts of Reviews of Effects (DARE), Centre for Reviews and Dissemination (University of York), resumos críticos estruturados de revisões sistemáticas sobre MTC/acupuntura/fitoterapia chinesa/qigong-tai chi, categoria PONTOS, acesso público via eutils db=books, rodada 5 de expansão, 2026",
+ "items": [
+  {
+   "id": "ncbibooks-dare-nbk80569",
+   "title": "Are acupoints specific for diseases? A systematic review of the randomized controlled trials with sham acupuncture controls.",
+   "category": "PONTOS",
+   "summary": "BACKGROUND:\nThe results of many clinical trials and experimental studies regarding acupoint specificity are contradictory. This review aims to investigate whether a difference in efficacy exists between ordinary acupuncture on specific acupoints and sham acupuncture controls on non-acupoints or on irrelevant acupoints.\nMETHODS:\nDatabases...",
+   "content": "BACKGROUND:\nThe results of many clinical trials and experimental studies regarding acupoint specificity are contradictory. This review aims to investigate whether a difference in efficacy exists between ordinary acupuncture on specific acupoints and sham acupuncture controls on non-acupoints or on irrelevant acupoints.\nMETHODS:\nDatabases including Medline, Embase, AMED and Chinese Biomedical Database were searched to identify randomized controlled trials published between 1998 and 2009 that compared traditional body acupuncture on acupoints with sham acupuncture controls on irrelevant acupoints or non-acupoints with the same needling depth. The Cochrane Collaboration's tool for assessing risk of bias was employed to address the quality of the included trials.\nRESULTS:\nTwelve acupuncture clinical trials with sham acupuncture controls were identified and included in the review. The conditions treated varied. Half of the included trials had positive results on the primary outcomes and demonstrated acupoint specificity. However, among those six trials (total sample size: 985) with low risk of bias, five trials (sample size: 940) showed no statistically significant difference between proper and sham acupuncture treatments.\nCONCLUSION:\nThis review did not demonstrate the existence of acupoint specificity. Further clinical trials with larger sample sizes, optimal acupuncture treatment protocols and appropriate sham acupuncture controls are required to resolve this important issue.",
+   "tags": [
+    "acupontos",
+    "especificidade",
+    "revisão sistemática"
+   ],
+   "citation": "Zhang H, Bian Z, Lin Z. Are acupoints specific for diseases? A systematic review of the randomized controlled trials with sham acupuncture controls. Chinese Medicine 2010; 5:1. In: Database of Abstracts of Reviews of Effects (DARE) [Internet]. York (UK): Centre for Reviews and Dissemination (UK); 2010. (NCBI Bookshelf NBK80569).",
+   "sourceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK80569/",
+   "sourceRef": "Resumo estruturado / Structured Abstract (DARE)"
+  }
+ ]
+}

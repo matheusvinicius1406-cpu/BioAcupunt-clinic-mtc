@@ -1,0 +1,245 @@
+{
+ "source": "PubMed — busca aberta E-utilities (esearch/efetch, db=pubmed) sobre MTC/acupuntura, rodada 5 de expansão, categoria MERIDIANOS, 2026 (resumos/abstracts públicos, revisados manualmente para relevância temática e para excluir duplicatas das rodadas anteriores)",
+ "items": [
+  {
+   "id": "pubmed-23997794",
+   "title": "Comparison of Acupuncture Effect on Blood Perfusion between Needling Nonacupoint on Meridian and Needling Nonacupoint off Meridian.",
+   "category": "MERIDIANOS",
+   "summary": "To verify the ancient theory of rather missing the acupoint than missing the meridian, acupuncture at nonacupoint on meridian and acupuncture at nonacupoint off meridian were performed, respectively. The blood perfusion (BP) on the calf around bladder meridian area was measured with a laser Doppler perfusion imager...",
+   "content": "To verify the ancient theory of rather missing the acupoint than missing the meridian, acupuncture at nonacupoint on meridian and acupuncture at nonacupoint off meridian were performed, respectively. The blood perfusion (BP) on the calf around bladder meridian area was measured with a laser Doppler perfusion imager before, during, and after acupuncture. The whole scanning field was divided into seven subareas, and mean BP on each area was calculated. The ratio of mean BP between a subarea and a reference subarea was gotten, and then the change rate was calculated as ratio change rate (RCR). The results showed that RCR on bladder meridian area and around Chengshan (BL57) during or after acupuncture at nonacupoint on meridian was significantly higher than that at nonacupoint off meridian, which supports the ancient theory. Such differences may be attributable to some factors that can facilitate the signals transmission and produce a better acupuncture effect, such as richer nerve terminals, blood vessels, and mast cells which can produce stronger signals on the acupoints and the low hydraulic resistance channel along meridians which plays a role of signal transmitting channel to get a better effect of acupuncture.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:23997794, Zhang WB et al., 2013, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23997794/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-2576341",
+   "title": "Towards the development of a mathematical model for acupuncture meridians.",
+   "category": "MERIDIANOS",
+   "summary": "Traditional concepts of classical acupuncture and Chinese medicine come from a culture which is very different from ours, and there has been considerable problems in their accurate presentation. Our approach is to attempt the development of a mathematical language that links these traditional concepts theoretically to...",
+   "content": "Traditional concepts of classical acupuncture and Chinese medicine come from a culture which is very different from ours, and there has been considerable problems in their accurate presentation. Our approach is to attempt the development of a mathematical language that links these traditional concepts theoretically to models that can be experimentally tested. We first review some of Manaka's findings, confirmed also by our results, having to do with low intensity stimuli. In particular, Manaka applied polarized agents such as Cu(+) and Zn(-) to nonacupuncture points on a meridian and to the so called \"mother and child\" points on a meridian. In both cases he observed the pressure pain reaction which increased for one orientation of Cu and Zn on the meridian and decreased for the opposite orientation. Note that in the case of \"mother and child\" points the observed reaction was in agreement with the so called \"five phase (five element)\" theory. Also, in the case of the \"mother and child\" points the effect usually lasted considerably longer than in the case of nonacupuncture points on a meridian. Taking into account the connection between Manaka's results and skin electrical measurements by some electrodermal diagnostic instruments such as Motoyama's AMI, we discuss some equivalent electric circuits for a single meridian and relate them to the nervous system response. In particular, an electrical circuit model similar to the synapse membrane with two ionic channels seems to be especially useful when we try to explain Manaka's clinical results and Motoyama's results on the velocity of propagation of electrical impulses along meridians. We also develop a mathematical model in the form of a linear five dimensional dynamical system of the so called \"five phase (five element)\" laws such as \"creative\" cycle, \"controlling\" cycle, etc., in the case of a single meridian. We connect this model with the membrane type model mentioned above by assuming a simple mass action law, for the dependence of the conductances in the ionic channels on the input signals. This combined model is used to describe the development of a \"disease\" and its treatment according to the \"five phase\" theory. Here we interpret the \"disease\" as a blockage in a meridian, while the treatment initiates the unblocking process.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:2576341, Friedman MJ et al., 1989, Acupuncture & electro-therapeutics research",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/2576341/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-23781270",
+   "title": "Visualization of the Meridian System Based on Biomedical Information about Acupuncture Treatment.",
+   "category": "MERIDIANOS",
+   "summary": "The origin of the concept of the meridian system is closely connected with the treatment effects of acupuncture, and it serves as an empirical reference system in the clinical setting. Understanding the meridian channels would be a first step in enhancing the clinical efficacy of acupuncture treatment. To understand...",
+   "content": "The origin of the concept of the meridian system is closely connected with the treatment effects of acupuncture, and it serves as an empirical reference system in the clinical setting. Understanding the meridian channels would be a first step in enhancing the clinical efficacy of acupuncture treatment. To understand the relationship between the location of the disease and the sites of relevant acupoints, we investigated acupuncture treatment regimens for low-back pain in 37 clinical studies. We found that the most frequently used acupoints in the treatment of low-back pain were BL23 (51%), BL25 (43%), BL24 (32%), BL40 (32%), BL60 (32%), GB30 (32%), BL26 (28%), BL32 (28%), and GB34 (21%). For the example of low-back pain, we visualized the biomedical information (frequency rates) about acupuncture treatment on the meridians of a three-dimensional (3D) model of the human body. We found that both local and distal acupoints were used to treat low-back pain in clinical trials based on the meridian theory. We suggest a new model for the visualization of a data-driven 3D meridian system of biomedical information about the meridians and acupoints. These findings may be helpful in understanding the meridian system and revealing the effectiveness of acupuncture treatment.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:23781270, Lee IS et al., 2013, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23781270/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40097206",
+   "title": "[Acupuncture research in the era of big data].",
+   "category": "MERIDIANOS",
+   "summary": "In the era of big data, neuroimaging and algorithmic analyses have propelled brain science research and brain mapping. Acupuncture, widely recognized as an effective surface stimulation therapy, has demonstrated therapeutic efficacy for various brain conditions such as stroke and depression. However, the mechanisms...",
+   "content": "In the era of big data, neuroimaging and algorithmic analyses have propelled brain science research and brain mapping. Acupuncture, widely recognized as an effective surface stimulation therapy, has demonstrated therapeutic efficacy for various brain conditions such as stroke and depression. However, the mechanisms linking acupuncture to brain function and its modulatory effects on brain activity require systematic exploration. Additionally, there is an urgent need to scientifically reinterpret traditional meridian theory and enhance its clinical applicability. Therefore, we propose the initiative of constructing a \"brain mapping atlas of meridian, collateral and body surface stimulation\" to explore the patterns linking the therapeutic effects of stimulating the twelve meridians, eight extraordinary vessels, divergent channels, collateral channels, sinew channels, and skin regions to brain function. This initiative aims to provide a scientific interpretation of traditional Chinese medicine meridian theory and enhance its practical applicability. This paper begins by reviewing the current state of brain mapping. It then summarizes existing research on the relationship between acupuncture and the brain, highlighting the necessity of constructing this atlas. The paper further analyzes the methodologies and technical challenges involved. Finally, the potential applications of the brain mapping atlas of meridian, collateral and body surface stimulation, and its main significance in advancing traditional meridian theory to keep pace with the times are prospected.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:40097206, Fan Z et al., 2025, Zhongguo zhen jiu = Chinese acupuncture & moxibustion",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40097206/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-35775268",
+   "title": "[An historical review of \"scientific acupuncture and moxibustion\" in the 1950s -- Learning from the Soviet Union].",
+   "category": "MERIDIANOS",
+   "summary": "The medicine of the Soviet Union represented by Pavlov's advanced neurological theory played a major role in the medical system for the New China in the 1950s. In terms of Acupuncture and Moxibustion, it embodied in the 'scientific' reconstruction of main and collateral channels and mechanism of acupuncture and...",
+   "content": "The medicine of the Soviet Union represented by Pavlov's advanced neurological theory played a major role in the medical system for the New China in the 1950s. In terms of Acupuncture and Moxibustion, it embodied in the 'scientific' reconstruction of main and collateral channels and mechanism of acupuncture and moxibustion, reported on acupoint electric measurement and skin active point, and developed acupuncture theory with Integrated Medicine. In this sense, 'learning from the Soviet Union', was one of the important factors for 'scientised acupuncture and moxibustion', which influenced the constructing of contemporary acupuncture and moxibustion in China and drove the development of 'scientised acupuncture and moxibustion'. In addition, inevitably, it led to some conflicts and contradictions between traditional medicine and modern sciences in the process of 'learning from the Soviet Union'. This review of 'learning from the Soviet Union', the analysis of its advantages and disadvantages, and synthesis of its experiences, will provide an historical reference to current development of traditional Chinese medicine.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:35775268, Xiao X et al., 2022, Zhonghua yi shi za zhi (Beijing, China : 1980)",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35775268/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-29696924",
+   "title": "[The theoretical basis, experimental verification and significance of revealing meridians].",
+   "category": "MERIDIANOS",
+   "summary": "In this paper, scientific theory was used to prove that the meridian was the resonant channel of information energy of life, and experiment and demonstration was performed to reveal meridians to explore the significance of revealing meridian. Based on the theory of physics, biochemistry, molecular biology and...",
+   "content": "In this paper, scientific theory was used to prove that the meridian was the resonant channel of information energy of life, and experiment and demonstration was performed to reveal meridians to explore the significance of revealing meridian. Based on the theory of physics, biochemistry, molecular biology and information theory, the essence of meridian was demonstrated in theory. According to TCM meridian theory, acupuncture was applied at selected acupoints; the infrared thermograms of stomach meridian of foot yangming, large intestine meridian of hand yangming, small intestine meridian of hand taiyang, pericardium meridian of hand jueyin, heart meridian of hand shaoyin, triple energizer meridian of hand shaoyang, liver meridian of foot jueyin, bladder meridian of foot taiyang were recorded before and after acupuncture. As a result, thermogram recorded and showed the visual image of the meridian. It is indicated that an energy transmission network which cannot be dissected existing in the body, which was believed to be meridian. It was the resonant channel of information energy of life, and could be shown by thermogram. These experiments and theory have significance in science.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:29696924, Wang H et al., 2018, Zhongguo zhen jiu = Chinese acupuncture & moxibustion",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29696924/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-32257871",
+   "title": "Establishment of a basic medical science system for Traditional Chinese medicine education: A suggestion based on the experience of BIOCERAMIC technology.",
+   "category": "MERIDIANOS",
+   "summary": "The aim of this review study is to present an integrated and systematic approach to meridian channels and Ashi acupuncture points based on scientific evidence. We herein establish a framework of basic medical science to explain meridian channels based on the(1) Concepts of Traditional Chinese medicine(TCM) approach...",
+   "content": "The aim of this review study is to present an integrated and systematic approach to meridian channels and Ashi acupuncture points based on scientific evidence. We herein establish a framework of basic medical science to explain meridian channels based on the(1) Concepts of Traditional Chinese medicine(TCM) approach using physics and physiology: (i) the physical theory of pulse sound and cardiovascular physiology: resonance of harmonic sounds and the specific frequencies arising from heartbeats, which form pathways of different meridian channels to enhance microcirculation; (ii) standing wave hypothesis to explain meridian channels; (iii) Ashi acupuncture or trigger points caused by ischemia due to inappropriate harmonic resonance of standing waves; and (2)the TCM concept strengthened by BIOCERAMIC technology: (i) 'wave-induced flow characteristics of meridians'; (ii) the 'Propagated sensation along meridian' phenomenon; (iii) clinical observations of the different chief complaints of candidates in which sensation was induced along specific meridian channels; (iv) generates 'biofield' phenomenon composed of virtual channels of interconnecting 'feet-hands-ears' to different internal organs/tissues that support the principles of reflexology.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:32257871, Chang YC et al., 2020, Journal of traditional and complementary medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32257871/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40563444",
+   "title": "Proteomic Study Between Interstitial Channels Along Meridians and Adjacent Areas in Mini-Pigs.",
+   "category": "MERIDIANOS",
+   "summary": "This study explores the material basis and biological functions of meridian interstitial channels in mini-pigs proximal to the stomach meridian by analyzing differential proteomics between interstitial channels and adjacent non-interstitial channel tissues.\nMETHODS: Liquid chromatography-mass spectrometry (LC-MS)...",
+   "content": "OBJECTIVE: This study explores the material basis and biological functions of meridian interstitial channels in mini-pigs proximal to the stomach meridian by analyzing differential proteomics between interstitial channels and adjacent non-interstitial channel tissues.\nMETHODS: Liquid chromatography-mass spectrometry (LC-MS) under data-dependent acquisition mode was employed to analyze and identify the proteome of subcutaneous connective tissues along the stomach meridian and adjacent tissues. SWATH MSALL method and omicsbean online analysis platforms were used for protein quantification and differential proteomic analysis. Differential proteins were subjected to Gene Ontology annotation and KEGG pathway analysis to understand their functions and biological processes. Combining traditional Chinese meridian theory with modern meridian research, proteins most relevant to meridian functions were selected, and their expression levels were assessed using Western blotting.\nRESULTS: GO annotation and KEGG pathway analysis revealed differences in molecular functions, biological processes, and metabolic pathways among differential proteins. Most downregulated proteins were enzyme functional proteins involved in amino acid metabolism (GOT1), adenosine nucleotide balance conversion (AK1), and calcium ion-binding processes (ANXA6). Most upregulated proteins were structural proteins in the extracellular matrix-collagen proteins (COL3A1, COL6A1, COL6A3, COL6A6, COL12A1, COL14A1) and proteoglycans (DCN, BGN, FMOD)-involved in influencing and regulating collagen fiber generation and arrangement. Intriguingly, almost all differential proteins were associated with gastrointestinal diseases, implying a pathological correlation of differential proteins in the stomach meridian interstitial channel.\nCONCLUSIONS: The stomach meridian interstitial channels in mini-pigs show 72 differentially expressed proteins compared to adjacent tissues. These differences include the upregulation of structural proteins and downregulation of functional proteins, potentially forming the molecular biological basis for the structural and functional specificity of meridians.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:40563444, Xiong F et al., 2025, Biomolecules",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40563444/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-23997798",
+   "title": "Induction of Hyperalgesia in Pigs through Blocking Low Hydraulic Resistance Channels and Reduction of the Resistance through Acupuncture: A Mechanism of Action of Acupuncture.",
+   "category": "MERIDIANOS",
+   "summary": "According to the classic theory of Chinese medicine, pain is due to the blockage in meridian channels, and acupuncture was invented to treat pain by \"dredging\" the channels. To test the theory, a hyperalgesia model was made by injecting hydrogel into low hydraulic resistance channel (LHRC) in 12 anaesthetized...",
+   "content": "According to the classic theory of Chinese medicine, pain is due to the blockage in meridian channels, and acupuncture was invented to treat pain by \"dredging\" the channels. To test the theory, a hyperalgesia model was made by injecting hydrogel into low hydraulic resistance channel (LHRC) in 12 anaesthetized minipigs. Tail-flick threshold and ear-flick threshold were measured using a thermal radiation dolorimeter, and relative flick threshold (RFT) was calculated. Hydraulic resistance (HR) was measured with a biological HR measuring instrument on low HR points on LHRC and on control points with higher HR located outside LHRC; readings were recorded before, during, and after acupuncture treatment. RFT decreased after blocking the LRHC and was still significantly decreased 2 days and 4 days afterwards. No significant changes occurred when injecting saline into the same points or injecting gel into points outside the channel. Subsequent acupuncture reduced HR on LRHC along meridians but had no significant effect on sites with higher HR located outside LHRC. One of the mechanisms of action of acupuncture treatment for chronic pain may be that acupuncture affects peripheral tissue by reducing the HR in LHRC along meridians, improving the flow of interstitial fluid and removing algogenic substances and thereby relieving pain.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:23997798, Zhang WB et al., 2013, Evidence-based complementary and alternative medicine : eCAM",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23997798/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-37128199",
+   "title": "Analysis of the mechanism of propagated sensation along meridians based on gene expression profiles.",
+   "category": "MERIDIANOS",
+   "summary": "Propagated sensation along meridians (PSM) is an important basis for the formation of the meridian theory, but its mechanism is still unclear. The study explored the mechanism of PSM from the perspective of gene expression.\nPROCEDURES: PSM induced by moxibustion was determined and classified according to the Modern...",
+   "content": "BACKGROUND AND AIM: Propagated sensation along meridians (PSM) is an important basis for the formation of the meridian theory, but its mechanism is still unclear. The study explored the mechanism of PSM from the perspective of gene expression.\nPROCEDURES: PSM induced by moxibustion was determined and classified according to the Modern Study of Meridians of Chinese Medicine. Seven subjects with obvious PSM (obvious PSM group) and five subjects with unobvious PSM (unobvious PSM group) were selected from 33 healthy volunteers according to the scores in their infrared radiant track along meridians (IRRTM) and the degree of subjective transduction. Agilent Human 4 × 44 K Gene Expression Microarrays V2 were used to detect the whole genome expression profile of subjects in the two groups. KEGG and GO were applied to analyze differentially expressed genes.\nRESULTS: Compared with the unobvious PSM group, 120 genes were differentially expressed in the obvious PSM group, including 76 up-regulated and 44 down-regulated genes. The differentially expressed genes were enriched in dopaminergic synapse, 5-hydroxychrominable synapse, glutamatergic synapse, calcium release channel, gap junction, and adherens junction pathways.\nCONCLUSIONS: The study provides a comprehensive set of gene expression data of subjects with obvious PSM, which indicates that the molecular basis of PSM may be closely related to neurotransmitters, calcium ions and cell junction pathways. This study combines the holistic concept of traditional Chinese medicine with modern molecular biology technology to explore the molecular mechanism of PSM from the perspective of genomics, which may shed new insights into the molecular mechanism of PSM.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:37128199, Zhu X et al., 2023, Journal of traditional and complementary medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37128199/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-17946439",
+   "title": "The brain mapping on reinforcement acupuncture stimulation at ST36 (zusanli) evidenced by fMRI.",
+   "category": "MERIDIANOS",
+   "summary": "To characterize the brain mapping on reinforcement acupuncture stimulation at ST36 (zusanli), and to discuss the mechanisms of acupuncture to treat diseases. fMRI was performed on 26 healthy Chinese student volunteers. Sixteen subjects were acupunctured at the acupoint ST36, while 10 others at sham-acupoint (lateral...",
+   "content": "To characterize the brain mapping on reinforcement acupuncture stimulation at ST36 (zusanli), and to discuss the mechanisms of acupuncture to treat diseases. fMRI was performed on 26 healthy Chinese student volunteers. Sixteen subjects were acupunctured at the acupoint ST36, while 10 others at sham-acupoint (lateral from ST36 about 3 cm). The fMRI studies were performed using a gradient echo-EPI sequence. Brain mapping were generated using GE Functool program. Cerebral blood flow and correlation coefficient (CC) of ROl were analyzed. Stimulation at the right ST36 elicited 13 brain functional areas, and 10 of these areas were the same with the sham-acupoint group. However, only the temporal gyrus was specificity while by using reinforcement manual acupuncture (MA) at ST36 (Fisher's Exact test, P=0.022), and the contralateral hemisphere activation was prominent (McNemer test, P=0.020). Our results support the theory of acupuncture about meridian distribution overlapping on the whole body. The special transmission channel of meridian may exists, and it may be consist of spinal nerve and autonomic nerve. However, our results may oppose the theory concerning on stomach meridian walking lateral.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:17946439, Xiao YY et al., 2006, Conference proceedings : ... Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE Engineering in Medicine and Biology Society. Annual Conference",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17946439/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-42272664",
+   "title": "Biological fundamental functional units of meridians: mechanosensitive ion channels.",
+   "category": "MERIDIANOS",
+   "summary": "Meridians are central to the theory of Traditional Chinese Medicine (TCM), yet their biological essence remains elusive. Mechanosensitive ion channels (MS channels) respond to diverse physical stimuli, and their properties closely parallel the biophysical characteristics attributed to meridians. Here, we propose the...",
+   "content": "Meridians are central to the theory of Traditional Chinese Medicine (TCM), yet their biological essence remains elusive. Mechanosensitive ion channels (MS channels) respond to diverse physical stimuli, and their properties closely parallel the biophysical characteristics attributed to meridians. Here, we propose the hypothesis that MS channels serve as the fundamental biological functional units of meridians. To test this hypothesis, we systematically compared the properties of MS channels with those of meridians and utilized Zusanli (ST36) as a model to dissect the critical role of MS channels in mediating the complete signaling pathway of acupuncture-from local initiation and central integration to visceral effector responses. Furthermore, applying this hypothesis successfully addresses three major challenges in meridian research: (1) the efficacy of sham acupuncture, which arises from the ubiquitous distribution of MS channels and their response gradients; (2) variations in the pathways of propagated sensation along meridians, which result from MS channel activity being guided by anatomical networks and modulated by central processes; and, importantly, (3) the persistence of meridian function following organ transplantation, which can be coherently explained by a mechanism wherein systemic signals from the recipient remotely regulate MS channels on the cells of the transplanted organ, thereby providing a modern biological basis for the concept of \"meridian transplantation.\" This hypothesis provides a testable molecular framework for understanding the essence of meridians, bridging traditional functional descriptions with modern developmental biology, neuroscience, and cellular and molecular mechanisms.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:42272664, Wang Y et al., 2026, Frontiers in medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42272664/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-25175096",
+   "title": "Variations in energy metabolism along the pericardium meridian and its relationship with visceral function adjustments during electroacupuncture.",
+   "category": "MERIDIANOS",
+   "summary": "Electroacupuncture (EA) is a traditional Chinese medicine treatment guided by meridian theory. As it gradually gains more worldwide acceptance, a clarification of its mechanisms is extremely urgent. We observed variations in transcutaneous oxygen pressure/carbon dioxide pressure (tcpO2/tcpCO2) and microcirculation...",
+   "content": "BACKGROUND: Electroacupuncture (EA) is a traditional Chinese medicine treatment guided by meridian theory. As it gradually gains more worldwide acceptance, a clarification of its mechanisms is extremely urgent. We observed variations in transcutaneous oxygen pressure/carbon dioxide pressure (tcpO2/tcpCO2) and microcirculation blood perfusion units (BPU) along the pericardium meridian, and cardiac function during EA at Neiguan (PC6) to explore variations in energy metabolism and its relationship with visceral function adjustments during EA.\nMETHODS: Twenty-two healthy volunteers participated in this study. Three channel laser Doppler flowmetry and tcpO2/tcpCO2 detection systems were used to detect tcpO2/tcpCO2 and microcirculation BPU along the pericardium meridian. A hemodynamic monitor was used to detect cardiac function.\nRESULTS: In the normal state, the microcirculatory BPU along the pericardium meridian were significantly higher than that of their bilateral corresponding control points (p < 0.05). During EA at PC6, the values of the microcirculatory BPU along the pericardium meridian did not vary, and few increased. In the normal state, the values of tcpO2 along the pericardium meridian were significantly higher than those of their bilateral corresponding control points (p < 0.05). In addition, the values of tcpCO2 along the pericardium meridian were lower than those of their bilateral corresponding control points. In comparison with the normal state, EA could decrease tcpO2 along the meridian significantly (p < 0.05) and increase tcpCO2. During EA at PC6 in healthy volunteers treated by artificial acute mild hypoxia, cardiac output and cardiac index (p < 0.05) decreased and systemic vascular resistance increased significantly (p < 0.05).\nCONCLUSIONS: In the normal state, the values of microcirculatory BPU and tcpO2 along the pericardium meridian were both higher than those of their bilateral corresponding control points. Energy metabolism was vigorous along the meridian. During EA, the decrease in oxygen partial pressure along the pericardium meridian might be a result of strengthened energy metabolism of associated tissue and increased oxygen consumption. The variations in energy metabolism along the pericardium meridian during the course of EA had a close relationship with visceral function adjustments.\nTRIAL REGISTRATION: Chinese Clinical Trial Registry ChiCTRTRC13003193.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:25175096, Zheng SX et al., 2014, BMC complementary and alternative medicine",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25175096/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-31510092",
+   "title": "Distal Electroacupuncture at the LI4 Acupoint Reduces CFA-Induced Inflammatory Pain via the Brain TRPV1 Signaling Pathway.",
+   "category": "MERIDIANOS",
+   "summary": "There is accumulating evidence supporting electroacupuncture's (EA) therapeutic effects. In mice, local EA reliably attenuates inflammatory pain and increases the transient receptor potential cation channel, subfamily V, member 1 (TRPV1). However, the effect of distal acupoint EA on pain control has rarely been...",
+   "content": "There is accumulating evidence supporting electroacupuncture's (EA) therapeutic effects. In mice, local EA reliably attenuates inflammatory pain and increases the transient receptor potential cation channel, subfamily V, member 1 (TRPV1). However, the effect of distal acupoint EA on pain control has rarely been studied. We used a mouse model to investigate the analgesic effect of distal EA by measuring TRPV1 expression in the brain. Complete Freund's adjuvant (CFA) was injected into mice's hind paws to induce inflammatory pain. The EA-treated group received EA at the LI4 acupoint on the bilateral forefeet on the second and the third days, whereas the control group underwent sham manipulation. Mechanical and thermal pain behavior tests showed that the EA-treated group experienced inflammatory pain alleviation immediately after EA, which did not occur in the sham group. Additionally, following CFA injection, the expression of TRPV1-associated molecules such as phosphorylated protein kinase A (pPKA), extracelluar signal-regulated kinase (pERK), and cAMP-response-element-binding protein (pCREB) increased in the prefrontal cortex (PFC) and the hypothalamus but decreased in the periaqueductal gray (PAG) area. These changes were significantly attenuated by EA but not sham EA. Our results show an analgesic effect of distal EA, which is based on the traditional Chinese medicine theory. The mechanism underlying this analgesic effect involves TRPV1 in the PFC, the hypothalamus, and the PAG. These novel findings are relevant for the evaluation and the treatment of clinical inflammatory pain syndrome.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:31510092, Yen CM et al., 2019, International journal of molecular sciences",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31510092/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-40097208",
+   "title": "[Textual research on the evolution of the meridian-zangfu related theory in the Warring States, Qin and Han dynasties].",
+   "category": "MERIDIANOS",
+   "summary": "The paper reviews the evolution of the theory related to meridians and zangfu organs during the Warring States, Qin and Han dynasties, so as to reveal the rules and value of its development. By analyzing historical documents, especially Zubi Shiyimai Jiujing (Moxibustion Classics of Eleven Meridians of Legs and Arms)...",
+   "content": "The paper reviews the evolution of the theory related to meridians and zangfu organs during the Warring States, Qin and Han dynasties, so as to reveal the rules and value of its development. By analyzing historical documents, especially Zubi Shiyimai Jiujing (Moxibustion Classics of Eleven Meridians of Legs and Arms), Yinyang Shiyimai Jiujing (Moxibustion Classic on Eleven Yin and Yang Meridians), Laoguanshan bamboo medical slips of Han Dynasty and lacquer figure of meridian points, the evolutionary stages, i.e. the germination, development, and maturity of meridian-zangfu theory, are explored. In the time of the Warring States, Qin and Han dynasties, the meridian-zangfu related theory was developed from the germination to the maturity. In the classics of the early time, Zubi Shiyimai Jiujing and Yinyang Shiyimai Jiujing demonstrated the preliminary relationship between meridians and zangfu organs, focusing on the physiological connection and pathogenesis of three yin meridians of foot and zangfu organs. In the literature of Laoguanshan bamboo medical slips of Han Dynasty and lacquer figure of meridian points, the physiological connection between the yin meridians of hand and foot, and five zang organs, as well as the related diseases were further clarified; additionally, the meridian-zangfu theory had been developed in the field of diagnosis and treatment. In the era of Chapter of Meridians in Lingshu (Miraculous Pivot), there were up to 31 descriptions relevant with the connection of meridian distribution and zangfu physiological functions. It marks the construction of the \"circular\" flow of meridians and the interior-exterior communication of zang and fu organs; and enriches the knowledge in diseases, diagnosis and treatment with meridians and zangfu organs involved. The review on the evolution of the meridian-zangfu theory is conductive to supplementing and improving the development history of this theory of early time, and further recognizing its development rules and value. The maturity of this theoretical system not only links the meridians with the five zang and six fu organs, but also provides an important theoretical basis for the diagnosis and treatment of traditional Chinese medicine.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:40097208, Chen X et al., 2025, Zhongguo zhen jiu = Chinese acupuncture & moxibustion",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40097208/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-16739858",
+   "title": "[Impressions of reading \"A new way for study of Meridian essence\"].",
+   "category": "MERIDIANOS",
+   "summary": "To probe into essence and concept of Meridian, and discuss with the author of the paper \"A new way for study of Meridian essence\".\nMETHODS: Review courses of studies on Meridian and collaterals in the half century, and look up and analyze the literature.\nCONCLUSION: Theories of Meridian and Collaterals originate from...",
+   "content": "OBJECTIVE: To probe into essence and concept of Meridian, and discuss with the author of the paper \"A new way for study of Meridian essence\".\nMETHODS: Review courses of studies on Meridian and collaterals in the half century, and look up and analyze the literature.\nCONCLUSION: Theories of Meridian and Collaterals originate from Yin and Shang Dynasties, and are perfected in two Han Dynasties. Explaining the linking interiorly with zang- and fu-organs in the theories of Meridian and collaterals by means of modern anatomical physiology is inheriting the regulative theory of the urinary Bladder Channel of the Foot-Taiyang--the vegetative nerve.",
+   "tags": [
+    "meridianos",
+    "canais",
+    "teoria dos canais"
+   ],
+   "citation": "PubMed PMID:16739858, Yan JM, 2006, Zhongguo zhen jiu = Chinese acupuncture & moxibustion",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16739858/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

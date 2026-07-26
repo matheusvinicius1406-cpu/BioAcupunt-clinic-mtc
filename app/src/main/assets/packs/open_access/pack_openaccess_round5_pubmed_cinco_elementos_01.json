@@ -1,0 +1,35 @@
+{
+ "source": "PubMed — busca aberta E-utilities (esearch/efetch, db=pubmed) sobre MTC/acupuntura, rodada 5 de expansão, categoria CINCO_ELEMENTOS, 2026 (resumos/abstracts públicos, revisados manualmente para relevância temática e para excluir duplicatas das rodadas anteriores)",
+ "items": [
+  {
+   "id": "pubmed-20869022",
+   "title": "Sa-Ahm Five Element acupuncture.",
+   "category": "CINCO_ELEMENTOS",
+   "summary": "This study aimed to review the clinical basis for Sa-Ahm Five Element acupuncture. This form of acupuncture uses the Five-Shu acupoints and the tonification-sedation treatments based on the creation and control cycles of the Five Elements. A total of 28 books and papers from the ancient \"Nan-Ching\" to the modern...",
+   "content": "This study aimed to review the clinical basis for Sa-Ahm Five Element acupuncture. This form of acupuncture uses the Five-Shu acupoints and the tonification-sedation treatments based on the creation and control cycles of the Five Elements. A total of 28 books and papers from the ancient \"Nan-Ching\" to the modern \"Medical Acupuncture\" were used to study clinical practices. Sa-Ahm Five Element acupuncture could be practiced in different ways depending upon differential diagnoses. These diagnoses include theories of excess and deficiency of Yin and Yang, seven emotions, ZangFu (organ, viscera), and comparing pulse diagnosis and meridian therapy to meridian palpation. Clinical trials and guidelines for the practice of Sa-Ahm acupuncture should be created to allow for a more evidence-based clinical approach to using this technique.",
+   "tags": [
+    "cinco elementos",
+    "wu xing",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:20869022, Ahn CB et al., 2010, Journal of acupuncture and meridian studies",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/20869022/",
+   "sourceRef": "Abstract"
+  },
+  {
+   "id": "pubmed-20633508",
+   "title": "A study of the Sa-Ahm Five Element acupuncture theory.",
+   "category": "CINCO_ELEMENTOS",
+   "summary": "This study is a review of the theoretical basis of Sa-Ahm Five Element acupuncture devised about 360 years ago. A total of 21 books and papers ranging from the ancient Huang Di Nei Jing to modern biomedical acupuncture for pain management were researched in relation to the Five Shu points. Gao-Wu, in the Chinese Ming...",
+   "content": "This study is a review of the theoretical basis of Sa-Ahm Five Element acupuncture devised about 360 years ago. A total of 21 books and papers ranging from the ancient Huang Di Nei Jing to modern biomedical acupuncture for pain management were researched in relation to the Five Shu points. Gao-Wu, in the Chinese Ming Dynasty, used the Five Shu points for the first time based on the creation cycle as the tonification and sedation treatment, termed the \"tonification and sedation treatment of self meridian\". Since then, and for no particular reason, this method has been rarely used until Sa-Ahm's new doctrine, which includes the concept of the destruction cycle, was asserted. Sa-Ahm Five Element acupuncture is a method in which the Five Shu points are used from the viewpoints of the simultaneous tonification and sedation methods that are based on the promotion and control cycles. Although it is currently the most utilized method in accordance with the practitioner's points, this method is in need of designated guidelines by which Sa-Ahm acupuncture can be practiced effectively.",
+   "tags": [
+    "cinco elementos",
+    "wu xing",
+    "acupuntura"
+   ],
+   "citation": "PubMed PMID:20633508, Ahn CB et al., 2009, Journal of acupuncture and meridian studies",
+   "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/20633508/",
+   "sourceRef": "Abstract"
+  }
+ ]
+}

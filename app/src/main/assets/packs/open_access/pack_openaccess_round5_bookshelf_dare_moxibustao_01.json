@@ -1,0 +1,110 @@
+{
+ "source": "NCBI Bookshelf (NLM) — Database of Abstracts of Reviews of Effects (DARE), Centre for Reviews and Dissemination (University of York), resumos críticos estruturados de revisões sistemáticas sobre MTC/acupuntura/fitoterapia chinesa/qigong-tai chi, categoria MOXIBUSTAO, acesso público via eutils db=books, rodada 5 de expansão, 2026",
+ "items": [
+  {
+   "id": "ncbibooks-dare-nbk98529",
+   "title": "An updated review of the efficacy of cupping therapy.",
+   "category": "MOXIBUSTAO",
+   "summary": "BACKGROUND:\nSince 1950, traditional Chinese medicine (TCM) cupping therapy has been applied as a formal modality in hospitals throughout China and elsewhere in the world. Based on a previous systematic literature review of clinical studies on cupping therapy, this study presents a thorough review of randomized controlled trials (RCTs) to...",
+   "content": "BACKGROUND:\nSince 1950, traditional Chinese medicine (TCM) cupping therapy has been applied as a formal modality in hospitals throughout China and elsewhere in the world. Based on a previous systematic literature review of clinical studies on cupping therapy, this study presents a thorough review of randomized controlled trials (RCTs) to evaluate the therapeutic effect of cupping therapy.\nMETHOD:\nSix databases were searched for articles published through 2010. RCTs on cupping therapy for various diseases were included. Studies on cupping therapy combined with other TCM treatments versus non-TCM therapies were excluded.\nRESULTS:\n135 RCTs published from 1992 through 2010 were identified. The studies were generally of low methodological quality. Diseases for which cupping therapy was commonly applied were herpes zoster, facial paralysis (Bell palsy), cough and dyspnea, acne, lumbar disc herniation, and cervical spondylosis. Wet cupping was used in most trials, followed by retained cupping, moving cupping, and flash cupping. Meta-analysis showed cupping therapy combined with other TCM treatments was significantly superior to other treatments alone in increasing the number of cured patients with herpes zoster, facial paralysis, acne, and cervical spondylosis. No serious adverse effects were reported in the trials.\nCONCLUSIONS:\nNumerous RCTs on cupping therapy have been conducted and published during the past decades. This review showed that cupping has potential effect in the treatment of herpes zoster and other specific conditions. However, further rigorously designed trials on its use for other conditions are warranted.",
+   "tags": [
+    "moxabustão",
+    "ventosaterapia",
+    "revisão sistemática"
+   ],
+   "citation": "Cao H, Li X, Liu J. An updated review of the efficacy of cupping therapy. PLOS ONE 2012; 7(2): Article Number e31793. In: Database of Abstracts of Reviews of Effects (DARE) [Internet]. York (UK): Centre for Reviews and Dissemination (UK); 2012. (NCBI Bookshelf NBK98529).",
+   "sourceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK98529/",
+   "sourceRef": "Resumo estruturado / Structured Abstract (DARE)"
+  },
+  {
+   "id": "ncbibooks-dare-nbk293031",
+   "title": "Effectiveness and safety of heat-sensitive moxibustion on bronchial asthma: a meta-analysis of randomized control trials.",
+   "category": "MOXIBUSTAO",
+   "summary": "OBJECTIVE:\nTo systematically evaluate the effectiveness and safety of heat-sensitive moxibustion (HSM) on asthma.\nMETHODS:\nLarge databases in China and overseas were searched by electronic and manual means to collect information on randomized controlled trials (RCTs). Two evaluators independently extracted data and evaluated the quality...",
+   "content": "OBJECTIVE:\nTo systematically evaluate the effectiveness and safety of heat-sensitive moxibustion (HSM) on asthma.\nMETHODS:\nLarge databases in China and overseas were searched by electronic and manual means to collect information on randomized controlled trials (RCTs). Two evaluators independently extracted data and evaluated the quality of RCTs according to Cochrane Review Handbook v5.0. RevMan v5.0.20 was used for statistical analyses.\nRESULTS:\nFourteen RCTs involving 637 patients were collected. Thirteen RCTs compared the effects of HSM and Western Medicine. After 3-month treatment and after 6-month follow-up, there was no significant difference in effective rate [relative risk (RR) = 1.01, 95% CI (0.92, 1.12), and 1.12, (0-93, 1.36), respectively], in the asthma control test score of asthma symptoms [weighted mean difference (WMD) = - 1.54, 95% CI (- 3.54, 0.47), and 1.41, (- 0.48, 3.29), respectively] and in the forced expiratory volume in 1 second (FEV1) and peak expiratory flow (PEF). One RCT compared the effect of HSM with warm-suspended moxibustion. After 6-month follow-up, there was a significant difference in FEV1 and PEF [WMD = 0.51, 95% CI (0.10, 0.92), and 1.78, (1.06, 2.50), respectively]. After 3-month treatment, there was no significant difference between the two groups. One RCT compared the effect of HSM with acupoint application. After 3-month treatment, there was no significant difference in the effective rate [RR = 0.68, 95% CI (0.42, 1.12)].\nCONCLUSION:\nHSM did not show superiority to conventional Western Medicine and acupoint application in terms of curative effects, and may be superior to warm-suspended moxibustion with regard to long-term curative effects. Because of low quality of the included RCTs, this conclusion must be bolstered with higher-quality RCTs.",
+   "tags": [
+    "moxabustão",
+    "ventosaterapia",
+    "revisão sistemática"
+   ],
+   "citation": "Xiong J, Liu Z, Chen R, Xie D, Chi Z, Zhang B. Effectiveness and safety of heat-sensitive moxibustion on bronchial asthma: a meta-analysis of randomized control trials. Journal of Traditional Chinese Medicine 2014; 34(4): 392-400. In: Database of Abstracts of Reviews of Effects (DARE) [Internet]. York (UK): Centre for Reviews and Dissemination (UK); 2014. (NCBI Bookshelf NBK293031).",
+   "sourceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK293031/",
+   "sourceRef": "Resumo estruturado / Structured Abstract (DARE)"
+  },
+  {
+   "id": "ncbibooks-dare-nbk138360",
+   "title": "Heat-sensitive moxibustion for lumbar disc herniation: a meta-analysis of randomized controlled trials.",
+   "category": "MOXIBUSTAO",
+   "summary": "OBJECTIVE:\nTo assess the efficacy and safety of heat-sensitive moxibustion in the treatment of lumbar disc herniation (LDH).\nMETHODS:\nRandomized controlled trials (RCTs) involving heat-sensitive moxibustion in the treatment of LDH were retrieved from the Chinese Biological Medical Literature database (1978-20011), Weipu database...",
+   "content": "OBJECTIVE:\nTo assess the efficacy and safety of heat-sensitive moxibustion in the treatment of lumbar disc herniation (LDH).\nMETHODS:\nRandomized controlled trials (RCTs) involving heat-sensitive moxibustion in the treatment of LDH were retrieved from the Chinese Biological Medical Literature database (1978-20011), Weipu database (1989-2011), Wanfang digital journal (1998-2011), China National Knowledge Internet (1979-2011), PubMed (1966-2011), EMBASE (1980-2011), and Cochrane Library (Issue 1,2011). Hand-search of the relevant journals from the Library of Jiangxi University of Traditional Chinese Medicine was also adopted for the collection of data. Data were extracted and evaluated by two reviewers independently with a specially designed extraction form. The Cochrane Collaboration's RevMan 5.0.20 software was used for data analyses.\nRESULTS:\nA total of 6 trials involving 580 patients were included. Meta-analysis showed that the total effectiveness rate in the heat-sensitive moxibustion group was significantly different when compared with conventional moxibustion [RR=1.19, 95% CI [1.06, 1.33)] and diclofenac sodium [RR=1.47, 95% CI [1.17, 1.85)], but similar to that of acupuncture. The cure rate in the heat-sensitive moxibustion group was significantly different when compared with conventional moxibustion [RR=1.58, 95% CI (1.04, 2.40)] and diclofenac sodium [RR-1.91, 95% CI (1.01, 3.60)], but similar with that of acupuncture. In terms of the Japanese Orthopaedic Association scores, significant differences were noted in subjective indices, objective indices, and daily life subscales. Two trials reported that there were no adverse events over the duration of treatment.\nCONCLUSION:\nCompared with conventional moxibustion, acupuncture, and diclofenac sodium, heat-sensitive moxibustion in the treatment of LDH is superior in efficacy. Further large-scale trials are required to define the role of heat-sensitive moxibustion in the treatment of this disease.",
+   "tags": [
+    "moxabustão",
+    "ventosaterapia",
+    "revisão sistemática"
+   ],
+   "citation": "Chen R, Xiong J, Chi Z, Zhang B. Heat-sensitive moxibustion for lumbar disc herniation: a meta-analysis of randomized controlled trials. Journal of Traditional Chinese Medicine 2012; 32(3): 322-328. In: Database of Abstracts of Reviews of Effects (DARE) [Internet]. York (UK): Centre for Reviews and Dissemination (UK); 2012. (NCBI Bookshelf NBK138360).",
+   "sourceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK138360/",
+   "sourceRef": "Resumo estruturado / Structured Abstract (DARE)"
+  },
+  {
+   "id": "ncbibooks-dare-nbk293338",
+   "title": "Effects of moxibustion or acupoint therapy for the treatment of primary dysmenorrhea: a meta-analysis.",
+   "category": "MOXIBUSTAO",
+   "summary": "CONTEX: Primary dysmenorrhea (PD) is a common gynecological syndrome that is characterized by cramping in the lower abdomen during menstruation, particularly during puberty. Treatment for PD includes a variety of pharmacological, nonpharmacological, and surgical options. Although studies supporting use of traditional Chinese medicine...",
+   "content": "CONTEX: Primary dysmenorrhea (PD) is a common gynecological syndrome that is characterized by cramping in the lower abdomen during menstruation, particularly during puberty. Treatment for PD includes a variety of pharmacological, nonpharmacological, and surgical options. Although studies supporting use of traditional Chinese medicine (TCM) have helped in the proliferation of its comprehensive therapy, their results do not determine with certainty whether moxibustion and acupoint therapy are better for the treatment of PD than nonacupuncture-related therapy.\nOBJECTIVE:\nThe study intended to compare the effectiveness of moxibustion and acupoint therapy- such as sandwiched moxibustion, moxibustion, acupuncture, eye of floating needle, and acupoint application-with other therapeutic methods for the treatment of PD.\nDESIGN:\nSix electronic databases-PubMed, Web of Science, the Chinese Biomedical Literature Database (CBM), the Chinese Journal Full-text Database (CNKI), the Chinese Science and Technology Journal Full-text Database (VIP), and Chinese Wanfang Data-were searched electronically, from inception to December, 2012, to find randomized, controlled trials (RCTs). Relevant references in articles used in the current study were searched manually. Literature was screened, data were extracted, and the methodological quality of the included studies was assessed. Then, meta-analyses were performed.\nSETTING:\nAll of processes of this study were conducted at Tianjin University of Traditional Chinese Medicine and School of Nursing at Tianjin Medical University.\nPARTICIPANTS:\nThe research team divided the selected RCTs into 2 groups based on the type of PD that the participants had: (1) the undifferentiated type group (UTG) and (2) the cold-damp stagnation type group (CDSTG).\nOUTCOME MEASURES:\nThe research team measured total effective rate, symptom score, and variation of peripheral blood prostaglandin F2α (PGF2α).\nRESULTS:\nA total of 20 RCTs, involving 2134 participants, were included in the current study. Results of the metaanalysis showed that (1) the total efficacy for the 2 studied interventions was better, with a statistically significant difference from that of the control methods: degrees of freedom (df) = 14, relative risk (RR) = 1.19, 95% confidence interval (95% CI) = (1.14 - 1.24), P < .000 for the UTG, and df = 4, RR = 1.15, 95% CI (1.02 - 1.29), P = .03 for the CDSTG; (2) the studied interventions were better than the control methods, with statistically significant differences, in relieving the severity of symptoms of PD: df = 3, mean difference (MD) = 3.20, 95% CI (2.36 - 4.04), P < .000 for the UTG and df = 1, MD = 2.09, 95% CI (0.16 - 4.02), P = .03 for the CDSTG; and (3) no statistical difference existed between the intervention and control methods groups in the reduction of the level of peripheral blood PGF2α: df = 2, standardized mean difference (SMD) = 0.13, 95% CI (-0.13 - 0.39), P = .32.\nCONCLUSIONS:\nMoxibustion and acupoint therapy can relieve pain effectively for individuals with PD, and these treatments have advantages in overall efficiency. Because of limitations on the quantity and quality of the included studies and the lack of a large, multicenter study, the research team's conclusion has yet to be substantiated.",
+   "tags": [
+    "moxabustão",
+    "ventosaterapia",
+    "revisão sistemática"
+   ],
+   "citation": "Xu T, Hui L, Juan YL, Min SG, Hua WT. Effects of moxibustion or acupoint therapy for the treatment of primary dysmenorrhea: a meta-analysis. Alternative Therapies in Health and Medicine 2014; 20(4): 33-42. In: Database of Abstracts of Reviews of Effects (DARE) [Internet]. York (UK): Centre for Reviews and Dissemination (UK); 2014. (NCBI Bookshelf NBK293338).",
+   "sourceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK293338/",
+   "sourceRef": "Resumo estruturado / Structured Abstract (DARE)"
+  },
+  {
+   "id": "ncbibooks-dare-nbk80154",
+   "title": "Wet cupping therapy for treatment of herpes zoster: a systematic review of randomized controlled trials.",
+   "category": "MOXIBUSTAO",
+   "summary": "BACKGROUND:\nWet cupping is a traditional Chinese medicine therapy commonly used in treating herpes zoster in China, and clinical studies have shown that wet cupping may have beneficial effect on herpes zoster compared with Western medication.\nMETHODS:\nWe included randomized controlled trials (RCTs) on wet cupping for herpes zoster. We...",
+   "content": "BACKGROUND:\nWet cupping is a traditional Chinese medicine therapy commonly used in treating herpes zoster in China, and clinical studies have shown that wet cupping may have beneficial effect on herpes zoster compared with Western medication.\nMETHODS:\nWe included randomized controlled trials (RCTs) on wet cupping for herpes zoster. We searched PubMed, the Cochrane Library (Issue 3, 2008), China Network Knowledge Infrastructure (CNKI), Chinese Scientific Journals Fulltext Database VIP, and Wan Fang Database. All searches ended in February 2009. Two authors extracted data and assessed the trials' quality independently. RevMan 5.0.18 software (The Cochrane Collaboration, The Nordic Cochrane Centre, Copenhagen, Denmark) was used for data analysis with effect estimate presented as relative risk (RR) and mean difference (MD) with a 95% confidence interval (CI).\nRESULTS:\nEight RCTs involving 651 patients were included, and the methodological quality of trials was generally fair in terms of randomization, blinding, and intention-to-treat analysis. Meta-analyses showed wet cupping was superior to medication in the number of cured patients (RR 2.49, 95% CI 1.91 to 3.24, P < .00001), the number of patients with improved symptoms (RR 1.15, 95% CI 1.05 to 1.26, P = .003), and reducing the incidence rate of postherpetic neuralgia (RR 0.06, 95% CI 0.02 to 0.25, P = .0001). Wet cupping plus medication was significantly better than medication alone on number of cured patients (RR 1.93, 95% CI 1.23 to 3.04, P = .005) but demonstrated no difference in symptom improvement (RR 1.00, 95% CI 0.92 to 1.08, P = .98). There were no serious adverse effects related to wet cupping therapy in the included trials.\nCONCLUSION:\nWet cupping appears to be effective in the treatment of herpes zoster. However, further large, rigorously designed",
+   "tags": [
+    "moxabustão",
+    "ventosaterapia",
+    "revisão sistemática"
+   ],
+   "citation": "Cao H, Zhu C, Liu J. Wet cupping therapy for treatment of herpes zoster: a systematic review of randomized controlled trials. Alternative Therapies in Health and Medicine 2010; 16(6): 48-54. In: Database of Abstracts of Reviews of Effects (DARE) [Internet]. York (UK): Centre for Reviews and Dissemination (UK); 2010. (NCBI Bookshelf NBK80154).",
+   "sourceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK80154/",
+   "sourceRef": "Resumo estruturado / Structured Abstract (DARE)"
+  },
+  {
+   "id": "ncbibooks-dare-nbk80527",
+   "title": "Cupping for hypertension: a systematic review.",
+   "category": "MOXIBUSTAO",
+   "summary": "The objective of this review is to assess the clinical evidence for or against cupping as a treatment for hypertension. We searched the literature using 15 databases from their inception to 30 June 2009, without language restrictions. We included all clinical trials (CTs) of cupping to treat hypertension in human patients. Risk of bias...",
+   "content": "The objective of this review is to assess the clinical evidence for or against cupping as a treatment for hypertension. We searched the literature using 15 databases from their inception to 30 June 2009, without language restrictions. We included all clinical trials (CTs) of cupping to treat hypertension in human patients. Risk of bias was assessed using the Cochrane criteria. Two CTs met all inclusion criteria. One RCT (randomized CT) assessed the effectiveness of dry cupping on changes in cerebral vascular function compared with drug therapy. Their results suggested significant effect in favor of cupping on vascular compliance and degree of vascular filling. One uncontrolled observational study (UOS) tested wet cupping for acute hypertension and found that a one-time treatment reduced blood pressure. In conclusion, the evidence is not significantly convincing to suggest cupping is effective for treating hypertension. Further research is required to investigate whether it generates any specific effects for that condition.",
+   "tags": [
+    "moxabustão",
+    "ventosaterapia",
+    "revisão sistemática"
+   ],
+   "citation": "Lee MS, Choi TY, Shin BC, Kim JI, Nam SS. Cupping for hypertension: a systematic review. Clinical and Experimental Hypertension 2010; 32(7): 423-425. In: Database of Abstracts of Reviews of Effects (DARE) [Internet]. York (UK): Centre for Reviews and Dissemination (UK); 2010. (NCBI Bookshelf NBK80527).",
+   "sourceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK80527/",
+   "sourceRef": "Resumo estruturado / Structured Abstract (DARE)"
+  },
+  {
+   "id": "ncbibooks-dare-nbk138361",
+   "title": "Effect of point application on chronic obstructive pulmonary disease in stationary phase and effects on pulmonary function: a systematic evaluation of randomized controlled trials.",
+   "category": "MOXIBUSTAO",
+   "summary": "OBJECTIVE:\nTo evaluate clinical efficacy of point application or adjuvant therapy on chronic obstructive pulmonary disease in stationary phase and effects on pulmonary functions.\nMETHODS:\nComputer retrieved CNKI, VIP, CBM and other databanks and manual operations retrieved correlative literatures to find randomized controlled trials...",
+   "content": "OBJECTIVE:\nTo evaluate clinical efficacy of point application or adjuvant therapy on chronic obstructive pulmonary disease in stationary phase and effects on pulmonary functions.\nMETHODS:\nComputer retrieved CNKI, VIP, CBM and other databanks and manual operations retrieved correlative literatures to find randomized controlled trials (RCTs) about comparison between point application or adjuvant therapy and no-point-applications for treatment of chronic obstructive pulmonary disease in stationary phase in China. RevMan 5.0 software was used for Meta analysis.\nRESULTS:\nAmong 3481 cases in the inclusive 32 RCTS, 1780 cases were in the test group and 1701 cases in the control group. Meta analysis indicated: 1) clinical efficacy: the groups containing point application therapy all were better than the groups of no-point-application; 2) force vital capacity (FVC): There was no statistically significant difference between the group of point application plus Western Medicine and the Western Medicine group; 3) force expiratory volume 1 (FEV1): The groups containing point application therapy were better than the no-point-application; 4) FEV1%: the groups of point application plus Western Medicine were better than the Western Medicine groups; 5) FEV1/FVC: there was a significant difference between the group of point application plus Chinese drugs and the group of Chinese drug.\nCONCLUSION:\nPoint application can increase clinical efficacy of chronic obstructive pulmonary disease in stationary phase in varying degrees, and different combinations of point application with Chinese drugs or Western Medicines have incomplete same actions in improvement of pulmonary function and therapeutic effect.",
+   "tags": [
+    "moxabustão",
+    "ventosaterapia",
+    "revisão sistemática"
+   ],
+   "citation": "Li F, Gao Z, Jing J, Xu D, Upur H. Effect of point application on chronic obstructive pulmonary disease in stationary phase and effects on pulmonary function: a systematic evaluation of randomized controlled trials. Journal of Traditional Chinese Medicine 2012; 32(4): 502-514. In: Database of Abstracts of Reviews of Effects (DARE) [Internet]. York (UK): Centre for Reviews and Dissemination (UK); 2012. (NCBI Bookshelf NBK138361).",
+   "sourceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK138361/",
+   "sourceRef": "Resumo estruturado / Structured Abstract (DARE)"
+  }
+ ]
+}
