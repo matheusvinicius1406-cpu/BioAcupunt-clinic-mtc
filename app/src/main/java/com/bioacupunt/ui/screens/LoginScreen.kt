@@ -276,8 +276,13 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             }
 
             Spacer(Modifier.height(20.dp))
-            Box(modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 12.dp, vertical = 4.dp)) {
-                Text("🔒 Dados criptografados no aparelho", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = Primary)
+            Row(
+                modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Icon(Icons.Default.Lock, null, tint = Primary, modifier = Modifier.size(14.dp))
+                Text("Dados criptografados no aparelho", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = Primary)
             }
             Spacer(Modifier.height(8.dp))
             Text(

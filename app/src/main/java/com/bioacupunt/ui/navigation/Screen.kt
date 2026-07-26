@@ -1,19 +1,19 @@
 package com.bioacupunt.ui.navigation
 
-sealed class Screen(val route: String, val label: String, val emoji: String = "") {
+sealed class Screen(val route: String, val label: String) {
     // Auth
-    data object Login       : Screen("login",       "Login",       "🔐")
-    data object BiometricLock: Screen("biometric_lock","Biometria","🔒")
+    data object Login       : Screen("login",       "Login")
+    data object BiometricLock: Screen("biometric_lock","Biometria")
 
     // Main navigation (bottom bar)
-    data object Dashboard   : Screen("dashboard",   "Início",      "🏠")
-    data object Agenda      : Screen("agenda",      "Agenda",      "📅")
-    data object CRM         : Screen("crm",         "Pacientes",   "👥")
-    data object Biblioteca  : Screen("biblioteca",  "Biblioteca",  "📚")
-    data object Ajustes     : Screen("ajustes",     "Ajustes",     "⚙️")
+    data object Dashboard   : Screen("dashboard",   "Início")
+    data object Agenda      : Screen("agenda",      "Agenda")
+    data object CRM         : Screen("crm",         "Pacientes")
+    data object Biblioteca  : Screen("biblioteca",  "Biblioteca")
+    data object Ajustes     : Screen("ajustes",     "Ajustes")
 
     // Secondary screens (não aparecem na bottom nav)
-    data object Prontuario  : Screen("prontuario/{patientId}", "Prontuário",  "📋") {
+    data object Prontuario  : Screen("prontuario/{patientId}", "Prontuário") {
         // `route` above is the *pattern* NavHost registers a destination for.
         // Navigating there needs a concrete path with the placeholder filled
         // in — string-concatenating "$route/$id" instead (as this call site
@@ -21,21 +21,21 @@ sealed class Screen(val route: String, val label: String, val emoji: String = ""
         // registered destination and throws at navigate() time.
         fun routeFor(patientId: Long) = "prontuario/$patientId"
     }
-    data object Atendimento : Screen("atendimento/{appointmentId}", "Atendimento", "🩹") {
+    data object Atendimento : Screen("atendimento/{appointmentId}", "Atendimento") {
         fun routeFor(appointmentId: Long) = "atendimento/$appointmentId"
     }
-    data object Evolucao : Screen("evolucao/{patientId}", "Evolução Clínica", "📈") {
+    data object Evolucao : Screen("evolucao/{patientId}", "Evolução Clínica") {
         fun routeFor(patientId: Long) = "evolucao/$patientId"
     }
-    data object Flashcards  : Screen("flashcards",  "Flashcards",  "🃏")
-    data object Analytics   : Screen("analytics",   "Analytics",   "📊")
-    data object Simulador   : Screen("simulador",   "Simulador",   "🧪")
-    data object AiAssistant : Screen("ai_assistant","Inteligência","🤖")
-    data object Relatorios  : Screen("relatorios",  "Relatórios",  "📄")
-    data object Financeiro  : Screen("financeiro",  "Financeiro",  "💰")
-    data object Conflitos   : Screen("conflitos",   "Conflitos",   "🔀")
-    data object Curadoria   : Screen("curadoria",   "Curadoria",   "📥")
-    data object PipelineMonitor: Screen("pipeline",    "Pipeline",    "🔧")
+    data object Flashcards  : Screen("flashcards",  "Flashcards")
+    data object Analytics   : Screen("analytics",   "Analytics")
+    data object Simulador   : Screen("simulador",   "Simulador")
+    data object AiAssistant : Screen("ai_assistant","Inteligência")
+    data object Relatorios  : Screen("relatorios",  "Relatórios")
+    data object Financeiro  : Screen("financeiro",  "Financeiro")
+    data object Conflitos   : Screen("conflitos",   "Conflitos")
+    data object Curadoria   : Screen("curadoria",   "Curadoria")
+    data object PipelineMonitor: Screen("pipeline",    "Pipeline")
 
     companion object {
         // Bottom navigation items — mockup order: Início, Pacientes, Prontuário,

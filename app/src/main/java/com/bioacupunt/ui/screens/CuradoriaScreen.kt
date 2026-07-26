@@ -292,7 +292,8 @@ private fun ReviewQueueFilters(
                 )
                 MtcCategory.entries.forEach { cat ->
                     DropdownMenuItem(
-                        text = { Text("${cat.emoji} ${cat.label}") },
+                        text = { Text(cat.label) },
+                        leadingIcon = { Icon(cat.icon(), null, modifier = Modifier.size(18.dp)) },
                         onClick = { onCategoryChange(cat.name); categoryMenuExpanded = false },
                     )
                 }

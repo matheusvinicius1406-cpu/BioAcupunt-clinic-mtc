@@ -101,7 +101,7 @@ private fun PipelineColumn(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(stage.emoji, style = MaterialTheme.typography.titleMedium)
+                Icon(stage.icon(), null, tint = stageColor, modifier = Modifier.size(18.dp))
                 Text(stage.label, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                 Spacer(Modifier.weight(1f))
                 Badge(containerColor = stageColor) { Text("${patients.size}") }
@@ -139,7 +139,8 @@ private fun PipelineColumn(
                             DropdownMenu(expanded = showMenu == p.id.toInt(), onDismissRequest = { showMenu = -1 }) {
                                 PatientStage.entries.filter { it != stage }.forEach { target ->
                                     DropdownMenuItem(
-                                        text = { Text("${target.emoji} Mover para ${target.label}") },
+                                        text = { Text("Mover para ${target.label}") },
+                                        leadingIcon = { Icon(target.icon(), null, modifier = Modifier.size(18.dp)) },
                                         onClick = { onMovePatient(p, target); showMenu = -1 }
                                     )
                                 }

@@ -2,20 +2,20 @@ package com.bioacupunt.biblioteca.domain.model
 
 import kotlinx.serialization.Serializable
 
-enum class MtcCategory(val label: String, val emoji: String) {
-    MERIDIANOS("Meridianos", "🫀"),
-    PONTOS("Pontos de Acupuntura", "📍"),
-    CINCO_ELEMENTOS("Cinco Elementos", "🌿"),
-    BA_GANG("Ba Gang (8 Princípios)", "☯️"),
-    SINDROME_ORGAOS("Síndromes de Órgãos", "🫁"),
-    LINGUA("Semiologia da Língua", "👅"),
-    PULSO("Semiologia do Pulso", "💓"),
-    TECNICAS("Técnicas de Agulhamento", "🪡"),
-    FITOTERAPIA("Fitoterapia Chinesa", "🌱"),
-    MOXIBUSTAO("Moxibustão", "🔥"),
-    DIETOTERAPIA("Dietoterapia MTC", "🥗"),
-    QIGONG("Qigong e Tai Chi", "🧘"),
-    CLINICA_MEDICA("Clínica Médica", "🏥")
+enum class MtcCategory(val label: String) {
+    MERIDIANOS("Meridianos"),
+    PONTOS("Pontos de Acupuntura"),
+    CINCO_ELEMENTOS("Cinco Elementos"),
+    BA_GANG("Ba Gang (8 Princípios)"),
+    SINDROME_ORGAOS("Síndromes de Órgãos"),
+    LINGUA("Semiologia da Língua"),
+    PULSO("Semiologia do Pulso"),
+    TECNICAS("Técnicas de Agulhamento"),
+    FITOTERAPIA("Fitoterapia Chinesa"),
+    MOXIBUSTAO("Moxibustão"),
+    DIETOTERAPIA("Dietoterapia MTC"),
+    QIGONG("Qigong e Tai Chi"),
+    CLINICA_MEDICA("Clínica Médica")
 }
 
 @Serializable

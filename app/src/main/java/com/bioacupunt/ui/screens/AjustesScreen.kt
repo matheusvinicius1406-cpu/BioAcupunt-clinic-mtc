@@ -153,7 +153,7 @@ private fun ProfileTab() {
 
                     if (saved) {
                         Spacer(Modifier.height(8.dp))
-                        Text("✅ Logo salva com sucesso!", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
+                        Text("Logo salva com sucesso.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
                     }
                 }
             }
@@ -328,7 +328,7 @@ private fun ClinicTab() {
                     colors = CardDefaults.cardColors(containerColor = GoogleBlue.copy(alpha = 0.08f))
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        Text("☁️ Google Drive conectado", style = MaterialTheme.typography.labelMedium.copy(color = GoogleBlue))
+                        Text("Google Drive conectado", style = MaterialTheme.typography.labelMedium.copy(color = GoogleBlue))
                         Text("Prontuários · Laudos · Fotos de evolução — sincronizados automaticamente", style = MaterialTheme.typography.bodySmall)
                         Spacer(Modifier.height(8.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -397,7 +397,7 @@ private fun AiApisTab() {
     }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { SectionHeader("📱 IA local (offline)") }
+        item { SectionHeader("IA local (offline)") }
         item {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -424,14 +424,14 @@ private fun AiApisTab() {
                         Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar URL do modelo")
                     }
                     if (modelUrlSaved) {
-                        Text("✅ URL salva.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
+                        Text("URL salva.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
                     }
                 }
             }
         }
         item { LocalModelCard() }
 
-        item { SectionHeader("☁️ IA na nuvem (opcional)") }
+        item { SectionHeader("IA na nuvem (opcional)") }
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -484,11 +484,11 @@ private fun AiApisTab() {
                 ) { Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar chave") }
             }
             if (keySaved) {
-                item { Text("✅ Chave salva. A IA na nuvem e a busca no Google ficam disponíveis no chat.", style = MaterialTheme.typography.labelMedium, color = statusColors().success) }
+                item { Text("Chave salva. A IA na nuvem e a busca no Google ficam disponíveis no chat.", style = MaterialTheme.typography.labelMedium, color = statusColors().success) }
             }
         }
 
-        item { SectionHeader("⚡ Desempenho / Cache") }
+        item { SectionHeader("Desempenho / Cache") }
         item {
             Text(
                 "Cache de IA: ${cacheManager.memoryUsageKb()} KB em memória · ${cacheManager.diskUsageKb()} KB em disco",
@@ -582,12 +582,17 @@ private fun SecurityTab(onLogout: () -> Unit) {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf(
-                        "✅ Dados armazenados localmente no dispositivo",
-                        "✅ Sincronização criptografada via TLS 1.3",
-                        "✅ Nenhum dado enviado a terceiros sem consentimento",
-                        "✅ Conformidade com LGPD (Lei 13.709/2018)",
-                        "✅ Backup Google Drive com criptografia ponta-a-ponta"
-                    ).forEach { item -> Text(item, style = MaterialTheme.typography.bodySmall) }
+                        "Dados armazenados localmente no dispositivo",
+                        "Sincronização criptografada via TLS 1.3",
+                        "Nenhum dado enviado a terceiros sem consentimento",
+                        "Conformidade com LGPD (Lei 13.709/2018)",
+                        "Backup Google Drive com criptografia ponta-a-ponta"
+                    ).forEach { item ->
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Icon(Icons.Default.CheckCircle, null, tint = statusColors().success, modifier = Modifier.size(16.dp))
+                            Text(item, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
                 }
             }
         }
@@ -616,7 +621,7 @@ private fun SecurityTab(onLogout: () -> Unit) {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (changePassSuccess) {
-                        Text("✅ PIN alterado com sucesso!", color = statusColors().success, style = MaterialTheme.typography.bodyMedium)
+                        Text("PIN alterado com sucesso.", color = statusColors().success, style = MaterialTheme.typography.bodyMedium)
                     } else {
                         OutlinedTextField(
                             value = oldPin, onValueChange = { oldPin = it.filter { c -> c.isDigit() }; changePassError = null },
@@ -751,7 +756,7 @@ private fun SystemTab() {
                         Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar servidor")
                     }
                     if (serverSaved) {
-                        Text("✅ Servidor salvo.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
+                        Text("Servidor salvo.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
                     }
                 }
             }

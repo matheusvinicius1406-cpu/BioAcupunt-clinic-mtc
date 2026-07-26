@@ -171,7 +171,7 @@ private fun PatientCrmCard(
         }
         Column(Modifier.weight(1f)) {
             Text(p.name, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            val secondLine = if (p.phone.isNotBlank()) "${stage.emoji} ${stage.label} · ${p.phone}" else "${stage.emoji} ${stage.label}"
+            val secondLine = if (p.phone.isNotBlank()) "${stage.label} · ${p.phone}" else stage.label
             Text(secondLine, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -217,7 +217,7 @@ private fun PatientCrmCard(
                                 .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(candidate.emoji, modifier = Modifier.width(28.dp))
+                            Icon(candidate.icon(), null, modifier = Modifier.width(28.dp).size(18.dp))
                             Text(candidate.label, modifier = Modifier.weight(1f))
                             if (candidate == stage) Icon(Icons.Default.Check, null, tint = statusColors().success)
                         }

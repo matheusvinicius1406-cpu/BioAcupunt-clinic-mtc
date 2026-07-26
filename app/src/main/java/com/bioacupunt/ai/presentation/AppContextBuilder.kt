@@ -31,24 +31,24 @@ class AppContextBuilder(
                 val formatter = DateTimeFormatter.ofPattern(
                     "EEEE, d 'de' MMMM 'às' HH:mm", Locale.Builder().setLanguage("pt").setRegion("BR").build()
                 )
-                appendLine("📅 Agora: ${now.format(formatter)}")
+                appendLine("Agora: ${now.format(formatter)}")
             } catch (_: Exception) {
-                appendLine("📅 Agora: --")
+                appendLine("Agora: --")
             }
 
             try {
                 val doctorName = securePreferences.professionalName
                     .ifBlank { "Profissional" }
-                appendLine("👩‍⚕️ Profissional: Dra. $doctorName")
+                appendLine("Profissional: Dra. $doctorName")
             } catch (_: Exception) {
-                appendLine("👩‍⚕️ Profissional: --")
+                appendLine("Profissional: --")
             }
 
             try {
                 val today = LocalDate.now().toString()
                 val appts = appointmentRepository.getByDateSync(today)
                 if (appts.isNotEmpty()) {
-                    appendLine("📋 Consultas hoje (${appts.size}):")
+                    appendLine("Consultas hoje (${appts.size}):")
                     appts.take(5).forEach { a ->
                         appendLine("  • ${a.patientName} às ${a.time}")
                     }
@@ -56,10 +56,10 @@ class AppContextBuilder(
                         appendLine("  ... e mais ${appts.size - 5}")
                     }
                 } else {
-                    appendLine("📋 Nenhuma consulta agendada para hoje.")
+                    appendLine("Nenhuma consulta agendada para hoje.")
                 }
             } catch (_: Exception) {
-                appendLine("📋 Consultas hoje: --")
+                appendLine("Consultas hoje: --")
             }
         }
     }

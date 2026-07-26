@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -139,7 +140,7 @@ private fun SimuladorMenu(onStartQuiz: () -> Unit, onStartCase: () -> Unit) {
         modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("Simulador MTC 🧪", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold))
+        Text("Simulador MTC", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold))
         Text(
             "Teste seus conhecimentos com quiz interativo e casos clínicos de MTC.",
             style = MaterialTheme.typography.bodyMedium,
@@ -217,7 +218,7 @@ private fun QuizMode(state: SimMode.Quiz, onUpdate: (SimMode.Quiz) -> Unit, onBa
                     color = Primary
                 )
                 Text(
-                    "${state.index + 1} / ${quizBank.size}  ·  ✅ ${state.correct} corretas",
+                    "${state.index + 1} / ${quizBank.size}  ·  ${state.correct} corretas",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -320,11 +321,11 @@ private fun QuizMode(state: SimMode.Quiz, onUpdate: (SimMode.Quiz) -> Unit, onBa
 @Composable
 private fun QuizResults(correct: Int, total: Int, onBack: () -> Unit, onRetry: () -> Unit) {
     val pct = (correct.toFloat() / total * 100).toInt()
-    val (emoji, msg) = when {
-        pct >= 90 -> "🏆" to "Excelente! Você domina MTC!"
-        pct >= 70 -> "⭐" to "Muito bem! Continue estudando!"
-        pct >= 50 -> "📚" to "Bom progresso! Revise os tópicos."
-        else      -> "💪" to "Continue praticando! Use os flashcards."
+    val (resultIcon, msg) = when {
+        pct >= 90 -> Icons.Default.EmojiEvents to "Excelente! Você domina MTC!"
+        pct >= 70 -> Icons.Default.Star to "Muito bem! Continue estudando!"
+        pct >= 50 -> Icons.AutoMirrored.Filled.MenuBook to "Bom progresso! Revise os tópicos."
+        else      -> Icons.Default.FitnessCenter to "Continue praticando! Use os flashcards."
     }
 
     Column(
@@ -332,7 +333,7 @@ private fun QuizResults(correct: Int, total: Int, onBack: () -> Unit, onRetry: (
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(emoji, style = MaterialTheme.typography.displayMedium)
+        Icon(resultIcon, null, tint = Primary, modifier = Modifier.size(64.dp))
         Spacer(Modifier.height(16.dp))
         Text("$correct / $total corretas", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = Primary))
         Text("$pct% de aproveitamento", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -405,7 +406,7 @@ Trabalho estressante, conflitos familiares recentes. Ciclos menstruais irregular
                     border = BorderStroke(1.dp, Primary.copy(alpha = 0.2f))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("🎯 Resposta Comentada", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold, color = Primary))
+                        Text("Resposta Comentada", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold, color = Primary))
                         Spacer(Modifier.height(8.dp))
                         Text("""
 **Padrão:** Estagnação de Qi do Fígado (肝气郁结)
