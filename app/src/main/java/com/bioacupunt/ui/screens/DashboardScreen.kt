@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.ui.theme.Accent
+import com.bioacupunt.ui.theme.AccentHairline
 import com.bioacupunt.ui.theme.SemanticError
 import com.bioacupunt.ui.theme.SemanticInfo
 import com.bioacupunt.ui.theme.SemanticSuccess
@@ -58,6 +59,9 @@ private data class DashMetric(
     val label: String,
     val value: String,
     val color: Color,
+    /** Sparing gold hairline instead of the usual outline — reserved for one
+     *  standout metric per the "gold as accent, never a fill" rule. */
+    val premium: Boolean = false,
 )
 
 @Composable
@@ -84,15 +88,15 @@ fun DashboardScreen(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         // ── Metrics grid (2 cols) ───────────────────────────
         item {
             val metrics = listOf(
                 DashMetric(Icons.Default.Today, "Hoje", "${state.todayCount}", Primary),
                 DashMetric(Icons.Default.Group, "Ativos", "${state.activeCount}", SemanticInfo),
-                DashMetric(Icons.Default.PeopleAlt, "Pacientes", "${state.totalPatients}", Accent),
+                DashMetric(Icons.Default.PeopleAlt, "Pacientes", "${state.totalPatients}", Accent, premium = true),
                 DashMetric(Icons.Default.AttachMoney, "Recebido/mês", if (state.financeUnavailable) "—" else brlCompact(state.monthReceivedBrl), SemanticSuccess),
                 DashMetric(Icons.Default.HourglassBottom, "Pendente/mês", if (state.financeUnavailable) "—" else brlCompact(state.monthPendingBrl), SemanticWarning),
                 DashMetric(Icons.Default.NotificationImportant, "Ausentes 30d+", "${state.overdueCount}", SemanticError),
@@ -167,6 +171,7 @@ private fun DashCard(
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.large,
     elevation: Dp = Elevation.Card,
+    borderColor: Color = MaterialTheme.colorScheme.outline,
     content: @Composable () -> Unit
 ) {
     Box(
@@ -175,7 +180,7 @@ private fun DashCard(
             .supremeShadow(shape = shape, elevation = elevation)
             .clip(shape)
             .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outline, shape)
+            .border(1.dp, borderColor, shape)
     ) {
         content()
     }
@@ -183,21 +188,32 @@ private fun DashCard(
 
 @Composable
 private fun MetricsGrid(metrics: List<DashMetric>) {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         metrics.chunked(2).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 row.forEach { m ->
-                    DashCard(modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.large) {
-                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                Icon(m.icon, null, tint = m.color, modifier = Modifier.size(16.dp))
-                                Text(
-                                    m.label.uppercase(),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = TextMuted,
-                                )
+                    DashCard(
+                        modifier = Modifier.weight(1f),
+                        shape = MaterialTheme.shapes.large,
+                        borderColor = if (m.premium) AccentHairline else MaterialTheme.colorScheme.outline,
+                    ) {
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .clip(MaterialTheme.shapes.small)
+                                    .background(m.color.copy(alpha = 0.12f)),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(m.icon, null, tint = m.color, modifier = Modifier.size(15.dp))
                             }
-                            Spacer(Modifier.height(6.dp))
+                            Spacer(Modifier.height(10.dp))
+                            Text(
+                                m.label.uppercase(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = TextMuted,
+                            )
+                            Spacer(Modifier.height(4.dp))
                             Text(
                                 m.value,
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
@@ -220,14 +236,19 @@ private fun ReengagementCard(
     onCall: (String) -> Unit,
 ) {
     DashCard(shape = MaterialTheme.shapes.extraLarge) {
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.NotificationImportant, null, tint = SemanticWarning, modifier = Modifier.size(20.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Box(
+                        modifier = Modifier.size(30.dp).clip(MaterialTheme.shapes.small).background(SemanticWarning.copy(alpha = 0.12f)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Default.NotificationImportant, null, tint = SemanticWarning, modifier = Modifier.size(17.dp))
+                    }
                     Text("Reengajamento", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                 }
                 Box(
@@ -243,7 +264,7 @@ private fun ReengagementCard(
                     )
                 }
             }
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(14.dp))
             if (patients.isEmpty()) {
                 Text(
                     "Nenhuma paciente ausente há 30+ dias. Tudo em dia.",
@@ -251,14 +272,14 @@ private fun ReengagementCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 patients.forEach { r ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(MaterialTheme.shapes.medium)
                             .background(MaterialTheme.colorScheme.background)
-                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
@@ -321,12 +342,12 @@ private fun KanbanColumnCard(col: KanbanColumn, onCardClick: (Long) -> Unit) {
     val stageColor = col.stage.uiColor
     Box(
         modifier = Modifier
-            .width(200.dp)
+            .width(204.dp)
             .supremeShadow(shape = MaterialTheme.shapes.large)
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
-            .padding(12.dp)
+            .padding(14.dp)
     ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -389,10 +410,10 @@ private fun QuickAccessCard(
     onAgenda: () -> Unit,
 ) {
     DashCard(shape = MaterialTheme.shapes.extraLarge) {
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Text("Acesso rápido", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
-            Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Spacer(Modifier.height(14.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 QuickAction(Modifier.weight(1f), Icons.Default.PersonAdd, "Novo\nPaciente", onNovoPaciente)
                 QuickAction(Modifier.weight(1f), Icons.Default.Description, "Relatório", onRelatorio)
                 QuickAction(Modifier.weight(1f), Icons.Default.SmartToy, "Assistente\nIA", onAssistenteIA)
@@ -410,11 +431,16 @@ private fun QuickAction(modifier: Modifier, icon: ImageVector, label: String, on
             .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.background)
             .clickable(onClick = onClick)
-            .padding(horizontal = 4.dp, vertical = 12.dp),
+            .padding(horizontal = 4.dp, vertical = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Icon(icon, null, tint = Primary, modifier = Modifier.size(24.dp))
+        Box(
+            modifier = Modifier.size(36.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, null, tint = Primary, modifier = Modifier.size(20.dp))
+        }
         Text(
             label,
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, lineHeight = 12.sp),
@@ -439,7 +465,8 @@ private fun NextAppointmentCard(
             .shadow(12.dp, shape = MaterialTheme.shapes.extraLarge, spotColor = Primary.copy(alpha = 0.28f))
             .clip(MaterialTheme.shapes.extraLarge)
             .background(Brush.linearGradient(listOf(Primary, PrimaryDark)))
-            .padding(18.dp)
+            .border(1.dp, AccentHairline.copy(alpha = 0.6f), MaterialTheme.shapes.extraLarge)
+            .padding(20.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

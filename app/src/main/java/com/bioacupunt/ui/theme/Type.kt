@@ -6,19 +6,23 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Reference look: Inter (humanist sans) throughout — headings, body and labels
-// alike, no serif/monospace mixed in. FontFamily.Default maps to the device's
-// sans font — no bundled font files (which previously crashed via a missing
-// R.font.*).
-val HeadingFont = FontFamily.Default
+// Premium-minimalista pairing: a serif display face for headings (editorial,
+// "private clinic" feel) over a humanist sans for body/labels (readability at
+// small sizes). HeadingFont deliberately stays FontFamily.Serif — a generic
+// system family Android always resolves locally (Noto Serif or the OEM
+// equivalent) — never a bundled font file or a downloadable Google Font: this
+// project already crashed once on a missing R.font.* from a bundled font, and
+// there is no device/emulator in this environment to verify a font swap
+// renders correctly before shipping it.
+val HeadingFont = FontFamily.Serif
 val BodyFont = FontFamily.Default
 val LabelFont = FontFamily.Default
 
 val Typography = Typography(
-    displayLarge = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.Bold, fontSize = 40.sp, lineHeight = 48.sp),
-    headlineMedium = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.Bold, fontSize = 28.sp, lineHeight = 34.sp),
-    headlineSmall = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.Bold, fontSize = 24.sp, lineHeight = 30.sp),
-    titleLarge = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 28.sp),
+    displayLarge = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.SemiBold, fontSize = 40.sp, lineHeight = 48.sp, letterSpacing = 0.sp),
+    headlineMedium = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.SemiBold, fontSize = 28.sp, lineHeight = 34.sp, letterSpacing = 0.sp),
+    headlineSmall = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.SemiBold, fontSize = 24.sp, lineHeight = 30.sp, letterSpacing = 0.sp),
+    titleLarge = TextStyle(fontFamily = HeadingFont, fontWeight = FontWeight.Medium, fontSize = 22.sp, lineHeight = 28.sp),
     titleMedium = TextStyle(fontFamily = BodyFont, fontWeight = FontWeight.SemiBold, fontSize = 18.sp, lineHeight = 24.sp),
     titleSmall = TextStyle(fontFamily = BodyFont, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, lineHeight = 20.sp),
     bodyMedium = TextStyle(fontFamily = BodyFont, fontWeight = FontWeight.Normal, fontSize = 15.sp, lineHeight = 22.sp),

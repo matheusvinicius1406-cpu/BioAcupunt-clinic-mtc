@@ -4,29 +4,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-// ── BioAcupunt "Supremo" palette ─────────────────────────────
-// Olive-green primary + gold accent over a warm cream, matching the
-// design mockups (dashboard/patients/prontuario/.../ajustes).
+// ── BioAcupunt "Supremo" palette — premium minimalista ───────
+// Olive-green primary + a more restrained champagne-gold accent over an
+// ivory (not cream) surface: less saturation, more air, closer to a private-
+// clinic aesthetic than the original mockup's warmer tone.
 
 val Primary = Color(0xFF4A6B2A)        // olive — nav active, buttons, chips
 val PrimaryDark = Color(0xFF6B8F4A)    // olive-light
 val PrimaryContainer = Color(0xFFEAF3E0) // olive-soft
 val OnPrimary = Color(0xFFFFFFFF)
 
-val Accent = Color(0xFFC9A96E)         // gold — secondary highlight, badges
+val Accent = Color(0xFFC2A671)         // champagne gold — secondary highlight, badges
 val AccentDark = Color(0xFFE8D5A8)     // gold-light
 val OnAccent = Color(0xFF1E1B16)
 val AccentContainer = Color(0xFFF8F0E0) // gold-soft
+/** Hairline gold — thin borders on "premium" cards, never a fill. */
+val AccentHairline = Color(0xFFE2D2AC)
 
-val Background = Color(0xFFF6F5F2)     // warm cream
+val Background = Color(0xFFFAF8F3)     // ivory
 val Surface = Color(0xFFFFFFFF)        // cards
-val SurfaceVariant = Color(0xFFE6E2DA) // border-color doubles as subtle fill
-val OnSurface = Color(0xFF1E1B16)      // text-primary
+val SurfaceVariant = Color(0xFFEDE9DF) // border-color doubles as subtle fill
+val OnSurface = Color(0xFF211E19)      // text-primary
 val OnSurfaceVariant = Color(0xFF5A5548) // text-secondary
 val TextMuted = Color(0xFF8A8578)
 
-val Outline = Color(0xFFE6E2DA)
-val OutlineVariant = Color(0xFFF0EDE6)
+val Outline = Color(0xFFEDE8DD)
+val OutlineVariant = Color(0xFFF4F1E9)
 
 val SemanticSuccess = Color(0xFF4A6B2A)
 val SemanticWarningBg = Color(0xFFFEF3C7)

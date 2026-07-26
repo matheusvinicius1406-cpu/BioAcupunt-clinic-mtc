@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,6 +26,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.biblioteca.domain.model.MtcArticle
 import com.bioacupunt.biblioteca.domain.model.MtcCategory
 import com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase
+import com.bioacupunt.biblioteca.presentation.HybridResultItem
+import com.bioacupunt.biblioteca.presentation.SearchMode
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.theme.*
 
@@ -44,9 +48,10 @@ fun BibliotecaScreen(
         openArticleId?.let { id -> state.allArticles.find { it.id == id } }
     }
 
-    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
         item {
             Text("Biblioteca", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold))
+            Spacer(Modifier.height(2.dp))
             Text(
                 "Conhecimento Ativo · ${MtcKnowledgeCount.totalArticles} artigos revisados",
                 style = MaterialTheme.typography.bodySmall,
@@ -57,11 +62,26 @@ fun BibliotecaScreen(
         item {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                AssistChip(onClick = onNavigateToFlashcards, label = { Text("🃏 Flashcards", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
-                AssistChip(onClick = onNavigateToSimulador, label = { Text("🧪 Simulador", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
-                AssistChip(onClick = onNavigateToAnalytics, label = { Text("📊 Analytics", style = MaterialTheme.typography.labelSmall) }, modifier = Modifier.weight(1f))
+                AssistChip(
+                    onClick = onNavigateToFlashcards,
+                    label = { Text("Flashcards", style = MaterialTheme.typography.labelSmall) },
+                    leadingIcon = { Icon(Icons.Default.Style, null, modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.weight(1f),
+                )
+                AssistChip(
+                    onClick = onNavigateToSimulador,
+                    label = { Text("Simulador", style = MaterialTheme.typography.labelSmall) },
+                    leadingIcon = { Icon(Icons.Default.Science, null, modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.weight(1f),
+                )
+                AssistChip(
+                    onClick = onNavigateToAnalytics,
+                    label = { Text("Analytics", style = MaterialTheme.typography.labelSmall) },
+                    leadingIcon = { Icon(Icons.Default.Analytics, null, modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
 
@@ -70,13 +90,22 @@ fun BibliotecaScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .supremeShadow(shape = MaterialTheme.shapes.extraLarge)
                     .clip(MaterialTheme.shapes.extraLarge)
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(2.dp, Primary, MaterialTheme.shapes.extraLarge)
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                    .border(1.dp, AccentHairline, MaterialTheme.shapes.extraLarge)
+                    .padding(horizontal = 18.dp, vertical = 6.dp),
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Icon(Icons.Default.Psychology, null, tint = Primary, modifier = Modifier.size(20.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .clip(RoundedCornerShape(11.dp))
+                            .background(Brush.linearGradient(listOf(Primary, Accent))),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Default.Psychology, null, tint = Color.White, modifier = Modifier.size(19.dp))
+                    }
                     androidx.compose.foundation.text.BasicTextField(
                         value = state.askQuestion,
                         onValueChange = vm::onAskQuestionChanged,
@@ -127,6 +156,71 @@ fun BibliotecaScreen(
             )
         }
 
+        // ── Search mode toggle: acervo local (fixo + curadoria) vs busca
+        // semântica sobre os nós do pipeline MKIS (FTS5 + sqlite-vec + RRF) ──
+        item {
+            val mkisActive = state.searchMode == SearchMode.MKIS_HYBRID
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, if (mkisActive) AccentHairline else MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Icon(
+                    Icons.Default.Hub,
+                    null,
+                    tint = if (mkisActive) Primary else TextMuted,
+                    modifier = Modifier.size(16.dp),
+                )
+                Text(
+                    "Busca semântica avançada (MKIS)",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (mkisActive) Primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                )
+                Switch(
+                    checked = mkisActive,
+                    onCheckedChange = { vm.toggleSearchMode() },
+                )
+            }
+        }
+
+        if (state.searchMode == SearchMode.MKIS_HYBRID) {
+            item {
+                Text(
+                    "Busca sobre os nós de conhecimento ingeridos pelo pipeline (Curadoria › Pipeline). " +
+                        "Complementa o acervo abaixo — não substitui o gate de evidência da IA (R2).",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            when {
+                state.query.isBlank() -> item {
+                    Text(
+                        "Digite algo na busca acima para consultar a base MKIS.",
+                        color = TextMuted,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(vertical = 20.dp),
+                    )
+                }
+                state.hybridResults.isEmpty() && !state.isSearching -> item {
+                    Text(
+                        "Nenhum nó de conhecimento encontrado para esta busca.",
+                        color = TextMuted,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(vertical = 20.dp),
+                    )
+                }
+                else -> items(state.hybridResults, key = { it.id }) { result ->
+                    HybridResultCard(result, onOpen = { vm.onHybridResultClick(result) })
+                }
+            }
+        } else {
+
         // ── Stats row ──────────────────────────────────────
         item {
             val favCount = state.favoriteIds.size
@@ -137,7 +231,7 @@ fun BibliotecaScreen(
                 "$favCount" to "Favoritos",
                 "${MtcKnowledgeCount.totalTags}" to "Tags",
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                 stats.forEach { (value, label) ->
                     Column(
                         modifier = Modifier
@@ -145,7 +239,7 @@ fun BibliotecaScreen(
                             .clip(MaterialTheme.shapes.medium)
                             .background(MaterialTheme.colorScheme.surface)
                             .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
-                            .padding(vertical = 10.dp, horizontal = 4.dp),
+                            .padding(vertical = 12.dp, horizontal = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = Primary)
@@ -157,9 +251,9 @@ fun BibliotecaScreen(
 
         item {
             Text("ACERVO", style = MaterialTheme.typography.labelMedium, color = TextMuted)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             MtcCategory.entries.chunked(3).forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
                     row.forEach { cat ->
                         val count = MtcKnowledgeBaseCategories.countFor(cat)
                         val selected = state.category == cat.name
@@ -170,7 +264,7 @@ fun BibliotecaScreen(
                                 .background(if (selected) Primary.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surface)
                                 .border(1.dp, if (selected) Primary else MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
                                 .clickable { vm.onCategorySelected(if (selected) null else cat.name) }
-                                .padding(vertical = 14.dp, horizontal = 4.dp),
+                                .padding(vertical = 16.dp, horizontal = 4.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(cat.emoji, style = MaterialTheme.typography.titleMedium)
@@ -225,6 +319,7 @@ fun BibliotecaScreen(
                 )
             }
         }
+        }
     }
 
     // ── Article detail sheet ──────────────────────────────
@@ -237,6 +332,15 @@ fun BibliotecaScreen(
             relatedArticles = related,
             onOpenRelated = { openArticleId = it.id },
             onDismiss = { openArticleId = null },
+        )
+    }
+
+    // ── MKIS node detail sheet ────────────────────────────
+    state.selectedMkisNode?.let { node ->
+        MkisDetailSheet(
+            node = node,
+            score = state.selectedMkisNodeScore,
+            onDismiss = vm::clearSelectedNode,
         )
     }
 
@@ -266,19 +370,55 @@ private fun AskAnswerView(answer: AskLibraryUseCase.Answer, onDismiss: () -> Uni
 }
 
 @Composable
+private fun HybridResultCard(result: HybridResultItem, onOpen: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .supremeShadow(shape = MaterialTheme.shapes.large, elevation = Elevation.Card)
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
+            .clickable(onClick = onOpen)
+            .padding(18.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Box(
+                modifier = Modifier.size(30.dp).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Default.Hub, null, tint = Primary, modifier = Modifier.size(16.dp))
+            }
+            Text(result.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
+            val pct = (result.score * 100).toInt().coerceIn(0, 99)
+            Box(modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 8.dp, vertical = 2.dp)) {
+                Text("$pct%", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Primary)
+            }
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(result.summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 3, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+@Composable
 private fun ArticleCard(article: MtcArticle, isFavorite: Boolean, onOpen: () -> Unit, onToggleFavorite: () -> Unit) {
     val category = runCatching { MtcCategory.valueOf(article.category) }.getOrNull()
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .supremeShadow(shape = MaterialTheme.shapes.large, elevation = Elevation.Card)
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
             .clickable(onClick = onOpen)
-            .padding(16.dp),
+            .padding(18.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(category?.emoji ?: "📄", style = MaterialTheme.typography.titleMedium)
+            Box(
+                modifier = Modifier.size(32.dp).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(category?.emoji ?: "📄", style = MaterialTheme.typography.titleSmall)
+            }
             Text(article.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
             IconButton(onClick = onToggleFavorite, modifier = Modifier.size(28.dp)) {
                 Icon(

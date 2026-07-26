@@ -35,8 +35,10 @@ import com.bioacupunt.ai.presentation.UnifiedChatRole
 import com.bioacupunt.ai.presentation.UnifiedChatTurn
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.theme.Accent
+import com.bioacupunt.ui.theme.AccentHairline
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.TextMuted
+import com.bioacupunt.ui.theme.supremeShadow
 import kotlinx.coroutines.launch
 
 private val quickSuggestions = listOf(
@@ -73,8 +75,8 @@ fun InteligenciaScreen(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         item {
             Text("Inteligência", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold))
@@ -84,10 +86,11 @@ fun InteligenciaScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .supremeShadow(shape = MaterialTheme.shapes.extraLarge)
                     .clip(MaterialTheme.shapes.extraLarge)
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.extraLarge)
-                    .padding(16.dp),
+                    .border(1.dp, AccentHairline, MaterialTheme.shapes.extraLarge)
+                    .padding(20.dp),
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -120,7 +123,8 @@ fun InteligenciaScreen(
                                 .fillMaxWidth()
                                 .clip(MaterialTheme.shapes.medium)
                                 .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f))
-                                .padding(horizontal = 10.dp, vertical = 8.dp),
+                                .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Info, null, tint = Primary, modifier = Modifier.size(14.dp))
@@ -154,8 +158,8 @@ fun InteligenciaScreen(
                     }
                 }
 
-                Spacer(Modifier.height(10.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                Spacer(Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     quickSuggestions.forEach { s ->
                         Box(
                             modifier = Modifier
@@ -163,7 +167,7 @@ fun InteligenciaScreen(
                                 .background(MaterialTheme.colorScheme.background)
                                 .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.extraLarge)
                                 .clickable(enabled = !state.thinking) { vm.send(s) }
-                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
                             Text(s, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -200,7 +204,7 @@ fun InteligenciaScreen(
                     .background(MaterialTheme.colorScheme.surface)
                     .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
                     .clickable { vm.refreshContext() }
-                    .padding(14.dp),
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
@@ -240,11 +244,17 @@ fun InteligenciaScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(MaterialTheme.shapes.large)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(14.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Icon(Icons.Default.VerifiedUser, null, tint = Primary, modifier = Modifier.size(20.dp))
+                Box(
+                    modifier = Modifier.size(30.dp).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(Icons.Default.VerifiedUser, null, tint = Primary, modifier = Modifier.size(16.dp))
+                }
                 Text(
                     buildAnnotatedStringCompat(
                         "Auditoria da IA: ",
@@ -253,6 +263,7 @@ fun InteligenciaScreen(
                             "app) usam o assistente livre, que recusa dar diagnóstico ou conselho clínico.",
                     ),
                     style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
