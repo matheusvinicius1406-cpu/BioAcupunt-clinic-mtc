@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import com.bioacupunt.pharma.domain.ingestion.toDomain
 
 /**
  * Manual DI container. Single source of truth for all dependencies.
@@ -292,6 +293,81 @@ object AppContainer {
                 com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles + libraryStagingRepository.approvedArticles()
             },
         )
+    }
+
+    // ── Farmacologia: Pharma Library + Smart Prescription ──
+    val medicamentoDao: com.bioacupunt.pharma.data.local.MedicamentoDao by lazy { database.medicamentoDao() }
+    val medicamentoFtsDao: com.bioacupunt.pharma.data.local.MedicamentoFtsDao by lazy { database.medicamentoFtsDao() }
+    val formularioMedicamentoDao: com.bioacupunt.pharma.data.local.FormularioMedicamentoDao by lazy { database.formularioMedicamentoDao() }
+    val prescricaoDao: com.bioacupunt.pharma.data.local.PrescricaoDao by lazy { database.prescricaoDao() }
+
+    val medicamentoRepository: com.bioacupunt.pharma.domain.repository.MedicamentoRepository by lazy {
+        com.bioacupunt.pharma.data.repository.MedicamentoRepositoryImpl(medicamentoDao, medicamentoFtsDao)
+    }
+    val formularioMedicamentoRepository: com.bioacupunt.pharma.domain.repository.FormularioMedicamentoRepository by lazy {
+        com.bioacupunt.pharma.data.repository.FormularioMedicamentoRepositoryImpl(formularioMedicamentoDao)
+    }
+    val prescricaoRepository: com.bioacupunt.pharma.domain.repository.PrescricaoRepository by lazy {
+        com.bioacupunt.pharma.data.repository.PrescricaoRepositoryImpl(prescricaoDao, tenantManager)
+    }
+    val pharmaSafetyEngine: com.bioacupunt.pharma.domain.safety.PharmaSafetyEngine by lazy {
+        com.bioacupunt.pharma.domain.safety.PharmaSafetyEngine()
+    }
+
+    /** Mesma resolução de identidade usada pelo override do veto clínico em ProntuarioScreen. */
+    private fun currentUserId(): String = runCatching {
+        authRepository.getCurrentUser()?.id?.toString() ?: securePreferences.pinHash.take(8)
+    }.getOrDefault("unknown").ifBlank { "unknown" }
+
+    val farmacologiaViewModelFactory: com.bioacupunt.pharma.presentation.FarmacologiaViewModelFactory by lazy {
+        com.bioacupunt.pharma.presentation.FarmacologiaViewModelFactory(
+            medicamentoRepository = medicamentoRepository,
+            formularioMedicamentoRepository = formularioMedicamentoRepository,
+            tenantManager = tenantManager,
+        )
+    }
+
+    val farmacologiaCuradoriaViewModelFactory: com.bioacupunt.pharma.presentation.FarmacologiaCuradoriaViewModelFactory by lazy {
+        com.bioacupunt.pharma.presentation.FarmacologiaCuradoriaViewModelFactory(
+            medicamentoRepository = medicamentoRepository,
+            formularioMedicamentoRepository = formularioMedicamentoRepository,
+            tenantManager = tenantManager,
+            currentUser = ::currentUserId,
+        )
+    }
+
+    fun prescricaoViewModelFactory(patientId: Long) =
+        com.bioacupunt.pharma.presentation.PrescricaoViewModelFactory(
+            medicamentoRepository = medicamentoRepository,
+            formularioMedicamentoRepository = formularioMedicamentoRepository,
+            prescricaoRepository = prescricaoRepository,
+            exameRepository = exameRepository,
+            mtcAssessmentRepository = mtcAssessmentRepository,
+            safetyEngine = pharmaSafetyEngine,
+            tenantManager = tenantManager,
+            patientId = patientId,
+            currentUser = ::currentUserId,
+        )
+
+    /**
+     * Popula o catálogo ANVISA a partir dos packs em assets, uma única vez — ao
+     * contrário de [seedDemoDataIfNeeded], roda em TODO build (inclusive release):
+     * não é dado de demonstração, é o catálogo real que toda instalação precisa pra a
+     * tela Farmacologia funcionar. Fire-and-forget na mesma [_seederScope] — não pode
+     * bloquear o primeiro frame inserindo milhares de linhas.
+     */
+    fun seedPharmaCatalogIfNeeded() {
+        _seederScope.launch {
+            runCatching {
+                if (medicamentoRepository.count() > 0) return@runCatching
+                val items = com.bioacupunt.pharma.data.packs.AnvisaCatalogPacks.load(appContext)
+                    .flatMap { pack -> pack.items }
+                    .map { item -> item.toDomain() }
+                medicamentoRepository.seedIfEmpty(items)
+            }.onFailure { e ->
+                com.bioacupunt.observability.AppLogger.e("AppContainer", "Pharma catalog seed failed", e)
+            }
+        }
     }
 
     // ── Financeiro ─────────────────────────────────────────

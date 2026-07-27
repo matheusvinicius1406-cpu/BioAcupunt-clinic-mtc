@@ -23,6 +23,14 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
  * - flashcards (cards autorais da médica; os 12 fixos ficam em BuiltinFlashcards.kt)
  * - flashcard_progress (repetição espaçada Leitner-lite, por cardKey)
  *
+ * v20 adiciona as tabelas de Farmacologia (BioAcupunt Pharma Library + Smart
+ * Prescription):
+ * - medicamentos (catálogo ANVISA bulk-importado, identificação) + medicamentos_fts
+ * - formulario_medicamento (camada clínica curada pela médica — posologia,
+ *   interação, contraindicação, MTC — só o que está aqui alimenta o
+ *   PharmaSafetyEngine; o catálogo sozinho nunca é "verificado")
+ * - prescricoes (prescrição ligada a paciente, soft delete via `active`)
+ *
  * ## Migrações
  * As migrações são gerenciadas centralizadamente em [DatabaseModule].
  * Cada migração é ADDITIVE: nunca remove colunas ou tabelas existentes.
@@ -32,6 +40,7 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
  * v17: tenantId em transacoes + override do veto clínico
  * v18: MKIS on-device (knowledge_nodes expandido + ingestion_jobs + purge_certificates + audit_trail + sqlite-vec + FTS5)
  * v19: Educação/Flashcards (flashcards + flashcard_progress)
+ * v20: Farmacologia (medicamentos + medicamentos_fts + formulario_medicamento + prescricoes)
  */
 @Database(
     entities = [
@@ -63,8 +72,14 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
         com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity::class,
         com.bioacupunt.educacao.data.local.FlashcardEntity::class,
         com.bioacupunt.educacao.data.local.FlashcardProgressEntity::class,
+
+        // === Farmacologia (v20) ===
+        com.bioacupunt.pharma.data.local.MedicamentoEntity::class,
+        com.bioacupunt.pharma.data.local.MedicamentoFtsEntity::class,
+        com.bioacupunt.pharma.data.local.FormularioMedicamentoEntity::class,
+        com.bioacupunt.pharma.data.local.PrescricaoEntity::class,
     ],
-    version = 19,
+    version = 20,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -92,4 +107,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun syncConflictDao(): com.bioacupunt.sync.data.local.SyncConflictDao
     abstract fun articleSearchDao(): com.bioacupunt.biblioteca.data.local.dao.ArticleSearchDao
     abstract fun flashcardDao(): com.bioacupunt.educacao.data.local.FlashcardDao
+
+    // === Farmacologia DAOs (v20) ===
+    abstract fun medicamentoDao(): com.bioacupunt.pharma.data.local.MedicamentoDao
+    abstract fun medicamentoFtsDao(): com.bioacupunt.pharma.data.local.MedicamentoFtsDao
+    abstract fun formularioMedicamentoDao(): com.bioacupunt.pharma.data.local.FormularioMedicamentoDao
+    abstract fun prescricaoDao(): com.bioacupunt.pharma.data.local.PrescricaoDao
 }

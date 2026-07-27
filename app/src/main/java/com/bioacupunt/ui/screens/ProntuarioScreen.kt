@@ -30,10 +30,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.prontuario.domain.model.*
+import com.bioacupunt.pharma.presentation.PrescricaoViewModel
 import com.bioacupunt.prontuario.presentation.ExameViewModel
 import com.bioacupunt.prontuario.presentation.ProntuarioViewModel
 import com.bioacupunt.prontuario.presentation.SupremoViewModel
 import com.bioacupunt.ui.components.ClinicalSafetyPanel
+import com.bioacupunt.ui.components.PharmaSafetyPanel
 import com.bioacupunt.ui.design.AxisSelector
 import com.bioacupunt.ui.design.CompletenessBar
 import com.bioacupunt.ui.design.SectionHeader
@@ -49,7 +51,7 @@ import kotlinx.coroutines.launch
 
 private enum class ProntTab(val label: String) {
     RESUMO("Resumo"), ANAMNESE("Anamnese"), PLANO("Plano"),
-    EXAMES("Exames"), EVOLUCAO("Evolução"), DOCUMENTOS("Documentos"),
+    EXAMES("Exames"), PRESCRICAO("Prescrição"), EVOLUCAO("Evolução"), DOCUMENTOS("Documentos"),
 }
 
 /**
@@ -152,6 +154,10 @@ fun ProntuarioScreen(
             key = "exame-${state.patientId}",
             factory = AppContainer.exameViewModelFactory(state.patientId),
         )
+        val prescricaoVm: PrescricaoViewModel = viewModel(
+            key = "prescricao-${state.patientId}",
+            factory = AppContainer.prescricaoViewModelFactory(state.patientId),
+        )
         val supremoState by supremoVm.state.collectAsStateWithLifecycle()
 
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -241,6 +247,7 @@ fun ProntuarioScreen(
                 ProntTab.ANAMNESE -> AnamneseTab(supremoVm)
                 ProntTab.PLANO -> PlanoTab(state, supremoState, onUpdate = vm::updateHeader, onOverride = onOverride)
                 ProntTab.EXAMES -> ExamesTab(exameVm)
+                ProntTab.PRESCRICAO -> PrescricaoTab(prescricaoVm)
                 ProntTab.EVOLUCAO -> EvolucaoTab(
                     entries = state.entries,
                     onAdd = { editingEntry = null; showSessionDialog = true },
@@ -684,6 +691,128 @@ private fun examTagColors(tag: ExamResultTag): Pair<Color, Color> = when (tag) {
     ExamResultTag.NORMAL -> SemanticSuccess.copy(alpha = 0.14f) to SemanticSuccess
     ExamResultTag.ALTERED -> SemanticError.copy(alpha = 0.14f) to SemanticError
     ExamResultTag.PENDING -> SemanticWarning.copy(alpha = 0.14f) to SemanticWarning
+}
+
+// ── PRESCRIÇÃO (Smart Prescription) ──────────────────────────────────────
+
+/**
+ * Busca no catálogo Farmacologia, roda o [com.bioacupunt.pharma.domain.safety.PharmaSafetyEngine]
+ * contra o perfil de risco desta paciente e só então libera salvar — mesmo contrato de
+ * "veto alto e não dispensável" do resto do prontuário. Confirmar com FORBIDDEN pendente
+ * é ignorado em silêncio pela ViewModel; só o override com justificativa grava.
+ */
+@Composable
+private fun PrescricaoTab(vm: PrescricaoViewModel) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(state.error, state.savedMessage) {
+        val msg = state.error ?: state.savedMessage
+        if (!msg.isNullOrBlank()) {
+            if (context is android.app.Activity) {
+                android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
+            }
+            vm.clearMessages()
+        }
+    }
+
+    LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        val selected = state.selected
+        if (selected == null) {
+            item {
+                OutlinedTextField(
+                    value = state.query,
+                    onValueChange = vm::onQueryChanged,
+                    label = { Text("Buscar medicamento pra prescrever") },
+                    leadingIcon = { Icon(Icons.Default.Search, null) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+            }
+            items(state.results, key = { it.id }) { med ->
+                Card(onClick = { vm.selectMedicamento(med) }, modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(med.nomeComercial, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text(
+                            "${med.principiosAtivos.joinToString()} · ${med.classeTerapeutica}",
+                            style = MaterialTheme.typography.bodySmall, color = TextMuted,
+                        )
+                    }
+                }
+            }
+        } else {
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Column {
+                        Text(selected.nomeComercial, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                        Text(selected.principiosAtivos.joinToString(), style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                    }
+                    TextButton(onClick = vm::clearSelection) { Text("Trocar") }
+                }
+            }
+            item {
+                if (state.checkingVerdict) {
+                    CircularProgressIndicator(modifier = Modifier.padding(12.dp))
+                } else {
+                    state.verdict?.let { verdict ->
+                        PharmaSafetyPanel(verdict = verdict, onOverride = vm::overridePrescricaoVeto)
+                    }
+                }
+            }
+            item {
+                SupremoCard {
+                    Text("DADOS DA PRESCRIÇÃO", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(state.dose, vm::onDoseChanged, label = { Text("Dose") }, modifier = Modifier.fillMaxWidth())
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(state.frequencia, vm::onFrequenciaChanged, label = { Text("Frequência") }, modifier = Modifier.fillMaxWidth())
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(state.duracao, vm::onDuracaoChanged, label = { Text("Duração") }, modifier = Modifier.fillMaxWidth())
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(state.via, vm::onViaChanged, label = { Text("Via de administração") }, modifier = Modifier.fillMaxWidth())
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(state.observacoes, vm::onObservacoesChanged, label = { Text("Observações") }, modifier = Modifier.fillMaxWidth())
+                    Spacer(Modifier.height(12.dp))
+                    val blocked = state.verdict?.isBlocked == true
+                    Button(
+                        onClick = vm::confirmPrescricao,
+                        enabled = !state.saving && !state.checkingVerdict && !blocked,
+                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text(if (blocked) "Bloqueado — justifique acima pra prosseguir" else "Confirmar prescrição") }
+                }
+            }
+        }
+
+        item {
+            Text("MEDICAÇÕES ATIVAS", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+        }
+        if (state.activePrescricoes.isEmpty()) {
+            item { Text("Nenhuma prescrição ativa registrada por aqui.", style = MaterialTheme.typography.bodySmall, color = TextMuted) }
+        } else {
+            items(state.activePrescricoes, key = { it.id }) { p ->
+                Row(
+                    Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            p.medicamentoNomeLivre.ifBlank { p.medicamentoId ?: "Medicamento" },
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                        )
+                        Text("${p.dose} · ${p.frequencia}", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                        if (p.overrideReason.isNotBlank()) {
+                            Text("Override: ${p.overrideReason}", style = MaterialTheme.typography.labelSmall, color = SemanticWarning)
+                        }
+                    }
+                    IconButton(onClick = { vm.deactivate(p.id) }, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.Close, null, tint = TextMuted, modifier = Modifier.size(16.dp))
+                    }
+                }
+            }
+        }
+    }
 }
 
 // ── EVOLUÇÃO ────────────────────────────────────────────────────────────

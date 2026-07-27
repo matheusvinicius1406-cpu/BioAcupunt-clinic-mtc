@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 19
+    private const val DB_VERSION = 20
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -148,6 +148,7 @@ object DatabaseModule {
         if (current >= 17) migrations.add(MIGRATION_16_17)
         if (current >= 18) migrations.add(MIGRATION_17_18)
         if (current >= 19) migrations.add(MIGRATION_18_19)
+        if (current >= 20) migrations.add(MIGRATION_19_20)
         return migrations
     }
 
@@ -752,6 +753,108 @@ object DatabaseModule {
                 "CREATE INDEX IF NOT EXISTS `index_flashcard_progress_tenantId_dueAtEpochMs` " +
                     "ON `flashcard_progress` (`tenantId`, `dueAtEpochMs`)"
             )
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // v20 — Farmacologia (BioAcupunt Pharma Library + Smart Prescription)
+    //
+    // Três tabelas novas, sem FK entre si (medicamentoId é chave natural, não FK
+    // de verdade — reimportar o catálogo nunca pode travar em uma FK):
+    // 1. medicamentos — catálogo ANVISA bulk-importado (identificação: nome,
+    //    princípio ativo, classe, categoria regulatória, fabricante, registro).
+    //    Global, sem tenantId — é referência pública, igual MtcKnowledgeBase.
+    // 2. medicamentos_fts — FTS4 pra busca tolerante no catálogo (mesmo padrão
+    //    de article_fts/v15).
+    // 3. formulario_medicamento — camada clínica curada pela médica (posologia,
+    //    interação, contraindicação, MTC), chave composta (medicamentoId,
+    //    tenantId). Sem isso, PharmaSafetyEngine trata o item como "não
+    //    verificado" — nunca como seguro.
+    // 4. prescricoes — prescrição ligada a paciente, soft delete via `active`.
+    //
+    // Sem DEFAULT no SQL — mesma regra de v18/v19.
+    // ═════════════════════════════════════════════════════════════════════
+    private val MIGRATION_19_20 = object : androidx.room.migration.Migration(19, 20) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `medicamentos` (
+                    `id` TEXT NOT NULL PRIMARY KEY,
+                    `nomeComercial` TEXT NOT NULL,
+                    `principiosAtivosCsv` TEXT NOT NULL,
+                    `classeTerapeutica` TEXT NOT NULL,
+                    `categoriaRegulatoria` TEXT NOT NULL,
+                    `empresaDetentora` TEXT NOT NULL,
+                    `situacaoAtiva` INTEGER NOT NULL
+                )
+                """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+                CREATE VIRTUAL TABLE IF NOT EXISTS `medicamentos_fts` USING fts4(
+                    `medicamentoId` TEXT,
+                    `nomeComercial` TEXT,
+                    `principiosAtivosCsv` TEXT,
+                    `classeTerapeutica` TEXT
+                )
+                """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `formulario_medicamento` (
+                    `medicamentoId` TEXT NOT NULL,
+                    `tenantId` INTEGER NOT NULL,
+                    `posologiaAdulto` TEXT NOT NULL,
+                    `posologiaPediatrica` TEXT NOT NULL,
+                    `posologiaIdoso` TEXT NOT NULL,
+                    `posologiaRenal` TEXT NOT NULL,
+                    `posologiaHepatica` TEXT NOT NULL,
+                    `viaAdministracao` TEXT NOT NULL,
+                    `contraindicacoesAbsolutasCsv` TEXT NOT NULL,
+                    `contraindicacoesRelativasCsv` TEXT NOT NULL,
+                    `alergenosCsv` TEXT NOT NULL,
+                    `interacoesJson` TEXT NOT NULL,
+                    `efeitosAdversosJson` TEXT NOT NULL,
+                    `visaoIntegrativaMtc` TEXT NOT NULL,
+                    `status` TEXT NOT NULL,
+                    `autor` TEXT NOT NULL,
+                    `atualizadoEm` TEXT NOT NULL,
+                    PRIMARY KEY(`medicamentoId`, `tenantId`)
+                )
+                """.trimIndent()
+            )
+            database.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_formulario_medicamento_tenantId` " +
+                    "ON `formulario_medicamento` (`tenantId`)"
+            )
+
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `prescricoes` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `patientId` INTEGER NOT NULL,
+                    `tenantId` INTEGER NOT NULL,
+                    `medicamentoId` TEXT,
+                    `medicamentoNomeLivre` TEXT NOT NULL,
+                    `dose` TEXT NOT NULL,
+                    `frequencia` TEXT NOT NULL,
+                    `duracao` TEXT NOT NULL,
+                    `viaAdministracao` TEXT NOT NULL,
+                    `observacoes` TEXT NOT NULL,
+                    `prescritoPor` TEXT NOT NULL,
+                    `prescritoEm` TEXT NOT NULL,
+                    `active` INTEGER NOT NULL,
+                    `overrideReason` TEXT NOT NULL,
+                    `overrideBy` TEXT NOT NULL,
+                    `overrideAt` TEXT NOT NULL,
+                    FOREIGN KEY(`patientId`) REFERENCES `crm_patients`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent()
+            )
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_prescricoes_patientId` ON `prescricoes` (`patientId`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_prescricoes_tenantId` ON `prescricoes` (`tenantId`)")
         }
     }
 

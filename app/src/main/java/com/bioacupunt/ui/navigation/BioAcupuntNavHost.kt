@@ -99,6 +99,8 @@ fun BioAcupuntNavHost(
             MoreItem("Conflitos", Icons.Default.SyncProblem, Screen.Conflitos.route),
             MoreItem("Curadoria", Icons.Default.Inbox, Screen.Curadoria.route),
             MoreItem("Pipeline", Icons.Default.Construction, Screen.PipelineMonitor.route),
+            MoreItem("Farmacologia", Icons.Default.Medication, Screen.Farmacologia.route),
+            MoreItem("Curadoria Farmacológica", Icons.Default.Vaccines, Screen.FarmacologiaCuradoria.route),
         )
     }
 
@@ -255,6 +257,10 @@ fun BioAcupuntNavHost(
             composable(Screen.PipelineMonitor.route) {
                 val factory = androidx.compose.runtime.remember { AppContainer.pipelineMonitorViewModelFactory() }
                 PipelineMonitorScreen(onBack = { navController.popBackStack() }, factory = factory)
+            }
+            composable(Screen.Farmacologia.route) { FarmacologiaScreen() }
+            composable(Screen.FarmacologiaCuradoria.route) {
+                FarmacologiaCuradoriaScreen(onBack = { navController.popBackStack() })
             }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }

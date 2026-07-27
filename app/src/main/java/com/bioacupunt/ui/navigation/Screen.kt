@@ -36,6 +36,8 @@ sealed class Screen(val route: String, val label: String) {
     data object Conflitos   : Screen("conflitos",   "Conflitos")
     data object Curadoria   : Screen("curadoria",   "Curadoria")
     data object PipelineMonitor: Screen("pipeline",    "Pipeline")
+    data object Farmacologia: Screen("farmacologia", "Farmacologia")
+    data object FarmacologiaCuradoria: Screen("farmacologia_curadoria", "Curadoria Farmacológica")
 
     companion object {
         // Bottom navigation items — mockup order: Início, Pacientes, Prontuário,

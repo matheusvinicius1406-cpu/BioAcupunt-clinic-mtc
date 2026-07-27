@@ -46,6 +46,7 @@ class MainActivity : FragmentActivity() {
         val bootFailure = runCatching {
             AppContainer.init(applicationContext)
             AppContainer.seedDemoDataIfNeeded()
+            AppContainer.seedPharmaCatalogIfNeeded()
             com.bioacupunt.ui.theme.ThemeController.load(AppContainer.securePreferences)
             // Cold start: o portão de auto-bloqueio NÃO se aplica — a tela de
             // Login (startDestination) já barra o acesso. Zerar o carimbo evita

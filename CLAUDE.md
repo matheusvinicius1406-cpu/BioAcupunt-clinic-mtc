@@ -321,14 +321,25 @@ ensina a preencher lixo para passar — pior que registro honestamente incomplet
 Não existe uma data de "pronto" — é um sistema clínico vivo. Mas cada peça tem uma
 direção clara de onde deveria chegar:
 
-- **Motor de segurança clínica:** hoje cobre 11/18 `ClinicalFlag`. Meta: 18/18, cada
-  regra nova revisada e aprovada pela médica antes do merge — nunca inferida por um
-  agente. `ClinicalSafetyEngine.kt` continua Kotlin puro, legível sem saber
+- **Motor de segurança clínica:** cobre 18/18 `ClinicalFlag` (confirmado em auditoria
+  de 2026-07-27 — a nota antiga de "11/18" estava desatualizada). Toda regra nova
+  continua exigindo revisão e aprovação da médica antes do merge — nunca inferida
+  por um agente. `ClinicalSafetyEngine.kt` continua Kotlin puro, legível sem saber
   programar, para sempre.
 - **Biblioteca:** hoje 16 artigos fixos + o que a médica aprovar na Curadoria
   (pipeline já traz ~3.500 candidatos de fontes abertas verificadas). Meta de longo
   prazo: 250+ artigos aprovados. Cresce um artigo de cada vez, por aprovação
   humana — nunca por geração. R4 não tem data de expiração.
+- **Farmacologia:** mesmo modelo de duas camadas que a Biblioteca. Catálogo
+  ANVISA (identificação — nome, princípio ativo, classe, fabricante, registro;
+  ~10.260 medicamentos ativos bulk-importados de `dados.anvisa.gov.br`, real e
+  público) é global e somente leitura. Posologia/interação/contraindicação/MTC só
+  existem depois que a médica cura um `FormularioMedicamento` (bula em mãos) e
+  aprova — o `PharmaSafetyEngine` (R1: Kotlin puro, sem IA) trata qualquer item
+  sem aprovação como "não verificado", nunca como seguro. Não existe fonte aberta
+  em bulk pra bula (Bulário Eletrônico da ANVISA é per-item, atrás de Cloudflare,
+  sem API oficial) — a curadoria manual é o único caminho legítimo, R4 aplicado ao
+  risco de dose/interação real, não só a um artigo de MTC.
 - **IA:** dois caminhos permanentes e deliberadamente diferentes — grounded (MTC,
   sempre com evidência da biblioteca, sempre determinístico no gate) e livre
   (administrativo: agenda, busca, lembretes, sem limite artificial). Ver "Escopo da
@@ -354,16 +365,87 @@ direção clara de onde deveria chegar:
 ## Estado honesto
 
 - **Executado e verde:** motor de segurança, catálogo de modelos, integridade, busca,
-  RAG, mapper de prontuário (101 testes, `./gradlew testDebugUnitTest`), `compileDebugKotlin`.
-- **Compilado, não testado em device:** Compose, Room (migração 8→9), MediaPipe.
+  RAG, mapper de prontuário, motor de segurança farmacológica (171 testes,
+  `./gradlew testDebugUnitTest`), `compileDebugKotlin`, `assembleDebug`.
+- **Compilado, não testado em device:** Compose, Room (migração 8→9, 19→20), MediaPipe.
 - **Nunca testado:** inferência on-device (só roda em Android real).
 - **MediaPipe está em modo manutenção** — migrar para LiteRT-LM. O raio de explosão
   está confinado ao `LocalLlmProvider` de propósito.
 - **Rasas ainda:** nenhuma feature principal — Educação/Flashcards saiu da lista em
-  2026-07-25 (rebuild completo, ver handoff abaixo). Agenda, CRM, Financeiro,
-  Relatórios e Analytics já tinham saído em sessões anteriores.
+  2026-07-25 (rebuild completo). Farmacologia é nova em 2026-07-27 (ver handoff
+  abaixo): motor de segurança e curadoria testados por unidade, mas nenhuma tela
+  vista pela médica e nenhum repositório/ViewModel da camada de apresentação testado
+  ainda. Agenda, CRM, Financeiro, Relatórios e Analytics já tinham saído em sessões
+  anteriores.
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
+
+### Onde parei (2026-07-27) — Farmacologia (Pharma Library + Smart Prescription)
+
+Sessão começou como auditoria completa (achados: gap de consentimento LGPD no cloud AI
+default-on, 2 falhas silenciosas na Biblioteca — ambos corrigidos e commitados em
+`7f6e03d`, só local) e virou construção do módulo de Farmacologia pedido em seguida.
+**Tudo desta parte ainda não commitado** — só no working tree.
+
+- **Pedido original** (Neo4j, ANVISA+FDA+EMA completos, imagens licenciadas, bulário
+  inteiro em bulk) foi **recusado como descrito** e renegociado com o usuário via
+  `AskUserQuestion` em 3 rodadas: fonte de dados, arquitetura, escopo do MVP. Decisão
+  final: catálogo ANVISA real (Room/SQLite, não Neo4j — quebraria offline-first) +
+  curadoria manual da médica pra tudo que exige julgamento clínico.
+- **Achado técnico que redefiniu o escopo**: baixei e inspecionei
+  `dados.anvisa.gov.br/dados/DADOS_ABERTOS_MEDICAMENTOS.csv` de verdade — 43.353
+  linhas, 16.999 `Ativo`. Cobre só identificação (nome/princípio ativo/classe/
+  categoria/fabricante/registro). Testei o Bulário Eletrônico (`consultas.anvisa.gov.br`)
+  — HTTP 403 via Cloudflare, sem API oficial, só PDF individual. **Não construí
+  scraper pra contornar isso** — posologia/interação/contraindicação/excipiente não
+  têm fonte aberta em bulk, ponto final. Isso é R4 aplicado a um risco mais alto que
+  Biblioteca: dose/interação real, não artigo de MTC.
+- **Pipeline real rodado**: `scripts/pharma/build_anvisa_packs.py` (csv module de
+  verdade, latin-1, delimiter `;` — dado tem vírgula dentro de campo citado) filtrou
+  `TIPO_PRODUTO=MEDICAMENTO` + `SITUACAO_REGISTRO=Ativo` → **10.260 itens válidos**
+  (6.971 rejeitados por não ter `NUMERO_REGISTRO_PRODUTO` — produtos por notificação,
+  ex. homeopáticos/baixo risco, isentos de registro formal; ficam de fora até ter uma
+  chave natural pra eles). 11 packs JSON em `assets/packs/pharma_anvisa/`.
+- **Domínio novo** (`pharma/domain/model/PharmaModels.kt`): `Medicamento` (catálogo,
+  somente leitura) + `FormularioMedicamento` (curadoria clínica da médica — posologia,
+  contraindicações via `ClinicalFlag` reaproveitado, alérgenos, interações,
+  efeitos adversos, Visão Integrativa MTC opcional, status RASCUNHO/APROVADO) +
+  `Prescricao` (liga ao paciente, complementa `Medication` livre já existente).
+- **`PharmaSafetyEngine`** (`pharma/domain/safety/`) — R1: Kotlin puro, zero import de
+  `ai/`. Roda alergia×princípio-ativo mesmo SEM curadoria (dado ANVISA bulk, fato
+  objetivo); todo o resto (excipiente, contraindicação, interação) exige
+  `FormularioMedicamento` **APROVADO** — sem isso, veredito é `verified=false` com
+  finding "Não verificado clinicamente", nunca "seguro" por omissão.
+- **Room v19→20** (`MIGRATION_19_20`): `medicamentos` + `medicamentos_fts` (FTS4,
+  mesmo padrão de `article_fts`) + `formulario_medicamento` (chave composta
+  medicamentoId+tenantId) + `prescricoes` (soft delete via `active`). Sem `DEFAULT`
+  no SQL, mesma regra de sempre.
+- **UI**: `FarmacologiaScreen` (Pharma Library standalone, sem paciente) +
+  `FarmacologiaCuradoriaScreen` (formulário estruturado pra médica curar, gate de
+  aprovação exige posologia adulto + via) + aba nova `PRESCRICAO` no `ProntuarioScreen`
+  (Smart Prescription — busca, roda o motor contra `standingFlags`/alergias/
+  medicações ativas da paciente, `PharmaSafetyPanel` clonado do `ClinicalSafetyPanel`
+  com o mesmo contrato de veto não-dispensável + override ≥10 chars).
+- **Suite: 171 testes (151 + 20 novos), 0 falhas, 2 skipped de propósito** (os
+  `@Ignore` R4 de antes, sem relação). Novos: `PharmaSafetyEngineTest` (10, inclusive
+  "não verificado nunca vira seguro" e "regra quebrada não derruba as outras"),
+  `FormularioMedicamentoRepositoryTest` (5, gate de aprovação + isolamento de tenant),
+  `AnvisaMigrationTest` (5, Robolectric — chave composta rejeita duplicata). `assembleDebug`
+  e `compileDebugKotlin` verdes, warnings de depreciação novos corrigidos na hora
+  (`Icons.AutoMirrored`).
+- **Corrigido de passagem**: nota desatualizada "11/18 `ClinicalFlag`" no CLAUDE.md →
+  18/18 (achado ao explorar o motor clínico pra reaproveitar o enum; já estava
+  completo, só a doc estava velha).
+- **Ainda não feito**: nada testado em device; sem teste de `PrescricaoRepositoryImpl`
+  nem de ViewModel (`FarmacologiaViewModel`/`FarmacologiaCuradoriaViewModel`/
+  `PrescricaoViewModel`) — `TenantManager` exige `SecurePreferences` real
+  (EncryptedSharedPreferences/Context), não dá pra fake sem Robolectric, e não coube
+  no tempo desta sessão; a engine e o gate de aprovação (as partes de risco real)
+  estão cobertos, a UI não. Revisão da médica sobre o fluxo completo (nenhuma tela
+  nova foi vista por ela ainda). Catálogo de 6.971 itens sem registro (homeopáticos/
+  baixo risco) fica de fora até decidir uma chave natural. Imagens de medicamento,
+  bulário completo, FDA/EMA — não fazem parte deste MVP, nem estão planejados sem
+  uma fonte licenciada real.
 
 ### Onde parei (2026-07-25, parte 3) — main no GitHub, escopo da IA, banco em produção
 
