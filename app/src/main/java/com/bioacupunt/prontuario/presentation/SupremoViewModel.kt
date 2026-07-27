@@ -18,10 +18,17 @@ import com.bioacupunt.prontuario.domain.safety.BodyRegion
 import com.bioacupunt.prontuario.domain.safety.SafetyVerdict
 import com.bioacupunt.prontuario.domain.safety.Technique
 import com.bioacupunt.prontuario.domain.safety.TreatmentProposal
+import com.bioacupunt.prontuario.domain.usecase.ChiefComplaintExtraction
 import com.bioacupunt.prontuario.domain.usecase.MtcAssessmentRepository
+import com.bioacupunt.prontuario.domain.usecase.StructureChiefComplaintUseCase
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -37,15 +44,24 @@ data class SupremoUiState(
     val saving: Boolean = false,
     val savedAt: String? = null,
     val error: String? = null,
+    /**
+     * Sugestão extrativa da IA sobre o texto de [MtcAssessment.chiefComplaint] já
+     * escrito — nunca gravada sozinha, só existe pra médica aceitar/ignorar item a
+     * item. Null = nenhuma sugestão pendente (nada extraído, ou tudo já aceito/
+     * descartado).
+     */
+    val chiefComplaintSuggestion: ChiefComplaintExtraction? = null,
 ) {
     /** Flags actually in force = today's + everything ever recorded. */
     val effectiveFlags: Set<ClinicalFlag> get() = draft.flags + standingFlags
     val completeness: Float get() = draft.completeness
 }
 
+@OptIn(FlowPreview::class)
 class SupremoViewModel(
     private val repository: MtcAssessmentRepository,
     private val patientId: Long,
+    private val structureChiefComplaint: StructureChiefComplaintUseCase? = null,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -68,6 +84,20 @@ class SupremoViewModel(
         viewModelScope.launch {
             repository.observeHistory(patientId).collect { history ->
                 _state.update { it.copy(history = history) }
+            }
+        }
+        if (structureChiefComplaint != null) {
+            viewModelScope.launch {
+                _state
+                    .map { it.draft.chiefComplaint }
+                    .distinctUntilChanged()
+                    .debounce(CHIEF_COMPLAINT_DEBOUNCE_MS)
+                    .collectLatest { text ->
+                        val extraction = structureChiefComplaint(text)
+                        _state.update {
+                            it.copy(chiefComplaintSuggestion = extraction.takeUnless { e -> e.isEmpty })
+                        }
+                    }
             }
         }
     }
@@ -112,6 +142,13 @@ class SupremoViewModel(
         // `save()` lê _state.value.draft — que a atualização síncrona acima já
         // preencheu com os campos de override —, então persiste na hora.
         save()
+    }
+
+    /** Anota um padrão Zang-Fu por texto livre — cria a linha (sem fatores) se ainda não houver uma pro órgão. */
+    fun updatePatternNotes(organ: Organ, text: String) = edit { draft ->
+        val existing = draft.patterns.firstOrNull { it.organ == organ }
+        val updated = (existing ?: ZangFuPattern(organ = organ)).copy(notes = text)
+        draft.copy(patterns = draft.patterns.filterNot { it.organ == organ } + updated)
     }
 
     fun togglePattern(pattern: ZangFuPattern) = edit { draft ->
@@ -191,6 +228,36 @@ class SupremoViewModel(
     }
 
     fun updateInterrogationNotes(text: String) = edit { it.copy(interrogationNotes = text) }
+
+    // -- Sugestão extrativa da IA sobre o Motivo da Consulta ---------------
+    //
+    // Aceitar um item chama a MESMA função que um toque manual chamaria — não há
+    // segundo caminho de escrita. Aceitar também remove aquele item específico da
+    // sugestão pendente, pra o chip sumir assim que usado.
+
+    fun acceptAggravatingSuggestion(item: String) {
+        toggleAggravating(item)
+        pruneSuggestion { it.copy(aggravating = it.aggravating - item) }
+    }
+
+    fun acceptRelievingSuggestion(item: String) {
+        toggleRelieving(item)
+        pruneSuggestion { it.copy(relieving = it.relieving - item) }
+    }
+
+    fun acceptReviewOfSystemsSuggestion(item: String) {
+        toggleReviewOfSystems(item)
+        pruneSuggestion { it.copy(reviewOfSystemsHits = it.reviewOfSystemsHits - item) }
+    }
+
+    fun dismissChiefComplaintSuggestion() = _state.update { it.copy(chiefComplaintSuggestion = null) }
+
+    private fun pruneSuggestion(transform: (ChiefComplaintExtraction) -> ChiefComplaintExtraction) {
+        _state.update { state ->
+            val updated = state.chiefComplaintSuggestion?.let(transform)
+            state.copy(chiefComplaintSuggestion = updated?.takeUnless { it.isEmpty })
+        }
+    }
 
     // -- Atendimento wizard: step 3 (Zang Fu cycling) ----------------------
 
@@ -280,13 +347,18 @@ class SupremoViewModel(
                 }
             }
     }
+
+    private companion object {
+        const val CHIEF_COMPLAINT_DEBOUNCE_MS = 1200L
+    }
 }
 
 class SupremoViewModelFactory(
     private val repository: MtcAssessmentRepository,
     private val patientId: Long,
+    private val structureChiefComplaint: StructureChiefComplaintUseCase? = null,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        SupremoViewModel(repository, patientId) as T
+        SupremoViewModel(repository, patientId, structureChiefComplaint) as T
 }

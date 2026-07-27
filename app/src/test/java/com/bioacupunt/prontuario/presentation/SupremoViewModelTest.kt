@@ -1,14 +1,19 @@
 package com.bioacupunt.prontuario.presentation
 
+import com.bioacupunt.ai.core.AiRepository
+import com.bioacupunt.ai.core.AiRequest
+import com.bioacupunt.ai.core.AiResult
 import com.bioacupunt.prontuario.data.local.BucketCount
 import com.bioacupunt.prontuario.data.local.MtcAssessmentDao
 import com.bioacupunt.prontuario.data.local.MtcAssessmentEntity
 import com.bioacupunt.prontuario.domain.usecase.MtcAssessmentRepository
+import com.bioacupunt.prontuario.domain.usecase.StructureChiefComplaintUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -19,6 +24,8 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 /**
  * Regressão do bug do override que era no-op.
@@ -31,8 +38,13 @@ import org.junit.Test
  * Estes testes fiam [SupremoViewModel.overrideVeto] no repositório real
  * ([MtcAssessmentRepository] + [com.bioacupunt.prontuario.domain.safety.ClinicalSafetyEngine]
  * reais) através de um DAO fake, e provam que o registro chega ao `save`.
+ *
+ * Sob Robolectric (não JUnit puro) porque os testes da sugestão extrativa da IA
+ * exercitam [StructureChiefComplaintUseCase], que usa `org.json.JSONObject` — só o
+ * shadow do Robolectric devolve o comportamento real dessa classe.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class SupremoViewModelTest {
 
     /** DAO fake em memória: captura a última entidade persistida. */
@@ -112,5 +124,73 @@ class SupremoViewModelTest {
         assertNull("Justificativa < 10 caracteres não pode gravar nada", dao.lastSaved)
         assertEquals("Override inválido não pode disparar save", 0, dao.saveCount)
         assertEquals("", vm.state.value.draft.overrideReason)
+    }
+
+    // -- Sugestão extrativa da IA sobre o Motivo da Consulta -------------------
+
+    /** Espião: conta chamadas e devolve sempre o mesmo JSON de extração. */
+    private class SpyAiRepository(private val json: String) : AiRepository {
+        var generateCalls = 0
+            private set
+
+        override suspend fun generate(request: AiRequest): Result<AiResult> {
+            generateCalls++
+            return Result.success(AiResult(text = json, providerId = "fake", modelId = "fake"))
+        }
+
+        override suspend fun stream(request: AiRequest): Flow<String> = flowOf(json)
+    }
+
+    @Test
+    fun acceptingASuggestionChip_writesViaTheSameToggleFunction_andPrunesItFromTheSuggestion() = runTest(dispatcher) {
+        val ai = SpyAiRepository("""{"aggravating": [], "relieving": ["repouso"], "reviewOfSystems": []}""")
+        val dao = FakeDao()
+        val vm = SupremoViewModel(MtcAssessmentRepository(dao), patientId = 1L, StructureChiefComplaintUseCase(ai))
+        advanceUntilIdle()
+
+        vm.updateChiefComplaint("Dor lombar que melhora muito com repouso, texto longo o bastante.")
+        advanceTimeBy(1300)
+        advanceUntilIdle()
+
+        assertEquals(listOf("repouso"), vm.state.value.chiefComplaintSuggestion?.relieving)
+
+        vm.acceptRelievingSuggestion("repouso")
+        advanceUntilIdle()
+
+        assertTrue("Aceitar deve gravar no MESMO campo que um toque manual usaria", "repouso" in vm.state.value.draft.relievingFactors)
+        assertNull("O item aceito deve sumir da sugestão pendente", vm.state.value.chiefComplaintSuggestion)
+    }
+
+    @Test
+    fun chiefComplaintDebounce_settlesToASingleModelCall_notOnePerKeystroke() = runTest(dispatcher) {
+        val ai = SpyAiRepository("""{"aggravating": [], "relieving": [], "reviewOfSystems": []}""")
+        val dao = FakeDao()
+        val vm = SupremoViewModel(MtcAssessmentRepository(dao), patientId = 1L, StructureChiefComplaintUseCase(ai))
+        advanceUntilIdle()
+
+        vm.updateChiefComplaint("Dor lombar que")
+        advanceTimeBy(400)
+        vm.updateChiefComplaint("Dor lombar que piora")
+        advanceTimeBy(400)
+        vm.updateChiefComplaint("Dor lombar que piora com frio, texto grande o bastante.")
+        advanceTimeBy(1300)
+        advanceUntilIdle()
+
+        assertEquals("Três digitações em sequência rápida devem virar UMA chamada, não três", 1, ai.generateCalls)
+    }
+
+    @Test
+    fun shortChiefComplaint_neverTriggersTheModel() = runTest(dispatcher) {
+        val ai = SpyAiRepository("""{"aggravating": [], "relieving": [], "reviewOfSystems": []}""")
+        val dao = FakeDao()
+        val vm = SupremoViewModel(MtcAssessmentRepository(dao), patientId = 1L, StructureChiefComplaintUseCase(ai))
+        advanceUntilIdle()
+
+        vm.updateChiefComplaint("dor")
+        advanceTimeBy(1300)
+        advanceUntilIdle()
+
+        assertEquals(0, ai.generateCalls)
+        assertNull(vm.state.value.chiefComplaintSuggestion)
     }
 }

@@ -440,7 +440,7 @@ private fun AiApisTab() {
                 Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(20.dp))
                     Text(
-                        "Ao ligar, o texto das suas conversas com a IA é enviado a um servidor externo (Google Gemini) — deixa de ser 100% offline. Não use com dados clínicos sensíveis sem consentimento (LGPD). A IA local continua sendo o padrão e tem prioridade quando disponível. Com a nuvem ligada, o assistente livre (perguntas administrativas/gerais, nunca clínicas) também pode buscar no Google em tempo real usando a mesma chave — sem cadastro adicional.",
+                        "Ao ligar, texto pode ser enviado a um servidor externo (Google Gemini) — deixa de ser 100% offline. Isso inclui o assistente livre (perguntas administrativas/gerais) e o Motivo da Consulta do prontuário, quando usado para organizar automaticamente o que você já escreveu. Diagnóstico, triagem de segurança e veto clínico continuam 100% determinísticos, sem IA, sempre no aparelho. A IA local continua sendo o padrão e tem prioridade quando disponível. Com a nuvem ligada, o assistente livre também pode buscar no Google em tempo real usando a mesma chave — sem cadastro adicional.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
                     )

@@ -60,12 +60,13 @@ fun CloudConsentDialog(onAnswered: (acceptCloud: Boolean) -> Unit) {
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "Ao ativar, o texto das suas conversas com o assistente pode ser enviado a um " +
-                            "servidor externo (Google) — deixa de ser 100% offline. Isso inclui dados " +
-                            "administrativos como nome e horário de pacientes quando aparecem no contexto " +
-                            "da conversa. Não é usado no caminho clínico/diagnóstico, que continua sempre " +
-                            "determinístico e sem IA. Você pode mudar essa escolha a qualquer momento em " +
-                            "Ajustes > IA.",
+                        "Ao ativar, texto pode ser enviado a um servidor externo (Google) — deixa de " +
+                            "ser 100% offline. Isso inclui dados administrativos (nome/horário de " +
+                            "pacientes no contexto da conversa) E o texto do Motivo da Consulta no " +
+                            "prontuário, quando usado para organizar automaticamente o que você já " +
+                            "escreveu. Nada disso decide nada: diagnóstico, triagem de segurança e " +
+                            "veto clínico continuam 100% determinísticos, sem IA, e nunca saem do " +
+                            "aparelho. Você pode mudar essa escolha a qualquer momento em Ajustes > IA.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

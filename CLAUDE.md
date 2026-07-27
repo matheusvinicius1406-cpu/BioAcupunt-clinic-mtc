@@ -380,6 +380,62 @@ direção clara de onde deveria chegar:
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
 
+### Onde parei (2026-07-27, parte 2) — Prontuário: menos checkbox, motivo unificado, 1ª IA no prontuário
+
+Pedido original era reconstrução total do Prontuário (15 "engines", OCR, DICOM,
+assinatura digital, body-map) — recusado como descrito, negociado em duas rodadas de
+`AskUserQuestion`. Achado que redefiniu o escopo: o design system "premium"
+(`SupremoCard`/`SectionHeader`/`SelectableChip`/`AxisSelector`/`CompletenessBar`,
+dark/light via `ThemeController`) **já existe e já é usado no Prontuário** — não
+havia "software feio" pra redesenhar. O trabalho real virou três coisas concretas:
+
+- **Pulso deixou de ser a maior grade de checkbox do app.** Eram 6 cartões (2
+  punhos × 3 posições) × 3 profundidades × 28 `PulseQuality` sempre abertos — até
+  504 alvos de toque simultâneos. Agora cada cartão é colapsável (`AnimatedVisibility`),
+  fechado por padrão, com resumo de uma linha ("Não registrado" ou as qualidades já
+  marcadas). Dado subjacente intocado, só a exposição visual mudou.
+  `TongueFinding.notes`/`PulseFinding.notes`/`ZangFuPattern.notes` já existiam no
+  domínio e nunca eram renderizados — agora têm campo de texto livre na tela
+  (`SupremoViewModel.updatePatternNotes` é novo; `updateTongueNotes`/`updatePulseNotes`
+  já existiam, só faltava a UI).
+- **"Motivo da Consulta" consolidado.** Antes eram dois campos desconectados: o
+  "Queixa principal" do `ResumoTab` (tabela `Prontuario`, nunca usado por nada) e
+  `MtcAssessment.chiefComplaint` (o que de fato conta pro `completeness` e pra
+  triagem, só editável em `AtendimentoScreen`, ausente do `ProntuarioScreen`).
+  `ResumoTab` agora edita só `chiefComplaint`. Nada foi apagado — o campo antigo
+  continua no schema, só paramos de escrever nele por essa tela.
+- **Primeira vez que texto do prontuário toca IA** (`StructureChiefComplaintUseCase`,
+  novo). Estritamente extrativo — reorganiza em JSON (fatores de piora/melhora,
+  sintomas citados) o que a médica JÁ escreveu, nunca infere diagnóstico nem sugere
+  ponto/protocolo/CID (system prompt proíbe isso explicitamente, testado). Debounce
+  de 1200ms sobre `chiefComplaint`, texto <15 chars nunca chama o modelo. Falha
+  (JSON malformado, provider indisponível) degrada em silêncio pra "sem sugestão" —
+  nunca propaga erro pra médica, nunca crasha. Aceitar um chip de sugestão chama a
+  MESMA função que um toque manual chamaria (`toggleAggravating`/`toggleRelieving`/
+  `toggleReviewOfSystems`, já existiam) — sem caminho de escrita paralelo. `R1`
+  intocado: `ClinicalSafetyEngine.kt` sem diff. `R2` intocado: `AskLibraryUseCase.kt`
+  sem diff — isto não é R2 (não responde pergunta clínica), é uma terceira coisa.
+- **Consentimento LGPD atualizado** (`CloudConsentDialog.kt` + card em
+  `AjustesScreen.kt`): antes dizia explicitamente "nunca clínicas" sobre o que vai
+  pra nuvem — ficou falso com esta feature. Texto agora avisa que o Motivo da
+  Consulta pode ser enviado quando a nuvem está ligada, e deixa claro que
+  diagnóstico/triagem/veto continuam 100% determinísticos e nunca saem do
+  aparelho — essa distinção é a parte que importa juridicamente.
+- **Suite: 181 testes (171 + 10 novos), 0 falhas, 2 skipped de propósito.** Novos:
+  `StructureChiefComplaintUseCaseTest` (7 — inclui "o prompt nunca pede diagnóstico
+  ou sugestão de tratamento", verificado por conteúdo literal do system prompt) +
+  `SupremoViewModelTest` (+3 — aceitar sugestão grava no campo certo e poda o chip
+  aceito; três digitações em sequência viram uma chamada só, não três; texto curto
+  nunca aciona o modelo). Ambos os arquivos de teste rodam sob Robolectric (não
+  JUnit puro) porque `org.json.JSONObject` é stub fora dele — mesma razão que já
+  vale pra `CloudAiProvider`. `assembleDebug` verde.
+- **Não feito nesta fatia** (documentado, não escondido): as outras abas
+  (Exames/Prescrição/Evolução/Documentos) não foram tocadas — já estavam alinhadas
+  com o design system, sem checkbox excessivo. `region`/`durationText`/`symptoms`
+  da extração ficaram de fora do v1 (só fatores de piora/melhora/sintomas citados
+  viram sugestão) — os campos de domínio pra isso não existem ainda, YAGNI até
+  provar que vale a pena. Nada testado em device. Médica não viu a tela nova ainda.
+
 ### Onde parei (2026-07-27) — Farmacologia (Pharma Library + Smart Prescription)
 
 Sessão começou como auditoria completa (achados: gap de consentimento LGPD no cloud AI

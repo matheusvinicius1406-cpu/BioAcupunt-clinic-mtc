@@ -3,6 +3,7 @@ package com.bioacupunt.ui.screens
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -243,7 +244,16 @@ fun ProntuarioScreen(
                 supremoVm.overrideVeto(reason, userId)
             }
             when (ProntTab.entries[tab]) {
-                ProntTab.RESUMO -> ResumoTab(state, onUpdate = vm::updateHeader, onOpenAnamnese = { tab = ProntTab.ANAMNESE.ordinal }, onOpenEvolucao = { onOpenEvolucao(state.patientId) })
+                ProntTab.RESUMO -> ResumoTab(
+                    state, supremoState, onUpdate = vm::updateHeader,
+                    onChiefComplaintChange = supremoVm::updateChiefComplaint,
+                    onAcceptAggravating = supremoVm::acceptAggravatingSuggestion,
+                    onAcceptRelieving = supremoVm::acceptRelievingSuggestion,
+                    onAcceptReviewOfSystems = supremoVm::acceptReviewOfSystemsSuggestion,
+                    onDismissSuggestion = supremoVm::dismissChiefComplaintSuggestion,
+                    onOpenAnamnese = { tab = ProntTab.ANAMNESE.ordinal },
+                    onOpenEvolucao = { onOpenEvolucao(state.patientId) },
+                )
                 ProntTab.ANAMNESE -> AnamneseTab(supremoVm)
                 ProntTab.PLANO -> PlanoTab(state, supremoState, onUpdate = vm::updateHeader, onOverride = onOverride)
                 ProntTab.EXAMES -> ExamesTab(exameVm)
@@ -306,7 +316,13 @@ private fun initialsOfPatient(name: String): String {
 @Composable
 private fun ResumoTab(
     state: com.bioacupunt.prontuario.presentation.ProntuarioUiState,
+    supremoState: com.bioacupunt.prontuario.presentation.SupremoUiState,
     onUpdate: (String?, String?, String?, String?) -> Unit,
+    onChiefComplaintChange: (String) -> Unit,
+    onAcceptAggravating: (String) -> Unit,
+    onAcceptRelieving: (String) -> Unit,
+    onAcceptReviewOfSystems: (String) -> Unit,
+    onDismissSuggestion: () -> Unit,
     onOpenAnamnese: () -> Unit,
     onOpenEvolucao: () -> Unit,
 ) {
@@ -315,6 +331,35 @@ private fun ResumoTab(
             Row(Modifier.fillMaxWidth().clickable(onClick = onOpenEvolucao), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text("Evolução Clínica", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold, color = Primary))
                 Icon(Icons.Default.ChevronRight, null, tint = Primary)
+            }
+        }
+        item {
+            // "Motivo da Consulta" consolidado em MtcAssessment.chiefComplaint — o campo
+            // que de fato conta pra completude e que a IA extrativa observa. O antigo
+            // campo "Queixa principal" (tabela Prontuario/mainComplaint) não é mais
+            // oferecido aqui pra não fragmentar em dois lugares — o dado antigo continua
+            // no banco, só paramos de escrever nele por esta tela.
+            SupremoCard {
+                Text("Motivo da Consulta", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
+                Spacer(Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = supremoState.draft.chiefComplaint,
+                    onValueChange = onChiefComplaintChange,
+                    placeholder = { Text("Descreva livremente o que a paciente trouxe hoje...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                )
+            }
+        }
+        supremoState.chiefComplaintSuggestion?.let { suggestion ->
+            item {
+                ChiefComplaintSuggestionCard(
+                    suggestion = suggestion,
+                    onAcceptAggravating = onAcceptAggravating,
+                    onAcceptRelieving = onAcceptRelieving,
+                    onAcceptReviewOfSystems = onAcceptReviewOfSystems,
+                    onDismiss = onDismissSuggestion,
+                )
             }
         }
         item {
@@ -342,13 +387,60 @@ private fun ResumoTab(
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
                 )
-                Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
-                    value = state.mainComplaint,
-                    onValueChange = { onUpdate(null, it, null, null) },
-                    label = { Text("Queixa principal") },
-                    modifier = Modifier.fillMaxWidth(),
+            }
+        }
+    }
+}
+
+/**
+ * "Sugestão da IA — revise antes de usar." Cada chip é a mesma escrita que um toque
+ * manual faria (`toggleAggravating`/`toggleRelieving`/`toggleReviewOfSystems` via
+ * SupremoViewModel) — aceitar não é um caminho de gravação paralelo, só um atalho
+ * pra não digitar de novo o que ela já escreveu no motivo da consulta.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ChiefComplaintSuggestionCard(
+    suggestion: com.bioacupunt.prontuario.domain.usecase.ChiefComplaintExtraction,
+    onAcceptAggravating: (String) -> Unit,
+    onAcceptRelieving: (String) -> Unit,
+    onAcceptReviewOfSystems: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    SupremoCard {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Sugestão da IA", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold, color = Primary))
+                Text(
+                    "Extraído do que você já escreveu acima — revise antes de usar.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextMuted,
                 )
+            }
+            IconButton(onClick = onDismiss) { Icon(Icons.Default.Close, "Dispensar", tint = TextMuted) }
+        }
+        Spacer(Modifier.height(10.dp))
+        if (suggestion.aggravating.isNotEmpty()) {
+            Text("PIORA COM", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+            Spacer(Modifier.height(6.dp))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                suggestion.aggravating.forEach { item -> SelectableChip(item, false, { onAcceptAggravating(item) }) }
+            }
+            Spacer(Modifier.height(10.dp))
+        }
+        if (suggestion.relieving.isNotEmpty()) {
+            Text("MELHORA COM", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+            Spacer(Modifier.height(6.dp))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                suggestion.relieving.forEach { item -> SelectableChip(item, false, { onAcceptRelieving(item) }) }
+            }
+            Spacer(Modifier.height(10.dp))
+        }
+        if (suggestion.reviewOfSystemsHits.isNotEmpty()) {
+            Text("OUTROS SINTOMAS CITADOS", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+            Spacer(Modifier.height(6.dp))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                suggestion.reviewOfSystemsHits.forEach { item -> SelectableChip(item, false, { onAcceptReviewOfSystems(item) }) }
             }
         }
     }
@@ -412,10 +504,22 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
             SupremoCard {
                 SectionHeader(title = "Zang Fu", subtitle = "Órgãos implicados no padrão.")
                 Spacer(Modifier.height(14.dp))
-                val selected = state.draft.patterns.map { it.organ }.toSet()
+                val selectedPatterns = state.draft.patterns
+                val selected = selectedPatterns.map { it.organ }.toSet()
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Organ.entries.forEach { organ ->
                         SelectableChip(organ.label, organ in selected, { viewModel.togglePattern(ZangFuPattern(organ = organ)) })
+                    }
+                }
+                if (selectedPatterns.isNotEmpty()) {
+                    Spacer(Modifier.height(14.dp))
+                    selectedPatterns.forEach { pattern ->
+                        OutlinedTextField(
+                            value = pattern.notes,
+                            onValueChange = { viewModel.updatePatternNotes(pattern.organ, it) },
+                            label = { Text("Notas — ${pattern.organ.label}") },
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                        )
                     }
                 }
             }
@@ -470,6 +574,13 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
                         })
                     }
                 }
+                Spacer(Modifier.height(14.dp))
+                OutlinedTextField(
+                    value = tongue.notes,
+                    onValueChange = { viewModel.updateTongueNotes(it) },
+                    label = { Text("Notas (forma, espessura, umidade, o que não coube nos chips)") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
 
@@ -481,6 +592,13 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
                     value = state.draft.pulse.rateBpm?.toString().orEmpty(),
                     onValueChange = { viewModel.updatePulseRate(it.toIntOrNull()) },
                     label = { Text("Frequência (bpm)") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = state.draft.pulse.notes,
+                    onValueChange = { viewModel.updatePulseNotes(it) },
+                    label = { Text("Notas gerais do pulso") },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -500,19 +618,57 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
     }
 }
 
+/**
+ * Colapsado por padrão — expandir revela o `FlowRow` de 28 [PulseQuality] por
+ * profundidade. Antes, os 6 cartões (2 punhos × 3 posições) ficavam todos sempre
+ * abertos ao mesmo tempo — até 504 alvos de toque simultâneos, o maior excesso de
+ * checkbox do app. O dado por trás não muda, só a exposição visual: "não
+ * registrado" continua explícito no resumo do cartão fechado (silêncio nunca é
+ * ambíguo), e abrir/fechar não apaga nenhuma seleção já feita.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun PulseCard(wrist: Wrist, position: PulsePosition, readings: List<PulseReading>, onToggle: (PulseDepth, PulseQuality) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val allSelected = PulseDepth.entries.flatMap { depth ->
+        readings.firstOrNull { it.wrist == wrist && it.position == position && it.depth == depth }?.qualities.orEmpty()
+    }
     SupremoCard {
-        SectionHeader(title = "${position.label} · punho ${wrist.label.lowercase()}")
-        PulseDepth.entries.forEach { depth ->
-            Spacer(Modifier.height(14.dp))
-            Text(depth.label.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.height(8.dp))
-            val selected = readings.firstOrNull { it.wrist == wrist && it.position == position && it.depth == depth }?.qualities.orEmpty()
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                PulseQuality.entries.forEach { quality ->
-                    SelectableChip(quality.label, quality in selected, { onToggle(depth, quality) })
+        Row(
+            Modifier.fillMaxWidth().clickable { expanded = !expanded },
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    "${position.label} · punho ${wrist.label.lowercase()}",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    if (allSelected.isEmpty()) "Não registrado" else allSelected.joinToString { it.label },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (allSelected.isEmpty()) TextMuted else Primary,
+                )
+            }
+            Icon(
+                if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = if (expanded) "Recolher" else "Expandir",
+                tint = TextMuted,
+            )
+        }
+        AnimatedVisibility(visible = expanded) {
+            Column {
+                PulseDepth.entries.forEach { depth ->
+                    Spacer(Modifier.height(14.dp))
+                    Text(depth.label.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(8.dp))
+                    val selected = readings.firstOrNull { it.wrist == wrist && it.position == position && it.depth == depth }?.qualities.orEmpty()
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        PulseQuality.entries.forEach { quality ->
+                            SelectableChip(quality.label, quality in selected, { onToggle(depth, quality) })
+                        }
+                    }
                 }
             }
         }

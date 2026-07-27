@@ -227,10 +227,21 @@ object AppContainer {
         )
     }
 
+    /**
+     * Extração puramente extrativa do Motivo da Consulta (nunca diagnóstico/sugestão
+     * de conduta) — ver `StructureChiefComplaintUseCase`. Reaproveita o mesmo
+     * `aiRepository` do resto do app; local ou nuvem conforme a médica configurou em
+     * Ajustes > IA, mesma engrenagem de sempre.
+     */
+    val structureChiefComplaintUseCase: com.bioacupunt.prontuario.domain.usecase.StructureChiefComplaintUseCase by lazy {
+        com.bioacupunt.prontuario.domain.usecase.StructureChiefComplaintUseCase(aiRepository)
+    }
+
     fun supremoViewModelFactory(patientId: Long) =
         com.bioacupunt.prontuario.presentation.SupremoViewModelFactory(
             repository = mtcAssessmentRepository,
             patientId = patientId,
+            structureChiefComplaint = structureChiefComplaintUseCase,
         )
 
     val exameRepository: com.bioacupunt.prontuario.domain.repository.ExameRepository by lazy {
