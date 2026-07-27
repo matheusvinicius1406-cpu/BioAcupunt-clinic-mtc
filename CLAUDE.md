@@ -102,6 +102,21 @@ assim — registrado aqui pra nenhuma sessão futura precisar relitigar do zero:
   ferramentas de verdade (busca web, agenda) implementadas e conectadas. Próxima
   sessão de IA: isso — mantendo R1/R2/R4 intocados no caminho clínico.
 
+**2026-07-27 — pedido de a IA inferir o diagnóstico direto (a médica só "faria ajustes
+finais antes de imprimir") foi recusado.** Mesma categoria do pedido de 2026-07-25,
+registrado pelo mesmo motivo: revisão sob pressão de agenda cheia não é uma proteção
+real contra um diagnóstico gerado por IA que soa completo e convincente — é
+exatamente o modo de falha que R1 já nomeia ("um prompt se deixa convencer, um `when`
+não") e que este projeto já documentou em outro contexto (perfil de risco permanente:
+"esquecer é o que o software existe para pegar" — sob pressão, revisar de relance é o
+esperado, não a exceção). "Sugestão + revisão" já é o padrão que R1 rejeita pra
+protocolo; diagnóstico é no mínimo tão crítico quanto protocolo. Alternativa segura
+identificada, não implementada: estender `StructureChiefComplaintUseCase` (extrativo,
+2026-07-27) para *buscar* padrões Zang-Fu já curados na Biblioteca que casam com o
+texto da médica — candidatos com fonte citada, ela escolhe, nunca a IA afirma. Isso é
+R2 (busca + escolha), não geração + revisão. Não implementado; é uma decisão de
+produto que merece conversa própria.
+
 ---
 
 ## Comandos
