@@ -237,11 +237,28 @@ object AppContainer {
         com.bioacupunt.prontuario.domain.usecase.StructureChiefComplaintUseCase(aiRepository)
     }
 
+    /**
+     * SÍNTESE CLÍNICA — IA analisa TODO o prontuário e sugere diagnóstico + plano.
+     * R1/R2/R4 permanecem intactos: este é um caminho SEPARADO que não substitui
+     * o ClinicalSafetyEngine (R1), não altera o gate do AskLibraryUseCase (R2), e
+     * não gera conteúdo para a biblioteca (R4).
+     *
+     * A médica REVISA cada componente e decide o que aceitar — NUNCA salva
+     * automaticamente.
+     */
+    val clinicalSynthesisUseCase: com.bioacupunt.prontuario.domain.usecase.ClinicalSynthesisUseCase by lazy {
+        com.bioacupunt.prontuario.domain.usecase.ClinicalSynthesisUseCase(
+            ai = aiRepository,
+            mtcRetriever = mtcRetriever,
+        )
+    }
+
     fun supremoViewModelFactory(patientId: Long) =
         com.bioacupunt.prontuario.presentation.SupremoViewModelFactory(
             repository = mtcAssessmentRepository,
             patientId = patientId,
             structureChiefComplaint = structureChiefComplaintUseCase,
+            clinicalSynthesisUseCase = clinicalSynthesisUseCase,
         )
 
     val exameRepository: com.bioacupunt.prontuario.domain.repository.ExameRepository by lazy {

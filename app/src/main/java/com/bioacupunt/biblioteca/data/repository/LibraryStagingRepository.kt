@@ -120,9 +120,24 @@ class LibraryStagingRepository(
                 else toArticle(e, meta) to meta
             }
 
-    /** @return false se o item não existe mais ou o metadata está corrompido — nada foi persistido. */
+    /**
+     * Marca um item como APROVADO (entra no acervo consultável/RAG).
+     * @return false se o item não existe mais ou o metadata está corrompido.
+     */
     suspend fun approve(id: String, now: Long): Boolean = transition(id, ReviewStatus.APPROVED, now)
+
+    /**
+     * Marca um item como REJEITADO (não entra no acervo).
+     * Funciona mesmo para itens já aprovados — permite reverter uma aprovação acidental.
+     * @return false se o item não existe mais ou o metadata está corrompido.
+     */
     suspend fun reject(id: String, now: Long): Boolean = transition(id, ReviewStatus.REJECTED, now)
+
+    /**
+     * Reverte a aprovação de um item — equivalente a rejeitá-lo.
+     * Use quando a médica aprovou um item por engano.
+     */
+    suspend fun unapprove(id: String, now: Long): Boolean = reject(id, now)
 
     private suspend fun transition(id: String, status: ReviewStatus, now: Long): Boolean {
         val entity = dao.getById(id) ?: return false

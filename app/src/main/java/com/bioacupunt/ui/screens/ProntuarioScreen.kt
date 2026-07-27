@@ -253,6 +253,11 @@ fun ProntuarioScreen(
                     onDismissSuggestion = supremoVm::dismissChiefComplaintSuggestion,
                     onOpenAnamnese = { tab = ProntTab.ANAMNESE.ordinal },
                     onOpenEvolucao = { onOpenEvolucao(state.patientId) },
+                    onSynthesize = supremoVm::synthesizeDiagnosis,
+                    onAcceptTcm = supremoVm::acceptTcmSynthesis,
+                    onAcceptBiomedical = supremoVm::acceptBiomedicalSynthesis,
+                    onAcceptTherapy = supremoVm::acceptTherapeuticSynthesis,
+                    onDismissSynthesis = supremoVm::dismissSynthesis,
                 )
                 ProntTab.ANAMNESE -> AnamneseTab(supremoVm)
                 ProntTab.PLANO -> PlanoTab(state, supremoState, onUpdate = vm::updateHeader, onOverride = onOverride)
@@ -325,6 +330,11 @@ private fun ResumoTab(
     onDismissSuggestion: () -> Unit,
     onOpenAnamnese: () -> Unit,
     onOpenEvolucao: () -> Unit,
+    onSynthesize: () -> Unit = {},
+    onAcceptTcm: () -> Unit = {},
+    onAcceptBiomedical: () -> Unit = {},
+    onAcceptTherapy: () -> Unit = {},
+    onDismissSynthesis: () -> Unit = {},
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -359,6 +369,29 @@ private fun ResumoTab(
                     onAcceptRelieving = onAcceptRelieving,
                     onAcceptReviewOfSystems = onAcceptReviewOfSystems,
                     onDismiss = onDismissSuggestion,
+                )
+            }
+        }
+        // ── SÍNTESE DIAGNÓSTICA IA ────────────────────────────────
+        // Renderiza card completo só quando há resultado/loading/erro;
+        // caso contrário, card minimalista só com botão (LazyColumn leve).
+        if (supremoState.clinicalSynthesis != null || supremoState.synthesizing || supremoState.synthesisError != null) {
+            item {
+                DiagnosticSynthesisResultCard(
+                    synthesis = supremoState.clinicalSynthesis,
+                    synthesizing = supremoState.synthesizing,
+                    synthesisError = supremoState.synthesisError,
+                    onAcceptTcm = onAcceptTcm,
+                    onAcceptBiomedical = onAcceptBiomedical,
+                    onAcceptTherapy = onAcceptTherapy,
+                    onDismiss = onDismissSynthesis,
+                )
+            }
+        } else {
+            item {
+                DiagnosticSynthesisTriggerCard(
+                    completeness = supremoState.completeness,
+                    onSynthesize = onSynthesize,
                 )
             }
         }
@@ -1119,6 +1152,278 @@ private fun formatDocMeta(mimeType: String, sizeBytes: Long): String {
     val kb = sizeBytes / 1024.0
     val sizeLabel = if (kb >= 1024) "%.1f MB".format(kb / 1024) else "%.0f KB".format(kb)
     return if (mimeType.isNotBlank()) "$mimeType · $sizeLabel" else sizeLabel
+}
+
+// ── SÍNTESE DIAGNÓSTICA IA ────────────────────────────────────────────
+//
+// Card de sugestão diagnóstica gerada pela IA a partir de TODOS os dados do
+// prontuário. A médica revisa cada componente (MTC, biomédico, plano) e decide
+// se aceita, edita ou descarta. NUNCA salva automaticamente.
+//
+// Dividido em dois composables: [DiagnosticSynthesisTriggerCard] (só o botão de
+// gerar, quando não há resultado) e [DiagnosticSynthesisResultCard] (resultado
+// completo, loading ou erro). Assim o LazyColumn não renderiza o card enorme
+// enquanto não há síntese.
+
+/** Botão para gerar a síntese — renderizado quando não há resultado pendente. */
+@Composable
+private fun DiagnosticSynthesisTriggerCard(
+    completeness: Float,
+    onSynthesize: () -> Unit,
+) {
+    SupremoCard {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("🤖 Síntese Diagnóstica IA", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold, color = Primary))
+                Text(
+                    if (completeness < 0.5f) "Preencha mais dados do prontuário para uma análise mais precisa"
+                    else "Analisa todo o prontuário e sugere diagnóstico MTC + CID + plano terapêutico",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextMuted,
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Button(
+            onClick = onSynthesize,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = completeness > 0f,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Primary,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            ),
+        ) {
+            Icon(Icons.Default.Star, null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text("Gerar Síntese Diagnóstica IA")
+        }
+        if (completeness < 0.5f) {
+            Spacer(Modifier.height(4.dp))
+            Text("Complete ao menos o Motivo da Consulta, Ba Gang, Zang Fu, Língua e Pulso para uma análise mais precisa.",
+                style = MaterialTheme.typography.labelSmall, color = TextMuted)
+        }
+    }
+}
+
+/** Resultado da síntese — renderizado quando há síntese, loading ou erro. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun DiagnosticSynthesisResultCard(
+    synthesis: ClinicalSynthesis?,
+    synthesizing: Boolean,
+    synthesisError: String?,
+    onAcceptTcm: () -> Unit,
+    onAcceptBiomedical: () -> Unit,
+    onAcceptTherapy: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    SupremoCard {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("🤖 Síntese Diagnóstica IA", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold, color = Primary))
+                Text(
+                    when {
+                        synthesis != null -> "Sugestão gerada — revise cada componente antes de aceitar"
+                        synthesizing -> "Analisando prontuário e buscando evidências..."
+                        else -> ""
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextMuted,
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+
+        // ── Loading state ──────────────────────────────
+        if (synthesizing) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(8.dp))
+            Text("Coletando dados clínicos, buscando na biblioteca e sintetizando...",
+                style = MaterialTheme.typography.bodySmall, color = TextMuted)
+        }
+
+        // ── Error state ────────────────────────────────
+        synthesisError?.let { error ->
+            Text(error, style = MaterialTheme.typography.bodySmall, color = SemanticError)
+        }
+
+        // ── Synthesis result ───────────────────────────
+        if (synthesis != null && !synthesizing) {
+            val confidenceColor = when (synthesis.overallConfidence) {
+                ConfidenceLevel.HIGH -> SemanticSuccess
+                ConfidenceLevel.MODERATE -> SemanticWarning
+                ConfidenceLevel.LOW -> SemanticError
+                ConfidenceLevel.INSUFFICIENT_EVIDENCE -> TextMuted
+            }
+            Row(
+                modifier = Modifier.clip(MaterialTheme.shapes.extraLarge)
+                    .background(confidenceColor.copy(alpha = 0.12f))
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
+                Text("Confiança: ${synthesis.overallConfidence.label}",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = confidenceColor)
+            }
+            Spacer(Modifier.height(12.dp))
+
+            // TCM Diagnosis
+            synthesis.tcmDiagnosis?.let { tcm ->
+                Text("DIAGNÓSTICO MTC", style = MaterialTheme.typography.labelMedium, color = Primary)
+                Spacer(Modifier.height(6.dp))
+                Text(tcm.patternName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                if (tcm.organInvolvement.isNotEmpty()) {
+                    Text("Órgãos: ${tcm.organInvolvement.joinToString(", ")}", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                }
+                if (tcm.baGangClassification.isNotBlank()) {
+                    Text("Ba Gang: ${tcm.baGangClassification}", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                }
+                if (tcm.explanation.isNotBlank()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(tcm.explanation, style = MaterialTheme.typography.bodySmall, maxLines = 6)
+                }
+                Spacer(Modifier.height(6.dp))
+                OutlinedButton(onClick = onAcceptTcm, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Check, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Aceitar diagnóstico MTC")
+                }
+                Spacer(Modifier.height(12.dp))
+                HorizontalDivider()
+                Spacer(Modifier.height(12.dp))
+            }
+
+            // Biomedical Diagnosis
+            synthesis.biomedicalDiagnosis?.let { bio ->
+                Text("DIAGNÓSTICO BIOMÉDICO", style = MaterialTheme.typography.labelMedium, color = Primary)
+                Spacer(Modifier.height(6.dp))
+                Text(bio.diagnosis, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                if (bio.cidCode.isNotBlank()) Text("CID-10: ${bio.cidCode}", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                if (bio.cid11Code.isNotBlank()) Text("CID-11: ${bio.cid11Code}", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                if (bio.explanation.isNotBlank()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(bio.explanation, style = MaterialTheme.typography.bodySmall, maxLines = 4)
+                }
+                Spacer(Modifier.height(6.dp))
+                OutlinedButton(onClick = onAcceptBiomedical, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Check, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Aceitar diagnóstico biomédico")
+                }
+                Spacer(Modifier.height(12.dp))
+                HorizontalDivider()
+                Spacer(Modifier.height(12.dp))
+            }
+
+            // Differential Diagnoses
+            if (synthesis.differentialDiagnoses.isNotEmpty()) {
+                Text("DIAGNÓSTICOS DIFERENCIAIS", style = MaterialTheme.typography.labelMedium, color = Primary)
+                Spacer(Modifier.height(6.dp))
+                synthesis.differentialDiagnoses.sortedBy { it.priority }.forEach { dd ->
+                    Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 4.dp)) {
+                        Text("${dd.priority}. ", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold))
+                        Column {
+                            Text(dd.description, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium))
+                            if (dd.rationale.isNotBlank()) {
+                                Text(dd.rationale, style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
+                HorizontalDivider()
+                Spacer(Modifier.height(12.dp))
+            }
+
+            // Therapeutic Plan
+            synthesis.therapeuticSuggestion?.let { therapy ->
+                Text("PLANO TERAPÊUTICO SUGERIDO", style = MaterialTheme.typography.labelMedium, color = Primary)
+                Spacer(Modifier.height(6.dp))
+                if (therapy.objectives.isNotBlank()) {
+                    Text("Objetivos: ${therapy.objectives}", style = MaterialTheme.typography.bodySmall)
+                    Spacer(Modifier.height(4.dp))
+                }
+                if (therapy.recommendedTechniques.isNotEmpty()) {
+                    Text("Técnicas: ${therapy.recommendedTechniques.joinToString(", ")}", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                }
+                if (therapy.acupuncturePoints.isNotEmpty()) {
+                    Text("Pontos: ${therapy.acupuncturePoints.joinToString(", ")}", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                }
+                if (therapy.pointCombinations.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    therapy.pointCombinations.forEach { combo ->
+                        Text("• $combo", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+                if (therapy.cautionAndContraindications.isNotEmpty()) {
+                    Spacer(Modifier.height(8.dp))
+                    therapy.cautionAndContraindications.forEach { caution ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Warning, null, tint = SemanticWarning, modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text(caution, style = MaterialTheme.typography.labelSmall, color = SemanticWarning)
+                        }
+                    }
+                }
+                therapy.sessionCount?.let {
+                    Text("Sessões sugeridas: $it", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                }
+                if (therapy.frequency.isNotBlank()) {
+                    Text("Frequência: ${therapy.frequency}", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                }
+                Spacer(Modifier.height(6.dp))
+                OutlinedButton(onClick = onAcceptTherapy, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Check, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Aceitar plano terapêutico")
+                }
+                Spacer(Modifier.height(12.dp))
+                HorizontalDivider()
+                Spacer(Modifier.height(12.dp))
+            }
+
+            // Evidence Sources
+            if (synthesis.evidenceSources.isNotEmpty()) {
+                Text("FONTES UTILIZADAS", style = MaterialTheme.typography.labelMedium, color = TextMuted)
+                Spacer(Modifier.height(6.dp))
+                synthesis.evidenceSources.forEach { source ->
+                    Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 2.dp)) {
+                        Icon(
+                            when (source.type) {
+                                com.bioacupunt.prontuario.domain.model.SourceType.LIBRARY -> Icons.Default.Description
+                                com.bioacupunt.prontuario.domain.model.SourceType.WEB -> Icons.Default.Search
+                                com.bioacupunt.prontuario.domain.model.SourceType.CLINICAL_DATA -> Icons.Default.Medication
+                            },
+                            null,
+                            tint = TextMuted,
+                            modifier = Modifier.size(14.dp),
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text("${source.type.label}: ${source.title}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextMuted,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
+            }
+
+            // Dismiss all
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Default.Close, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Descartar")
+                }
+            }
+
+            Spacer(Modifier.height(4.dp))
+            Text("Sugestão da IA — revise e valide antes de utilizar clinicamente.",
+                style = MaterialTheme.typography.labelSmall,
+                color = TextMuted)
+        }
+    }
 }
 
 // ── Small add-item dialogs ────────────────────────────────────────────

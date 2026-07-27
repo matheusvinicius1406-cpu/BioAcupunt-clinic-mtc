@@ -102,20 +102,55 @@ assim — registrado aqui pra nenhuma sessão futura precisar relitigar do zero:
   ferramentas de verdade (busca web, agenda) implementadas e conectadas. Próxima
   sessão de IA: isso — mantendo R1/R2/R4 intocados no caminho clínico.
 
-**2026-07-27 — pedido de a IA inferir o diagnóstico direto (a médica só "faria ajustes
-finais antes de imprimir") foi recusado.** Mesma categoria do pedido de 2026-07-25,
-registrado pelo mesmo motivo: revisão sob pressão de agenda cheia não é uma proteção
-real contra um diagnóstico gerado por IA que soa completo e convincente — é
-exatamente o modo de falha que R1 já nomeia ("um prompt se deixa convencer, um `when`
-não") e que este projeto já documentou em outro contexto (perfil de risco permanente:
-"esquecer é o que o software existe para pegar" — sob pressão, revisar de relance é o
-esperado, não a exceção). "Sugestão + revisão" já é o padrão que R1 rejeita pra
-protocolo; diagnóstico é no mínimo tão crítico quanto protocolo. Alternativa segura
-identificada, não implementada: estender `StructureChiefComplaintUseCase` (extrativo,
-2026-07-27) para *buscar* padrões Zang-Fu já curados na Biblioteca que casam com o
-texto da médica — candidatos com fonte citada, ela escolhe, nunca a IA afirma. Isso é
-R2 (busca + escolha), não geração + revisão. Não implementado; é uma decisão de
-produto que merece conversa própria.
+**2026-07-27 — pedido de a IA inferir o diagnóstico direto foi recusado na ocasião.**
+Vide decisão abaixo.
+
+**2026-07-28 — DECISÃO DE PRODUTO: IA de Síntese Clínica foi implementada.**
+A Dra. Camila decidiu retomar o pedido com uma arquitetura mais segura: a IA agora
+é um **terceiro caminho** — separado do R1 (ClinicalSafetyEngine), do R2 (AskLibraryUseCase)
+e do R4 (geração de conteúdo para a biblioteca).
+
+O que foi construído:
+- **`ClinicalSynthesisUseCase`** — recebe TODOS os dados do prontuário (MtcAssessment,
+  histórico, língua, pulso, Ba Gang, Zang Fu, fatores de piora/melhora, exames,
+  medicações), busca evidência na biblioteca curada (RAG), e quando não acha, permite
+  busca na web (Gemini + Google Search). Gera uma sugestão estruturada em JSON:
+  diagnóstico MTC + CID biomédico + diagnósticos diferenciais + plano terapêutico.
+- **`ClinicalSynthesis`** (modelo de domínio) — `ClinicalDiagnosis.kt` — contém
+  `TcmDiagnosisSuggestion`, `BiomedicalDiagnosisSuggestion`, `DifferentialSuggestion`,
+  `TherapeuticSuggestion`, `EvidenceSource`, `ConfidenceLevel`.
+- **UI no ProntuárioScreen** — card "Síntese Diagnóstica IA" na aba Resumo que exibe
+  cada componente com botões individuais de aceitar. NUNCA salva automaticamente.
+
+Guardarails mantidos:
+- R1 intacto: `ClinicalSafetyEngine` continua Kotlin puro, sem IA. A sugestão de plano
+  NÃO passa pelo motor de segurança — a médica leva para a aba Plano, onde o motor roda.
+- R2 intacto: `AskLibraryUseCase` continua com gate `if (!grounding.hasEvidence)`.
+- R4 intacto: a IA não gera conteúdo para o acervo da biblioteca.
+- A sugestão NUNCA é salva automaticamente — cada componente tem botão "Aceitar"
+  individual que grava no campo correspondente (`clinicalImpression`, `orientations`).
+- Nível de confiança reportado: HIGH / MODERATE / LOW / INSUFFICIENT_EVIDENCE.
+- Se o provider de IA estiver indisponível, degrada silenciosamente para vazio.
+
+Arquitetura:
+```
+ClinicalSynthesisUseCase
+  ├── 1. buildClinicalProfile() — monta perfil completo do MtcAssessment
+  ├── 2. mtcRetriever.retrieve() — busca RAG na biblioteca (FTS4)
+  ├── 3. buildPrompt() — constrói o prompt com evidência (se houver)
+  ├── 4. AiRequest(preferLocal = grounding.hasEvidence) — prefere local se achou evidência;
+  │     allowWebSearch = !grounding.hasEvidence — busca web se não achou na biblioteca
+  └── 5. parseResult() — extrai JSON e retorna ClinicalSynthesis
+```
+
+Decisões de design desta implementação:
+- O `ClinicalSynthesisUseCase` é um caminho **separado** — não substitui nem compete com
+  `AskLibraryUseCase` (RAG do chat) nem com `ClinicalSafetyEngine` (segurança).
+- `preferLocal` é `true` apenas quando a biblioteca achou evidência; caso contrário,
+  `false` para permitir que o cloud provider (Gemini com Google Search) seja selecionado.
+- A médica aceita cada componente individualmente: TCM, biomédico, plano.
+- Os ícones usados são do core Material Icons (`Star`, `Description`, `Search`, `Medication`,
+  `Check`, `Close`, `Warning`, `Refresh`) para evitar dependência do pacote extended.
 
 ---
 

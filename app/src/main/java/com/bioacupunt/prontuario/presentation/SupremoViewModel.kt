@@ -7,6 +7,8 @@ import com.bioacupunt.prontuario.domain.model.BaGang
 import com.bioacupunt.prontuario.domain.model.BodyMark
 import com.bioacupunt.prontuario.domain.model.BodySide
 import com.bioacupunt.prontuario.domain.model.ClinicalFlag
+import com.bioacupunt.prontuario.domain.model.ClinicalSynthesis
+import com.bioacupunt.prontuario.domain.model.ConfidenceLevel
 import com.bioacupunt.prontuario.domain.model.MtcAssessment
 import com.bioacupunt.prontuario.domain.model.Organ
 import com.bioacupunt.prontuario.domain.model.PatternFactor
@@ -19,6 +21,7 @@ import com.bioacupunt.prontuario.domain.safety.SafetyVerdict
 import com.bioacupunt.prontuario.domain.safety.Technique
 import com.bioacupunt.prontuario.domain.safety.TreatmentProposal
 import com.bioacupunt.prontuario.domain.usecase.ChiefComplaintExtraction
+import com.bioacupunt.prontuario.domain.usecase.ClinicalSynthesisUseCase
 import com.bioacupunt.prontuario.domain.usecase.MtcAssessmentRepository
 import com.bioacupunt.prontuario.domain.usecase.StructureChiefComplaintUseCase
 import kotlinx.coroutines.FlowPreview
@@ -51,6 +54,14 @@ data class SupremoUiState(
      * descartado).
      */
     val chiefComplaintSuggestion: ChiefComplaintExtraction? = null,
+    /**
+     * SÍNTESE CLÍNICA COMPLETA — IA analisa TODO o prontuário e sugere diagnóstico
+     * MTC + biomédico + plano terapêutico. A médica revisa, edita e decide o que
+     * aceitar. Null = nenhuma síntese foi gerada ainda.
+     */
+    val clinicalSynthesis: ClinicalSynthesis? = null,
+    val synthesizing: Boolean = false,
+    val synthesisError: String? = null,
 ) {
     /** Flags actually in force = today's + everything ever recorded. */
     val effectiveFlags: Set<ClinicalFlag> get() = draft.flags + standingFlags
@@ -62,6 +73,7 @@ class SupremoViewModel(
     private val repository: MtcAssessmentRepository,
     private val patientId: Long,
     private val structureChiefComplaint: StructureChiefComplaintUseCase? = null,
+    private val clinicalSynthesisUseCase: ClinicalSynthesisUseCase? = null,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -348,6 +360,117 @@ class SupremoViewModel(
             }
     }
 
+    // ── Clinical Synthesis ─────────────────────────────────────────────
+    //
+    // A IA analisa TODO o prontuário deste paciente e gera uma sugestão
+    // diagnóstica + plano. A médica revisa, edita, aceita ou descarta.
+    // NUNCA salva automaticamente.
+
+    /**
+     * Gera a síntese clínica chamando a IA com todos os dados do prontuário:
+     * MtcAssessment completo + histórico + dados de exames.
+     */
+    fun synthesizeDiagnosis() {
+        if (_state.value.synthesizing) return
+        if (clinicalSynthesisUseCase == null) {
+            _state.update { it.copy(synthesisError = "IA de síntese não configurada") }
+            return
+        }
+        _state.update { it.copy(synthesizing = true, synthesisError = null) }
+        viewModelScope.launch {
+            val snapshot = _state.value
+            val result = clinicalSynthesisUseCase(
+                assessment = snapshot.draft,
+                history = snapshot.history,
+            )
+            _state.update {
+                it.copy(
+                    clinicalSynthesis = result.takeUnless { syn -> syn.isEmpty },
+                    synthesizing = false,
+                    synthesisError = null,
+                )
+            }
+        }
+    }
+
+    /**
+     * A médica ACEITOU o diagnóstico MTC sugerido pela IA — faz append no campo
+     * clinicalImpression para não sobrescrever o que ela já escreveu.
+     */
+    fun acceptTcmSynthesis() {
+        val synthesis = _state.value.clinicalSynthesis?.tcmDiagnosis ?: return
+        val current = _state.value.draft.clinicalImpression
+        val suffix = buildString {
+            appendLine("\n\nSugestão da IA — padrão MTC:")
+            appendLine(synthesis.patternName)
+            if (synthesis.organInvolvement.isNotEmpty()) {
+                appendLine("Órgãos: ${synthesis.organInvolvement.joinToString(", ")}")
+            }
+            if (synthesis.baGangClassification.isNotBlank()) {
+                appendLine("Ba Gang: ${synthesis.baGangClassification}")
+            }
+            if (synthesis.explanation.isNotBlank()) {
+                appendLine(synthesis.explanation)
+            }
+        }
+        updateImpression(current.trim() + suffix)
+    }
+
+    /**
+     * A médica ACEITOU o diagnóstico biomédico sugerido pela IA.
+     */
+    fun acceptBiomedicalSynthesis() {
+        val synthesis = _state.value.clinicalSynthesis?.biomedicalDiagnosis ?: return
+        val current = _state.value.draft.clinicalImpression
+        val suffix = buildString {
+            appendLine("\n\nDiagnóstico biomédico (sugestão IA):")
+            appendLine(synthesis.diagnosis)
+            if (synthesis.cidCode.isNotBlank()) appendLine("CID-10: ${synthesis.cidCode}")
+            if (synthesis.cid11Code.isNotBlank()) appendLine("CID-11: ${synthesis.cid11Code}")
+            if (synthesis.explanation.isNotBlank()) appendLine(synthesis.explanation)
+        }
+        updateImpression(current.trim() + suffix)
+    }
+
+    /**
+     * A médica ACEITOU o plano terapêutico sugerido pela IA — leva para
+     * [MtcAssessment.orientations].
+     */
+    fun acceptTherapeuticSynthesis() {
+        val therapy = _state.value.clinicalSynthesis?.therapeuticSuggestion ?: return
+        val text = buildString {
+            if (therapy.objectives.isNotBlank()) {
+                appendLine("Objetivos: ${therapy.objectives}")
+                appendLine()
+            }
+            if (therapy.recommendedTechniques.isNotEmpty()) {
+                appendLine("Técnicas: ${therapy.recommendedTechniques.joinToString(", ")}")
+            }
+            if (therapy.acupuncturePoints.isNotEmpty()) {
+                appendLine("Pontos: ${therapy.acupuncturePoints.joinToString(", ")}")
+            }
+            if (therapy.pointCombinations.isNotEmpty()) {
+                appendLine("Combinações: ${therapy.pointCombinations.joinToString(", ")}")
+            }
+            if (therapy.cautionAndContraindications.isNotEmpty()) {
+                appendLine("Cuidados: ${therapy.cautionAndContraindications.joinToString("; ")}")
+            }
+            therapy.sessionCount?.let { appendLine("Sessões sugeridas: $it") }
+            if (therapy.frequency.isNotBlank()) appendLine("Frequência: ${therapy.frequency}")
+        }
+        updateOrientations(text)
+    }
+
+    /** Descartar a síntese atual — a médica não quer usar nada. */
+    fun dismissSynthesis() {
+        _state.update { it.copy(clinicalSynthesis = null, synthesisError = null) }
+    }
+
+    /** Descartar erro de síntese. */
+    fun clearSynthesisError() {
+        _state.update { it.copy(synthesisError = null) }
+    }
+
     private companion object {
         const val CHIEF_COMPLAINT_DEBOUNCE_MS = 1200L
     }
@@ -357,8 +480,9 @@ class SupremoViewModelFactory(
     private val repository: MtcAssessmentRepository,
     private val patientId: Long,
     private val structureChiefComplaint: StructureChiefComplaintUseCase? = null,
+    private val clinicalSynthesisUseCase: ClinicalSynthesisUseCase? = null,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        SupremoViewModel(repository, patientId, structureChiefComplaint) as T
+        SupremoViewModel(repository, patientId, structureChiefComplaint, clinicalSynthesisUseCase) as T
 }
