@@ -24,7 +24,11 @@ class AndroidAiSecretsProvider(
         }
 
     private fun buildTimeGeminiKey(): String? =
-        BuildConfig.GEMINI_API_KEY.takeIf { it.isNotBlank() && it != "REPLACE_ME" }
+        // Trimmed defensively: a stray trailing newline/space picked up from
+        // local.properties turns into a malformed `?key=` query param and Google
+        // answers with an opaque 401 ("invalid authentication credentials") that gives
+        // no hint the key itself has a formatting problem.
+        BuildConfig.GEMINI_API_KEY.trim().takeIf { it.isNotBlank() && it != "REPLACE_ME" }
 
     override suspend fun setApiKey(providerId: String, key: String) {
         if (providerId == "gemini") securePreferences.geminiApiKey = key

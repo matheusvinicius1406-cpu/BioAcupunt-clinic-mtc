@@ -54,9 +54,13 @@ fun BibliotecaScreen(
             Text("Biblioteca", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold))
             Spacer(Modifier.height(2.dp))
             Text(
-                "Conhecimento Ativo · ${state.allArticles.size} artigos revisados",
+                if (state.articlesUnavailable) {
+                    "Conhecimento Ativo · falha ao carregar aprovados da Curadoria (mostrando só os fixos)"
+                } else {
+                    "Conhecimento Ativo · ${state.allArticles.size} artigos revisados"
+                },
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (state.articlesUnavailable) statusColors().danger else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
@@ -208,6 +212,14 @@ fun BibliotecaScreen(
                         modifier = Modifier.padding(vertical = 20.dp),
                     )
                 }
+                state.hybridSearchFailed -> item {
+                    Text(
+                        "Falha ao consultar a base MKIS. Tente novamente.",
+                        color = statusColors().danger,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(vertical = 20.dp),
+                    )
+                }
                 state.hybridResults.isEmpty() && !state.isSearching -> item {
                     Text(
                         "Nenhum nó de conhecimento encontrado para esta busca.",
@@ -230,11 +242,16 @@ fun BibliotecaScreen(
             val favCount = state.favoriteIds.size
             val categoryCount = state.allArticles.map { it.category }.distinct().size
             val totalTags = state.allArticles.flatMap { it.tags }.distinct().size
+            // Quando a query de artigos aprovados falhou, allArticles está degradado (só os
+            // 16 fixos) — mostrar "—" em vez de um número plausível porém incompleto, para
+            // não passar a impressão de "acervo completo" quando na verdade é "carregamento
+            // parcial silencioso".
+            val degraded = state.articlesUnavailable
             val stats = listOf(
-                "${state.allArticles.size}" to "Artigos",
-                "$categoryCount" to "Categorias",
+                (if (degraded) "—" else "${state.allArticles.size}") to "Artigos",
+                (if (degraded) "—" else "$categoryCount") to "Categorias",
                 "$favCount" to "Favoritos",
-                "$totalTags" to "Tags",
+                (if (degraded) "—" else "$totalTags") to "Tags",
             )
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                 stats.forEach { (value, label) ->

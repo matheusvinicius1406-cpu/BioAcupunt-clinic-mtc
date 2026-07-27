@@ -42,6 +42,7 @@ import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.lock.BiometricLockScreen
 import com.bioacupunt.ui.screens.*
 import com.bioacupunt.ui.theme.ThemeController
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -67,6 +68,7 @@ fun BioAcupuntNavHost(
 
     val showShell = currentRoute != null && currentRoute != Screen.Login.route && currentRoute != Screen.BiometricLock.route
     var moreOpen by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     // Auth é 100% local (sem servidor): o app trava a cada abertura fria e a
     // LoginScreen resolve os dois casos — criar a conta local no primeiro uso ou
@@ -294,6 +296,25 @@ fun BioAcupuntNavHost(
                     }
                 }
             }
+        }
+    }
+
+    // Consentimento de nuvem do primeiro acesso (R2/LGPD) — recalculado a partir da prefs
+    // real toda vez que a médica sai da tela de Login (showShell recompõe reativamente via
+    // currentRoute, ao contrário de um valor lido direto de SharedPreferences em outro
+    // lugar), então aparece exatamente na primeira vez que ela entra no app, sem depender
+    // de nenhum outro estado global mudar por coincidência. AlertDialog usa uma Window
+    // própria (via Dialog), então não precisa envolver o Scaffold acima numa Box.
+    if (showShell) {
+        var consentAsked by remember { mutableStateOf(AppContainer.securePreferences.cloudConsentAsked) }
+        if (!consentAsked) {
+            CloudConsentDialog(onAnswered = { acceptCloud ->
+                scope.launch {
+                    runCatching { AppContainer.aiConfigManager.setCloudEnabled(acceptCloud) }
+                    AppContainer.securePreferences.cloudConsentAsked = true
+                    consentAsked = true
+                }
+            })
         }
     }
 }

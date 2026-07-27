@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,6 +39,13 @@ data class BibliotecaUiState(
      * mesmo quando a lista visível está filtrada por uma busca que os esconderia.
      */
     val allArticles: List<MtcArticle> = MtcKnowledgeBase.articles,
+    /**
+     * True when [observeApprovedArticles] failed and [allArticles] is degraded to just the
+     * fixed 16 (no approved-via-Curadoria articles). The stats row must show "—" instead of
+     * a real-looking count in this case — a failure must never render identically to "no
+     * approvals yet".
+     */
+    val articlesUnavailable: Boolean = false,
     val favoriteIds: Set<String> = emptySet(),
     val askQuestion: String = "",
     val askAnswer: AskLibraryUseCase.Answer? = null,
@@ -47,6 +55,8 @@ data class BibliotecaUiState(
     /** Resultados da busca híbrida MKIS (quando searchMode = MKIS_HYBRID). */
     val hybridResults: List<HybridResultItem> = emptyList(),
     val isSearching: Boolean = false,
+    /** True quando a última busca híbrida falhou — distingue de "zero resultados" real. */
+    val hybridSearchFailed: Boolean = false,
     /** Nó MKIS selecionado para exibir no detail sheet. */
     val selectedMkisNode: KnowledgeNodeEntity? = null,
     val selectedMkisNodeScore: Double = 0.0,
@@ -87,23 +97,30 @@ class BibliotecaViewModel(
 
     init {
         viewModelScope.launch {
-            // Observa favoritos E artigos aprovados simultaneamente
+            // Observa favoritos E artigos aprovados simultaneamente. O par (lista, falhou)
+            // preserva a distinção entre "curadoria não aprovou nada ainda" (lista vazia,
+            // falhou=false) e "a query de aprovados quebrou" (falhou=true) — sem isso, as
+            // duas situações colapsavam no mesmo emptyList() e o card de estatísticas
+            // mostrava um número plausível, porém incompleto, sem nenhum indício de falha.
             combine(
                 observeFavorites.onStart { emit(emptySet()) }.catch { emit(emptySet()) },
-                observeApprovedArticles.onStart { emit(emptyList()) }.catch { emit(emptyList()) },
-            ) { favIds, approved ->
+                observeApprovedArticles
+                    .map { it to false }
+                    .onStart { emit(emptyList<MtcArticle>() to false) }
+                    .catch { emit(emptyList<MtcArticle>() to true) },
+            ) { favIds, (approved, approvedFailed) ->
                 val fixed = MtcKnowledgeBase.articles
                 // Merge: fixos têm prioridade. Aprovados complementam.
-                val approvedIds = approved.map { it.id }.toSet()
                 val extra = approved.filter { it.id !in fixed.map { f -> f.id } }
                 val merged = fixed + extra
-                favIds to merged
-            }.collect { (favIds, merged) ->
+                Triple(favIds, merged, approvedFailed)
+            }.collect { (favIds, merged, approvedFailed) ->
                 _state.update { state ->
                     val current = state.copy(
                         favoriteIds = favIds,
                         articles = merged,
                         allArticles = merged,
+                        articlesUnavailable = approvedFailed,
                     )
                     // Re-aplica filtros ativos se houver query/categoria
                     if (current.query.isNotBlank() || !current.category.isNullOrBlank()) {
@@ -119,9 +136,10 @@ class BibliotecaViewModel(
     fun onQueryChanged(query: String) {
         _state.update { state ->
             if (state.searchMode == SearchMode.MKIS_HYBRID) {
-                // Limpar resultados se a query foi limpa
+                // Limpar resultados (e o estado de falha) se a query foi limpa
                 val cleared = if (query.isBlank()) emptyList<HybridResultItem>() else state.hybridResults
-                state.copy(query = query, hybridResults = cleared)
+                val failedCleared = if (query.isBlank()) false else state.hybridSearchFailed
+                state.copy(query = query, hybridResults = cleared, hybridSearchFailed = failedCleared)
             } else {
                 state.copy(query = query, articles = filtered(query, state.category, state.allArticles))
             }
@@ -192,6 +210,7 @@ class BibliotecaViewModel(
             state.copy(
                 searchMode = newMode,
                 hybridResults = emptyList(),
+                hybridSearchFailed = false,
                 query = "",
                 articles = state.allArticles,
             )
@@ -202,7 +221,7 @@ class BibliotecaViewModel(
     private fun performHybridSearch(query: String) {
         val svc = hybridSearchService ?: return
         viewModelScope.launch {
-            _state.update { it.copy(isSearching = true) }
+            _state.update { it.copy(isSearching = true, hybridSearchFailed = false) }
             try {
                 val results = svc.search(query, maxResults = 20)
                 // TODO: Usar score real do RRF quando o HybridSearchService expor scores normalizados
@@ -216,7 +235,9 @@ class BibliotecaViewModel(
                 }
                 _state.update { it.copy(hybridResults = items, isSearching = false) }
             } catch (e: Exception) {
-                _state.update { it.copy(hybridResults = emptyList(), isSearching = false) }
+                // Falha real de busca (FTS5/embeddings indisponível) nunca deve parecer
+                // "zero resultados" — a tela distingue os dois pelo hybridSearchFailed.
+                _state.update { it.copy(hybridResults = emptyList(), isSearching = false, hybridSearchFailed = true) }
             }
         }
     }

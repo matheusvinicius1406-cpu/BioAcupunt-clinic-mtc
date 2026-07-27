@@ -28,8 +28,9 @@ import kotlin.coroutines.cancellation.CancellationException
  * OPTIONAL CLOUD LLM PROVIDER — off by default, offline-first stays the rule.
  *
  * The product decision is "Gemma on-device (padrão) + nuvem OPCIONAL que a médica liga
- * manualmente". This provider is that opt-in cloud path. It is always *registered* in the
- * orchestrator, but [isAvailable] returns false unless BOTH conditions hold:
+ * manualmente, ou aceita no diálogo de consentimento do primeiro acesso". This provider is
+ * that opt-in cloud path. It is always *registered* in the orchestrator, but [isAvailable]
+ * returns false unless BOTH conditions hold:
  *
  *   1. the doctor turned cloud on ([AiConfigManager.isCloudEnabled]); and
  *   2. an API key exists ([AiSecretsProvider.apiKeyFor]).
@@ -40,10 +41,15 @@ import kotlin.coroutines.cancellation.CancellationException
  *
  * ## LGPD boundary
  *
- * A patient chart is *dado pessoal sensível* (LGPD Art. 5º, II). Sending it to a remote
- * API is a processing decision that needs the doctor's explicit consent. That consent is
- * exactly the enable toggle above: this provider only ever runs after she flips it. The UI
- * that flips it MUST carry the LGPD warning that clinical text will leave the device.
+ * A patient chart is *dado pessoal sensível* (LGPD Art. 5º, II), and even the
+ * "administrative" fallback prompt carries real patient names/appointment times
+ * ([com.bioacupunt.ai.presentation.AppContextBuilder]). Sending either to a remote API is
+ * a processing decision that needs the doctor's explicit consent *before* it happens —
+ * not just a toggle she could stumble into. That consent is: the first-access
+ * `CloudConsentDialog` (shown once, gated by `SecurePreferences.cloudConsentAsked`) or,
+ * afterward, the enable toggle in Ajustes > IA. `isCloudEnabled()` defaults to **false**
+ * specifically so nothing can reach this provider before one of those two has run. The UI
+ * for both MUST carry the LGPD warning that clinical text will leave the device.
  *
  * ## What it must NEVER touch (R1 / R2)
  *
@@ -210,7 +216,13 @@ class CloudAiProvider(
         client.newCall(httpRequest).execute().use { response ->
             val payload = response.body?.string().orEmpty()
             check(response.isSuccessful) {
-                "Falha na nuvem: HTTP ${response.code}${extractApiError(payload)?.let { " — $it" } ?: ""}"
+                if (response.code == 401 || response.code == 403) {
+                    "Chave de API da nuvem inválida, expirada ou sem permissão para o Gemini " +
+                        "(HTTP ${response.code}). Gere uma chave nova em " +
+                        "https://aistudio.google.com/apikey e cole em Ajustes > IA."
+                } else {
+                    "Falha na nuvem: HTTP ${response.code}${extractApiError(payload)?.let { " — $it" } ?: ""}"
+                }
             }
             return parseText(payload) to parseGroundingSources(payload)
         }

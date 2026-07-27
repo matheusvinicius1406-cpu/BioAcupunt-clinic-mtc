@@ -84,6 +84,16 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("gemini_api_key", null)
         set(value) = if (value.isNullOrBlank()) edit { it.remove("gemini_api_key") } else edit { it.putString("gemini_api_key", value) }
 
+    /**
+     * True once the doctor has answered the cloud-AI consent dialog (accept or decline).
+     * Gates [com.bioacupunt.ai.config.AiConfigManager.isCloudEnabled], which defaults to
+     * false until this flips true — a patient's name/appointment data must never reach
+     * Gemini before she has explicitly seen and answered the LGPD notice.
+     */
+    var cloudConsentAsked: Boolean
+        get() = prefs.getBoolean("cloud_consent_asked", false)
+        set(value) = edit { it.putBoolean("cloud_consent_asked", value) }
+
     /** URL de onde baixar o modelo local (.task do Gemma). Vazio = usa o padrão do código. */
     var localModelUrl: String
         get() = prefs.getString("local_model_url", "") ?: ""
