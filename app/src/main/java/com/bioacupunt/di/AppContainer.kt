@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.bioacupunt.pharma.domain.ingestion.toDomain
 
 /**
@@ -722,7 +723,11 @@ object AppContainer {
      */
     suspend fun resetDevDatabaseIfDebuggable(): Boolean {
         if (!com.bioacupunt.security.AppHardening.isDebugDebuggable(appContext)) return false
-        database.clearAllTables()
+        // clearAllTables() é bloqueante (não é suspend) — Room recusa rodar isto na main
+        // thread (RoomDatabase.assertNotMainThread), e o chamador (botão em Ajustes, via
+        // rememberCoroutineScope) despacha em Dispatchers.Main por padrão. Sem o
+        // withContext aqui, a única thread seguinte da coroutine ainda é a main.
+        withContext(Dispatchers.IO) { database.clearAllTables() }
         seedDemoDataIfNeeded()
         seedPharmaCatalogIfNeeded()
         return true
