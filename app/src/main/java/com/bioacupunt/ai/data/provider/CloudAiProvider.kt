@@ -133,6 +133,14 @@ class CloudAiProvider(
                 check(configManager.isCloudEnabled()) { "IA na nuvem está desligada em Ajustes > IA." }
                 val apiKey = secretsProvider.apiKeyFor(secretId)?.takeIf { it.isNotBlank() }
                     ?: error("Chave de API da nuvem não configurada em Ajustes > IA.")
+                // Falha rápido e local em vez de gastar um round-trip pra Google só pra
+                // aprender via 401 opaco que a chave nunca foi uma chave válida — já
+                // aconteceu (token OAuth colado em vez da chave gerada em aistudio.google.com).
+                check(isPlausibleGeminiKey(apiKey)) {
+                    "Chave de API da nuvem não parece uma chave do Google AI Studio (formato " +
+                        "esperado: começa com \"AIzaSy\"). Gere uma em " +
+                        "https://aistudio.google.com/apikey e cole em Ajustes > IA."
+                }
 
                 val started = System.currentTimeMillis()
                 val (rawText, sources) = withTimeout(REQUEST_TIMEOUT_MS) {
@@ -274,6 +282,17 @@ class CloudAiProvider(
     private fun extractApiError(payload: String): String? = runCatching {
         JSONObject(payload).optJSONObject("error")?.optString("message")?.takeIf { it.isNotBlank() }
     }.getOrNull()
+
+    /**
+     * Real Google AI Studio keys are "AIzaSy..." (~39 chars). This is a shape check, not
+     * proof the key is live — Google is still the source of truth for that — but it catches
+     * the exact failure already seen once: an OAuth/session token pasted into the API-key
+     * field by mistake, which is well-formed enough to send but always answers 401.
+     */
+    private fun isPlausibleGeminiKey(key: String): Boolean =
+        key.startsWith("AIzaSy") && key.length in 35..45
+
+
 
     companion object {
         const val PROVIDER_ID = "cloud-gemini"
