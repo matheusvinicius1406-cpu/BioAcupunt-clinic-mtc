@@ -50,6 +50,6 @@ data class UserState(
 
 data class AIState(
     val isEnabled: Boolean = true,
-    val primaryModel: String = "local-gemma",
+    val primaryModel: String = "local-llm",
     val lastUsedAt: String? = null
 )

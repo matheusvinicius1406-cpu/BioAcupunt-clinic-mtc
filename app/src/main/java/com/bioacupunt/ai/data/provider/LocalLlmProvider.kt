@@ -11,6 +11,7 @@ import com.bioacupunt.ai.core.AiProviderMetadata
 import com.bioacupunt.ai.core.AiRequest
 import com.bioacupunt.ai.core.AiResult
 import com.bioacupunt.ai.core.DevicePreference
+import com.bioacupunt.ai.local.LocalModelCatalog
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import com.google.mediapipe.tasks.genai.llminference.LlmInference.LlmInferenceOptions
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * ON-DEVICE LLM PROVIDER — Gemma running fully inside the app.
+ * ON-DEVICE LLM PROVIDER — Qwen 2.5 running fully inside the app.
  *
  * Plugs into the existing [AiProvider] contract, so the orchestrator can route to it
  * exactly like any cloud provider. No architectural change was needed: the AI layer
@@ -38,7 +39,7 @@ import java.io.File
  *
  * ## The model is not in the APK, and cannot be
  *
- * Gemma weights are hundreds of MB to multiple GB — far past the Play Store's
+ * The weights are hundreds of MB to multiple GB — far past the Play Store's
  * delivery limits. The model is downloaded once, on demand, into app-private storage
  * (see [LocalModelManager]); [isAvailable] reports false until it is present, and the
  * orchestrator simply routes elsewhere in the meantime. The app must degrade, never
@@ -57,7 +58,7 @@ class LocalLlmProvider(
 ) : AiProvider {
 
     override val id: String = PROVIDER_ID
-    override val displayName: String = "Gemma (no dispositivo)"
+    override val displayName: String = "Qwen 2.5 (no dispositivo)"
 
     override val capabilities = AiProviderCapabilities(
         capabilities = setOf(AiCapability.Chat),
@@ -86,7 +87,7 @@ class LocalLlmProvider(
         AiModelDescriptor(
             id = MODEL_ID,
             providerId = PROVIDER_ID,
-            displayName = "Gemma 3 1B (int4)",
+            displayName = "Qwen 2.5 1.5B (q8)",
             capabilities = setOf(AiCapability.Chat),
             contextTokens = MAX_CONTEXT_TOKENS,
             isLocal = true,
@@ -182,11 +183,21 @@ class LocalLlmProvider(
     }
 
     companion object {
-        const val PROVIDER_ID = "local-gemma"
-        const val MODEL_ID = "gemma-3-1b-it-int4"
+        const val PROVIDER_ID = "local-llm"
+        const val MODEL_ID = LocalModelManager.MODEL_ID
 
-        private const val MAX_CONTEXT_TOKENS = 2048
-        private const val MAX_OUTPUT_TOKENS = 1024
+        /**
+         * Vem do catálogo, não de uma constante própria. O arquivo em uso é um build
+         * `ekv1280`: seu KV cache tem 1280 tokens e pedir mais que isso ao runtime faz a
+         * criação da sessão FALHAR, não truncar. Enquanto este número vivia duplicado
+         * aqui (2048) e no catálogo (1280), a única coisa que impedia esse crash era
+         * ninguém ter rodado o modelo ainda.
+         */
+        private val MAX_CONTEXT_TOKENS: Int =
+            LocalModelCatalog.byId(MODEL_ID)?.contextTokens ?: 1280
+
+        /** Metade do orçamento fica para a resposta; a outra metade é o prompt. */
+        private val MAX_OUTPUT_TOKENS: Int = MAX_CONTEXT_TOKENS / 2
 
         val CLINICAL_GUARDRAIL = """
             Você é um assistente de apoio ao raciocínio clínico em Medicina Tradicional

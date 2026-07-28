@@ -80,17 +80,49 @@ class LocalModelCatalogTest {
     }
 
     @Test
-    fun shippedCatalogIsCurrentlyUnpinned_soNothingIsOffered() {
-        // Documents present reality honestly: the real hashes are not filled in yet,
-        // so the app offers no local model. It must degrade to cloud, not to garbage.
+    fun shippedCatalogPinnedEntriesAreWellFormed() {
+        // Substitui um teste que afirmava "nada está pinado, logo nada é oferecido".
+        // Isso deixou de ser verdade quando o Qwen2.5 recebeu um SHA-256 REAL — obtido
+        // com sha256sum sobre o arquivo baixado e conferido de novo no próprio aparelho,
+        // nunca inventado (R3). O invariante que importa nunca foi "nada pinado"; é
+        // "o que está pinado está pinado direito".
+        val pinned = LocalModelCatalog.verifiable
+        assertTrue("Deve haver ao menos um modelo local pinado", pinned.isNotEmpty())
+        pinned.forEach { m ->
+            assertEquals("SHA-256 precisa ter 64 caracteres", 64, m.sha256.length)
+            assertTrue(
+                "SHA-256 só pode conter hexadecimais minúsculos",
+                m.sha256.all { c -> c.isDigit() || c in 'a'..'f' },
+            )
+            assertTrue("Tamanho fixado não pode ser zero", m.sizeBytes > 0)
+        }
+    }
+
+    @Test
+    fun modelInUseIsPinned_butGatedModelsStayUnofferable() {
         assertTrue(
-            "Catálogo real ainda não tem SHA-256 fixado — rode scripts/pin_models.sh",
-            LocalModelCatalog.verifiable.isEmpty(),
+            "O modelo local em uso precisa estar pinado, senão nada é oferecido",
+            LocalModelCatalog.byId("qwen2.5-1.5b-instruct")?.isVerifiable == true,
+        )
+        // O Gemma continua no catálogo, e continua SEM hash de propósito: o repo dele é
+        // gated (o Hugging Face responde HTTP 401 sem conta com a licença aceita), então
+        // não há como baixá-lo nem verificá-lo. Fail-closed — ele nunca é oferecido.
+        assertFalse(
+            "Gemma segue não-oferecível: repo gated, sem hash fixado",
+            LocalModelCatalog.verifiable.any { it.id == "gemma-3-1b-it-int4" },
         )
     }
 
     @Test
-    fun downloadUrlPointsAtOurBackend_notHuggingFace() {
+    fun downloadUrlHelperTargetsSelfHosting_notHuggingFace() {
+        // Este helper é o caminho de AUTO-HOSPEDAGEM e continua sendo: monta
+        // <seu-backend>/models/<arquivo>.
+        //
+        // Não confundir com `LocalModelManager.DEFAULT_MODEL_URL`, que HOJE aponta para o
+        // Hugging Face de propósito — é o que permite a médica baixar o modelo sem colar
+        // URL nenhuma. Isso só é aceitável porque o Qwen2.5 é Apache 2.0 e não-gated; com
+        // o Gemma seria impossível (401) e legalmente mais delicado. Quem quiser hospedar
+        // por conta própria preenche a URL em Ajustes > IA, que tem precedência.
         val url = mid.downloadUrl("https://api.exemplo.com/")
         assertEquals("https://api.exemplo.com/models/mid.litertlm", url)
         assertFalse(url.contains("huggingface"))

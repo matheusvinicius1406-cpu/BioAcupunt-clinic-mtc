@@ -413,7 +413,7 @@ private fun AiApisTab() {
                         value = modelUrl,
                         onValueChange = { modelUrl = it; modelUrlSaved = false },
                         label = { Text("URL de download do modelo") },
-                        placeholder = { Text("https://…/gemma-3-1b-it-int4.task") },
+                        placeholder = { Text("Deixe vazio para usar o padrão (Hugging Face)") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -867,8 +867,8 @@ private fun SystemTab() {
                     AboutRow(
                         "IA",
                         when (localModelState) {
-                            is com.bioacupunt.ai.data.provider.LocalModelManager.State.Ready -> "Gemma 3 1B · local (offline)"
-                            is com.bioacupunt.ai.data.provider.LocalModelManager.State.Downloading -> "Gemma 3 1B · baixando…"
+                            is com.bioacupunt.ai.data.provider.LocalModelManager.State.Ready -> "Qwen 2.5 1.5B · local (offline)"
+                            is com.bioacupunt.ai.data.provider.LocalModelManager.State.Downloading -> "Qwen 2.5 1.5B · baixando…"
                             else -> "Nuvem (opcional) — baixe o modelo local acima para rodar offline"
                         },
                     )

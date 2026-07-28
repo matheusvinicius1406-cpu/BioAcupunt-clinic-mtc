@@ -96,17 +96,32 @@ object LocalModelCatalog {
             qualityRank = 10,
             notes = "Menor e mais rápido. Bom para resumo e redação de evolução.",
         ),
+        // PINADO E EM USO — este é o modelo local padrão do app.
+        //
+        // Trocado de Gemma para Qwen por um motivo concreto, não estético: o repo
+        // `litert-community/Gemma3-1B-IT` responde HTTP 401 `GatedRepo` sem uma conta
+        // Hugging Face com a licença Gemma aceita, então nenhum download automático
+        // conseguia buscá-lo. Qwen2.5 é `gated: false` (Apache 2.0) e, segundo a nota
+        // que já estava aqui, tem português e chinês melhores — os dois idiomas que
+        // mais importam num app de MTC.
+        //
+        // sizeBytes/sha256 abaixo NÃO foram inventados (R3): saíram de `sha256sum` sobre
+        // o arquivo real baixado de
+        // Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv1280.task, e o tamanho bate
+        // exatamente com o `x-linked-size` que o Hugging Face reporta.
         LocalModel(
             id = "qwen2.5-1.5b-instruct",
             displayName = "Qwen 2.5 1.5B",
-            fileName = "qwen2.5-1.5b-instruct.litertlm",
-            runtime = LocalRuntime.LITERT_LM,
+            fileName = "qwen2.5-1.5b-instruct-q8.task",
+            runtime = LocalRuntime.MEDIAPIPE,
             license = ModelLicense.APACHE_2_0,
             huggingFaceRepo = "litert-community/Qwen2.5-1.5B-Instruct",
-            sizeBytes = 0L,
-            sha256 = "",
+            sizeBytes = 1_597_913_616L,
+            sha256 = "8d867a7c93a6acf2892f08e0174e2f6f351ad256b7e3cfb6d6cd9c89794b42e0",
             minDeviceRamMb = 4096,
-            contextTokens = 4096,
+            // ekv1280: o KV cache deste build é 1280 tokens. Pedir mais que isso ao
+            // runtime não "trunca" — ele falha ao criar a sessão.
+            contextTokens = 1280,
             qualityRank = 20,
             notes = "Apache 2.0 — licença mais livre. Bom português e chinês (útil em MTC).",
         ),

@@ -188,25 +188,39 @@ class LocalModelManager(
     }
 
     companion object {
-        const val MODEL_FILE_NAME = "gemma-3-1b-it-int4.task"
+        const val MODEL_FILE_NAME = "qwen2.5-1.5b-instruct-q8.task"
 
         /**
          * Catalog id whose pinned SHA-256 / size govern this file. Ties the download and
          * readiness checks to [LocalModelCatalog.byId], so R3 is enforced on the LLM path.
+         *
+         * Qwen, não Gemma: o repo do Gemma no Hugging Face é gated (HTTP 401 sem conta
+         * com a licença aceita), então era impossível baixá-lo automaticamente. Ver a
+         * nota em [LocalModelCatalog].
          */
-        const val MODEL_ID = "gemma-3-1b-it-int4"
+        const val MODEL_ID = "qwen2.5-1.5b-instruct"
 
         /**
-         * PENDÊNCIA DO USUÁRIO — intentionally empty, not an invented URL.
+         * URL padrão REAL e verificada — a médica não precisa configurar nada.
          *
-         * The old value (`https://bioacupunt-api.onrender.com/models/…`) returns 404: the
-         * backend has no such route, so it was dead weight that made every download fail.
-         * Host the weights yourself (S3/R2/CDN of your choice) rather than hot-linking a
-         * third party — you control availability and keep the Gemma licence-acceptance
-         * flow in your own hands — then set the real URL in `SecurePreferences.localModelUrl`
-         * (Ajustes > IA). Until then [download] rejects a blank URL with a clear message.
+         * Isto só é possível porque o modelo deixou de ser o Gemma: o repo do Gemma é
+         * gated (HTTP 401 `GatedRepo` sem uma conta Hugging Face com a licença aceita),
+         * então qualquer URL padrão dele falharia para todo mundo. O Qwen2.5 é Apache 2.0
+         * e `gated: false`, então este link baixa direto, sem token, sem cadastro.
+         *
+         * Continua sendo um hot-link para terceiro: se um dia o Hugging Face sair do ar ou
+         * mover o arquivo, o download falha com mensagem clara e a nuvem assume — o app
+         * degrada, não quebra. Hospedar por conta própria continua sendo a opção mais
+         * robusta, e para isso basta preencher `SecurePreferences.localModelUrl`
+         * (Ajustes > IA), que tem precedência sobre este valor.
+         *
+         * O arquivo baixado daqui é verificado contra o SHA-256 fixado em
+         * [LocalModelCatalog] antes de ser aceito (R3) — um link que devolva outro
+         * conteúdo é recusado, não executado.
          */
-        const val DEFAULT_MODEL_URL = ""
+        const val DEFAULT_MODEL_URL =
+            "https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct/resolve/main/" +
+                "Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv1280.task?download=true"
 
         /** Anything under this is a truncated download or an error page, not a model. */
         private const val MIN_VALID_BYTES = 50L * 1024 * 1024

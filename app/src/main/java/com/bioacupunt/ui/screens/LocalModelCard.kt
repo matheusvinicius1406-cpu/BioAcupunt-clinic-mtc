@@ -14,16 +14,17 @@ import com.bioacupunt.di.AppContainer
 import kotlinx.coroutines.launch
 
 /**
- * IA LOCAL (no aparelho) — baixar / apagar o modelo Gemma.
+ * IA LOCAL (no aparelho) — baixar / apagar o modelo Qwen 2.5.
  *
  * Quando o modelo está presente, o orquestrador prefere rodar no dispositivo
  * (fallbackOrder 0): de graça, offline e o dado clínico não sai do aparelho. Enquanto
  * ausente, o app cai para a nuvem (ou diz que a IA não está configurada). Este cartão
  * é a única forma de a médica trazer o modelo pra dentro.
  *
- * O arquivo (~1GB) NÃO cabe no APK — é baixado uma vez da URL configurada em Ajustes
- * (ou sideloadado via adb para testes). Gemma é license-bound: hospede você mesmo o
- * `.task` depois de aceitar a licença.
+ * O arquivo (~1,5GB) NÃO cabe no APK — é baixado uma vez, da URL padrão embutida
+ * (Hugging Face) ou de uma URL própria configurada em Ajustes. Diferente do Gemma, que
+ * é gated e exigia conta com licença aceita, o Qwen2.5 é Apache 2.0 e baixa direto:
+ * a médica não precisa de token, cadastro nem colar URL nenhuma.
  */
 @Composable
 fun LocalModelCard() {
@@ -43,7 +44,7 @@ fun LocalModelCard() {
                 Column {
                     Text("IA local no aparelho", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
                     Text(
-                        "Gemma 3 1B · ~1GB · roda offline, sem cota, dado clínico não sai do celular",
+                        "Qwen 2.5 1.5B · ~1,5GB · roda offline, sem cota, dado clínico não sai do celular",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -104,6 +105,6 @@ private fun DownloadButton(
     ) {
         Icon(Icons.Default.Download, null, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
-        Text("Baixar modelo (~1GB, uma vez)")
+        Text("Baixar modelo (~1,5GB, uma vez)")
     }
 }
