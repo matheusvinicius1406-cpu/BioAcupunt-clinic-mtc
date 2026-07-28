@@ -5,6 +5,7 @@ import com.bioacupunt.pharma.data.local.MedicamentoFtsDao
 import com.bioacupunt.pharma.data.local.toDomain
 import com.bioacupunt.pharma.data.local.toEntity
 import com.bioacupunt.pharma.data.local.toFtsEntity
+import com.bioacupunt.pharma.domain.model.ClasseTerapeuticaSummary
 import com.bioacupunt.pharma.domain.model.Medicamento
 import com.bioacupunt.pharma.domain.repository.MedicamentoRepository
 
@@ -35,6 +36,12 @@ class MedicamentoRepositoryImpl(
         dao.insertAll(items.map { it.toEntity() })
         ftsDao.insertAll(items.map { it.toFtsEntity() })
     }
+
+    override suspend fun listClasses(): List<ClasseTerapeuticaSummary> =
+        dao.listClasses().map { ClasseTerapeuticaSummary(it.classeTerapeutica, it.count) }
+
+    override suspend fun getByClasse(classe: String, limit: Int): List<Medicamento> =
+        dao.getByClasse(classe, limit).map { it.toDomain() }
 }
 
 /**

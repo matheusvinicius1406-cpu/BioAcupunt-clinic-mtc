@@ -19,7 +19,33 @@ interface MedicamentoDao {
 
     @Query("SELECT * FROM medicamentos WHERE id IN (:ids)")
     suspend fun getByIds(ids: List<String>): List<MedicamentoEntity>
+
+    @Query(
+        """
+        SELECT classeTerapeutica, COUNT(*) as count FROM medicamentos
+        WHERE classeTerapeutica != '' AND situacaoAtiva = 1
+        GROUP BY classeTerapeutica
+        ORDER BY classeTerapeutica ASC
+        """
+    )
+    suspend fun listClasses(): List<ClasseTerapeuticaCountRow>
+
+    @Query(
+        """
+        SELECT * FROM medicamentos
+        WHERE classeTerapeutica = :classe AND situacaoAtiva = 1
+        ORDER BY nomeComercial ASC
+        LIMIT :limit
+        """
+    )
+    suspend fun getByClasse(classe: String, limit: Int): List<MedicamentoEntity>
 }
+
+/** Projeção de `GROUP BY` — Room mapeia por nome de campo, não precisa de `@ColumnInfo` aqui. */
+data class ClasseTerapeuticaCountRow(
+    val classeTerapeutica: String,
+    val count: Int,
+)
 
 @Dao
 interface MedicamentoFtsDao {

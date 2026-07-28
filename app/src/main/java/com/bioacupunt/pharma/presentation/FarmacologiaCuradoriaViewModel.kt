@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.core.multitenancy.TenantManager
 import com.bioacupunt.core.util.Result
+import com.bioacupunt.pharma.domain.model.ClasseTerapeuticaSummary
 import com.bioacupunt.pharma.domain.model.EfeitoAdverso
 import com.bioacupunt.pharma.domain.model.FormularioMedicamento
 import com.bioacupunt.pharma.domain.model.InteracaoMedicamentosa
@@ -36,6 +37,11 @@ data class FarmacologiaCuradoriaUiState(
     val saving: Boolean = false,
     val error: String? = null,
     val savedMessage: String? = null,
+    // ── Navegação por classe terapêutica (sem precisar buscar) ──
+    val classes: List<ClasseTerapeuticaSummary> = emptyList(),
+    val loadingClasses: Boolean = false,
+    val selectedClasse: String? = null,
+    val classResults: List<Medicamento> = emptyList(),
 ) {
     val canApprove: Boolean get() = draft?.meetsApprovalMinimum == true
 }
@@ -56,6 +62,28 @@ class FarmacologiaCuradoriaViewModel(
 
     private val _state = MutableStateFlow(FarmacologiaCuradoriaUiState())
     val state: StateFlow<FarmacologiaCuradoriaUiState> = _state.asStateFlow()
+
+    init {
+        loadClasses()
+    }
+
+    fun loadClasses() {
+        viewModelScope.launch {
+            _state.update { it.copy(loadingClasses = true) }
+            val classes = runCatching { medicamentoRepository.listClasses() }.getOrDefault(emptyList())
+            _state.update { it.copy(classes = classes, loadingClasses = false) }
+        }
+    }
+
+    fun selectClasse(classe: String) {
+        _state.update { it.copy(selectedClasse = classe, classResults = emptyList()) }
+        viewModelScope.launch {
+            val results = runCatching { medicamentoRepository.getByClasse(classe) }.getOrDefault(emptyList())
+            _state.update { it.copy(classResults = results) }
+        }
+    }
+
+    fun clearClasseSelection() = _state.update { it.copy(selectedClasse = null, classResults = emptyList()) }
 
     fun onQueryChanged(query: String) {
         _state.update { it.copy(query = query) }

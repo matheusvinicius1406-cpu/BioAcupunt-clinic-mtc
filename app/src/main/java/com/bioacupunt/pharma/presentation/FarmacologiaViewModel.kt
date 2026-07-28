@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.core.multitenancy.TenantManager
+import com.bioacupunt.pharma.domain.model.ClasseTerapeuticaSummary
 import com.bioacupunt.pharma.domain.model.FormularioMedicamento
 import com.bioacupunt.pharma.domain.model.FormularioStatus
 import com.bioacupunt.pharma.domain.model.Medicamento
@@ -23,6 +24,11 @@ data class FarmacologiaUiState(
     /** Null = sem curadoria; presente mas RASCUNHO = ainda não vale pra consulta clínica. */
     val selectedFormulario: FormularioMedicamento? = null,
     val loadingDetail: Boolean = false,
+    // ── Navegação por classe terapêutica (sem precisar buscar) ──
+    val classes: List<ClasseTerapeuticaSummary> = emptyList(),
+    val loadingClasses: Boolean = false,
+    val selectedClasse: String? = null,
+    val classResults: List<Medicamento> = emptyList(),
 ) {
     /** A tela só mostra a seção clínica quando isto é true — nunca com um rascunho. */
     val hasApprovedClinicalContent: Boolean
@@ -43,6 +49,28 @@ class FarmacologiaViewModel(
 
     private val _state = MutableStateFlow(FarmacologiaUiState())
     val state: StateFlow<FarmacologiaUiState> = _state.asStateFlow()
+
+    init {
+        loadClasses()
+    }
+
+    fun loadClasses() {
+        viewModelScope.launch {
+            _state.update { it.copy(loadingClasses = true) }
+            val classes = runCatching { medicamentoRepository.listClasses() }.getOrDefault(emptyList())
+            _state.update { it.copy(classes = classes, loadingClasses = false) }
+        }
+    }
+
+    fun selectClasse(classe: String) {
+        _state.update { it.copy(selectedClasse = classe, classResults = emptyList()) }
+        viewModelScope.launch {
+            val results = runCatching { medicamentoRepository.getByClasse(classe) }.getOrDefault(emptyList())
+            _state.update { it.copy(classResults = results) }
+        }
+    }
+
+    fun clearClasseSelection() = _state.update { it.copy(selectedClasse = null, classResults = emptyList()) }
 
     fun onQueryChanged(query: String) {
         _state.update { it.copy(query = query) }

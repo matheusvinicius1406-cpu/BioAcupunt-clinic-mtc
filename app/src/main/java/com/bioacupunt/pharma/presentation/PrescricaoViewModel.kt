@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.core.multitenancy.TenantManager
 import com.bioacupunt.core.util.Result
+import com.bioacupunt.pharma.domain.model.ClasseTerapeuticaSummary
 import com.bioacupunt.pharma.domain.model.Medicamento
 import com.bioacupunt.pharma.domain.model.Prescricao
 import com.bioacupunt.pharma.domain.repository.FormularioMedicamentoRepository
@@ -38,6 +39,11 @@ data class PrescricaoUiState(
     val saving: Boolean = false,
     val error: String? = null,
     val savedMessage: String? = null,
+    // ── Navegação por classe terapêutica (sem precisar buscar) ──
+    val classes: List<ClasseTerapeuticaSummary> = emptyList(),
+    val loadingClasses: Boolean = false,
+    val selectedClasse: String? = null,
+    val classResults: List<Medicamento> = emptyList(),
 )
 
 /**
@@ -71,7 +77,26 @@ class PrescricaoViewModel(
                 _state.update { it.copy(activePrescricoes = list) }
             }
         }
+        loadClasses()
     }
+
+    fun loadClasses() {
+        viewModelScope.launch {
+            _state.update { it.copy(loadingClasses = true) }
+            val classes = runCatching { medicamentoRepository.listClasses() }.getOrDefault(emptyList())
+            _state.update { it.copy(classes = classes, loadingClasses = false) }
+        }
+    }
+
+    fun selectClasse(classe: String) {
+        _state.update { it.copy(selectedClasse = classe, classResults = emptyList()) }
+        viewModelScope.launch {
+            val results = runCatching { medicamentoRepository.getByClasse(classe) }.getOrDefault(emptyList())
+            _state.update { it.copy(classResults = results) }
+        }
+    }
+
+    fun clearClasseSelection() = _state.update { it.copy(selectedClasse = null, classResults = emptyList()) }
 
     fun onQueryChanged(query: String) {
         _state.update { it.copy(query = query) }

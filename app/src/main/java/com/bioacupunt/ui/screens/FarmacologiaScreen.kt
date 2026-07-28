@@ -69,30 +69,46 @@ fun FarmacologiaScreen() {
         Spacer(Modifier.height(12.dp))
         if (state.isSearching) CircularProgressIndicator(modifier = Modifier.padding(16.dp))
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(state.results, key = { it.id }) { med ->
-                Card(
-                    onClick = { vm.selectMedicamento(med) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                ) {
-                    Column(Modifier.padding(12.dp)) {
-                        Text(med.nomeComercial, fontWeight = FontWeight.SemiBold)
+        val selectedClasse = state.selectedClasse
+        when {
+            // Busca ativa: resultados de texto, do jeito que já era.
+            state.query.isNotBlank() -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(state.results, key = { it.id }) { med ->
+                    Card(
+                        onClick = { vm.selectMedicamento(med) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    ) {
+                        Column(Modifier.padding(12.dp)) {
+                            Text(med.nomeComercial, fontWeight = FontWeight.SemiBold)
+                            Text(
+                                "${med.principiosAtivos.joinToString()} · ${med.classeTerapeutica}",
+                                style = MaterialTheme.typography.bodySmall, color = TextMuted,
+                            )
+                        }
+                    }
+                }
+                if (!state.isSearching && state.results.isEmpty()) {
+                    item {
                         Text(
-                            "${med.principiosAtivos.joinToString()} · ${med.classeTerapeutica}",
+                            "Nenhum medicamento encontrado no catálogo ANVISA pra essa busca.",
                             style = MaterialTheme.typography.bodySmall, color = TextMuted,
+                            modifier = Modifier.padding(vertical = 20.dp),
                         )
                     }
                 }
             }
-            if (state.query.isNotBlank() && !state.isSearching && state.results.isEmpty()) {
-                item {
-                    Text(
-                        "Nenhum medicamento encontrado no catálogo ANVISA pra essa busca.",
-                        style = MaterialTheme.typography.bodySmall, color = TextMuted,
-                        modifier = Modifier.padding(vertical = 20.dp),
-                    )
-                }
+            // Sem busca + classe escolhida: lista da classe.
+            selectedClasse != null -> MedicamentoClassResultsList(
+                classe = selectedClasse,
+                items = state.classResults,
+                onBack = vm::clearClasseSelection,
+                onSelect = vm::selectMedicamento,
+            )
+            // Sem busca, sem classe: navegação por classe terapêutica — igual à Biblioteca.
+            else -> {
+                if (state.loadingClasses) CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                ClasseTerapeuticaGrid(classes = state.classes, onSelect = vm::selectClasse)
             }
         }
     }

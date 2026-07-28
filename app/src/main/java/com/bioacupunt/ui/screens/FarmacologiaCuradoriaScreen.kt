@@ -97,9 +97,22 @@ fun FarmacologiaCuradoriaScreen(onBack: () -> Unit) {
                 )
                 Spacer(Modifier.height(12.dp))
                 if (state.isSearching) CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(state.results, key = { it.id }) { med ->
-                        MedicamentoResultCard(med, onClick = { vm.selectMedicamento(med) })
+                val selectedClasse = state.selectedClasse
+                when {
+                    state.query.isNotBlank() -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(state.results, key = { it.id }) { med ->
+                            MedicamentoResultCard(med, onClick = { vm.selectMedicamento(med) })
+                        }
+                    }
+                    selectedClasse != null -> MedicamentoClassResultsList(
+                        classe = selectedClasse,
+                        items = state.classResults,
+                        onBack = vm::clearClasseSelection,
+                        onSelect = vm::selectMedicamento,
+                    )
+                    else -> {
+                        if (state.loadingClasses) CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                        ClasseTerapeuticaGrid(classes = state.classes, onSelect = vm::selectClasse)
                     }
                 }
             }

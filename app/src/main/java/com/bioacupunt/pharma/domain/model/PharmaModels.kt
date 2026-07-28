@@ -32,6 +32,12 @@ data class Medicamento(
     val situacaoAtiva: Boolean = true,
 )
 
+/** Uma classe terapêutica do catálogo + quantos medicamentos ela tem — pra navegação sem busca. */
+data class ClasseTerapeuticaSummary(
+    val classeTerapeutica: String,
+    val count: Int,
+)
+
 @Serializable
 enum class SeveridadeInteracao { LEVE, MODERADA, GRAVE }
 
