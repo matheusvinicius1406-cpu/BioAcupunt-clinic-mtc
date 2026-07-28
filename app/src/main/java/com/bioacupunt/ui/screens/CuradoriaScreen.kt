@@ -55,6 +55,8 @@ fun CuradoriaScreen(onBack: () -> Unit = {}) {
     val provenanceFilter by vm.provenanceFilter.collectAsStateWithLifecycle()
     val searchText by vm.searchText.collectAsStateWithLifecycle()
     val feedback by vm.feedback.collectAsStateWithLifecycle()
+    val studyMaterialDraft by vm.studyMaterialDraft.collectAsStateWithLifecycle()
+    val generatingStudyMaterial by vm.generatingStudyMaterial.collectAsStateWithLifecycle()
     val showBuiltinPacks = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val pcdtPacks = remember(context) { com.bioacupunt.biblioteca.data.packs.PcdtAssetPack.load(context) }
@@ -231,6 +233,90 @@ fun CuradoriaScreen(onBack: () -> Unit = {}) {
                     onApprove = { vm.approve(staged.article.id) },
                     onReject = { vm.reject(staged.article.id) },
                 )
+            }
+
+            // ── Flashcards + Caso simulado sugeridos do artigo recém-aprovado ──
+            // Mesma tela, logo após aprovar — rascunho em memória (R4), nada aqui
+            // grava sozinho até a médica aceitar item por item ou o lote inteiro.
+            if (generatingStudyMaterial) {
+                item {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                        Text("Gerando sugestão de flashcards + caso a partir do artigo aprovado…", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+            studyMaterialDraft?.let { draft ->
+                item {
+                    StudyMaterialDraftCard(
+                        draft = draft,
+                        onAcceptFlashcard = vm::acceptFlashcard,
+                        onAcceptAllFlashcards = vm::acceptAllFlashcards,
+                        onAcceptCase = vm::acceptCase,
+                        onDismiss = vm::dismissStudyMaterial,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Sugestão gerada por [com.bioacupunt.educacao.domain.usecase.GenerateStudyMaterialUseCase]
+ * a partir do artigo que a médica acabou de aprovar. Cada flashcard e o caso têm botão de
+ * aceitar individual; "Aceitar todos" cobre o lote de flashcards de uma vez — o caso
+ * clínico sempre é um aceite à parte, por ser um item só.
+ */
+@Composable
+private fun StudyMaterialDraftCard(
+    draft: com.bioacupunt.educacao.domain.model.StudyMaterialDraft,
+    onAcceptFlashcard: (com.bioacupunt.educacao.domain.model.GeneratedFlashcardDraft) -> Unit,
+    onAcceptAllFlashcards: () -> Unit,
+    onAcceptCase: (com.bioacupunt.educacao.domain.model.GeneratedCaseDraft) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Accent.copy(alpha = 0.06f)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Accent.copy(alpha = 0.25f)),
+    ) {
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("Sugestão de estudo — \"${draft.articleTitle}\"", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold, color = Accent))
+                    Text("Rascunho da IA, grounded só no artigo aprovado. Revise antes de aceitar.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                IconButton(onClick = onDismiss) { Icon(Icons.Default.Close, "Descartar sugestão") }
+            }
+
+            if (draft.flashcards.isNotEmpty()) {
+                Text("FLASHCARDS (${draft.flashcards.size})", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                draft.flashcards.forEach { card ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(card.front, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
+                            Text(card.back, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                        IconButton(onClick = { onAcceptFlashcard(card) }) { Icon(Icons.Default.Check, "Aceitar este flashcard", tint = statusColors().success) }
+                    }
+                }
+                Button(onClick = onAcceptAllFlashcards, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.DoneAll, null, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Aceitar todos os flashcards")
+                }
+            }
+
+            draft.clinicalCase?.let { case ->
+                Spacer(Modifier.height(4.dp))
+                Text("CASO CLÍNICO SIMULADO", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(case.title, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
+                Text(case.vignette.take(200), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 4)
+                OutlinedButton(onClick = { onAcceptCase(case) }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Aceitar caso clínico")
+                }
             }
         }
     }

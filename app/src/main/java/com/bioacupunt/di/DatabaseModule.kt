@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 20
+    private const val DB_VERSION = 21
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -149,6 +149,7 @@ object DatabaseModule {
         if (current >= 18) migrations.add(MIGRATION_17_18)
         if (current >= 19) migrations.add(MIGRATION_18_19)
         if (current >= 20) migrations.add(MIGRATION_19_20)
+        if (current >= 21) migrations.add(MIGRATION_20_21)
         return migrations
     }
 
@@ -855,6 +856,38 @@ object DatabaseModule {
             )
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_prescricoes_patientId` ON `prescricoes` (`patientId`)")
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_prescricoes_tenantId` ON `prescricoes` (`tenantId`)")
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // v21 — Simulador de Casos Clínicos data-driven
+    //
+    // Uma tabela nova, sem FK (mesmo raciocínio de flashcards/v19): o caso fixo
+    // ("Paciente F.S., 38 anos") fica em código (BuiltinSimulatedCases.kt), nunca
+    // nesta tabela. Casos aqui vêm só de aprovação humana na Curadoria da
+    // Biblioteca (a IA rascunha, a médica aceita item por item — R4).
+    //
+    // Sem DEFAULT no SQL — mesma regra de v18/v19/v20.
+    // ═════════════════════════════════════════════════════════════════════
+    private val MIGRATION_20_21 = object : androidx.room.migration.Migration(20, 21) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `simulated_cases` (
+                    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    `tenantId` INTEGER NOT NULL,
+                    `title` TEXT NOT NULL,
+                    `vignette` TEXT NOT NULL,
+                    `questionsText` TEXT NOT NULL,
+                    `answerKey` TEXT NOT NULL,
+                    `category` TEXT NOT NULL,
+                    `sourceArticleId` TEXT NOT NULL,
+                    `createdAt` TEXT NOT NULL,
+                    `updatedAt` TEXT NOT NULL
+                )
+                """.trimIndent()
+            )
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_simulated_cases_tenantId` ON `simulated_cases` (`tenantId`)")
         }
     }
 

@@ -301,6 +301,9 @@ object AppContainer {
         com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory(
             repo = libraryStagingRepository,
             onContentChanged = { ftsSearchService.notifyContentChanged() },
+            generateStudyMaterial = generateStudyMaterialUseCase,
+            flashcardRepository = flashcardRepository,
+            simulatedCaseRepository = simulatedCaseRepository,
         )
     }
 
@@ -321,6 +324,27 @@ object AppContainer {
                 com.bioacupunt.biblioteca.data.MtcKnowledgeBase.articles + libraryStagingRepository.approvedArticles()
             },
         )
+    }
+
+    // ── Educação: Simulador de Casos Clínicos ────────────────
+    val simulatedCaseDao: com.bioacupunt.educacao.data.local.SimulatedCaseDao by lazy { database.simulatedCaseDao() }
+    val simulatedCaseRepository: com.bioacupunt.educacao.domain.repository.SimulatedCaseRepository by lazy {
+        com.bioacupunt.educacao.data.repository.SimulatedCaseRepositoryImpl(
+            dao = simulatedCaseDao,
+            tenantId = { tenantManager.requireTenantId() },
+        )
+    }
+    val simuladorViewModelFactory: com.bioacupunt.educacao.presentation.SimuladorViewModelFactory by lazy {
+        com.bioacupunt.educacao.presentation.SimuladorViewModelFactory(repository = simulatedCaseRepository)
+    }
+
+    /**
+     * Gera rascunho de flashcards + caso simulado a partir de UM artigo já aprovado —
+     * chamado pela Curadoria logo após aprovar (R4: rascunho, nunca salvo automático;
+     * ver [com.bioacupunt.educacao.domain.usecase.GenerateStudyMaterialUseCase]).
+     */
+    val generateStudyMaterialUseCase: com.bioacupunt.educacao.domain.usecase.GenerateStudyMaterialUseCase by lazy {
+        com.bioacupunt.educacao.domain.usecase.GenerateStudyMaterialUseCase(aiRepository)
     }
 
     // ── Farmacologia: Pharma Library + Smart Prescription ──
@@ -683,6 +707,27 @@ object AppContainer {
 
     // ── Seeder ──────────────────────────────────────────────
     private val _seederScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    /**
+     * Reset de dados de DEV/TESTE — nunca produção. A mesma checagem que já protege
+     * [seedDemoDataIfNeeded] (build precisa ser debuggable) é repetida AQUI DENTRO, não só
+     * na tela que chama isto: um botão de UI mal-gateado não deve ser a única coisa entre
+     * uma médica de verdade e o prontuário dela sendo apagado (mesmo raciocínio de
+     * "filtro de segurança mora dentro da função" do R3/`runnableOn`).
+     *
+     * Apaga todas as linhas de todas as tabelas (schema intacto) e re-semeia pacientes de
+     * demonstração + catálogo ANVISA — o mesmo estado de uma instalação nova em dev. Os 16
+     * artigos fixos da Biblioteca são uma constante Kotlin (`MtcKnowledgeBase`), não uma
+     * tabela — sobrevivem ao reset sem precisar de re-seed.
+     */
+    suspend fun resetDevDatabaseIfDebuggable(): Boolean {
+        if (!com.bioacupunt.security.AppHardening.isDebugDebuggable(appContext)) return false
+        database.clearAllTables()
+        seedDemoDataIfNeeded()
+        seedPharmaCatalogIfNeeded()
+        return true
+    }
+
     fun seedDemoDataIfNeeded() {
         // TODO: Configurar produção - atualmente seed apenas para ambientes dev sem dados.
         if (!com.bioacupunt.security.AppHardening.isDebugDebuggable(appContext)) return

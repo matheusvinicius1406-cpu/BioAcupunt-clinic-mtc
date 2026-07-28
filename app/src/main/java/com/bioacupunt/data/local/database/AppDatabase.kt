@@ -41,6 +41,7 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
  * v18: MKIS on-device (knowledge_nodes expandido + ingestion_jobs + purge_certificates + audit_trail + sqlite-vec + FTS5)
  * v19: Educação/Flashcards (flashcards + flashcard_progress)
  * v20: Farmacologia (medicamentos + medicamentos_fts + formulario_medicamento + prescricoes)
+ * v21: Simulador de Casos Clínicos data-driven (simulated_cases)
  */
 @Database(
     entities = [
@@ -78,8 +79,11 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
         com.bioacupunt.pharma.data.local.MedicamentoFtsEntity::class,
         com.bioacupunt.pharma.data.local.FormularioMedicamentoEntity::class,
         com.bioacupunt.pharma.data.local.PrescricaoEntity::class,
+
+        // === Simulador de Casos Clínicos (v21) ===
+        com.bioacupunt.educacao.data.local.SimulatedCaseEntity::class,
     ],
-    version = 20,
+    version = 21,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -113,4 +117,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun medicamentoFtsDao(): com.bioacupunt.pharma.data.local.MedicamentoFtsDao
     abstract fun formularioMedicamentoDao(): com.bioacupunt.pharma.data.local.FormularioMedicamentoDao
     abstract fun prescricaoDao(): com.bioacupunt.pharma.data.local.PrescricaoDao
+
+    // === Simulador de Casos Clínicos DAO (v21) ===
+    abstract fun simulatedCaseDao(): com.bioacupunt.educacao.data.local.SimulatedCaseDao
 }
