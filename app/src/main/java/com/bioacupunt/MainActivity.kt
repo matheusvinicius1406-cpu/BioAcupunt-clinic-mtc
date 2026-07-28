@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
@@ -59,8 +60,13 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         setContent {
             BioAcupuntTheme {
+                // Edge-to-edge (enableEdgeToEdge acima) desliga o resize automático do
+                // teclado — sem consumir o inset do IME aqui, na raiz de verdade da
+                // composição, cada tela precisaria fazer isso sozinha (e nem todas
+                // faziam — campo de texto ficava escondido atrás do teclado). Um único
+                // .imePadding() aqui cobre NavHost, overlay de re-lock e CrashReportScreen.
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().imePadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     var showCrash by remember { mutableStateOf(crashReport != null) }

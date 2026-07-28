@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -144,6 +146,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
+                .verticalScroll(rememberScrollState())
                 .clip(MaterialTheme.shapes.extraLarge)
                 .background(MaterialTheme.colorScheme.surface)
                 .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.extraLarge)
