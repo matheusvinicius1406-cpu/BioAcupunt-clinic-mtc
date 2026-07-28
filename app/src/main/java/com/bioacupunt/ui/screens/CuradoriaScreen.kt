@@ -455,7 +455,7 @@ private fun StagedCard(
             }
             Text(category, style = MaterialTheme.typography.labelSmall, color = Primary)
             Spacer(Modifier.height(6.dp))
-            Text(preview, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            MarkdownText(preview, bodyStyle = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant))
             Spacer(Modifier.height(6.dp))
             Text("Fonte: $source", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (meta.sourceRef.isNotBlank()) {

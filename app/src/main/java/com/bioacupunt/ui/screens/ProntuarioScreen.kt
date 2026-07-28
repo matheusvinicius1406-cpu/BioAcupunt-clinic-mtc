@@ -1335,7 +1335,7 @@ private fun DiagnosticSynthesisResultCard(
                 }
                 if (tcm.explanation.isNotBlank()) {
                     Spacer(Modifier.height(4.dp))
-                    Text(tcm.explanation, style = MaterialTheme.typography.bodySmall, maxLines = 6)
+                    MarkdownText(tcm.explanation, bodyStyle = MaterialTheme.typography.bodySmall)
                 }
                 Spacer(Modifier.height(6.dp))
                 OutlinedButton(onClick = onAcceptTcm, modifier = Modifier.fillMaxWidth()) {
@@ -1357,7 +1357,7 @@ private fun DiagnosticSynthesisResultCard(
                 if (bio.cid11Code.isNotBlank()) Text("CID-11: ${bio.cid11Code}", style = MaterialTheme.typography.bodySmall, color = TextMuted)
                 if (bio.explanation.isNotBlank()) {
                     Spacer(Modifier.height(4.dp))
-                    Text(bio.explanation, style = MaterialTheme.typography.bodySmall, maxLines = 4)
+                    MarkdownText(bio.explanation, bodyStyle = MaterialTheme.typography.bodySmall)
                 }
                 Spacer(Modifier.height(6.dp))
                 OutlinedButton(onClick = onAcceptBiomedical, modifier = Modifier.fillMaxWidth()) {
@@ -1395,7 +1395,7 @@ private fun DiagnosticSynthesisResultCard(
                 Text("PLANO TERAPÊUTICO SUGERIDO", style = MaterialTheme.typography.labelMedium, color = Primary)
                 Spacer(Modifier.height(6.dp))
                 if (therapy.objectives.isNotBlank()) {
-                    Text("Objetivos: ${therapy.objectives}", style = MaterialTheme.typography.bodySmall)
+                    MarkdownText("**Objetivos:** ${therapy.objectives}", bodyStyle = MaterialTheme.typography.bodySmall)
                     Spacer(Modifier.height(4.dp))
                 }
                 if (therapy.recommendedTechniques.isNotEmpty()) {

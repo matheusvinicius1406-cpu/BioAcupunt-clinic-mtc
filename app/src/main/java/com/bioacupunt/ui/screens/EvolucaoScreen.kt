@@ -211,7 +211,11 @@ private fun TimelineEntry(entry: ProntuarioEntry) {
                 Icon(Icons.Default.ExpandMore, null, tint = TextMuted, modifier = Modifier.rotate(rotation))
             }
             AnimatedVisibility(visible = open) {
-                Text(entry.body, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
+                MarkdownText(
+                    entry.body,
+                    modifier = Modifier.padding(top = 6.dp),
+                    bodyStyle = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                )
             }
         }
     }

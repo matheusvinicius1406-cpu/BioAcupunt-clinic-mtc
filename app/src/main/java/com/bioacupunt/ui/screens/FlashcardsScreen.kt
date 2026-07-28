@@ -406,11 +406,15 @@ private fun FlipCard(card: Flashcard, isFlipped: Boolean, onClick: () -> Unit) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
                     Icon(Icons.Default.Lightbulb, null, tint = FlashcardGold, modifier = Modifier.size(32.dp))
                     Spacer(Modifier.height(16.dp))
-                    Text(
+                    // O verso costuma vir de uma seção extraída VERBATIM de um artigo da
+                    // biblioteca, que é markdown — então `**negrito**` e listas apareciam
+                    // crus aqui. Alinhado à esquerda de propósito: uma resposta de várias
+                    // linhas centralizada fica difícil de ler.
+                    MarkdownText(
                         card.back,
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center
-                        )
+                        bodyStyle = MaterialTheme.typography.bodyLarge.copy(
+                            color = Color.White, fontWeight = FontWeight.Medium,
+                        ),
                     )
                     Spacer(Modifier.height(16.dp))
                     Text("Resposta ✓", style = MaterialTheme.typography.labelSmall.copy(color = FlashcardGreen))

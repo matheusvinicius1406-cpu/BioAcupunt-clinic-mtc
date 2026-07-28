@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -35,7 +36,19 @@ import com.bioacupunt.ui.theme.SemanticSuccess
  * app de fato usa — não é um motor de markdown genérico.
  */
 @Composable
-fun MarkdownText(markdown: String, modifier: Modifier = Modifier) {
+fun MarkdownText(
+    markdown: String,
+    modifier: Modifier = Modifier,
+    /**
+     * Estilo do texto corrido. Existe porque as telas que renderizam markdown usam
+     * escalas diferentes (o corpo de um artigo é `bodyMedium`, o verso de um flashcard e
+     * a sugestão da IA no prontuário são `bodySmall`) — sem isto, trocar `Text` por
+     * `MarkdownText` mudava o tamanho da fonte junto, o que parecia um bug de layout.
+     * Títulos e tabelas seguem com escala própria, proporcional.
+     */
+    bodyStyle: TextStyle? = null,
+) {
+    val body = bodyStyle ?: MaterialTheme.typography.bodyMedium
     val lines = markdown.split("\n")
     Column(modifier = modifier) {
         var i = 0
@@ -67,14 +80,14 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier) {
                 line.trimStart().startsWith("✅ ") -> {
                     Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(vertical = 2.dp)) {
                         Icon(Icons.Default.CheckCircle, null, tint = SemanticSuccess, modifier = Modifier.padding(top = 2.dp))
-                        Text(inlineMarkdown(line.trimStart().removePrefix("✅ ")), style = MaterialTheme.typography.bodyMedium)
+                        Text(inlineMarkdown(line.trimStart().removePrefix("✅ ")), style = body)
                     }
                 }
 
                 line.trimStart().startsWith("❌ ") -> {
                     Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(vertical = 2.dp)) {
                         Icon(Icons.Default.Cancel, null, tint = SemanticError, modifier = Modifier.padding(top = 2.dp))
-                        Text(inlineMarkdown(line.trimStart().removePrefix("❌ ")), style = MaterialTheme.typography.bodyMedium)
+                        Text(inlineMarkdown(line.trimStart().removePrefix("❌ ")), style = body)
                     }
                 }
 
@@ -88,7 +101,7 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier) {
                     MarkdownTable(tableLines)
                 }
 
-                else -> Text(inlineMarkdown(line), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(vertical = 1.dp))
+                else -> Text(inlineMarkdown(line), style = body, modifier = Modifier.padding(vertical = 1.dp))
             }
             i++
         }
