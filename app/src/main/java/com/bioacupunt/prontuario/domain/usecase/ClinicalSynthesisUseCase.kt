@@ -38,6 +38,7 @@ class ClinicalSynthesisUseCase(
      * @param clinicalSummary Resumo textual adicional (ex.: evolução recente)
      * @param labSummary Resumo de exames laboratoriais (ex.: "Hb 12.5, PCR 3.2")
      * @param activeMedications Medicações em uso
+     * @param allergySummary Alergias registradas do paciente
      */
     suspend operator fun invoke(
         assessment: MtcAssessment,
@@ -45,9 +46,10 @@ class ClinicalSynthesisUseCase(
         clinicalSummary: String = "",
         labSummary: String = "",
         activeMedications: String = "",
+        allergySummary: String = "",
     ): ClinicalSynthesis {
         // 1. Monta o perfil clínico completo
-        val clinicalProfile = buildClinicalProfile(assessment, history, clinicalSummary, labSummary, activeMedications)
+        val clinicalProfile = buildClinicalProfile(assessment, history, clinicalSummary, labSummary, activeMedications, allergySummary)
 
         // 2. Busca evidência na biblioteca curada
         val searchQuery = buildLibraryQuery(assessment)
@@ -92,6 +94,7 @@ class ClinicalSynthesisUseCase(
         clinicalSummary: String,
         labSummary: String,
         activeMedications: String,
+        allergySummary: String,
     ): String = buildString {
         appendLine("=== PERFIL CLÍNICO COMPLETO ===")
         appendLine()
@@ -220,6 +223,11 @@ class ClinicalSynthesisUseCase(
         if (activeMedications.isNotBlank()) {
             appendLine("--- MEDICAÇÕES EM USO ---")
             appendLine(activeMedications)
+            appendLine()
+        }
+        if (allergySummary.isNotBlank()) {
+            appendLine("--- ALERGIAS REGISTRADAS ---")
+            appendLine(allergySummary)
             appendLine()
         }
 
@@ -441,15 +449,24 @@ class ClinicalSynthesisUseCase(
 
             REGRAS ABSOLUTAS:
             1. BASEIE-SE nos dados fornecidos — sintomas, língua, pulso, Ba Gang, exames,
-               histórico. NÃO invente informações que não estão nos dados.
+               histórico, medicações e alergias. NÃO invente informações que não estão
+               nos dados. Cada achado citado no "explanation" precisa apontar para um
+               dado específico do perfil (ex.: "saburra amarela + pulso rápido" em vez de
+               generalidades que serviriam para qualquer paciente).
             2. Quando evidência da biblioteca estiver disponível, CITE as fontes.
             3. Se os dados forem insuficientes para um diagnóstico confiante, diga isso
-               explicitamente com confidence baixo.
+               explicitamente com confidence baixo — não complete a lacuna com achismo.
             4. NUNCA afirme um diagnóstico como definitivo — use linguagem de sugestão.
             5. NUNCA prescreva automaticamente — a sugestão terapêutica é uma proposta
-               que a médica avalia.
+               que a médica avalia. Se houver medicação em uso ou alergia registrada,
+               mencione explicitamente em "cautionAndContraindications" quando relevante
+               ao plano sugerido (ex.: interação, sensibilização).
             6. Inclua raciocínio clínico para cada componente sugerido, explicando POR
-               QUE determinado padrão ou técnica foi selecionado.
+               QUE determinado padrão ou técnica foi selecionado — não apenas O QUE foi
+               selecionado.
+            7. Gere pelo menos um diagnóstico diferencial sempre que o quadro permitir
+               mais de uma leitura plausível — com "rationale" ligado a achado concreto,
+               não uma lista genérica de possibilidades.
 
             RESPONDA EXCLUSIVAMENTE no formato JSON abaixo, sem texto antes ou depois:
 

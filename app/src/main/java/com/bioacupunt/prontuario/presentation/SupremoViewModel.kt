@@ -370,7 +370,11 @@ class SupremoViewModel(
      * Gera a síntese clínica chamando a IA com todos os dados do prontuário:
      * MtcAssessment completo + histórico + dados de exames.
      */
-    fun synthesizeDiagnosis() {
+    fun synthesizeDiagnosis(
+        labSummary: String = "",
+        activeMedications: String = "",
+        allergySummary: String = "",
+    ) {
         if (_state.value.synthesizing) return
         if (clinicalSynthesisUseCase == null) {
             _state.update { it.copy(synthesisError = "IA de síntese não configurada") }
@@ -382,6 +386,9 @@ class SupremoViewModel(
             val result = clinicalSynthesisUseCase(
                 assessment = snapshot.draft,
                 history = snapshot.history,
+                labSummary = labSummary,
+                activeMedications = activeMedications,
+                allergySummary = allergySummary,
             )
             _state.update {
                 it.copy(

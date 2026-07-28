@@ -160,6 +160,7 @@ fun ProntuarioScreen(
             factory = AppContainer.prescricaoViewModelFactory(state.patientId),
         )
         val supremoState by supremoVm.state.collectAsStateWithLifecycle()
+        val exameState by exameVm.state.collectAsStateWithLifecycle()
 
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             if (state.loading) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -253,14 +254,23 @@ fun ProntuarioScreen(
                     onDismissSuggestion = supremoVm::dismissChiefComplaintSuggestion,
                     onOpenAnamnese = { tab = ProntTab.ANAMNESE.ordinal },
                     onOpenEvolucao = { onOpenEvolucao(state.patientId) },
-                    onSynthesize = supremoVm::synthesizeDiagnosis,
+                )
+                ProntTab.ANAMNESE -> AnamneseTab(supremoVm)
+                ProntTab.PLANO -> PlanoTab(
+                    supremoState, onOverride = onOverride,
+                    onOrientationsChange = supremoVm::updateOrientations,
+                    onSynthesize = {
+                        supremoVm.synthesizeDiagnosis(
+                            labSummary = buildLabSummary(exameState),
+                            activeMedications = buildActiveMedicationsSummary(exameState),
+                            allergySummary = buildAllergySummary(exameState),
+                        )
+                    },
                     onAcceptTcm = supremoVm::acceptTcmSynthesis,
                     onAcceptBiomedical = supremoVm::acceptBiomedicalSynthesis,
                     onAcceptTherapy = supremoVm::acceptTherapeuticSynthesis,
                     onDismissSynthesis = supremoVm::dismissSynthesis,
                 )
-                ProntTab.ANAMNESE -> AnamneseTab(supremoVm)
-                ProntTab.PLANO -> PlanoTab(state, supremoState, onUpdate = vm::updateHeader, onOverride = onOverride)
                 ProntTab.EXAMES -> ExamesTab(exameVm)
                 ProntTab.PRESCRICAO -> PrescricaoTab(prescricaoVm)
                 ProntTab.EVOLUCAO -> EvolucaoTab(
@@ -307,6 +317,37 @@ fun ProntuarioScreen(
     }
 }
 
+/** Formata sinais vitais + exames para o perfil que a Síntese Diagnóstica IA recebe. */
+private fun buildLabSummary(exameState: com.bioacupunt.prontuario.presentation.ExameUiState): String = buildString {
+    if (exameState.vitals.isNotEmpty()) {
+        appendLine("Sinais vitais:")
+        exameState.vitals.forEach { v ->
+            val when_ = v.recordedAt.take(10).takeIf { it.isNotBlank() }
+            appendLine("- ${v.label}: ${v.value}" + (when_?.let { " ($it)" } ?: ""))
+        }
+    }
+    if (exameState.exams.isNotEmpty()) {
+        if (isNotEmpty()) appendLine()
+        appendLine("Exames laboratoriais:")
+        exameState.exams.forEach { e ->
+            val when_ = e.date.take(10).takeIf { it.isNotBlank() }
+            appendLine(
+                "- ${e.name}: ${e.resultTag.label}" +
+                    (e.notes.takeIf { it.isNotBlank() }?.let { " — $it" } ?: "") +
+                    (when_?.let { " ($it)" } ?: "")
+            )
+        }
+    }
+}.trim()
+
+/** Só medicações ativas — inativas/descontinuadas não pesam na síntese. */
+private fun buildActiveMedicationsSummary(exameState: com.bioacupunt.prontuario.presentation.ExameUiState): String =
+    exameState.medications.filter { it.active }
+        .joinToString("\n") { m -> "- ${m.name}" + (m.info.takeIf { it.isNotBlank() }?.let { " ($it)" } ?: "") }
+
+private fun buildAllergySummary(exameState: com.bioacupunt.prontuario.presentation.ExameUiState): String =
+    exameState.allergies.joinToString("\n") { a -> "- ${a.description}" }
+
 private fun initialsOfPatient(name: String): String {
     val parts = name.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
     return when {
@@ -330,11 +371,6 @@ private fun ResumoTab(
     onDismissSuggestion: () -> Unit,
     onOpenAnamnese: () -> Unit,
     onOpenEvolucao: () -> Unit,
-    onSynthesize: () -> Unit = {},
-    onAcceptTcm: () -> Unit = {},
-    onAcceptBiomedical: () -> Unit = {},
-    onAcceptTherapy: () -> Unit = {},
-    onDismissSynthesis: () -> Unit = {},
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -369,29 +405,6 @@ private fun ResumoTab(
                     onAcceptRelieving = onAcceptRelieving,
                     onAcceptReviewOfSystems = onAcceptReviewOfSystems,
                     onDismiss = onDismissSuggestion,
-                )
-            }
-        }
-        // ── SÍNTESE DIAGNÓSTICA IA ────────────────────────────────
-        // Renderiza card completo só quando há resultado/loading/erro;
-        // caso contrário, card minimalista só com botão (LazyColumn leve).
-        if (supremoState.clinicalSynthesis != null || supremoState.synthesizing || supremoState.synthesisError != null) {
-            item {
-                DiagnosticSynthesisResultCard(
-                    synthesis = supremoState.clinicalSynthesis,
-                    synthesizing = supremoState.synthesizing,
-                    synthesisError = supremoState.synthesisError,
-                    onAcceptTcm = onAcceptTcm,
-                    onAcceptBiomedical = onAcceptBiomedical,
-                    onAcceptTherapy = onAcceptTherapy,
-                    onDismiss = onDismissSynthesis,
-                )
-            }
-        } else {
-            item {
-                DiagnosticSynthesisTriggerCard(
-                    completeness = supremoState.completeness,
-                    onSynthesize = onSynthesize,
                 )
             }
         }
@@ -712,10 +725,14 @@ internal fun PulseCard(wrist: Wrist, position: PulsePosition, readings: List<Pul
 
 @Composable
 private fun PlanoTab(
-    state: com.bioacupunt.prontuario.presentation.ProntuarioUiState,
     supremoState: com.bioacupunt.prontuario.presentation.SupremoUiState,
-    onUpdate: (String?, String?, String?, String?) -> Unit,
     onOverride: ((String) -> Unit)? = null,
+    onOrientationsChange: (String) -> Unit = {},
+    onSynthesize: () -> Unit = {},
+    onAcceptTcm: () -> Unit = {},
+    onAcceptBiomedical: () -> Unit = {},
+    onAcceptTherapy: () -> Unit = {},
+    onDismissSynthesis: () -> Unit = {},
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -731,13 +748,37 @@ private fun PlanoTab(
                 )
             }
         }
+        // ── SÍNTESE DIAGNÓSTICA IA ────────────────────────────────
+        // Fica na aba Plano (não Resumo): é aqui que a médica decide o que vira
+        // conduta. Vem depois da triagem de segurança, nunca antes — um plano
+        // sugerido por IA passa pelo mesmo veto que qualquer outro.
+        if (supremoState.clinicalSynthesis != null || supremoState.synthesizing || supremoState.synthesisError != null) {
+            item {
+                DiagnosticSynthesisResultCard(
+                    synthesis = supremoState.clinicalSynthesis,
+                    synthesizing = supremoState.synthesizing,
+                    synthesisError = supremoState.synthesisError,
+                    onAcceptTcm = onAcceptTcm,
+                    onAcceptBiomedical = onAcceptBiomedical,
+                    onAcceptTherapy = onAcceptTherapy,
+                    onDismiss = onDismissSynthesis,
+                )
+            }
+        } else {
+            item {
+                DiagnosticSynthesisTriggerCard(
+                    completeness = supremoState.completeness,
+                    onSynthesize = onSynthesize,
+                )
+            }
+        }
         item {
             SupremoCard {
                 Text("Plano terapêutico", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                 Spacer(Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = state.treatmentPlan,
-                    onValueChange = { onUpdate(null, null, null, it) },
+                    value = supremoState.draft.orientations,
+                    onValueChange = onOrientationsChange,
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 5,
                     placeholder = { Text("Objetivos, técnicas recomendadas e orientações ao paciente.") },
@@ -918,15 +959,28 @@ private fun PrescricaoTab(vm: PrescricaoViewModel) {
                     singleLine = true,
                 )
             }
-            items(state.results, key = { it.id }) { med ->
-                Card(onClick = { vm.selectMedicamento(med) }, modifier = Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(12.dp)) {
-                        Text(med.nomeComercial, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                        Text(
-                            "${med.principiosAtivos.joinToString()} · ${med.classeTerapeutica}",
-                            style = MaterialTheme.typography.bodySmall, color = TextMuted,
-                        )
+            val selectedClasse = state.selectedClasse
+            when {
+                state.query.isNotBlank() -> items(state.results, key = { it.id }) { med ->
+                    Card(onClick = { vm.selectMedicamento(med) }, modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(12.dp)) {
+                            Text(med.nomeComercial, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                            Text(
+                                "${med.principiosAtivos.joinToString()} · ${med.classeTerapeutica}",
+                                style = MaterialTheme.typography.bodySmall, color = TextMuted,
+                            )
+                        }
                     }
+                }
+                selectedClasse != null -> medicamentoClassResultItems(
+                    classe = selectedClasse,
+                    items = state.classResults,
+                    onBack = vm::clearClasseSelection,
+                    onSelect = vm::selectMedicamento,
+                )
+                else -> {
+                    if (state.loadingClasses) item { CircularProgressIndicator(modifier = Modifier.padding(16.dp)) }
+                    classeTerapeuticaGridItems(classes = state.classes, onSelect = vm::selectClasse)
                 }
             }
         } else {
