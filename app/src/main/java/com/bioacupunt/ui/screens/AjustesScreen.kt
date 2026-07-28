@@ -716,9 +716,16 @@ private fun SecurityTab(onLogout: () -> Unit) {
 // ── SYSTEM TAB ──────────────────────────────────────────────
 @Composable
 private fun SystemTab() {
+    val context = LocalContext.current
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
     val cacheManager = remember { com.bioacupunt.di.AppContainer.cacheManager }
+    val localModelManager = remember { com.bioacupunt.di.AppContainer.localModelManager }
+    val localModelState by localModelManager.state.collectAsState(initial = com.bioacupunt.ai.data.provider.LocalModelManager.State.Absent)
     val scope = rememberCoroutineScope()
+    val isDevBuild = remember { com.bioacupunt.security.AppHardening.isDebugDebuggable(context) }
+    var showResetConfirm by remember { mutableStateOf(false) }
+    var resetting by remember { mutableStateOf(false) }
+    var resetMessage by remember { mutableStateOf<String?>(null) }
     var darkMode by remember { mutableStateOf(false) }
     var notificationsEnabled by remember { mutableStateOf(true) }
     var reminderMin by remember { mutableIntStateOf(30) }
@@ -816,19 +823,83 @@ private fun SystemTab() {
             }
         }
 
+        // Só existe em build debuggable (dev/QA) — nunca aparece pra médica em produção.
+        // A checagem real que importa é dentro de AppContainer.resetDevDatabaseIfDebuggable;
+        // isto aqui só evita mostrar um botão que sempre recusaria em release.
+        if (isDevBuild) {
+            item { SectionHeader("Ambiente de desenvolvimento") }
+            item {
+                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = statusColors().danger.copy(alpha = 0.06f))) {
+                    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            "Apaga todos os pacientes, financeiro e prontuários DESTE build de teste " +
+                                "e recarrega os dados de demonstração. Nunca afeta um build de produção " +
+                                "(instalado pela médica) — este botão nem aparece nele.",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        OutlinedButton(
+                            onClick = { showResetConfirm = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = !resetting,
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = statusColors().danger),
+                            border = BorderStroke(1.dp, statusColors().danger),
+                        ) {
+                            if (resetting) {
+                                CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp, color = statusColors().danger)
+                            } else {
+                                Icon(Icons.Default.DeleteForever, null)
+                            }
+                            Spacer(Modifier.width(8.dp))
+                            Text("Resetar dados de teste")
+                        }
+                        resetMessage?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = statusColors().success) }
+                    }
+                }
+            }
+        }
+
         item { SectionHeader("Sobre o App") }
         item {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     AboutRow("Versão", com.bioacupunt.BuildConfig.VERSION_NAME)
                     AboutRow("Build", "${com.bioacupunt.BuildConfig.VERSION_CODE}")
-                    AboutRow("IA", "Gemma 3 1B · local (offline)")
+                    AboutRow(
+                        "IA",
+                        when (localModelState) {
+                            is com.bioacupunt.ai.data.provider.LocalModelManager.State.Ready -> "Gemma 3 1B · local (offline)"
+                            is com.bioacupunt.ai.data.provider.LocalModelManager.State.Downloading -> "Gemma 3 1B · baixando…"
+                            else -> "Nuvem (opcional) — baixe o modelo local acima para rodar offline"
+                        },
+                    )
                     AboutRow("Segurança", "AES-256 + TLS 1.3")
                     AboutRow("Conformidade", "LGPD · CFM · CFMTC")
                     AboutRow("Suporte", "suporte@bioacupunt.com.br")
                 }
             }
         }
+    }
+
+    if (showResetConfirm) {
+        AlertDialog(
+            onDismissRequest = { showResetConfirm = false },
+            icon = { Icon(Icons.Default.DeleteForever, null, tint = statusColors().danger) },
+            title = { Text("Resetar dados de teste?") },
+            text = { Text("Apaga TODOS os pacientes, financeiro e prontuários deste build de teste e recarrega os dados de demonstração. Não pode ser desfeito.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showResetConfirm = false
+                    resetting = true
+                    resetMessage = null
+                    scope.launch {
+                        val didReset = com.bioacupunt.di.AppContainer.resetDevDatabaseIfDebuggable()
+                        resetting = false
+                        resetMessage = if (didReset) "Dados de teste resetados." else "Build não é de teste — nada foi alterado."
+                    }
+                }) { Text("Resetar", color = statusColors().danger) }
+            },
+            dismissButton = { TextButton(onClick = { showResetConfirm = false }) { Text("Cancelar") } },
+        )
     }
 }
 
