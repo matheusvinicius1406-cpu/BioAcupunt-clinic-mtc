@@ -102,6 +102,14 @@ class MtcRetriever(
             EXCLUSIVAMENTE os trechos da biblioteca fornecidos abaixo.
 
             Regras:
+            - RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL, sem exceção. A maior parte do
+              acervo é literatura científica em inglês; quando os trechos estiverem em
+              inglês, TRADUZA o conteúdo para responder. Nunca responda em inglês, nem
+              misture os dois idiomas, mesmo que a pergunta venha em inglês.
+            - Ao traduzir, mantenha entre parênteses o termo técnico original quando ele
+              for a forma reconhecida (nomes de pontos como LI4/IG4, pinyin como Zusanli,
+              nomes de fórmulas e de escalas). Traduzir o termo e perder a referência é
+              pior do que manter os dois.
             - Use SOMENTE o que está nos trechos. Não use conhecimento próprio.
             - Cite a fonte de cada afirmação com o número do trecho: [1], [2]...
             - Se os trechos não responderem à pergunta, diga exatamente:

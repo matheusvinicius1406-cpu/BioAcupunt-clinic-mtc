@@ -132,4 +132,43 @@ class AskLibraryUseCaseTest {
         val grounded = answer as AskLibraryUseCase.Answer.Grounded
         assertTrue("A resposta deve carregar as passagens para verificação", grounded.sources.isNotEmpty())
     }
+
+    // -- Idioma da resposta --------------------------------------------------
+
+    /**
+     * 97% do acervo aberto (1.272 de 1.303 itens vindos de PubMed/WHO/Europe PMC) está
+     * em INGLÊS. Um modelo pequeno espelha o idioma do contexto, então trechos em inglês
+     * produziam respostas em inglês para uma médica brasileira. O prompt ser *escrito* em
+     * português nunca bastou — ele precisa MANDAR responder em português.
+     */
+    @Test
+    fun systemPromptDemandsBrazilianPortugueseOutput() {
+        val prompt = MtcRetriever.SYSTEM_PROMPT.lowercase()
+        assertTrue(
+            "O prompt do RAG precisa exigir resposta em português do Brasil",
+            prompt.contains("português do brasil") || prompt.contains("portugues do brasil"),
+        )
+        assertTrue(
+            "O prompt precisa instruir a TRADUZIR quando o trecho vier em inglês",
+            prompt.contains("tradu"),
+        )
+    }
+
+    /**
+     * Regressão: exigir tradução não pode virar licença para o modelo completar lacunas
+     * com conhecimento próprio. As duas regras convivem — traduzir o que está no trecho,
+     * nunca acrescentar o que não está.
+     */
+    @Test
+    fun translationInstructionDidNotWeakenTheNoOwnKnowledgeRule() {
+        val prompt = MtcRetriever.SYSTEM_PROMPT.lowercase()
+        assertTrue(
+            "O prompt precisa seguir proibindo conhecimento próprio",
+            prompt.contains("não use conhecimento próprio") || prompt.contains("nao use conhecimento proprio"),
+        )
+        assertTrue(
+            "O prompt precisa seguir proibindo inventar pontos/fórmulas/estudos",
+            prompt.contains("nunca invente"),
+        )
+    }
 }

@@ -122,6 +122,13 @@ class GenerateStudyMaterialUseCase(
             clínico SIMULADO (fictício, educacional — nunca um paciente real) que ilustre
             a aplicação do conteúdo do artigo.
 
+            IDIOMA: os flashcards e o caso clínico DEVEM ser escritos em português do
+            Brasil, mesmo quando o artigo-fonte estiver em inglês (a maior parte do acervo
+            é literatura científica em inglês) — traduza o conteúdo. Mantenha entre
+            parênteses o termo técnico original quando ele for a forma reconhecida
+            (LI4/IG4, pinyin, nome de fórmula). Traduzir não é licença para adicionar:
+            continua valendo a regra 1 abaixo.
+
             REGRAS ABSOLUTAS:
             1. Use SOMENTE fatos, termos, pontos e padrões que aparecem literalmente no
                artigo. NUNCA introduza informação externa, mesmo que pareça relacionada.
