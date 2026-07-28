@@ -166,11 +166,14 @@ private fun ChatBubble(turn: UnifiedChatTurn) {
                     .background(if (isUser) Primary else MaterialTheme.colorScheme.background)
                     .padding(horizontal = 14.dp, vertical = 10.dp),
             ) {
-                Text(
-                    turn.text,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface,
-                )
+                // Mensagem da médica é texto puro (não precisa de markdown); a resposta da IA
+                // frequentemente vem com **negrito**/listas/títulos — sem isto, o balão mostrava
+                // os caracteres crus (`**`, `#`, `-`) em vez de formatação de verdade.
+                if (isUser) {
+                    Text(turn.text, style = MaterialTheme.typography.bodySmall, color = Color.White)
+                } else {
+                    MarkdownText(turn.text)
+                }
             }
             if (turn.sources.isNotEmpty()) {
                 Spacer(Modifier.height(4.dp))

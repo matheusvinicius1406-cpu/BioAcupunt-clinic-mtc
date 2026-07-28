@@ -17,8 +17,14 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bioacupunt.di.AppContainer
+import com.bioacupunt.educacao.domain.model.SimulatedCase
+import com.bioacupunt.educacao.presentation.SimuladorViewModel
 import com.bioacupunt.ui.theme.CatBlue
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.TextMuted
 import com.bioacupunt.ui.theme.statusColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -107,6 +113,7 @@ private val quizBank = listOf(
 @Composable
 fun SimuladorScreen() {
     var mode by remember { mutableStateOf<SimMode>(SimMode.Menu) }
+    val simuladorVm: SimuladorViewModel = viewModel(factory = AppContainer.simuladorViewModelFactory)
 
     when (val m = mode) {
         SimMode.Menu       -> SimuladorMenu(
@@ -118,7 +125,7 @@ fun SimuladorScreen() {
             onUpdate  = { mode = it },
             onBack    = { mode = SimMode.Menu }
         )
-        SimMode.ClinicalCase -> ClinicalCaseMode(onBack = { mode = SimMode.Menu })
+        SimMode.ClinicalCase -> ClinicalCaseMode(vm = simuladorVm, onBack = { mode = SimMode.Menu })
     }
 }
 
@@ -350,31 +357,64 @@ private fun QuizResults(correct: Int, total: Int, onBack: () -> Unit, onRetry: (
     }
 }
 
+/**
+ * Casos Clínicos — antes um único caso hardcoded aqui. Agora vem de
+ * [SimuladorViewModel] (caso fixo + casos aprovados na Curadoria da Biblioteca, que
+ * cresce sozinho conforme a médica aprova artigos — ver [com.bioacupunt.educacao.domain.usecase.GenerateStudyMaterialUseCase]).
+ */
 @Composable
-private fun ClinicalCaseMode(onBack: () -> Unit) {
-    val case = remember {
-        """
-**Caso Clínico: Paciente F.S., 38 anos**
-
-**Queixa Principal:**
-Dor no hipocôndrio direito, distensão abdominal, irritabilidade e suspiros frequentes há 3 meses.
-
-**História:**
-Trabalho estressante, conflitos familiares recentes. Ciclos menstruais irregulares com cólicas e coágulos. Insônia com dificuldade para adormecer.
-
-**Semiologia:**
-• Língua: Levemente roxa nas bordas, saburra fina branca
-• Pulso: Xian (tenso como corda) em guan esquerdo
-• Face: Tez levemente acinzentada
-
-**Pergunta 1:** Qual o padrão de desarmonia mais provável?
-**Pergunta 2:** Quais são os princípios de tratamento?
-**Pergunta 3:** Sugira 5 pontos com justificativa.
-        """.trimIndent()
+private fun ClinicalCaseMode(vm: SimuladorViewModel, onBack: () -> Unit) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val selected = state.selectedCase
+    if (selected == null) {
+        ClinicalCaseList(cases = state.cases, onSelect = vm::selectCase, onBack = onBack)
+    } else {
+        ClinicalCaseDetail(
+            case = selected,
+            showAnswer = state.showAnswer,
+            onToggleAnswer = vm::toggleAnswer,
+            onBack = vm::clearSelection,
+        )
     }
+}
 
-    var showAnswer by remember { mutableStateOf(false) }
+@Composable
+private fun ClinicalCaseList(cases: List<SimulatedCase>, onSelect: (SimulatedCase) -> Unit, onBack: () -> Unit) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
+                Text("Casos Clínicos", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+            }
+        }
+        items(cases, key = { it.key }) { case ->
+            Card(onClick = { onSelect(case) }, modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
+                Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(case.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text(case.category, style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                    }
+                    Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, null, tint = TextMuted, modifier = Modifier.size(14.dp))
+                }
+            }
+        }
+        if (cases.isEmpty()) {
+            item { Text("Nenhum caso disponível ainda.", style = MaterialTheme.typography.bodySmall, color = TextMuted) }
+        }
+    }
+}
 
+@Composable
+private fun ClinicalCaseDetail(
+    case: SimulatedCase,
+    showAnswer: Boolean,
+    onToggleAnswer: () -> Unit,
+    onBack: () -> Unit,
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -383,17 +423,25 @@ Trabalho estressante, conflitos familiares recentes. Ciclos menstruais irregular
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
-                Text("Caso Clínico", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                Text(case.title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
             }
         }
         item {
             Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
-                Text(case, modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.bodySmall)
+                Column(Modifier.padding(16.dp)) {
+                    MarkdownText(case.vignette)
+                    if (case.questions.isNotEmpty()) {
+                        Spacer(Modifier.height(10.dp))
+                        case.questions.forEachIndexed { i, q ->
+                            Text("Pergunta ${i + 1}: $q", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        }
+                    }
+                }
             }
         }
         item {
             Button(
-                onClick = { showAnswer = !showAnswer },
+                onClick = onToggleAnswer,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Primary)
             ) { Text(if (showAnswer) "Ocultar resposta" else "Ver resposta comentada") }
@@ -408,28 +456,7 @@ Trabalho estressante, conflitos familiares recentes. Ciclos menstruais irregular
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Resposta Comentada", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold, color = Primary))
                         Spacer(Modifier.height(8.dp))
-                        Text("""
-**Padrão:** Estagnação de Qi do Fígado (肝气郁结)
-
-**Justificativa:**
-• Dor no hipocôndrio → região do Fígado/VB
-• Irritabilidade e suspiros → Qi do Fígado estagnado
-• Pulso Xian no Guan esquerdo → Fígado comprometido
-• Língua levemente roxa → início de estagnação de Sangue
-• Menstruação irregular com coágulos → Qi estagnado afeta Sangue
-
-**Princípios de Tratamento:**
-1. Mover o Qi do Fígado (疏肝理气)
-2. Acalmar o Shen
-3. Regular o Sangue (se sangue estagnado)
-
-**Pontos Sugeridos:**
-• F3 (Taichong) — Yuan do Fígado, principal ponto para mover Qi
-• F14 (Qimen) — Mu do Fígado, desobstrui o Qi do Fígado
-• VB34 (Yanglingquan) — He da VB, alivia hipocôndrio
-• PC6 (Neiguan) — Acalma o Shen, alivia distensão
-• SP6 (Sanyinjiao) — Move Qi e Sangue, regula menstruação
-                        """.trimIndent(), style = MaterialTheme.typography.bodySmall)
+                        MarkdownText(case.answerKey)
                     }
                 }
             }
