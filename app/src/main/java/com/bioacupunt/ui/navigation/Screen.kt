@@ -28,7 +28,6 @@ sealed class Screen(val route: String, val label: String) {
         fun routeFor(patientId: Long) = "evolucao/$patientId"
     }
     data object Flashcards  : Screen("flashcards",  "Flashcards")
-    data object Analytics   : Screen("analytics",   "Analytics")
     data object Simulador   : Screen("simulador",   "Simulador")
     data object AiAssistant : Screen("ai_assistant","Inteligência")
     data object Relatorios  : Screen("relatorios",  "Relatórios")

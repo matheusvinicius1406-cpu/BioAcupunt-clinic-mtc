@@ -203,7 +203,6 @@ fun BioAcupuntNavHost(
                 BibliotecaScreen(
                     onNavigateToFlashcards = { navController.navigate(Screen.Flashcards.route) },
                     onNavigateToSimulador  = { navController.navigate(Screen.Simulador.route) },
-                    onNavigateToAnalytics  = { navController.navigate(Screen.Analytics.route) }
                 )
             }
             composable(Screen.Ajustes.route)     {
@@ -263,7 +262,6 @@ fun BioAcupuntNavHost(
                 FarmacologiaCuradoriaScreen(onBack = { navController.popBackStack() })
             }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
-            composable(Screen.Analytics.route)   { AnalyticsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Simulador.route)   { SimuladorScreen() }
             composable(Screen.AiAssistant.route) { InteligenciaScreen() }
             composable(Screen.Relatorios.route)  { RelatoriosScreen() }

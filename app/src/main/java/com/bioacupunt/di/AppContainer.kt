@@ -584,30 +584,27 @@ object AppContainer {
         com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
             providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
                 kotlinx.coroutines.runBlocking {
-                    // Offline-first: o Gemma no dispositivo é o provider padrão. Reporta
-                    // isAvailable() == false até o modelo ser baixado E verificado (R3);
-                    // nesse meio-tempo o orquestrador devolve "IA não configurada"
-                    // (degrada, não quebra) — a menos que a nuvem opcional esteja ligada.
+                    // Offline-first: o modelo no dispositivo (Qwen 2.5) é o provider
+                    // padrão. Reporta isAvailable() == false até o arquivo estar presente
+                    // E verificado contra o SHA-256 fixado (R3); nesse meio-tempo o
+                    // orquestrador devolve "IA não configurada" (degrada, não quebra) —
+                    // a menos que a nuvem opcional esteja ligada.
                     registry.register(localLlmProvider)
                     // Nuvem opcional, sempre registrada mas desligada por padrão: só entra
                     // no roteamento quando a médica habilita + fornece chave (LGPD). Dado
                     // clínico não sai do aparelho sem esse consentimento explícito.
                     registry.register(cloudAiProvider)
-                    // MockProvider is deliberately NOT registered.
+                    // Não existe mais um provider de mentira aqui para registrar por
+                    // acidente: MockProvider ("Mock resposta para: <prompt>") e
+                    // FakeProvider foram DELETADOS do projeto. Eles não eram usados por
+                    // nenhum teste, e reportavam isAvailable() == true sem condição
+                    // nenhuma — bastava um registro distraído para a médica receber
+                    // texto de espaço reservado no assistente clínico.
                     //
-                    // It answers every prompt with "Mock resposta para: <prompt>"
-                    // and reports isAvailable() == true unconditionally, so once
-                    // the orchestrator started honouring availability it became
-                    // the *selected* provider on any device without a downloaded
-                    // model and without a Gemini key — which is every device
-                    // today. The doctor would have been shown placeholder text
-                    // in the clinical assistant.
-                    //
-                    // With no provider available the orchestrator now returns
-                    // NoProviderAvailable and the UI says the assistant is not
-                    // configured. "I cannot answer" is a safe answer; a fake one
-                    // dressed as an answer is not. Tests construct MockProvider
-                    // directly — it does not need to be in the app's graph.
+                    // Sem provider disponível o orquestrador devolve NoProviderAvailable
+                    // e a UI diz que o assistente não está configurado. "Não sei
+                    // responder" é uma resposta segura; uma resposta falsa vestida de
+                    // resposta não é.
                 }
             },
             healthRegistry = com.bioacupunt.ai.health.DefaultHealthRegistry(),
@@ -716,10 +713,13 @@ object AppContainer {
      * uma médica de verdade e o prontuário dela sendo apagado (mesmo raciocínio de
      * "filtro de segurança mora dentro da função" do R3/`runnableOn`).
      *
-     * Apaga todas as linhas de todas as tabelas (schema intacto) e re-semeia pacientes de
-     * demonstração + catálogo ANVISA — o mesmo estado de uma instalação nova em dev. Os 16
-     * artigos fixos da Biblioteca são uma constante Kotlin (`MtcKnowledgeBase`), não uma
-     * tabela — sobrevivem ao reset sem precisar de re-seed.
+     * Apaga todas as linhas de todas as tabelas (schema intacto) e recarrega SÓ o catálogo
+     * ANVISA — que é referência pública real, não dado de clínica. Nenhum paciente,
+     * consulta ou transação de demonstração é recriado: o seed de demo foi removido do
+     * app (ele era a origem dos "pacientes" Ana Lima/Carlos Souza/Maria Santos e do
+     * faturamento fantasma que apareciam no Dashboard e no Financeiro). Os 16 artigos
+     * fixos da Biblioteca são constante Kotlin (`MtcKnowledgeBase`), não tabela —
+     * sobrevivem ao reset sem re-seed.
      */
     suspend fun resetDevDatabaseIfDebuggable(): Boolean {
         if (!com.bioacupunt.security.AppHardening.isDebugDebuggable(appContext)) return false
@@ -728,117 +728,7 @@ object AppContainer {
         // rememberCoroutineScope) despacha em Dispatchers.Main por padrão. Sem o
         // withContext aqui, a única thread seguinte da coroutine ainda é a main.
         withContext(Dispatchers.IO) { database.clearAllTables() }
-        seedDemoDataIfNeeded()
         seedPharmaCatalogIfNeeded()
         return true
     }
-
-    fun seedDemoDataIfNeeded() {
-        // TODO: Configurar produção - atualmente seed apenas para ambientes dev sem dados.
-        if (!com.bioacupunt.security.AppHardening.isDebugDebuggable(appContext)) return
-        // Fire-and-forget on a SupervisorJob scope: without this guard an
-        // exception here (a failed insert, a constraint violation) would reach
-        // the default uncaught-exception handler and crash the whole app on
-        // startup instead of just skipping the demo data.
-        _seederScope.launch {
-            runCatching { seedDemoData() }
-                .onFailure { e -> com.bioacupunt.observability.AppLogger.e("AppContainer", "Demo seed failed", e) }
-        }
-    }
-
-    /**
-     * Seeds demo data, CRM-first.
-     *
-     * `crm_patients` is the patient registry — every clinical, financial and
-     * scheduling row references it — so the CRM row must be created first and
-     * its *generated* id used for everything that follows.
-     *
-     * The previous version wrote the legacy `patients` row first and then
-     * assumed the id: `if (p.id == 0L) 1L else p.id`. Since every demo patient
-     * was declared with `id = 0L`, all three were written to CRM id 1, each
-     * overwriting the last (the DAO uses REPLACE). Three patients went in and
-     * one came out, wearing the last one's name.
-     */
-    private suspend fun seedDemoData() {
-            if (crmPatientDao.count(tenantManager.requireTenantId()) > 0) return
-            val now = java.time.Instant.now().toString()
-            val demoPatients = listOf(
-                "Ana Lima" to "123",
-                "Carlos Souza" to "456",
-                "Maria Santos" to "789",
-            )
-            demoPatients.forEach { (patientName, document) ->
-                val savedCrm = crmPatientRepository.save(
-                    com.bioacupunt.crm.domain.model.CrmPatient(
-                        id = 0L,
-                        tenantId = 1L,
-                        name = patientName,
-                        phone = "",
-                        email = "",
-                        birthDate = "",
-                        stage = com.bioacupunt.crm.domain.model.PatientStage.ACTIVE.name,
-                        totalSessions = 0,
-                        totalRevenueBrl = 0.0,
-                        lastVisit = now,
-                        nextAppointment = "",
-                        tags = listOf("seed"),
-                        notes = "Seed",
-                        referralSource = "",
-                        npsScore = null,
-                        healthInsurance = "",
-                        mainComplaint = "",
-                        createdAt = now
-                    )
-                )
-                val patientId = (savedCrm as? com.bioacupunt.core.util.Result.Success)?.data?.id
-                    ?: return@forEach
-                createPatient(
-                    com.bioacupunt.patient.domain.model.Patient(
-                        id = 0L, tenantId = 1L, name = patientName, document = document,
-                        status = "ACTIVE", createdAt = now, updatedAt = now
-                    )
-                )
-                val p = com.bioacupunt.patient.domain.model.Patient(
-                    id = patientId, tenantId = 1L, name = patientName, document = document,
-                    status = "ACTIVE", createdAt = now, updatedAt = now
-                )
-                val apptEntity = com.bioacupunt.agenda.data.local.AppointmentEntity(
-                    tenantId = 1L,
-                    patientId = patientId,
-                    patientName = p.name,
-                    date = java.time.LocalDate.now().toString(),
-                    time = "08:00",
-                    status = com.bioacupunt.agenda.domain.model.AppointmentStatus.SCHEDULED.name,
-                    valueBrl = 150.0,
-                    paid = true,
-                    createdAt = now
-                )
-                appointmentDao.save(apptEntity)
-                transacaoDao.save(
-                    com.bioacupunt.financeiro.data.local.TransacaoEntity(
-                        tenantId = 1L,
-                        patientId = patientId,
-                        appointmentId = null,
-                        amountBrl = 150.0,
-                        date = java.time.LocalDate.now().toString(),
-                        type = "PAGAMENTO",
-                        status = "PAGO",
-                        category = "SESSÃO",
-                        createdAt = now
-                    )
-                )
-                reportDao.save(
-                    com.bioacupunt.relatorios.data.local.ReportEntity(
-                        id = 0,
-                        type = "evo",
-                        title = "Nota de Evolução — ${p.name}",
-                        body = "",
-                        filtersJson = "{}",
-                        generatedAt = now,
-                        patientId = patientId,
-                        status = com.bioacupunt.relatorios.domain.model.ReportStatus.DRAFT.name
-                    )
-                )
-            }
-        }
-    }
+}

@@ -46,7 +46,6 @@ class MainActivity : FragmentActivity() {
         // which is exactly how the launch crash stayed invisible for so long.
         val bootFailure = runCatching {
             AppContainer.init(applicationContext)
-            AppContainer.seedDemoDataIfNeeded()
             AppContainer.seedPharmaCatalogIfNeeded()
             com.bioacupunt.ui.theme.ThemeController.load(AppContainer.securePreferences)
             // Cold start: o portão de auto-bloqueio NÃO se aplica — a tela de

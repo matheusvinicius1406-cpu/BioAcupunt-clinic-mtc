@@ -37,7 +37,6 @@ import com.bioacupunt.ui.theme.*
 fun BibliotecaScreen(
     onNavigateToFlashcards: () -> Unit = {},
     onNavigateToSimulador: () -> Unit = {},
-    onNavigateToAnalytics: () -> Unit = {}
 ) {
     val vm = viewModel<com.bioacupunt.biblioteca.presentation.BibliotecaViewModel>(factory = AppContainer.bibliotecaViewModelFactory)
     val state by vm.state.collectAsStateWithLifecycle()
@@ -79,12 +78,6 @@ fun BibliotecaScreen(
                     onClick = onNavigateToSimulador,
                     label = { Text("Simulador", style = MaterialTheme.typography.labelSmall) },
                     leadingIcon = { Icon(Icons.Default.Science, null, modifier = Modifier.size(16.dp)) },
-                    modifier = Modifier.weight(1f),
-                )
-                AssistChip(
-                    onClick = onNavigateToAnalytics,
-                    label = { Text("Analytics", style = MaterialTheme.typography.labelSmall) },
-                    leadingIcon = { Icon(Icons.Default.Analytics, null, modifier = Modifier.size(16.dp)) },
                     modifier = Modifier.weight(1f),
                 )
             }
