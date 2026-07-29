@@ -430,6 +430,80 @@ direção clara de onde deveria chegar:
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
 
+### Onde parei (2026-07-29, parte 2) — Inteligência ganha contexto de paciente, auditoria de 12 itens
+
+**Inteligência deixa de ser uma ilha.** Pedido do usuário ("Clinical OS") foi
+investigado antes de qualquer código — achado real: `AskLibraryUseCase` (RAG),
+`ClinicalSynthesisUseCase` (síntese diagnóstica) e `StructureChiefComplaintUseCase`
+já existiam e funcionavam, não eram stubs. O gap real era outro: o chat
+"Inteligência" (`UnifiedAiChatViewModel`) nunca recebia `patientId` — não sabia
+qual paciente a médica estava atendendo, nem tinha memória entre mensagens.
+Corrigido sem tocar R1/R2/R4:
+- `Screen.AiAssistantPatient` (rota nova, `ai_assistant/{patientId}`) — a rota da
+  bottom nav (`Screen.AiAssistant`, sem paciente) continua intocada.
+- `ProntuarioScreen` ganhou botão "Perguntar à IA sobre este caso" na TopAppBar.
+- `UnifiedAiChatViewModel` ganhou `patientId` + resumo factual do paciente
+  (nome, sessões, última visita, queixa principal do CRM) injetado em
+  `AiRequest.context` **só no caminho de fallback** — o caminho RAG
+  (`askLibrary`) nunca recebe isso, gate R2 sem nenhuma alteração de
+  comportamento. Memória de sessão (últimas 6 mensagens) idem, só no fallback.
+- `AppContextBuilder` virou `AppContextSource` (interface) + implementação —
+  necessário porque a classe concreta precisa de `SecurePreferences`, que exige
+  `AndroidKeyStore` real e não constrói nem sob Robolectric. Sem isso,
+  `UnifiedAiChatViewModelTest.kt` (novo, 4 casos) seria impossível de escrever.
+- `DiagnosticRagUseCase.kt` deletado — código morto, nunca ligado a nenhuma
+  tela, redundante com `ClinicalSynthesisUseCase` (mais capaz, já em produção).
+- `ClinicalSynthesisUseCaseTest.kt` novo (6 casos) — zero cobertura antes disso
+  para o use case mais importante do "terceiro caminho".
+
+**Auditoria de 12 itens** (pedido explícito do usuário, três agentes Explore em
+paralelo — Android/backend/web), todos corrigidos nesta sessão:
+- **Segurança**: `PrescricaoViewModel.selectMedicamento` tratava falha ao ler
+  flags/alergias/medicações como "paciente sem restrição" (anti-padrão #3) no
+  motor de segurança farmacológica — agora vira um `PharmaFinding` FORBIDDEN
+  explícito, mesmo tratamento de qualquer veto real. Backend: Argon2
+  (`hash_password`/`verify_password`) rodava síncrono dentro de handler `async`,
+  travando o event loop inteiro (todas as clínicas) a cada login/registro —
+  movido para `run_in_threadpool`.
+- **Correção**: `LazyColumn` sem `key` no chat da Inteligência e na Curadoria
+  Farmacológica (interações/efeitos removidos por índice, mesma família do bug
+  do Relatórios desta sessão). Web: zero `error.tsx` em todo o projeto — criado
+  na raiz. Middleware web apagava sessão de 30 dias em qualquer falha de rede
+  no refresh, não só quando o token era de fato inválido — corrigido, com log.
+  Logs adicionados no `logout` (backend) e no logout do Sidebar (web), que
+  engoliam erro em silêncio total.
+- **Performance**: índice composto novo em `medicamentos` (Room v21→22, catálogo
+  ANVISA sem nenhum índice desde que a tabela existe). Migration Alembic nova
+  com índices `(clinic_id, deleted_at)` em appointments/transactions/
+  crm_patients/patients + `status` em appointments + `updated_at` no mixin
+  sincronizável inteiro. Paginação (`limit`, mesmo padrão de `/crm`) em
+  `/appointments` e `/patients`; `/reports/analytics` ganhou `start`/`end`
+  opcionais. `web/app/(app)/loading.tsx` novo.
+- **Arquitetura**: `TenantManager` virou interface (`TenantManagerImpl` faz a
+  implementação) — os 16 arquivos que dependiam dela (6 ViewModels +
+  repositories) compilaram sem nenhuma mudança, porque só referenciavam o nome
+  do tipo. Torna esses ViewModels testáveis; **nenhum teste novo foi escrito
+  para eles** — é trabalho futuro, não incluído aqui.
+
+**Ressalvas honestas, não escondidas:**
+- N+1 do sync push (`_find_existing`) foi **mitigado, não eliminado**: de até 2
+  queries sequenciais por item para 1 só (`OR` entre server_id/client_id). Não
+  fiz o batch-fetch do lote inteiro de uma vez — arriscaria quebrar a garantia
+  central do arquivo (nunca sobrescrever edição concorrente em silêncio) se
+  duas mudanças do mesmo lote mirassem a mesma linha.
+- O waterfall de fetch em `(app)/layout.tsx` (o `/me` bloqueando o fetch da
+  página antes de começar) **não foi mexido** — só o `loading.tsx`. A causa
+  raiz exigiria reestruturar pra Suspense/`use()`, mudança que eu não
+  conseguiria verificar sem rodar o dev server e medir o Network tab de
+  verdade; preferi reportar como pendente a fingir resolvido.
+- Busca da biblioteca (`LIKE` + `lower()`, sem suporte de índice) ficou de fora
+  de propósito — exige decisão de estratégia (trigram/FTS), não é índice simples.
+
+**Suite: 194 testes Android (184 + 10 novos), 0 falhas · 67 testes backend, 0
+falhas · `compileDebugKotlin`, `assembleDebug`, `tsc --noEmit`, `npm run build`
+do web, todos verdes.** Nenhum diff em `ClinicalSafetyEngine.kt` nem no
+comportamento/assinatura de `AskLibraryUseCase.kt`. Nada testado em device real.
+
 ### Onde parei (2026-07-29) — troca de motor local (Qwen → Phi-4 Mini Instruct), Llama 3.2 investigado e rejeitado, bug de crash no Relatórios
 
 Também nesta sessão, sem relação com a troca de modelo: corrigido um crash real
