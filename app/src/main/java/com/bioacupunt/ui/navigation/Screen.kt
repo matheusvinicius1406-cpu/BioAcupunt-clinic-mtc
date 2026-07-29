@@ -30,6 +30,12 @@ sealed class Screen(val route: String, val label: String) {
     data object Flashcards  : Screen("flashcards",  "Flashcards")
     data object Simulador   : Screen("simulador",   "Simulador")
     data object AiAssistant : Screen("ai_assistant","Inteligência")
+    // Entrada patient-aware: alcançada a partir do Prontuário ("Perguntar à IA
+    // sobre este caso"), não da bottom nav — AiAssistant acima continua sendo
+    // a rota global/sem paciente, intocada.
+    data object AiAssistantPatient : Screen("ai_assistant/{patientId}", "Inteligência") {
+        fun routeFor(patientId: Long) = "ai_assistant/$patientId"
+    }
     data object Relatorios  : Screen("relatorios",  "Relatórios")
     data object Financeiro  : Screen("financeiro",  "Financeiro")
     data object Conflitos   : Screen("conflitos",   "Conflitos")

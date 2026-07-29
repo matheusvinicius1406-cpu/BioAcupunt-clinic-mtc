@@ -13,6 +13,7 @@ import com.bioacupunt.core.domain.SyncState
 import com.bioacupunt.core.domain.ThemeState
 import com.bioacupunt.core.domain.UserState
 import com.bioacupunt.core.multitenancy.TenantManager
+import com.bioacupunt.core.multitenancy.TenantManagerImpl
 import com.bioacupunt.core.network.ConnectivityObserver
 import com.bioacupunt.core.network.ConnectivityObserverHandler
 import com.bioacupunt.core.network.NetworkStatus
@@ -117,7 +118,7 @@ object AppContainer {
     val localAuthManager: com.bioacupunt.security.LocalAuthManager by lazy {
         com.bioacupunt.security.LocalAuthManager(securePreferences)
     }
-    val tenantManager: TenantManager by lazy { TenantManager(securePreferences) }
+    val tenantManager: TenantManager by lazy { TenantManagerImpl(securePreferences) }
     val connectivityObserver: ConnectivityObserver by lazy { ConnectivityObserver(appContext) }
     val connectivityObserverHandler: ConnectivityObserverHandler by lazy { ConnectivityObserverHandler(connectivityObserver) }
     val syncStatusManager: com.bioacupunt.observability.SyncStatusManager by lazy { com.bioacupunt.observability.SyncStatusManager() }
@@ -661,10 +662,6 @@ object AppContainer {
      * The only sanctioned path for asking the AI a knowledge question: it refuses to
      * call the model when the library has no evidence. See AskLibraryUseCase.
      */
-    val diagnosticRagUseCase: com.bioacupunt.biblioteca.domain.usecase.DiagnosticRagUseCase by lazy {
-        com.bioacupunt.biblioteca.domain.usecase.DiagnosticRagUseCase(mtcRetriever, aiRepository)
-    }
-
     val askLibrary: com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase by lazy {
         com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase(mtcRetriever, aiRepository)
     }
@@ -695,14 +692,19 @@ object AppContainer {
      * o fallback livre ([generateAiResponse]) só é chamado quando a biblioteca não tem
      * evidência. Ver [com.bioacupunt.ai.presentation.UnifiedAiChatViewModel] para o porquê
      * disso é seguro.
+     *
+     * Função de `patientId`, mesmo padrão de [supremoViewModelFactory]/
+     * [evolucaoViewModelFactory] — `0L` (padrão) é o chat geral da bottom nav, sem
+     * paciente; `>0` é aberto a partir do Prontuário e escopado por paciente.
      */
-    val unifiedAiChatViewModelFactory: com.bioacupunt.ai.presentation.UnifiedAiChatViewModelFactory by lazy {
+    fun unifiedAiChatViewModelFactory(patientId: Long = 0L): com.bioacupunt.ai.presentation.UnifiedAiChatViewModelFactory =
         com.bioacupunt.ai.presentation.UnifiedAiChatViewModelFactory(
             askLibrary = askLibrary,
             generateAiResponse = generateAiResponse,
             contextBuilder = appContextBuilder,
+            crmPatientRepository = crmPatientRepository,
+            patientId = patientId,
         )
-    }
 
     // ── Seeder ──────────────────────────────────────────────
     private val _seederScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

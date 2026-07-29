@@ -10,12 +10,25 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
+ * Interface mínima pra [UnifiedAiChatViewModel] depender de — não da implementação
+ * concreta. [AppContextBuilder] precisa de [SecurePreferences], que por sua vez
+ * exige um `AndroidKeyStore` real (via `MasterKey`): não constrói em JVM puro nem
+ * sob Robolectric (sem shadow de keystore), então testar o ViewModel sem esta
+ * interface exigiria device real. Mesmo padrão de "depender de interface, fakear
+ * em teste" já usado em ~90% dos testes do projeto (ver CLAUDE.md).
+ */
+interface AppContextSource {
+    suspend fun build(): String
+}
+
+/**
  * Constrói uma string de contexto do app para injetar no prompt do chat geral.
  *
  * Diferente do RAG clínico (que busca na biblioteca), este contexto é sobre o
  * *funcionamento do dia* da médica: quantas consultas, quem é a profissional,
- * data/hora atual. O modelo 1B não consegue processar grandes volumes, então
- * o contexto é mantido enxuto — cabe em ~200 tokens.
+ * data/hora atual. O modelo local tem um orçamento de contexto pequeno (hoje
+ * 4096 tokens no Phi-4 Mini — ver LocalModelCatalog), então este contexto é
+ * mantido enxuto de propósito — cabe em ~200 tokens.
  *
  * Falhas silenciosas: se um repositório falhar, a seção correspondente é
  * omitida. O chat nunca deve falhar inteiro por falta de contexto.
@@ -23,8 +36,8 @@ import java.util.Locale
 class AppContextBuilder(
     private val appointmentRepository: AppointmentRepository,
     private val securePreferences: SecurePreferences,
-) {
-    suspend fun build(): String = withContext(Dispatchers.IO) {
+) : AppContextSource {
+    override suspend fun build(): String = withContext(Dispatchers.IO) {
         buildString {
             try {
                 val now = LocalDateTime.now()

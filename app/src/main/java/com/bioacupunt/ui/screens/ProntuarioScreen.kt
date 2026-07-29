@@ -69,6 +69,7 @@ fun ProntuarioScreen(
     onBack: (() -> Unit)? = null,
     onOpenEvolucao: (Long) -> Unit = {},
     onOpenAtendimento: () -> Unit = {},
+    onOpenInteligencia: (Long) -> Unit = {},
     vm: ProntuarioViewModel = viewModel(factory = AppContainer.prontuarioViewModelFactory),
     patientId: Long = 0L
 ) {
@@ -109,6 +110,13 @@ fun ProntuarioScreen(
                 navigationIcon = {
                     if (onBack != null && state.patientId > 0L) {
                         IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar") }
+                    }
+                },
+                actions = {
+                    if (state.patientId > 0L) {
+                        IconButton(onClick = { onOpenInteligencia(state.patientId) }) {
+                            Icon(Icons.Default.SmartToy, "Perguntar à IA sobre este caso")
+                        }
                     }
                 },
             )

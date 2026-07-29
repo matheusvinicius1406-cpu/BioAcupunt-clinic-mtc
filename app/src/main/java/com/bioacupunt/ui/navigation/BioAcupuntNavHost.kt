@@ -229,6 +229,7 @@ fun BioAcupuntNavHost(
                     onBack = { navController.popBackStack() },
                     onOpenEvolucao = { openPid -> navController.navigate(Screen.Evolucao.routeFor(openPid)) },
                     onOpenAtendimento = { navController.navigate(Screen.Agenda.route) },
+                    onOpenInteligencia = { openPid -> navController.navigate(Screen.AiAssistantPatient.routeFor(openPid)) },
                     patientId = pid
                 )
             }
@@ -264,6 +265,17 @@ fun BioAcupuntNavHost(
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Simulador.route)   { SimuladorScreen() }
             composable(Screen.AiAssistant.route) { InteligenciaScreen() }
+            composable(
+                route = Screen.AiAssistantPatient.route,
+                arguments = listOf(androidx.navigation.navArgument("patientId") { type = androidx.navigation.NavType.LongType })
+            ) { entry ->
+                val pid = entry.arguments?.getLong("patientId") ?: 0L
+                InteligenciaScreen(
+                    patientId = pid,
+                    onBack = { navController.popBackStack() },
+                    onOpenSynthesis = { openPid -> navController.navigate(Screen.Prontuario.routeFor(openPid)) },
+                )
+            }
             composable(Screen.Relatorios.route)  { RelatoriosScreen() }
         }
     }

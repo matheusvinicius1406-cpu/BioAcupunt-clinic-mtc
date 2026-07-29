@@ -7,6 +7,8 @@ import com.bioacupunt.ai.core.AiRequest
 import com.bioacupunt.ai.domain.usecase.GenerateAiResponseUseCase
 import com.bioacupunt.biblioteca.domain.search.MtcRetriever
 import com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase
+import com.bioacupunt.core.util.Result
+import com.bioacupunt.crm.domain.repository.CrmPatientRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +22,8 @@ data class UnifiedChatTurn(
     val text: String,
     /** Only populated when the reply came from the RAG (Grounded) path. */
     val sources: List<MtcRetriever.Passage> = emptyList(),
+    /** Stable identity for LazyColumn's `key` — messages are only ever appended, never reordered. */
+    val id: String = java.util.UUID.randomUUID().toString(),
 )
 
 data class UnifiedAiChatUiState(
@@ -35,6 +39,8 @@ data class UnifiedAiChatUiState(
     val input: String = "",
     val thinking: Boolean = false,
     val contextLoaded: String? = null,
+    /** Nome do paciente em foco, quando o chat foi aberto a partir do Prontuário. Null = chat geral. */
+    val patientName: String? = null,
 )
 
 /**
@@ -66,13 +72,26 @@ data class UnifiedAiChatUiState(
 class UnifiedAiChatViewModel(
     private val askLibrary: AskLibraryUseCase,
     private val generateAiResponse: GenerateAiResponseUseCase,
-    private val contextBuilder: AppContextBuilder,
+    private val contextBuilder: AppContextSource,
+    private val crmPatientRepository: CrmPatientRepository,
+    /** 0L = chat geral (bottom nav), sem paciente. >0 = aberto a partir do Prontuário. */
+    private val patientId: Long = 0L,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UnifiedAiChatUiState())
     val state: StateFlow<UnifiedAiChatUiState> = _state.asStateFlow()
 
     private var fallbackSystemPrompt: String = buildFallbackSystemPrompt()
+
+    /**
+     * Resumo factual do paciente (nome, sessões, última visita, queixa principal
+     * registrada no CRM) — nunca raciocínio clínico. Só alimenta [runFallback]
+     * via [AiRequest.context] (mesmo mecanismo que [LocalLlmProvider]/
+     * [com.bioacupunt.ai.data.provider.CloudAiProvider] já sabem renderizar). O
+     * caminho RAG ([askLibrary]) nunca vê isto — seu prompt continua inteiramente
+     * definido por [MtcRetriever], gate R2 sem nenhuma alteração.
+     */
+    private var patientContext: Map<String, String> = emptyMap()
 
     init {
         // Carrega o contexto do app (consultas de hoje, nome da médica) de forma assíncrona.
@@ -82,6 +101,26 @@ class UnifiedAiChatViewModel(
             val ctx = runCatching { contextBuilder.build() }.getOrDefault("")
             _state.update { it.copy(contextLoaded = ctx) }
             fallbackSystemPrompt = buildFallbackSystemPrompt(ctx)
+        }
+        if (patientId > 0L) {
+            viewModelScope.launch {
+                when (val result = crmPatientRepository.getById(patientId)) {
+                    is Result.Success -> {
+                        val p = result.data
+                        patientContext = buildMap {
+                            put("Paciente em foco", p.name)
+                            if (p.totalSessions > 0) put("Sessoes realizadas", p.totalSessions.toString())
+                            if (p.lastVisit.isNotBlank()) put("Ultima visita", p.lastVisit)
+                            if (p.mainComplaint.isNotBlank()) put("Queixa principal registrada", p.mainComplaint)
+                        }
+                        _state.update { it.copy(patientName = p.name) }
+                    }
+                    // Falha em silêncio de propósito: contexto de paciente é um extra que
+                    // enriquece a resposta, nunca um requisito — o chat continua funcionando
+                    // sem ele (degrada, não quebra), igual o AppContextBuilder já faz hoje.
+                    else -> Unit
+                }
+            }
         }
     }
 
@@ -134,11 +173,29 @@ class UnifiedAiChatViewModel(
      * já que não tem acesso à internet; a busca é só um recurso a mais, nunca uma dependência.
      */
     private suspend fun runFallback(question: String): UnifiedChatTurn {
+        // Memoria de sessao: as ultimas mensagens da conversa atual (ja vivem em
+        // state.messages) entram no contexto, para perguntas de acompanhamento
+        // ("e sobre isso que eu perguntei antes?") fazerem sentido. Escopo de
+        // sessao apenas — nao persiste entre reaberturas do app.
+        // dropLast(1): a pergunta atual ja esta em state.messages (adicionada em
+        // send() antes deste ponto) e ja vai como request.prompt — nao duplicar.
+        val recentHistory = _state.value.messages.dropLast(1).takeLast(6)
+        val historyContext = if (recentHistory.isNotEmpty()) {
+            mapOf(
+                "Historico recente da conversa" to recentHistory.joinToString("\n") { turn ->
+                    val who = if (turn.role == UnifiedChatRole.USER) "Medica" else "Voce"
+                    "$who: ${turn.text}"
+                },
+            )
+        } else {
+            emptyMap()
+        }
         val request = AiRequest(
             prompt = question,
             systemPrompt = fallbackSystemPrompt,
             temperature = 0.7,
             maxTokens = 1024,
+            context = patientContext + historyContext,
             preferLocal = true,
             taskHint = "general-chat",
             allowWebSearch = true,
@@ -211,9 +268,11 @@ class UnifiedAiChatViewModel(
 class UnifiedAiChatViewModelFactory(
     private val askLibrary: AskLibraryUseCase,
     private val generateAiResponse: GenerateAiResponseUseCase,
-    private val contextBuilder: AppContextBuilder,
+    private val contextBuilder: AppContextSource,
+    private val crmPatientRepository: CrmPatientRepository,
+    private val patientId: Long = 0L,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        UnifiedAiChatViewModel(askLibrary, generateAiResponse, contextBuilder) as T
+        UnifiedAiChatViewModel(askLibrary, generateAiResponse, contextBuilder, crmPatientRepository, patientId) as T
 }

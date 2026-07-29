@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -46,11 +47,26 @@ import kotlinx.coroutines.launch
  * Layout de chat padrão: cabeçalho compacto, mensagens ocupando o espaço disponível,
  * caixa de entrada fixa embaixo. Sem cards promocionais nem sugestões pré-definidas —
  * a médica digita a pergunta dela.
+ *
+ * ## Modo patient-aware
+ *
+ * `patientId > 0` (alcançado a partir do botão "Perguntar à IA sobre este caso" no
+ * Prontuário) escopa o ViewModel por paciente e mostra uma faixa com o nome real. O
+ * chat NÃO reimplementa a síntese diagnóstica — [onOpenSynthesis] leva de volta ao
+ * `ClinicalSynthesisUseCase` já existente (aba Plano do Prontuário), evitando duplicar
+ * a lógica de gerar/aceitar sugestão em dois lugares.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InteligenciaScreen() {
-    val vm = viewModel<UnifiedAiChatViewModel>(factory = AppContainer.unifiedAiChatViewModelFactory)
+fun InteligenciaScreen(
+    patientId: Long = 0L,
+    onBack: (() -> Unit)? = null,
+    onOpenSynthesis: (Long) -> Unit = {},
+) {
+    val vm = viewModel<UnifiedAiChatViewModel>(
+        key = "chat-$patientId",
+        factory = AppContainer.unifiedAiChatViewModelFactory(patientId),
+    )
     val state by vm.state.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -65,6 +81,12 @@ fun InteligenciaScreen() {
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (onBack != null) {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar", tint = TextMuted)
+                }
+                Spacer(Modifier.width(4.dp))
+            }
             Box(
                 modifier = Modifier.size(32.dp).clip(RoundedCornerShape(10.dp)).background(Brush.linearGradient(listOf(Primary, Accent))),
                 contentAlignment = Alignment.Center,
@@ -78,6 +100,33 @@ fun InteligenciaScreen() {
             }
         }
         HorizontalDivider()
+
+        // ── Paciente em foco (só quando o chat foi aberto a partir do Prontuário) ──
+        AnimatedVisibility(
+            visible = patientId > 0L && !state.patientName.isNullOrBlank(),
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f))
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Icon(Icons.Default.Person, null, tint = Primary, modifier = Modifier.size(14.dp))
+                Text(
+                    "Conversando sobre: ${state.patientName}",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = Primary,
+                    modifier = Modifier.weight(1f),
+                )
+                TextButton(onClick = { onOpenSynthesis(patientId) }, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)) {
+                    Text("Ver síntese diagnóstica", style = MaterialTheme.typography.labelSmall)
+                }
+            }
+        }
 
         // ── Contexto do app (só quando carregado) ────────────
         AnimatedVisibility(
@@ -109,7 +158,7 @@ fun InteligenciaScreen() {
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(state.messages) { turn -> ChatBubble(turn) }
+            items(state.messages, key = { it.id }) { turn -> ChatBubble(turn) }
             if (state.thinking) {
                 item {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
