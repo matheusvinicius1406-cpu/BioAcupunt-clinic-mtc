@@ -1,8 +1,10 @@
 import hashlib
+import logging
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.concurrency import run_in_threadpool
 
 from app.core.config import get_settings
 from app.core.errors import AppError
@@ -18,6 +20,8 @@ from app.models.auth import RefreshSession
 from app.models.clinic import Clinic
 from app.models.user import User, UserRole
 from app.schemas.auth import TokenPairResponse
+
+logger = logging.getLogger("bioacupunt.auth")
 
 
 def _hash_token(token: str) -> str:
@@ -44,10 +48,14 @@ async def _issue_new_session(db: AsyncSession, user: User) -> tuple[TokenPairRes
 
 
 async def register_user(db: AsyncSession, *, clinic_id: int, email: str, password: str, full_name: str, role: str) -> User:
+    # Argon2 is deliberately slow (CPU-bound) — calling it inline in this async def
+    # would block the event loop for every clinic's concurrent request while this
+    # one hash runs. run_in_threadpool moves it off the loop.
+    password_hash = await run_in_threadpool(hash_password, password)
     user = User(
         clinic_id=clinic_id,
         email=email.lower().strip(),
-        password_hash=hash_password(password),
+        password_hash=password_hash,
         full_name=full_name,
         role=role,
     )
@@ -96,7 +104,9 @@ async def register(
 async def login(db: AsyncSession, *, email: str, password: str) -> TokenPairResponse:
     result = await db.execute(select(User).where(User.email == email.lower().strip()))
     user = result.scalar_one_or_none()
-    if user is None or not user.is_active or not verify_password(password, user.password_hash):
+    # Same reasoning as register_user: Argon2 verify is CPU-bound, run off the event loop.
+    password_ok = user is not None and await run_in_threadpool(verify_password, password, user.password_hash)
+    if user is None or not user.is_active or not password_ok:
         raise AppError("E-mail ou senha inválidos.", status_code=401, code="invalid_credentials")
 
     pair, _session_id = await _issue_new_session(db, user)
@@ -155,6 +165,11 @@ async def logout(db: AsyncSession, *, refresh_token: str) -> None:
     try:
         payload = decode_token(refresh_token)
     except ValueError:
+        # Idempotent on purpose (an already-invalid/expired token is still a
+        # successful logout from the caller's point of view) — but silent
+        # meant no trail at all to tell a corrupted token apart from a replay
+        # attempt later. Log, don't fail the request.
+        logger.warning("logout called with an undecodable refresh token")
         return
     await db.execute(
         update(RefreshSession).where(RefreshSession.id == payload.get("sid")).values(revoked=True)

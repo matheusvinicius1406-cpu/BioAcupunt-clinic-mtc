@@ -11,7 +11,9 @@ import com.bioacupunt.pharma.domain.model.Prescricao
 import com.bioacupunt.pharma.domain.repository.FormularioMedicamentoRepository
 import com.bioacupunt.pharma.domain.repository.MedicamentoRepository
 import com.bioacupunt.pharma.domain.repository.PrescricaoRepository
+import com.bioacupunt.pharma.domain.safety.PharmaFinding
 import com.bioacupunt.pharma.domain.safety.PharmaSafetyEngine
+import com.bioacupunt.pharma.domain.safety.PharmaSeverity
 import com.bioacupunt.pharma.domain.safety.PharmaVerdict
 import com.bioacupunt.prontuario.domain.repository.ExameRepository
 import com.bioacupunt.prontuario.domain.usecase.MtcAssessmentRepository
@@ -120,17 +122,37 @@ class PrescricaoViewModel(
         }
         viewModelScope.launch {
             val tenantId = tenantManager.requireTenantId()
+            // Uma falha aqui embaixo NUNCA pode virar "sem flag/alergia/medicação" pro motor —
+            // isso calcularia o veredito como se a paciente não tivesse restrição nenhuma, no
+            // exato motor que decide se uma prescrição é segura. getOrDefault(vazio) sozinho já
+            // foi esse bug; agora toda falha de leitura marca dataUnavailable e vira um FORBIDDEN
+            // explícito abaixo — falha fechada, igual R1, nunca silenciosa.
+            var dataUnavailable = false
             val formulario = runCatching { formularioMedicamentoRepository.getById(medicamento.id, tenantId) }.getOrNull()
-            val flags = runCatching { mtcAssessmentRepository.standingFlags(patientId) }.getOrDefault(emptySet())
+            val flags = runCatching { mtcAssessmentRepository.standingFlags(patientId) }
+                .onFailure { dataUnavailable = true }
+                .getOrDefault(emptySet())
             val allergies = runCatching { exameRepository.observeAllergies(patientId).first() }
+                .onFailure { dataUnavailable = true }
                 .getOrDefault(emptyList())
                 .map { it.description }
             val activeIds = _state.value.activePrescricoes.mapNotNull { it.medicamentoId }
             val activeFormularios = runCatching {
                 formularioMedicamentoRepository.getApprovedByIds(activeIds, tenantId)
-            }.getOrDefault(emptyList())
+            }.onFailure { dataUnavailable = true }.getOrDefault(emptyList())
 
-            val verdict = safetyEngine.evaluate(medicamento, formulario, flags, allergies, activeFormularios)
+            var verdict = safetyEngine.evaluate(medicamento, formulario, flags, allergies, activeFormularios)
+            if (dataUnavailable) {
+                verdict = verdict.copy(
+                    findings = verdict.findings + PharmaFinding(
+                        severity = PharmaSeverity.FORBIDDEN,
+                        title = "Dados clínicos indisponíveis",
+                        rationale = "Não foi possível carregar flags clínicas, alergias ou medicações " +
+                            "ativas da paciente agora. O veredito acima pode estar incompleto — não " +
+                            "presuma segurança. Tente novamente antes de prescrever.",
+                    ),
+                )
+            }
             _state.update {
                 it.copy(
                     verdict = verdict,
