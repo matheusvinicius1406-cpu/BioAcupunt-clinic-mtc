@@ -211,7 +211,7 @@ private fun GeneratedReportsTab(reports: List<com.bioacupunt.relatorios.domain.m
                 }
             }
         } else {
-            items(reports, key = { it.generatedAt + it.type }) { r ->
+            items(reports, key = { it.id }) { r ->
                 val date = runCatching {
                     java.time.OffsetDateTime.parse(r.generatedAt).toLocalDate().format(fmt)
                 }.getOrDefault(r.generatedAt.take(10))
