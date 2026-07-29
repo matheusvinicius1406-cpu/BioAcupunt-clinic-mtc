@@ -430,6 +430,82 @@ direção clara de onde deveria chegar:
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
 
+### Onde parei (2026-07-29) — troca de motor local (Qwen → Phi-4 Mini Instruct), Llama 3.2 investigado e rejeitado, bug de crash no Relatórios
+
+Também nesta sessão, sem relação com a troca de modelo: corrigido um crash real
+reportado por stack trace (`IllegalArgumentException: Key ... was already used`) na
+aba "Gerados" de `RelatoriosScreen.kt` — a lista usava `key = { it.generatedAt +
+it.type }` em vez do `id` real (Room `@PrimaryKey(autoGenerate = true)`, já existente
+em `ReportEntity`/`Report`), e um duplo toque rápido em "Gerar" no mesmo template
+podia produzir dois relatórios com o mesmo timestamp de milissegundo, colidindo a
+chave. Trocado para `key = { it.id }`, igual a todo outro `LazyColumn` do app.
+
+**Pedido original**: usar `Llama-3.2-3B-Instruct` como motor por trás de todas as
+funções de IA do app (prontuário, biblioteca, assistente livre), "sem restrição de
+tokens". Esclarecido em duas rodadas de `AskUserQuestion` antes de tocar em código:
+(1) escopo é trocar só o motor — R1/R2/R4 continuam intocados, garantido de graça
+porque `AppContainer.kt` liga um único `AiRepository` compartilhado por todos os
+use cases; (2) execução continua no dispositivo, offline — não um backend novo com
+GPU (o usuário colou snippets `transformers`/`AutoModelForCausalLM`/
+`InferenceClient`/Docker Model Runner da própria página do Hugging Face, que são
+exemplos genéricos de uso em Python/nuvem/desktop, não o caminho deste app).
+
+**Llama 3.2 3B investigado a fundo e REJEITADO — não é só a licença.** A sessão
+gastou muitas rodadas tentando destravar `litert-community/Llama-3.2-3B-Instruct`
+(gated, Llama Community License) com o usuário — ele teve dificuldade real
+completando o fluxo de licença/token do Hugging Face. No fim, usando
+`huggingface_hub` autenticado (não `curl`/`WebFetch` cru, que davam 401/404 pouco
+informativos) pra listar os ~282 repos reais do org `litert-community`, descobri
+que **`litert-community/Llama-3.2-3B-Instruct` NUNCA EXISTIU** — a URL que
+resultados de busca (e eu, repassando pro usuário) insistiam ser real. O repo
+correto é `litert-community/Llama-3.2-3B` (sem "-Instruct"), e ele tem três
+problemas técnicos reais, independentes de qualquer licença:
+1. Só existe em `.litertlm` (`llama3_2_3b_mixed_int4_gpu.litertlm`, ~2.06GB) — sem
+   `.task`. Este app só tem runtime implementado pra `.task` (MediaPipe);
+   `LocalRuntime.LITERT_LM` não tem código nenhum por trás.
+2. É uma build GPU-específica — compatibilidade incerta entre aparelhos Android.
+3. A tag `base_model` aponta pra `meta-llama/Llama-3.2-3B` (sem "-Instruct") —
+   sinal forte de ser o modelo base/pré-treinado, não afinado pra seguir instrução.
+
+Fica registrado no catálogo como `llama-3.2-3b-rejected` (nunca pinado, nunca será)
+só pra nenhuma sessão futura repetir a mesma investigação.
+
+**O que ficou ativo: Phi-4 Mini Instruct.** Depois de rejeitar o Llama, usei a
+mesma API autenticada pra auditar os outros candidatos já presentes no catálogo
+antes de escolher. `litert-community/Phi-4-mini-instruct`: `gated: False` (MIT,
+zero fricção de licença — confirmado também com `curl -I` sem nenhum header de
+autenticação, HTTP 200 direto), tem `.task` real
+(`Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.task`), "instruct" no próprio
+nome, contexto real de 4096 tokens (3x o do Qwen — atende de fato o "sem restrição
+de token" do pedido original, coisa que o Llama nunca teria garantido). Baixado o
+arquivo real (3.910.050.199 bytes) e calculado `sha256sum` de verdade — nunca
+inventado (R3): `88665a75f6a0b5083ce65255139212ff6da705d5f682edbbd109eae784b2173c`.
+Colado em `LocalModelCatalog.kt` (`runtime` trocado de `LITERT_LM` pra `MEDIAPIPE`,
+já que o arquivo real é `.task`; `minDeviceRamMb` subido de 6144 pra 8192 —
+estimativa por proporção de tamanho, ainda não validada em device real).
+`LocalModelManager.MODEL_ID`/`MODEL_FILE_NAME`/`DEFAULT_MODEL_URL` cortados pro Phi-4
+— `DEFAULT_MODEL_URL` continua sendo um link direto ao Hugging Face (confirmado
+funcionando sem token, igual o Qwen tinha) porque este repo também não é gated.
+
+Corrigido de passagem, pra próxima troca de modelo não repetir o mesmo
+esquecimento: `LocalLlmProvider.displayName` e o descritor em `models` eram string
+fixa (`"Qwen 2.5 (no dispositivo)"`); agora leem `LocalModelCatalog.byId(MODEL_ID)`.
+Mesma correção em `AjustesScreen.kt` (card "Sobre o App") e `LocalModelCard.kt`.
+
+**Suite: 184 testes, 0 falhas, 2 skipped de propósito.** `compileDebugKotlin` e
+`assembleDebug` verdes. Nenhum diff em `ClinicalSafetyEngine.kt`,
+`AskLibraryUseCase.kt` ou `ClinicalSynthesisUseCase.kt` — confirmado via `git
+status`.
+
+**Lição pra próxima sessão que for pinar um modelo novo**: não confie em URL de
+resultado de busca nem em `curl`/`WebFetch` cru pra confirmar existência/formato de
+repo gated — os dois deram sinais enganosos aqui (401/404 indistinguíveis de "não
+existe"). `huggingface_hub` autenticado (`HfApi().list_models`/`model_info`) foi o
+único jeito de obter fato real, e resolveu em minutos o que consumiu a sessão
+inteira tentando pelo navegador do usuário. **Nada disso foi testado em device
+real** — mesma limitação de sempre; a estimativa de `minDeviceRamMb = 8192` precisa
+de validação num aparelho de verdade antes de confiar cegamente.
+
 ### Onde parei (2026-07-27, parte 2) — Prontuário: menos checkbox, motivo unificado, 1ª IA no prontuário
 
 Pedido original era reconstrução total do Prontuário (15 "engines", OCR, DICOM,

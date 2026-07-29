@@ -866,10 +866,15 @@ private fun SystemTab() {
                     AboutRow("Build", "${com.bioacupunt.BuildConfig.VERSION_CODE}")
                     AboutRow(
                         "IA",
-                        when (localModelState) {
-                            is com.bioacupunt.ai.data.provider.LocalModelManager.State.Ready -> "Qwen 2.5 1.5B · local (offline)"
-                            is com.bioacupunt.ai.data.provider.LocalModelManager.State.Downloading -> "Qwen 2.5 1.5B · baixando…"
-                            else -> "Nuvem (opcional) — baixe o modelo local acima para rodar offline"
+                        run {
+                            val modelName = com.bioacupunt.ai.local.LocalModelCatalog
+                                .byId(com.bioacupunt.ai.data.provider.LocalModelManager.MODEL_ID)
+                                ?.displayName ?: com.bioacupunt.ai.data.provider.LocalModelManager.MODEL_ID
+                            when (localModelState) {
+                                is com.bioacupunt.ai.data.provider.LocalModelManager.State.Ready -> "$modelName · local (offline)"
+                                is com.bioacupunt.ai.data.provider.LocalModelManager.State.Downloading -> "$modelName · baixando…"
+                                else -> "Nuvem (opcional) — baixe o modelo local acima para rodar offline"
+                            }
                         },
                     )
                     AboutRow("Segurança", "AES-256 + TLS 1.3")

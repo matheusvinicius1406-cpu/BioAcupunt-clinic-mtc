@@ -584,8 +584,9 @@ object AppContainer {
         com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
             providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
                 kotlinx.coroutines.runBlocking {
-                    // Offline-first: o modelo no dispositivo (Qwen 2.5) é o provider
-                    // padrão. Reporta isAvailable() == false até o arquivo estar presente
+                    // Offline-first: o modelo no dispositivo (LocalModelManager.MODEL_ID,
+                    // hoje Phi-4 Mini Instruct) é o provider padrão. Reporta
+                    // isAvailable() == false até o arquivo estar presente
                     // E verificado contra o SHA-256 fixado (R3); nesse meio-tempo o
                     // orquestrador devolve "IA não configurada" (degrada, não quebra) —
                     // a menos que a nuvem opcional esteja ligada.

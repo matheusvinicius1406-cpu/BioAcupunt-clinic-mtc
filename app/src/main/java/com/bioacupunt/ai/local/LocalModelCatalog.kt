@@ -125,19 +125,66 @@ object LocalModelCatalog {
             qualityRank = 20,
             notes = "Apache 2.0 — licença mais livre. Bom português e chinês (útil em MTC).",
         ),
+        // INVESTIGADO E REJEITADO (2026-07-29) — pedido do usuário era trocar o motor
+        // local para Llama 3.2 3B Instruct. `litert-community/Llama-3.2-3B-Instruct`
+        // (a URL óbvia, e a que resultados de busca insistiam existir) NÃO EXISTE —
+        // confirmado com `huggingface_hub` autenticado listando os ~282 repos reais
+        // do org `litert-community`. O repo real é `litert-community/Llama-3.2-3B`
+        // (sem "-Instruct"), e ele tem três problemas técnicos reais, não só a
+        // licença (Llama Community License, gated="auto" — auto-aprovação, mas ainda
+        // exige aceite):
+        //   1. Só existe em `.litertlm` (arquivo real:
+        //      `llama3_2_3b_mixed_int4_gpu.litertlm`, ~2.06GB). Não há `.task`. Este
+        //      app só tem runtime implementado para `.task` (MediaPipe) —
+        //      `LocalRuntime.LITERT_LM` não tem código nenhum por trás ainda.
+        //   2. É uma build específica de GPU (`_gpu` no nome) — compatibilidade
+        //      incerta entre aparelhos Android variados.
+        //   3. A tag `base_model` desse arquivo aponta para `meta-llama/Llama-3.2-3B`
+        //      (SEM "-Instruct") — sinal forte de que é o modelo base/pré-treinado,
+        //      não o afinado para seguir instrução. Não haveria como confirmar sem
+        //      baixar o conteúdo gated, e não faz sentido pedir mais um aceite de
+        //      licença para um modelo que provavelmente não serve como assistente.
+        // Não fica pinado nem será — mantido aqui só como registro, para nenhuma
+        // sessão futura repetir a mesma investigação. Ver CLAUDE.md "Onde parei
+        // (2026-07-29)" para o histórico completo da tentativa.
         LocalModel(
-            id = "phi-4-mini-instruct",
-            displayName = "Phi-4 Mini",
-            fileName = "phi-4-mini-instruct.litertlm",
+            id = "llama-3.2-3b-rejected",
+            displayName = "Llama 3.2 3B (rejeitado)",
+            fileName = "llama3_2_3b_mixed_int4_gpu.litertlm",
             runtime = LocalRuntime.LITERT_LM,
-            license = ModelLicense.MIT,
-            huggingFaceRepo = "litert-community/Phi-4-mini-instruct",
+            license = ModelLicense.LLAMA_COMMUNITY,
+            huggingFaceRepo = "litert-community/Llama-3.2-3B",
             sizeBytes = 0L,
             sha256 = "",
-            minDeviceRamMb = 6144,
+            minDeviceRamMb = 8192,
+            contextTokens = 0,
+            qualityRank = 0,
+            notes = "REJEITADO: só .litertlm (sem runtime no app), build GPU-específica, provável modelo base (não-instruct). Ver comentário acima.",
+        ),
+        // PINADO E ATIVO (2026-07-29) — substituiu o Qwen 2.5 como modelo local padrão.
+        // Escolhido depois de o Llama 3.2 3B (acima) ser investigado e rejeitado: este
+        // é `.task` real (mesmo runtime MediaPipe já testado, não `.litertlm`), MIT
+        // (`gated: False`, confirmado via `huggingface_hub` autenticado — sem fricção
+        // de licença nenhuma), "instruct" no próprio nome, e contexto real de 4096
+        // tokens (`ekv4096`, mais que o triplo do Qwen). sizeBytes/sha256 vêm de
+        // `sha256sum` sobre o arquivo real baixado de
+        // `litert-community/Phi-4-mini-instruct/resolve/main/
+        // Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.task` — nunca inventados (R3).
+        LocalModel(
+            id = "phi-4-mini-instruct",
+            displayName = "Phi-4 Mini Instruct",
+            fileName = "Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.task",
+            runtime = LocalRuntime.MEDIAPIPE,
+            license = ModelLicense.MIT,
+            huggingFaceRepo = "litert-community/Phi-4-mini-instruct",
+            sizeBytes = 3_910_050_199L,
+            sha256 = "88665a75f6a0b5083ce65255139212ff6da705d5f682edbbd109eae784b2173c",
+            // ~3.9GB de peso, maior que o Qwen (1.5GB, exige 4096). Estimativa por
+            // proporção — ainda não validada em device real.
+            minDeviceRamMb = 8192,
             contextTokens = 4096,
             qualityRank = 30,
-            notes = "MIT. Raciocínio estruturado forte.",
+            notes = "MIT, sem licença restrita. Raciocínio estruturado forte, contexto 3x maior que o Qwen.",
         ),
         LocalModel(
             id = "gemma-4-e2b-it",

@@ -41,10 +41,17 @@ fi
 
 # repo:arquivo:id_no_catalogo
 MODELS=(
-  "litert-community/Qwen2.5-1.5B-Instruct:qwen2.5-1.5b-instruct.litertlm:qwen2.5-1.5b-instruct"
+  # Corrigido: o arquivo em uso pelo app é "-q8.task" (MEDIAPIPE), não ".litertlm"
+  # — estava dessincronizado do LocalModelCatalog.kt/LocalModelManager.kt.
+  "litert-community/Qwen2.5-1.5B-Instruct:Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv1280.task:qwen2.5-1.5b-instruct"
   "litert-community/Phi-4-mini-instruct:phi-4-mini-instruct.litertlm:phi-4-mini-instruct"
   "litert-community/Gemma3-1B-IT:gemma-3-1b-it-int4.task:gemma-3-1b-it-int4"
   "litert-community/gemma-4-E2B-it-litert-lm:gemma-4-E2B-it.litertlm:gemma-4-e2b-it"
+  "litert-community/Phi-4-mini-instruct:Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.task:phi-4-mini-instruct"
+  # Llama 3.2 3B investigado e rejeitado em 2026-07-29 — ver comentário em
+  # LocalModelCatalog.kt (id "llama-3.2-3b-rejected"): só existe em .litertlm sem
+  # runtime no app, build GPU-específica, provável modelo base (não-instruct).
+  # Não incluído aqui de propósito.
 )
 
 echo "== Baixando modelos =="

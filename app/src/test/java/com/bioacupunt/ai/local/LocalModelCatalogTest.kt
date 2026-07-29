@@ -111,6 +111,14 @@ class LocalModelCatalogTest {
             "Gemma segue não-oferecível: repo gated, sem hash fixado",
             LocalModelCatalog.verifiable.any { it.id == "gemma-3-1b-it-int4" },
         )
+        // Llama 3.2 3B (2026-07-29): investigado como candidato e REJEITADO — só existe
+        // em .litertlm (sem runtime no app), build GPU-específica, provável modelo base
+        // (não-instruct). Fica no catálogo só como registro histórico e nunca será
+        // pinado. Ver comentário completo em LocalModelCatalog.kt.
+        assertFalse(
+            "Llama fica permanentemente não-oferecível — rejeitado, não só pendente",
+            LocalModelCatalog.verifiable.any { it.id == "llama-3.2-3b-rejected" },
+        )
     }
 
     @Test

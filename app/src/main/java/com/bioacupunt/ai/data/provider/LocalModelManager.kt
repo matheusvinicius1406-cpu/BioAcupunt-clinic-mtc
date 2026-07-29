@@ -188,39 +188,44 @@ class LocalModelManager(
     }
 
     companion object {
-        const val MODEL_FILE_NAME = "qwen2.5-1.5b-instruct-q8.task"
+        const val MODEL_FILE_NAME = "phi-4-mini-instruct-q8.task"
 
         /**
          * Catalog id whose pinned SHA-256 / size govern this file. Ties the download and
          * readiness checks to [LocalModelCatalog.byId], so R3 is enforced on the LLM path.
          *
-         * Qwen, não Gemma: o repo do Gemma no Hugging Face é gated (HTTP 401 sem conta
-         * com a licença aceita), então era impossível baixá-lo automaticamente. Ver a
-         * nota em [LocalModelCatalog].
+         * Trocado de Qwen2.5 para Phi-4 Mini Instruct (2026-07-29). O pedido original do
+         * usuário era Llama 3.2 3B Instruct; investigado e rejeitado (ver a entrada
+         * `llama-3.2-3b-rejected` em [LocalModelCatalog] e o handoff em CLAUDE.md) por
+         * três problemas técnicos reais — só `.litertlm` sem runtime neste app, build
+         * GPU-específica, e provável modelo base (não-instruct) — independentes da
+         * licença gated que já tinha causado bastante fricção. Phi-4 Mini Instruct tem
+         * `.task` real (mesmo runtime já testado do Qwen), MIT (`gated: false`,
+         * confirmado via API autenticada — zero fricção de licença), e contexto real de
+         * 4096 tokens (3x o do Qwen). sizeBytes/sha256 em [LocalModelCatalog] vêm de
+         * `sha256sum` sobre o arquivo real baixado, nunca inventados (R3).
          */
-        const val MODEL_ID = "qwen2.5-1.5b-instruct"
+        const val MODEL_ID = "phi-4-mini-instruct"
 
         /**
          * URL padrão REAL e verificada — a médica não precisa configurar nada.
          *
-         * Isto só é possível porque o modelo deixou de ser o Gemma: o repo do Gemma é
-         * gated (HTTP 401 `GatedRepo` sem uma conta Hugging Face com a licença aceita),
-         * então qualquer URL padrão dele falharia para todo mundo. O Qwen2.5 é Apache 2.0
-         * e `gated: false`, então este link baixa direto, sem token, sem cadastro.
+         * Confirmado com `curl -I` sem nenhum header de autenticação: o Hugging Face
+         * responde 200 com redirect público (`user_id=public` na URL assinada do CDN) —
+         * mesma facilidade que o Qwen tinha, porque este repo também é `gated: false`
+         * (MIT). `X-Linked-Size` bateu exatamente com o `sizeBytes` pinado no catálogo.
          *
          * Continua sendo um hot-link para terceiro: se um dia o Hugging Face sair do ar ou
          * mover o arquivo, o download falha com mensagem clara e a nuvem assume — o app
-         * degrada, não quebra. Hospedar por conta própria continua sendo a opção mais
-         * robusta, e para isso basta preencher `SecurePreferences.localModelUrl`
-         * (Ajustes > IA), que tem precedência sobre este valor.
+         * degrada, não quebra.
          *
          * O arquivo baixado daqui é verificado contra o SHA-256 fixado em
          * [LocalModelCatalog] antes de ser aceito (R3) — um link que devolva outro
          * conteúdo é recusado, não executado.
          */
         const val DEFAULT_MODEL_URL =
-            "https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct/resolve/main/" +
-                "Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv1280.task?download=true"
+            "https://huggingface.co/litert-community/Phi-4-mini-instruct/resolve/main/" +
+                "Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.task?download=true"
 
         /** Anything under this is a truncated download or an error page, not a model. */
         private const val MIN_VALID_BYTES = 50L * 1024 * 1024

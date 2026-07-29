@@ -21,7 +21,11 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * ON-DEVICE LLM PROVIDER — Qwen 2.5 running fully inside the app.
+ * ON-DEVICE LLM PROVIDER — runs whichever model [LocalModelCatalog.byId] with
+ * [LocalModelManager.MODEL_ID] resolves to, fully inside the app (Phi-4 Mini Instruct
+ * as of 2026-07-29; Qwen 2.5 1.5B before that — see [LocalModelManager.MODEL_ID] for
+ * why). [displayName] and the [models] descriptor read the catalog instead of
+ * hardcoding a name, so the next swap does not silently leave a stale label behind.
  *
  * Plugs into the existing [AiProvider] contract, so the orchestrator can route to it
  * exactly like any cloud provider. No architectural change was needed: the AI layer
@@ -58,7 +62,8 @@ class LocalLlmProvider(
 ) : AiProvider {
 
     override val id: String = PROVIDER_ID
-    override val displayName: String = "Qwen 2.5 (no dispositivo)"
+    override val displayName: String =
+        (LocalModelCatalog.byId(MODEL_ID)?.displayName ?: MODEL_ID) + " (no dispositivo)"
 
     override val capabilities = AiProviderCapabilities(
         capabilities = setOf(AiCapability.Chat),
@@ -87,7 +92,7 @@ class LocalLlmProvider(
         AiModelDescriptor(
             id = MODEL_ID,
             providerId = PROVIDER_ID,
-            displayName = "Qwen 2.5 1.5B (q8)",
+            displayName = LocalModelCatalog.byId(MODEL_ID)?.displayName ?: MODEL_ID,
             capabilities = setOf(AiCapability.Chat),
             contextTokens = MAX_CONTEXT_TOKENS,
             isLocal = true,
@@ -187,11 +192,11 @@ class LocalLlmProvider(
         const val MODEL_ID = LocalModelManager.MODEL_ID
 
         /**
-         * Vem do catálogo, não de uma constante própria. O arquivo em uso é um build
-         * `ekv1280`: seu KV cache tem 1280 tokens e pedir mais que isso ao runtime faz a
-         * criação da sessão FALHAR, não truncar. Enquanto este número vivia duplicado
-         * aqui (2048) e no catálogo (1280), a única coisa que impedia esse crash era
-         * ninguém ter rodado o modelo ainda.
+         * Vem do catálogo, não de uma constante própria. O tamanho do KV cache é fixado
+         * na conversão do arquivo (`ekv<N>` no nome, hoje 4096 para o Phi-4 Mini) — pedir
+         * mais que isso ao runtime faz a criação da sessão FALHAR, não truncar. Enquanto
+         * este número vivia duplicado aqui e no catálogo, a única coisa que impedia esse
+         * crash era ninguém ter rodado o modelo ainda.
          */
         private val MAX_CONTEXT_TOKENS: Int =
             LocalModelCatalog.byId(MODEL_ID)?.contextTokens ?: 1280
