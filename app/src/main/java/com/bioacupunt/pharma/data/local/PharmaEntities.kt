@@ -12,7 +12,12 @@ import androidx.room.PrimaryKey
  * `AppContainer.seedPharmaCatalogIfNeeded`). Global, sem tenantId — é referência pública,
  * igual `MtcKnowledgeBase`, não dado de clínica.
  */
-@Entity(tableName = "medicamentos")
+@Entity(
+    tableName = "medicamentos",
+    // listClasses()/getByClasse() (PharmaDao.kt) sempre filtram os dois juntos —
+    // índice composto evita full scan a cada abertura de tela de Farmácia.
+    indices = [Index("classeTerapeutica", "situacaoAtiva")],
+)
 data class MedicamentoEntity(
     @PrimaryKey val id: String, // NUMERO_REGISTRO_PRODUTO da ANVISA
     val nomeComercial: String,

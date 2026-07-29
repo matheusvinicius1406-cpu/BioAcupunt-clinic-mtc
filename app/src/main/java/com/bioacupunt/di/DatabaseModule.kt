@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 21
+    private const val DB_VERSION = 22
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -150,6 +150,7 @@ object DatabaseModule {
         if (current >= 19) migrations.add(MIGRATION_18_19)
         if (current >= 20) migrations.add(MIGRATION_19_20)
         if (current >= 21) migrations.add(MIGRATION_20_21)
+        if (current >= 22) migrations.add(MIGRATION_21_22)
         return migrations
     }
 
@@ -888,6 +889,24 @@ object DatabaseModule {
                 """.trimIndent()
             )
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_simulated_cases_tenantId` ON `simulated_cases` (`tenantId`)")
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // v22 — índice em `medicamentos` (catálogo ANVISA, ~10.260 itens)
+    //
+    // A tabela nunca teve índice desde que foi criada (v19→20). listClasses()/
+    // getByClasse() (PharmaDao.kt) filtram SEMPRE por classeTerapeutica +
+    // situacaoAtiva juntos — full table scan a cada abertura de qualquer tela
+    // de Farmácia. Índice composto serve as duas queries (a segunda coluna
+    // também cobre WHERE só por classeTerapeutica, por prefixo à esquerda).
+    // ═════════════════════════════════════════════════════════════════════
+    private val MIGRATION_21_22 = object : androidx.room.migration.Migration(21, 22) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_medicamentos_classeTerapeutica_situacaoAtiva` " +
+                    "ON `medicamentos` (`classeTerapeutica`, `situacaoAtiva`)"
+            )
         }
     }
 

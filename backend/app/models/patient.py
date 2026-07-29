@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy import DateTime, ForeignKey, Index, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -19,6 +19,9 @@ class Patient(Base, SyncableMixin):
     """
 
     __tablename__ = "patients"
+    __table_args__ = (
+        Index("ix_patients_clinic_deleted", "clinic_id", "deleted_at"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     clinic_id: Mapped[int] = mapped_column(ForeignKey("clinics.id"), index=True)

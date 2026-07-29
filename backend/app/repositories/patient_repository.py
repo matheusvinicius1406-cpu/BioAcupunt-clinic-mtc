@@ -17,10 +17,15 @@ async def create_patient(db: AsyncSession, *, clinic_id: int, name: str, documen
     return patient
 
 
-async def list_patients(db: AsyncSession, *, clinic_id: int) -> list[Patient]:
-    result = await db.execute(
-        select(Patient).where(Patient.clinic_id == clinic_id, Patient.deleted_at.is_(None))
+async def list_patients(db: AsyncSession, *, clinic_id: int, limit: int = 1000) -> list[Patient]:
+    """Scoped by clinic, tombstones excluded, most recently updated first."""
+    stmt = (
+        select(Patient)
+        .where(Patient.clinic_id == clinic_id, Patient.deleted_at.is_(None))
+        .order_by(Patient.updated_at.desc(), Patient.id.desc())
+        .limit(limit)
     )
+    result = await db.execute(stmt)
     return list(result.scalars().all())
 
 

@@ -36,8 +36,12 @@ async def reports_overview(
 
 @router.get("/analytics", response_model=AnalyticsOverview)
 async def reports_analytics(
+    start: date | None = Query(default=None, description="Início do período (YYYY-MM-DD)."),
+    end: date | None = Query(default=None, description="Fim do período (YYYY-MM-DD)."),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> AnalyticsOverview:
-    series = await reports_repository.monthly_analytics(db, clinic_id=current_user.clinic_id)
+    series = await reports_repository.monthly_analytics(
+        db, clinic_id=current_user.clinic_id, start=start, end=end
+    )
     return AnalyticsOverview(**series)

@@ -83,7 +83,7 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
         // === Simulador de Casos Clínicos (v21) ===
         com.bioacupunt.educacao.data.local.SimulatedCaseEntity::class,
     ],
-    version = 21,
+    version = 22,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

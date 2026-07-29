@@ -25,8 +25,10 @@ class SyncableMixin:
     #: contraindication ends up recorded on the copy nobody opens.
     client_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
 
+    #: Indexed: every listing query in the repositories sorts by this (most
+    #: recent first), and sync's delta pull filters by it too.
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), index=True
     )
 
     #: Soft delete. A hard DELETE cannot be communicated to a device that is

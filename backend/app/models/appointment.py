@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import DateTime, ForeignKey, Numeric, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, Index, Numeric, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -18,6 +18,11 @@ class AppointmentStatus:
 
 class Appointment(Base, SyncableMixin):
     __tablename__ = "appointments"
+    __table_args__ = (
+        # Toda leitura filtra os dois juntos (ver appointment_repository.py) —
+        # um índice em clinic_id sozinho não serve bem essa combinação.
+        Index("ix_appointments_clinic_deleted", "clinic_id", "deleted_at"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     clinic_id: Mapped[int] = mapped_column(ForeignKey("clinics.id"), index=True)
@@ -30,7 +35,8 @@ class Appointment(Base, SyncableMixin):
         ForeignKey("users.id"), index=True, nullable=True
     )
     scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    status: Mapped[str] = mapped_column(String(20), default=AppointmentStatus.SCHEDULED)
+    # Indexed: reports_repository.count_appointments_by_status() GROUP BYs this.
+    status: Mapped[str] = mapped_column(String(20), default=AppointmentStatus.SCHEDULED, index=True)
     notes: Mapped[str] = mapped_column(Text, default="")
     # Numeric, not float: binary floating point accumulates error over sums, and
     # this column feeds the revenue figures the practice is run on.

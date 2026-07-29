@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
@@ -34,10 +34,11 @@ async def create_patient(
 
 @router.get("", response_model=list[PatientResponse])
 async def list_patients(
+    limit: int = Query(default=1000, ge=1, le=5000),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> list[PatientResponse]:
-    return await patient_repository.list_patients(db, clinic_id=current_user.clinic_id)
+    return await patient_repository.list_patients(db, clinic_id=current_user.clinic_id, limit=limit)
 
 
 @router.get("/{patient_id}", response_model=PatientResponse)

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import Date, DateTime, ForeignKey, Numeric, String, Text, func
+from sqlalchemy import Date, DateTime, ForeignKey, Index, Numeric, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -24,6 +24,9 @@ class Transaction(Base, SyncableMixin):
     """A financial movement — the server side of the app's `transacoes` table."""
 
     __tablename__ = "transactions"
+    __table_args__ = (
+        Index("ix_transactions_clinic_deleted", "clinic_id", "deleted_at"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     clinic_id: Mapped[int] = mapped_column(ForeignKey("clinics.id"), index=True)

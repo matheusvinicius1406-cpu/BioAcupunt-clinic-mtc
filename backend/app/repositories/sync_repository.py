@@ -17,7 +17,7 @@ from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.appointment import Appointment
@@ -102,27 +102,36 @@ async def _find_existing(
 ) -> Any | None:
     """Locates the row a change refers to.
 
-    Tries `server_id` first, then falls back to `client_id`. The fallback is what
-    makes a retry safe: if the client pushed successfully but never received the
-    response, it retries without a server_id, and this finds the row it already
-    created instead of creating a second one.
+    Prefers a `server_id` match, falling back to `client_id`. The fallback is
+    what makes a retry safe: if the client pushed successfully but never
+    received the response, it retries without a server_id, and this finds the
+    row it already created instead of creating a second one.
+
+    Both candidates are fetched in a SINGLE query (OR'd together) instead of
+    two sequential ones — a push batch calls this once per change, so this
+    was the N+1 in `apply_change`'s caller. Priority (server_id over
+    client_id) is preserved exactly, just resolved in Python over at most two
+    in-memory rows instead of a second round-trip to the database.
 
     Both lookups are scoped by clinic_id — a server_id from another clinic must
     never resolve, or one clinic could overwrite another's records by guessing
     an integer.
     """
+    conditions = [model.client_id == change.client_id]
     if change.server_id is not None:
-        result = await db.execute(
-            select(model).where(model.id == change.server_id, model.clinic_id == clinic_id)
-        )
-        row = result.scalar_one_or_none()
-        if row is not None:
-            return row
+        conditions.append(model.id == change.server_id)
 
     result = await db.execute(
-        select(model).where(model.client_id == change.client_id, model.clinic_id == clinic_id)
+        select(model).where(model.clinic_id == clinic_id, or_(*conditions))
     )
-    return result.scalar_one_or_none()
+    candidates = result.scalars().all()
+
+    if change.server_id is not None:
+        by_server_id = next((row for row in candidates if row.id == change.server_id), None)
+        if by_server_id is not None:
+            return by_server_id
+
+    return next((row for row in candidates if row.client_id == change.client_id), None)
 
 
 async def apply_change(

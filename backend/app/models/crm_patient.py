@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, Numeric, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -35,6 +35,9 @@ class CrmPatient(Base, SyncableMixin):
     """
 
     __tablename__ = "crm_patients"
+    __table_args__ = (
+        Index("ix_crm_patients_clinic_deleted", "clinic_id", "deleted_at"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     clinic_id: Mapped[int] = mapped_column(ForeignKey("clinics.id"), index=True)

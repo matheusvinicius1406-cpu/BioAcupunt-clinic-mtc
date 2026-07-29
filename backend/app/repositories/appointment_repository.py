@@ -28,10 +28,15 @@ async def create_appointment(
     return appointment
 
 
-async def list_appointments(db: AsyncSession, *, clinic_id: int) -> list[Appointment]:
-    result = await db.execute(
-        select(Appointment).where(Appointment.clinic_id == clinic_id, Appointment.deleted_at.is_(None))
+async def list_appointments(db: AsyncSession, *, clinic_id: int, limit: int = 1000) -> list[Appointment]:
+    """Scoped by clinic, tombstones excluded, most recently scheduled first."""
+    stmt = (
+        select(Appointment)
+        .where(Appointment.clinic_id == clinic_id, Appointment.deleted_at.is_(None))
+        .order_by(Appointment.scheduled_at.desc(), Appointment.id.desc())
+        .limit(limit)
     )
+    result = await db.execute(stmt)
     return list(result.scalars().all())
 
 

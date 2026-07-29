@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import date
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,26 +39,36 @@ def _sorted_points(buckets: dict[str, float]) -> list[dict]:
     return [{"month": m, "value": buckets[m]} for m in sorted(buckets)]
 
 
-async def monthly_analytics(db: AsyncSession, *, clinic_id: int) -> dict[str, list[dict]]:
+async def monthly_analytics(
+    db: AsyncSession,
+    *,
+    clinic_id: int,
+    start: date | None = None,
+    end: date | None = None,
+) -> dict[str, list[dict]]:
     """Real monthly series, bucketed in Python so the same code works on both
     SQLite (tests) and Postgres (prod) without dialect-specific date functions.
 
     Tombstones excluded everywhere: a deleted row must not show up in a trend.
+    `start`/`end` are optional (default: full history, previous behavior) — a
+    clinic with years of data can now be asked for, say, only the last 12
+    months instead of loading every row every time this endpoint is hit.
     """
     # ── Receita líquida por mês ──
-    tx_rows = (
-        await db.execute(
-            select(
-                Transaction.occurred_on,
-                Transaction.amount_brl,
-                Transaction.status,
-                Transaction.type,
-            ).where(
-                Transaction.clinic_id == clinic_id,
-                Transaction.deleted_at.is_(None),
-            )
-        )
-    ).all()
+    tx_stmt = select(
+        Transaction.occurred_on,
+        Transaction.amount_brl,
+        Transaction.status,
+        Transaction.type,
+    ).where(
+        Transaction.clinic_id == clinic_id,
+        Transaction.deleted_at.is_(None),
+    )
+    if start is not None:
+        tx_stmt = tx_stmt.where(Transaction.occurred_on >= start)
+    if end is not None:
+        tx_stmt = tx_stmt.where(Transaction.occurred_on <= end)
+    tx_rows = (await db.execute(tx_stmt)).all()
     revenue: dict[str, float] = defaultdict(float)
     for occurred_on, amount, status, ttype in tx_rows:
         month = occurred_on.strftime("%Y-%m")
@@ -67,27 +78,29 @@ async def monthly_analytics(db: AsyncSession, *, clinic_id: int) -> dict[str, li
             revenue[month] -= float(amount)
 
     # ── Agendamentos por mês ──
-    appt_rows = (
-        await db.execute(
-            select(Appointment.scheduled_at).where(
-                Appointment.clinic_id == clinic_id,
-                Appointment.deleted_at.is_(None),
-            )
-        )
-    ).all()
+    appt_stmt = select(Appointment.scheduled_at).where(
+        Appointment.clinic_id == clinic_id,
+        Appointment.deleted_at.is_(None),
+    )
+    if start is not None:
+        appt_stmt = appt_stmt.where(Appointment.scheduled_at >= start)
+    if end is not None:
+        appt_stmt = appt_stmt.where(Appointment.scheduled_at <= end)
+    appt_rows = (await db.execute(appt_stmt)).all()
     appointments: dict[str, float] = defaultdict(float)
     for (scheduled_at,) in appt_rows:
         appointments[scheduled_at.strftime("%Y-%m")] += 1
 
     # ── Pacientes novos por mês ──
-    pat_rows = (
-        await db.execute(
-            select(Patient.created_at).where(
-                Patient.clinic_id == clinic_id,
-                Patient.deleted_at.is_(None),
-            )
-        )
-    ).all()
+    pat_stmt = select(Patient.created_at).where(
+        Patient.clinic_id == clinic_id,
+        Patient.deleted_at.is_(None),
+    )
+    if start is not None:
+        pat_stmt = pat_stmt.where(Patient.created_at >= start)
+    if end is not None:
+        pat_stmt = pat_stmt.where(Patient.created_at <= end)
+    pat_rows = (await db.execute(pat_stmt)).all()
     new_patients: dict[str, float] = defaultdict(float)
     for (created_at,) in pat_rows:
         new_patients[created_at.strftime("%Y-%m")] += 1
