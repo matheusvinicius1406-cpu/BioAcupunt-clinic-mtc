@@ -38,8 +38,9 @@ export default function Sidebar({
     setLoggingOut(true);
     try {
       await fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      /* limpa a sessao mesmo se o backend nao responder */
+    } catch (err) {
+      // limpa a sessao mesmo se o backend nao responder — mas registra o motivo
+      console.error("Falha ao chamar /api/auth/logout, prosseguindo com logout local:", err);
     }
     router.replace("/login");
     router.refresh();

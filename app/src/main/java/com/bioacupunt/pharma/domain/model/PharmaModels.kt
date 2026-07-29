@@ -53,6 +53,8 @@ data class InteracaoMedicamentosa(
 data class EfeitoAdverso(
     val descricao: String,
     val frequencia: String = "",
+    /** Identidade estável pra LazyColumn (a lista não tem nenhum campo naturalmente único). */
+    val id: String = java.util.UUID.randomUUID().toString(),
 )
 
 enum class FormularioStatus { RASCUNHO, APROVADO }

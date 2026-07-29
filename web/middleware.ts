@@ -96,8 +96,17 @@ export async function middleware(request: NextRequest) {
       cookieOpts(REFRESH_MAX_AGE),
     );
     return response;
-  } catch {
-    return redirectToLogin(request, true);
+  } catch (err) {
+    // Isto captura QUALQUER falha em fetch()/res.json() — inclusive um blip
+    // transitorio de rede/DNS/timeout com o backend, nao so um refresh token
+    // realmente invalido (esse caso ja e tratado acima, em `!res.ok`, com
+    // `clear = true` porque o backend respondeu e disse explicitamente "nao").
+    // Apagar uma sessao de 30 dias por causa de uma falha de rede momentanea
+    // forcaria login de novo sem necessidade — entao aqui NAO limpa os cookies,
+    // so redireciona; se a proxima navegacao pegar o backend de volta no ar, o
+    // refresh tenta de novo com o mesmo par de cookies ainda intacto.
+    console.error("middleware: falha ao chamar /auth/refresh (rede/parse), sessao preservada:", err);
+    return redirectToLogin(request);
   }
 }
 

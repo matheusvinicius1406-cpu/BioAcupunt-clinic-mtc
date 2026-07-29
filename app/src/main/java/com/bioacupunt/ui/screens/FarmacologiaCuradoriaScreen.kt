@@ -202,8 +202,7 @@ fun FarmacologiaCuradoriaScreen(onBack: () -> Unit) {
                 }
 
                 item { SectionLabel("INTERAÇÕES MEDICAMENTOSAS") }
-                items(draft.interacoes.size) { index ->
-                    val interacao = draft.interacoes[index]
+                items(draft.interacoes, key = { it.outroMedicamentoId }) { interacao ->
                     Row(
                         Modifier.fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(10.dp))
@@ -214,14 +213,13 @@ fun FarmacologiaCuradoriaScreen(onBack: () -> Unit) {
                             Text("${interacao.outroNome} — ${interacao.severidade}", fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
                             Text(interacao.descricao, style = MaterialTheme.typography.bodySmall, color = TextMuted)
                         }
-                        IconButton(onClick = { vm.removeInteracao(index) }) { Icon(Icons.Default.Delete, null, tint = statusColors().danger) }
+                        IconButton(onClick = { vm.removeInteracao(interacao.outroMedicamentoId) }) { Icon(Icons.Default.Delete, null, tint = statusColors().danger) }
                     }
                 }
                 item { AddInteracaoForm(vm, state) }
 
                 item { SectionLabel("EFEITOS ADVERSOS") }
-                items(draft.efeitosAdversos.size) { index ->
-                    val efeito = draft.efeitosAdversos[index]
+                items(draft.efeitosAdversos, key = { it.id }) { efeito ->
                     Row(
                         Modifier.fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(10.dp))
@@ -232,7 +230,7 @@ fun FarmacologiaCuradoriaScreen(onBack: () -> Unit) {
                             Text(efeito.descricao, style = MaterialTheme.typography.bodyMedium)
                             if (efeito.frequencia.isNotBlank()) Text(efeito.frequencia, style = MaterialTheme.typography.labelSmall, color = TextMuted)
                         }
-                        IconButton(onClick = { vm.removeEfeitoAdverso(index) }) { Icon(Icons.Default.Delete, null, tint = statusColors().danger) }
+                        IconButton(onClick = { vm.removeEfeitoAdverso(efeito.id) }) { Icon(Icons.Default.Delete, null, tint = statusColors().danger) }
                     }
                 }
                 item { AddEfeitoAdversoForm(vm, state) }

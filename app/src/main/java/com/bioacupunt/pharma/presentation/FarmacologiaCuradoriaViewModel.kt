@@ -175,7 +175,8 @@ class FarmacologiaCuradoriaViewModel(
         _state.update { it.copy(interacaoOutro = null, interacaoQuery = "", interacaoResults = emptyList(), interacaoDescricao = "") }
     }
 
-    fun removeInteracao(index: Int) = updateDraft { it.copy(interacoes = it.interacoes.filterIndexed { i, _ -> i != index }) }
+    fun removeInteracao(outroMedicamentoId: String) =
+        updateDraft { it.copy(interacoes = it.interacoes.filterNot { i -> i.outroMedicamentoId == outroMedicamentoId }) }
 
     // -- Efeitos adversos -----------------------------------------------------------
 
@@ -191,7 +192,7 @@ class FarmacologiaCuradoriaViewModel(
         _state.update { it.copy(efeitoDescricao = "", efeitoFrequencia = "") }
     }
 
-    fun removeEfeitoAdverso(index: Int) = updateDraft { it.copy(efeitosAdversos = it.efeitosAdversos.filterIndexed { i, _ -> i != index }) }
+    fun removeEfeitoAdverso(id: String) = updateDraft { it.copy(efeitosAdversos = it.efeitosAdversos.filterNot { e -> e.id == id }) }
 
     // -- Persistência -----------------------------------------------------------------
 
