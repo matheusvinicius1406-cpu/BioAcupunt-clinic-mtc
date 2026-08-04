@@ -27,6 +27,7 @@ class ReportRepositoryImpl(private val dao: ReportDao) : ReportRepository {
             filtersJson = report.filtersJson,
             generatedAt = report.generatedAt.ifBlank { Instant.now().toString() },
             patientId = report.patientId,
+            patientName = report.patientName,
             status = report.status.name
         )
         val id = dao.save(entity)

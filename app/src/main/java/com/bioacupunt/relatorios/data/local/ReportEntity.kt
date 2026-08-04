@@ -13,5 +13,6 @@ data class ReportEntity(
     val filtersJson: String = "{}",
     val generatedAt: String = "",
     val patientId: Long? = null,
+    val patientName: String = "",
     val status: String = ReportStatus.DRAFT.name
 )

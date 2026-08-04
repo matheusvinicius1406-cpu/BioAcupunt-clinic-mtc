@@ -82,13 +82,22 @@ class LocalModelManager(
     }
 
     /**
-     * Downloads to a temp file and only then renames into place.
+     * Downloads to a temp file and only then renames into place. **Resumable**: a partial
+     * `.part` from an earlier attempt is continued via an HTTP `Range` request, never
+     * discarded.
      *
-     * This matters more than it looks: a download interrupted at 90% — the user walked
-     * out of wifi, the OS killed the app — would otherwise leave a truncated file that
-     * *exists*, so [isModelReady] would say yes and the inference engine would crash
-     * on a corrupt model. Atomic rename means the real filename only ever appears when
-     * the bytes behind it are complete.
+     * Resuming is not a nicety here, it is what makes the download possible at all. The
+     * file is ~3.9GB over a mobile connection; it will be interrupted. Before this, the
+     * method opened with `temp.delete()`, so every retry restarted from zero — combined
+     * with the system's 10-minute ceiling on background work (see [ModelDownloadWorker],
+     * which now runs in the foreground precisely because of it), the download could never
+     * finish no matter how many times it was retried. Observed on a real device: it died
+     * at ~100MB after ~12 minutes, and the next attempt would have thrown those bytes away.
+     *
+     * The atomic rename at the end still matters for a different reason: a truncated file
+     * that merely *exists* would make [isModelReady] say yes and hand a corrupt model to
+     * the native runtime. The real filename only ever appears once the bytes behind it are
+     * complete **and** verified against the pinned SHA-256 (R3).
      */
     suspend fun download(url: String = DEFAULT_MODEL_URL): Result<File> =
         withContext(Dispatchers.IO) {
@@ -108,20 +117,40 @@ class LocalModelManager(
                 }
 
                 val temp = File(context.filesDir, "$MODEL_FILE_NAME.part")
-                temp.delete()
+                val alreadyHave = if (temp.exists()) temp.length() else 0L
 
-                _state.value = State.Downloading(0f)
+                // Estado inicial já refletindo o que existe em disco: reabrir o app no meio
+                // de um download mostra "62%", não "0%" — a médica não pode achar que perdeu
+                // tudo e mandar recomeçar um download de 3,9GB à toa.
+                val expectedTotal = LocalModelCatalog.byId(MODEL_ID)?.sizeBytes?.takeIf { it > 0 }
+                _state.value = State.Downloading(
+                    if (expectedTotal != null) (alreadyHave.toFloat() / expectedTotal) else 0f,
+                )
 
-                val response = client.newCall(Request.Builder().url(url).build()).execute()
+                val request = Request.Builder().url(url).apply {
+                    // Continua de onde parou. Se o servidor ignorar (responde 200 em vez
+                    // de 206), o bloco abaixo detecta e recomeça do zero — nunca concatena
+                    // um arquivo inteiro no fim de um pedaço, que produziria um blob
+                    // corrompido que só seria pego lá na frente pelo SHA-256.
+                    if (alreadyHave > 0) header("Range", "bytes=$alreadyHave-")
+                }.build()
+
+                val response = client.newCall(request).execute()
                 response.use { res ->
                     check(res.isSuccessful) { "Falha ao baixar o modelo: HTTP ${res.code}" }
                     val body = res.body ?: error("Resposta vazia ao baixar o modelo")
-                    val total = body.contentLength().takeIf { it > 0 }
+
+                    val resuming = res.code == HTTP_PARTIAL_CONTENT && alreadyHave > 0
+                    val startFrom = if (resuming) alreadyHave else 0L
+                    if (!resuming && alreadyHave > 0) temp.delete()
+
+                    // contentLength() é o que FALTA baixar; o total é isso mais o que já temos.
+                    val total = body.contentLength().takeIf { it > 0 }?.plus(startFrom)
 
                     body.byteStream().use { input ->
-                        temp.outputStream().use { output ->
+                        java.io.FileOutputStream(temp, resuming).use { output ->
                             val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                            var downloaded = 0L
+                            var downloaded = startFrom
                             while (true) {
                                 val read = input.read(buffer)
                                 if (read == -1) break
@@ -229,5 +258,30 @@ class LocalModelManager(
 
         /** Anything under this is a truncated download or an error page, not a model. */
         private const val MIN_VALID_BYTES = 50L * 1024 * 1024
+
+        /** HTTP 206 — o servidor honrou o `Range` e está mandando só o pedaço que falta. */
+        private const val HTTP_PARTIAL_CONTENT = 206
+
+        /**
+         * Decide qual URL usar de verdade: a personalizada só vale se apontar para um
+         * arquivo `.task`; caso contrário cai para [DEFAULT_MODEL_URL].
+         *
+         * Isto não é paranoia teórica — aconteceu no device em 2026-07-29: foi colada em
+         * Ajustes a URL da *página* de um repositório do Hugging Face (um GGUF, formato que
+         * este app nem executa). O download trouxe HTML, o R3 recusou corretamente, e a IA
+         * ficou parecendo quebrada quando na verdade estava se defendendo. A médica não
+         * deveria precisar saber a diferença entre a URL de uma página e a de um arquivo —
+         * o padrão embutido funciona sozinho, e é para ele que qualquer coisa estranha volta.
+         *
+         * Resolvido no momento do download (não só na hora de enfileirar) de propósito: um
+         * job já enfileirado com URL ruim também se corrige na próxima execução, em vez de
+         * gastar a franquia de dados dela até estourar o limite de tentativas.
+         */
+        fun resolveUrl(configured: String): String {
+            val trimmed = configured.trim()
+            val looksLikeModelFile = trimmed.startsWith("http") &&
+                (trimmed.substringBefore('?').endsWith(".task"))
+            return if (looksLikeModelFile) trimmed else DEFAULT_MODEL_URL
+        }
     }
 }

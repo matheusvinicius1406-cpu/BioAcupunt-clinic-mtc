@@ -7,6 +7,8 @@ import com.bioacupunt.data.local.model.IngestionJobEntity
 import com.bioacupunt.data.local.model.PurgeCertificateEntity
 import com.bioacupunt.data.local.model.AuditTrailEntity
 import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
+import com.bioacupunt.biblioteca.data.local.ArticleTranslationEntity
+import com.bioacupunt.biblioteca.data.local.ArticleTranslationDao
 
 /**
  * BIOACUPUNT SUPREMO — DATABASE (v19)
@@ -82,8 +84,11 @@ import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
 
         // === Simulador de Casos Clínicos (v21) ===
         com.bioacupunt.educacao.data.local.SimulatedCaseEntity::class,
+
+        // === Tradutor automático da Biblioteca (v24) ===
+        com.bioacupunt.biblioteca.data.local.ArticleTranslationEntity::class,
     ],
-    version = 22,
+    version = 24,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -120,4 +125,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     // === Simulador de Casos Clínicos DAO (v21) ===
     abstract fun simulatedCaseDao(): com.bioacupunt.educacao.data.local.SimulatedCaseDao
+
+    // === Tradutor automático da Biblioteca DAO (v24) ===
+    abstract fun articleTranslationDao(): com.bioacupunt.biblioteca.data.local.ArticleTranslationDao
 }

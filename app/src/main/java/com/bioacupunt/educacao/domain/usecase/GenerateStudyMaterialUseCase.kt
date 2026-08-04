@@ -55,7 +55,6 @@ class GenerateStudyMaterialUseCase(
             maxTokens = 2048,
             preferLocal = true,
             taskHint = "study-material-generation",
-            allowWebSearch = false,
         )
 
         return ai.generate(request).fold(

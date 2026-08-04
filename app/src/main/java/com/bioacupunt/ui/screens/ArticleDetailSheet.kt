@@ -14,10 +14,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,12 +30,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.bioacupunt.biblioteca.data.worker.ArticleTranslationWorker
 import com.bioacupunt.biblioteca.domain.ingestion.Provenance
 import com.bioacupunt.biblioteca.domain.model.MtcArticle
 import com.bioacupunt.biblioteca.domain.model.MtcCategory
+import com.bioacupunt.biblioteca.domain.model.TranslationLanguage
+import com.bioacupunt.biblioteca.domain.model.TranslationStatus
+import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.TextMuted
 import com.bioacupunt.ui.theme.statusColors
+import kotlinx.coroutines.launch
 
 /**
  * Página de detalhe de um artigo da Biblioteca — full screen via bottom sheet expandido
@@ -133,6 +143,12 @@ fun ArticleDetailSheet(
                 }
             }
 
+            // ── Tradução automática (só para artigos aprovados via curadoria) ──
+            if (hasProvenance) {
+                Spacer(Modifier.height(20.dp))
+                AutoTranslationSection(articleId = article.id)
+            }
+
             // ── Artigos relacionados ──
             if (relatedArticles.isNotEmpty()) {
                 Spacer(Modifier.height(24.dp))
@@ -198,6 +214,97 @@ private fun ProvenanceBadge(provenance: Provenance) {
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
             color = color,
         )
+    }
+}
+
+/**
+ * Overlay de EXIBIÇÃO da tradução automática — nunca substitui o artigo original acima
+ * (que continua sendo o que a busca/RAG indexa; ver `ArticleTranslation`). Observa
+ * [AppContainer.articleTranslationRepository] direto, mesmo padrão já usado por
+ * `InteligenciaScreen`/`LocalModelCard` para `LocalModelManager.state`.
+ */
+@Composable
+private fun AutoTranslationSection(articleId: String) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val targetLanguage = remember {
+        TranslationLanguage.byCode(AppContainer.securePreferences.translationTargetLanguage) ?: TranslationLanguage.default
+    }
+    val translation by AppContainer.articleTranslationRepository
+        .observe(articleId, targetLanguage)
+        .collectAsStateWithLifecycle(initialValue = null)
+    var expanded by remember(articleId) { mutableStateOf(false) }
+
+    Text("TRADUÇÃO AUTOMÁTICA", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+    Spacer(Modifier.height(8.dp))
+
+    val current = translation
+    when {
+        current == null -> {
+            OutlinedButton(onClick = {
+                scope.launch { ArticleTranslationWorker.enqueue(context, articleId, targetLanguage) }
+            }) {
+                Icon(Icons.Default.Language, null, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(6.dp))
+                Text("Traduzir para ${targetLanguage.label}")
+            }
+        }
+        current.status == TranslationStatus.PENDING || current.status == TranslationStatus.PROCESSING -> {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                Text(
+                    if (current.status == TranslationStatus.PENDING) "Na fila para tradução…" else "Traduzindo para ${targetLanguage.label}…",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        current.status == TranslationStatus.ERROR -> {
+            Column {
+                Text(
+                    "Falha na tradução automática: ${current.errorMessage.ifBlank { "erro desconhecido" }}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = statusColors().danger,
+                )
+                Spacer(Modifier.height(6.dp))
+                OutlinedButton(onClick = {
+                    scope.launch { ArticleTranslationWorker.enqueue(context, articleId, targetLanguage) }
+                }) {
+                    Icon(Icons.Default.Refresh, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text("Tentar de novo")
+                }
+            }
+        }
+        else -> { // COMPLETED
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        Modifier.clip(RoundedCornerShape(50))
+                            .background(Primary.copy(alpha = 0.12f))
+                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                    ) {
+                        Text(
+                            "AUTOMÁTICA · NÃO REVISADA · ${targetLanguage.label.uppercase()}",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                            color = Primary,
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    TextButton(onClick = { expanded = !expanded }) { Text(if (expanded) "Ocultar" else "Mostrar") }
+                }
+                if (expanded) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(current.title, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+                    if (current.summary.isNotBlank()) {
+                        Spacer(Modifier.height(2.dp))
+                        Text(current.summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    MarkdownText(current.content)
+                }
+            }
+        }
     }
 }
 

@@ -29,8 +29,7 @@ import org.robolectric.RobolectricTestRunner
  * O que importa travar aqui não é a qualidade do JSON gerado (isso é responsabilidade
  * do modelo) — é o contrato de degradação: falha em qualquer ponto (provider
  * indisponível, JSON malformado) nunca propaga exceção pra médica, sempre vira
- * [ClinicalSynthesis.EMPTY]. E que `preferLocal`/`allowWebSearch` seguem a evidência
- * da biblioteca, não o contrário.
+ * [ClinicalSynthesis.EMPTY].
  */
 @RunWith(RobolectricTestRunner::class)
 class ClinicalSynthesisUseCaseTest {
@@ -75,34 +74,20 @@ class ClinicalSynthesisUseCaseTest {
 
     private fun assessmentWithComplaint(complaint: String) = MtcAssessment(patientId = 1L, chiefComplaint = complaint)
 
-    // -- Evidência disponível: prefere local, não permite busca web --------
+    // -- A síntese sempre prefere o modelo local (único provider do app) ----
 
     @Test
-    fun withEvidence_prefersLocalAndDoesNotAllowWebSearch() = runTest {
+    fun alwaysPrefersLocal_withOrWithoutEvidence() = runTest {
         val ai = FakeAiRepository()
-        val useCase = ClinicalSynthesisUseCase(ai, MtcRetriever(FakeBackend(listOf(bacoArticle))))
+        val withEvidence = ClinicalSynthesisUseCase(ai, MtcRetriever(FakeBackend(listOf(bacoArticle))))
+        withEvidence(assessmentWithComplaint("cansaço e fezes amolecidas, deficiência de qi do baço"))
+        assertTrue("Requisição deve ter sido feita", ai.lastRequest != null)
+        assertTrue("Deve preferir o modelo local", ai.lastRequest!!.preferLocal)
 
-        useCase(assessmentWithComplaint("cansaço e fezes amolecidas, deficiência de qi do baço"))
-
-        val request = ai.lastRequest
-        assertTrue("Requisição deve ter sido feita", request != null)
-        assertTrue("Com evidência na biblioteca, deve preferir o modelo local", request!!.preferLocal)
-        assertFalse("Com evidência, não deve depender de busca web", request.allowWebSearch)
-    }
-
-    // -- Sem evidência: cai pra busca web, não trava a médica ---------------
-
-    @Test
-    fun withoutEvidence_allowsWebSearchAndDoesNotPreferLocal() = runTest {
-        val ai = FakeAiRepository()
-        val useCase = ClinicalSynthesisUseCase(ai, MtcRetriever(FakeBackend(emptyList())))
-
-        useCase(assessmentWithComplaint("quadro sem nenhum artigo correspondente no acervo"))
-
-        val request = ai.lastRequest
-        assertTrue("Requisição deve ter sido feita mesmo sem evidência", request != null)
-        assertFalse("Sem evidência, não deve forçar o modelo local", request!!.preferLocal)
-        assertTrue("Sem evidência da biblioteca, deve permitir busca web", request.allowWebSearch)
+        val withoutEvidence = ClinicalSynthesisUseCase(ai, MtcRetriever(FakeBackend(emptyList())))
+        withoutEvidence(assessmentWithComplaint("quadro sem nenhum artigo correspondente no acervo"))
+        assertTrue("Requisição deve ter sido feita mesmo sem evidência", ai.lastRequest != null)
+        assertTrue("Deve preferir o modelo local mesmo sem evidência (não há mais fallback de nuvem)", ai.lastRequest!!.preferLocal)
     }
 
     // -- Degradação: falha do provider nunca propaga exceção -----------------

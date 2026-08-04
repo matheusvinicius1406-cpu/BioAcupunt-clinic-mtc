@@ -7,9 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.bioacupunt.ai.data.provider.LocalModelManager
+import com.bioacupunt.ai.data.provider.ModelDownloadWorker
 import com.bioacupunt.ai.local.LocalModelCatalog
 import com.bioacupunt.di.AppContainer
 import kotlinx.coroutines.launch
@@ -19,10 +21,9 @@ import kotlinx.coroutines.launch
  * ([LocalModelManager.MODEL_ID], hoje Phi-4 Mini Instruct — MIT, sem licença
  * restrita, contexto 4096 tokens).
  *
- * Quando o modelo está presente, o orquestrador prefere rodar no dispositivo
- * (fallbackOrder 0): de graça, offline e o dado clínico não sai do aparelho. Enquanto
- * ausente, o app cai para a nuvem (ou diz que a IA não está configurada). Este cartão
- * é a única forma de a médica trazer o modelo pra dentro.
+ * O modelo local é o ÚNICO provider de IA do app (sem nuvem, sem chave de API — ver
+ * "Escopo da IA" no CLAUDE.md). Enquanto ausente, o assistente diz que ainda não está
+ * pronto. Este cartão é a única forma de a médica trazer o modelo pra dentro.
  *
  * O arquivo NÃO cabe no APK — é baixado uma vez, da URL padrão embutida (Hugging
  * Face, sem token, confirmado com `curl -I` sem autenticação) ou de uma URL própria
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LocalModelCard() {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val manager = remember { AppContainer.localModelManager }
     val securePrefs = remember { AppContainer.securePreferences }
     val state by manager.state.collectAsState(initial = LocalModelManager.State.Absent)
@@ -69,9 +71,9 @@ fun LocalModelCard() {
                             color = MaterialTheme.colorScheme.error,
                         )
                     } else {
-                        Text("Modelo não baixado. A IA usa a nuvem até você baixá-lo.", style = MaterialTheme.typography.bodySmall)
+                        Text("Modelo não baixado. Baixe uma vez para a IA funcionar offline.", style = MaterialTheme.typography.bodySmall)
                     }
-                    DownloadButton(scope, manager, securePrefs, enabled = urlConfigured)
+                    DownloadButton(context, securePrefs, enabled = urlConfigured)
                 }
                 is LocalModelManager.State.Downloading -> {
                     val pct = (s.progress * 100).toInt().coerceIn(0, 100)
@@ -98,27 +100,28 @@ fun LocalModelCard() {
                 }
                 is LocalModelManager.State.Failed -> {
                     Text("Falha: ${s.message}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-                    DownloadButton(scope, manager, securePrefs, enabled = urlConfigured)
+                    DownloadButton(context, securePrefs, enabled = urlConfigured)
                 }
             }
         }
     }
 }
 
+/**
+ * Enfileira o download no WorkManager em vez de disparar `manager.download()` numa
+ * coroutine presa à composição — essa era a causa raiz confirmada em device de o
+ * download travar sempre no mesmo byte count (a Composable saía de composição antes
+ * do download de ~3.9GB terminar, cancelando a coroutine no meio). WorkManager
+ * sobrevive à troca de tela e ao app indo para segundo plano; ver [ModelDownloadWorker].
+ */
 @Composable
 private fun DownloadButton(
-    scope: kotlinx.coroutines.CoroutineScope,
-    manager: LocalModelManager,
+    context: android.content.Context,
     securePrefs: com.bioacupunt.security.SecurePreferences,
     enabled: Boolean = true,
 ) {
     Button(
-        onClick = {
-            scope.launch {
-                val url = securePrefs.localModelUrl.ifBlank { LocalModelManager.DEFAULT_MODEL_URL }
-                manager.download(url)
-            }
-        },
+        onClick = { ModelDownloadWorker.enqueue(context, LocalModelManager.resolveUrl(securePrefs.localModelUrl)) },
         enabled = enabled,
         modifier = Modifier.fillMaxWidth(),
     ) {

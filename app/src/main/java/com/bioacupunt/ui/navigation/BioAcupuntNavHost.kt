@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -87,11 +86,13 @@ fun BioAcupuntNavHost(
     val moreItems = remember {
         listOf(
             MoreItem("Agenda", Icons.Default.CalendarMonth, Screen.Agenda.route),
-            // "Atendimento" foi removido do menu global: um atendimento só existe a
-            // partir de uma consulta concreta (precisa de appointmentId), então é
-            // aberto pelos cards da Agenda. O item antigo apontava para Screen.Agenda
-            // (copy/paste) — duplicava "Agenda" e nunca abria um atendimento.
-            MoreItem("Evolução", Icons.AutoMirrored.Filled.TrendingUp, Screen.Evolucao.routeFor(0)),
+            // "Atendimento" não tem item aqui: um atendimento só existe a partir de uma
+            // consulta concreta (precisa de appointmentId), então é aberto pelos cards da
+            // Agenda — e hoje é o próprio Prontuário em modo atendimento (ver
+            // Screen.Prontuario), não uma tela separada.
+            // "Evolução" idem: deixou de ser tela própria em 2026-08-04 (unificada como
+            // aba dentro do Prontuário, com o gráfico/comparação que só existiam na tela
+            // separada) — acesso agora é sempre via CRM → paciente → Prontuário.
             MoreItem("Inteligência", Icons.Default.SmartToy, Screen.AiAssistant.route),
             MoreItem("Financeiro", Icons.Default.AccountBalance, Screen.Financeiro.route),
             MoreItem("Relatórios", Icons.Default.Description, Screen.Relatorios.route),
@@ -197,7 +198,11 @@ fun BioAcupuntNavHost(
                 )
             }
             composable(Screen.Agenda.route) {
-                AgendaScreen(onOpenAtendimento = { apptId -> navController.navigate(Screen.Atendimento.routeFor(apptId)) })
+                AgendaScreen(
+                    onOpenAtendimento = { apptId, apptPatientId ->
+                        navController.navigate(Screen.Prontuario.routeFor(apptPatientId, apptId))
+                    },
+                )
             }
             composable(Screen.Biblioteca.route) {
                 BibliotecaScreen(
@@ -217,7 +222,13 @@ fun BioAcupuntNavHost(
             // Secondary screens
             composable(
                 route = Screen.Prontuario.route,
-                arguments = listOf(androidx.navigation.navArgument("patientId") { type = androidx.navigation.NavType.LongType })
+                arguments = listOf(
+                    androidx.navigation.navArgument("patientId") { type = androidx.navigation.NavType.LongType },
+                    androidx.navigation.navArgument("appointmentId") {
+                        type = androidx.navigation.NavType.LongType
+                        defaultValue = 0L
+                    },
+                )
             ) { entry ->
                 // Without the explicit LongType above, Navigation Compose infers
                 // {patientId} as a String argument. Bundle.getLong() on a String
@@ -225,30 +236,14 @@ fun BioAcupuntNavHost(
                 // returns 0, so every patient's prontuário silently opened
                 // patient id 0 instead of the one actually tapped.
                 val pid = entry.arguments?.getLong("patientId") ?: 0L
+                val apptId = entry.arguments?.getLong("appointmentId") ?: 0L
                 ProntuarioScreen(
                     onBack = { navController.popBackStack() },
-                    onOpenEvolucao = { openPid -> navController.navigate(Screen.Evolucao.routeFor(openPid)) },
                     onOpenAtendimento = { navController.navigate(Screen.Agenda.route) },
                     onOpenInteligencia = { openPid -> navController.navigate(Screen.AiAssistantPatient.routeFor(openPid)) },
-                    patientId = pid
-                )
-            }
-            composable(
-                route = Screen.Evolucao.route,
-                arguments = listOf(androidx.navigation.navArgument("patientId") { type = androidx.navigation.NavType.LongType })
-            ) { entry ->
-                val pid = entry.arguments?.getLong("patientId") ?: 0L
-                EvolucaoScreen(patientId = pid, onBack = { navController.popBackStack() })
-            }
-            composable(
-                route = Screen.Atendimento.route,
-                arguments = listOf(androidx.navigation.navArgument("appointmentId") { type = androidx.navigation.NavType.LongType })
-            ) { entry ->
-                val apptId = entry.arguments?.getLong("appointmentId") ?: 0L
-                AtendimentoScreen(
-                    appointmentId = apptId,
-                    onBack = { navController.popBackStack() },
-                    onFinalized = { navController.popBackStack() },
+                    patientId = pid,
+                    appointmentId = apptId.takeIf { it > 0L },
+                    onFinalizedAtendimento = { navController.popBackStack() },
                 )
             }
             composable(Screen.Financeiro.route)  { FinanceiroScreen() }
@@ -315,24 +310,6 @@ fun BioAcupuntNavHost(
         }
     }
 
-    // Consentimento de nuvem do primeiro acesso (R2/LGPD) — recalculado a partir da prefs
-    // real toda vez que a médica sai da tela de Login (showShell recompõe reativamente via
-    // currentRoute, ao contrário de um valor lido direto de SharedPreferences em outro
-    // lugar), então aparece exatamente na primeira vez que ela entra no app, sem depender
-    // de nenhum outro estado global mudar por coincidência. AlertDialog usa uma Window
-    // própria (via Dialog), então não precisa envolver o Scaffold acima numa Box.
-    if (showShell) {
-        var consentAsked by remember { mutableStateOf(AppContainer.securePreferences.cloudConsentAsked) }
-        if (!consentAsked) {
-            CloudConsentDialog(onAnswered = { acceptCloud ->
-                scope.launch {
-                    runCatching { AppContainer.aiConfigManager.setCloudEnabled(acceptCloud) }
-                    AppContainer.securePreferences.cloudConsentAsked = true
-                    consentAsked = true
-                }
-            })
-        }
-    }
 }
 
 /** Mockup header: ☯ logo, "Olá, Dra. …", date · Supremo badge, sync chip, theme toggle, avatar. */

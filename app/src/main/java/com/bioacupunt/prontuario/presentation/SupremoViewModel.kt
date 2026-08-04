@@ -98,6 +98,22 @@ class SupremoViewModel(
                 _state.update { it.copy(history = history) }
             }
         }
+        // Re-triagem reativa e debounced: toda edição de draft/proposal precisa re-rodar
+        // a triagem (um veredito computado uma vez e envelhecido diz "seguro" sobre um
+        // prontuário que já mudou — ver rescreen()), mas antes cada `edit{}`/
+        // `updateProposal` disparava `rescreenAsync()` synchronously, e cada um deles
+        // fazia 2 queries no Room (`flagsHistory`/`latestGestationalWeeks`) — uma rajada
+        // por tecla digitada em Motivo da Consulta, Plano ou notas de língua/pulso.
+        // `distinctUntilChanged` + `debounce` + `collectLatest` é o mesmo padrão já usado
+        // abaixo para a sugestão extrativa de IA: só a QUERY é adiada, o dado em si
+        // (`_state.draft`) já está atualizado na tela desde o primeiro `_state.update`.
+        viewModelScope.launch {
+            _state
+                .map { it.draft to it.proposal }
+                .distinctUntilChanged()
+                .debounce(RESCREEN_DEBOUNCE_MS)
+                .collectLatest { rescreen() }
+        }
         if (structureChiefComplaint != null) {
             viewModelScope.launch {
                 _state
@@ -198,7 +214,6 @@ class SupremoViewModel(
 
     fun updateProposal(proposal: TreatmentProposal) {
         _state.update { it.copy(proposal = proposal) }
-        rescreenAsync()
     }
 
     fun toggleTechnique(technique: Technique) {
@@ -302,19 +317,17 @@ class SupremoViewModel(
 
     private fun edit(transform: (MtcAssessment) -> MtcAssessment) {
         _state.update { it.copy(draft = transform(it.draft), savedAt = null) }
-        rescreenAsync()
     }
 
     /**
      * Re-runs the deterministic safety screen against the current draft + proposal.
      *
-     * Screening is re-run on **every** edit rather than only when the practitioner asks
-     * for it. A verdict computed once and left stale is a verdict that says "safe" about
-     * a chart that has since changed — and the moment it is most likely to be wrong is
-     * exactly the moment a contraindication is being typed in.
+     * Screening is re-run on **every** edit (via the debounced collector in `init`)
+     * rather than only when the practitioner asks for it. A verdict computed once and
+     * left stale is a verdict that says "safe" about a chart that has since changed —
+     * and the moment it is most likely to be wrong is exactly the moment a
+     * contraindication is being typed in.
      */
-    private fun rescreenAsync() = viewModelScope.launch { rescreen() }
-
     private suspend fun rescreen() {
         val snapshot = _state.value
         runCatching {
@@ -480,6 +493,7 @@ class SupremoViewModel(
 
     private companion object {
         const val CHIEF_COMPLAINT_DEBOUNCE_MS = 1200L
+        const val RESCREEN_DEBOUNCE_MS = 400L
     }
 }
 

@@ -38,7 +38,7 @@ private enum class AgendaView(val label: String) { DIA("Dia"), SEMANA("Semana"),
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AgendaScreen(viewModel: AgendaViewModel? = null, onOpenAtendimento: (Long) -> Unit = {}) {
+fun AgendaScreen(viewModel: AgendaViewModel? = null, onOpenAtendimento: (Long, Long) -> Unit = { _, _ -> }) {
     val vm = viewModel ?: viewModel(factory = com.bioacupunt.di.AppContainer.agendaViewModelFactory)
     val state by vm.state.collectAsStateWithLifecycle()
     val selectedDate = remember(state.selectedDate) { LocalDate.parse(state.selectedDate) }
@@ -156,7 +156,7 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null, onOpenAtendimento: (Long) -
                         AppointmentCard(
                             appt,
                             onStatusChange = { newStatus -> vm.onStatusChange(appt.id, newStatus) },
-                            onAttend = { onOpenAtendimento(appt.id) },
+                            onAttend = { onOpenAtendimento(appt.id, appt.patientId) },
                         )
                     }
                 }

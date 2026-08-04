@@ -40,6 +40,12 @@ class BioAcupuntApp : Application(), Configuration.Provider {
             } else {
                 AppContainer.syncScheduler.cancelAll()
             }
+
+            // A IA se instala sozinha: se o modelo local ainda não está no aparelho, o
+            // download entra na fila aqui, no Wi-Fi, sem a médica precisar achar
+            // Ajustes > IA nem colar URL nenhuma. O Worker sai na hora se já estiver
+            // pronto, e `KEEP` faz reabrir o app no meio do download não recomeçar do zero.
+            com.bioacupunt.ai.data.provider.ModelDownloadWorker.enqueueAutomatic(applicationContext)
         }.onFailure { AppLogger.e("BioAcupuntApp", "WorkManager init failed", it) }
     }
 

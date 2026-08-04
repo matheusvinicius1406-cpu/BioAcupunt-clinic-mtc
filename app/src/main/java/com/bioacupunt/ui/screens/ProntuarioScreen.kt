@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,14 +30,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.di.AppContainer
+import com.bioacupunt.agenda.presentation.AtendimentoUiState
+import com.bioacupunt.agenda.presentation.AtendimentoViewModel
 import com.bioacupunt.crm.domain.model.CrmPatient
 import com.bioacupunt.prontuario.domain.model.*
 import com.bioacupunt.pharma.presentation.PrescricaoViewModel
+import com.bioacupunt.prontuario.presentation.EvolucaoViewModel
 import com.bioacupunt.prontuario.presentation.ExameViewModel
 import com.bioacupunt.prontuario.presentation.ProntuarioViewModel
 import com.bioacupunt.prontuario.presentation.SupremoViewModel
 import com.bioacupunt.ui.components.ClinicalSafetyPanel
 import com.bioacupunt.ui.components.PharmaSafetyPanel
+import com.bioacupunt.ui.components.SpellCheckedTextField
 import com.bioacupunt.ui.design.AxisSelector
 import com.bioacupunt.ui.design.CompletenessBar
 import com.bioacupunt.ui.design.SectionHeader
@@ -47,6 +52,7 @@ import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.SemanticError
 import com.bioacupunt.ui.theme.SemanticSuccess
 import com.bioacupunt.ui.theme.SemanticWarning
+import com.bioacupunt.ui.theme.SemanticWarningBg
 import com.bioacupunt.ui.theme.TextMuted
 import kotlinx.coroutines.launch
 
@@ -67,11 +73,21 @@ private enum class ProntTab(val label: String) {
 @Composable
 fun ProntuarioScreen(
     onBack: (() -> Unit)? = null,
-    onOpenEvolucao: (Long) -> Unit = {},
     onOpenAtendimento: () -> Unit = {},
     onOpenInteligencia: (Long) -> Unit = {},
     vm: ProntuarioViewModel = viewModel(factory = AppContainer.prontuarioViewModelFactory),
-    patientId: Long = 0L
+    patientId: Long = 0L,
+    /**
+     * Presente ⇒ este Prontuário está sendo aberto a partir de uma consulta concreta da
+     * Agenda ("Atender") — a tela entra em MODO ATENDIMENTO: banner com o tempo de
+     * sessão e botão "Finalizar atendimento" (fecha a consulta + grava uma evolução).
+     * Ausente ⇒ prontuário aberto pra consulta/edição normal (CRM → paciente), sem
+     * nenhum desses dois. Antes disto existir, "Atendimento" era uma TELA separada
+     * (`AtendimentoScreen`, removida 2026-08-04) editando o mesmo [MtcAssessment] com
+     * uma UI diferente — unificado aqui por pedido explícito da médica.
+     */
+    appointmentId: Long? = null,
+    onFinalizedAtendimento: () -> Unit = {},
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     var showPatientPicker by remember { mutableStateOf(patientId <= 0L) }
@@ -123,16 +139,43 @@ fun ProntuarioScreen(
         }
     ) { padding ->
         if (showPatientPicker || state.patientId <= 0L) {
+            var patientQuery by remember { mutableStateOf("") }
+            val filteredPatients = remember(allPatients, patientQuery) {
+                if (patientQuery.isBlank()) {
+                    allPatients
+                } else {
+                    val q = patientQuery.trim().lowercase()
+                    allPatients.filter { it.name.lowercase().contains(q) || it.phone.contains(q) }
+                }
+            }
             Column(modifier = Modifier.fillMaxSize().padding(padding).padding(20.dp)) {
                 Text("Selecione o paciente", style = MaterialTheme.typography.headlineSmall)
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = patientQuery,
+                    onValueChange = { patientQuery = it },
+                    placeholder = { Text("Buscar por nome ou telefone…") },
+                    leadingIcon = { Icon(Icons.Default.Search, null, modifier = Modifier.size(18.dp)) },
+                    trailingIcon = {
+                        if (patientQuery.isNotEmpty()) {
+                            IconButton(onClick = { patientQuery = "" }) { Icon(Icons.Default.Close, "Limpar busca", modifier = Modifier.size(16.dp)) }
+                        }
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 Spacer(Modifier.height(12.dp))
                 if (allPatients.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("Nenhum paciente disponível.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
+                } else if (filteredPatients.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Nenhum paciente corresponde à busca.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 } else {
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxSize()) {
-                        items(allPatients, key = { it.id }) { p ->
+                        items(filteredPatients, key = { it.id }) { p ->
                             Card(modifier = Modifier.fillMaxWidth().clickable {
                                 vm.load(p.id)
                                 showPatientPicker = false
@@ -167,8 +210,28 @@ fun ProntuarioScreen(
             key = "prescricao-${state.patientId}",
             factory = AppContainer.prescricaoViewModelFactory(state.patientId),
         )
+        val evolucaoVm: EvolucaoViewModel = viewModel(
+            key = "evolucao-${state.patientId}",
+            factory = AppContainer.evolucaoViewModelFactory(state.patientId),
+        )
         val supremoState by supremoVm.state.collectAsStateWithLifecycle()
         val exameState by exameVm.state.collectAsStateWithLifecycle()
+        val evolucaoState by evolucaoVm.state.collectAsStateWithLifecycle()
+
+        // ── Modo atendimento (appointmentId != null) ──────────────
+        val atendVm: AtendimentoViewModel? = appointmentId?.let { apptId ->
+            viewModel(key = "atendimento-$apptId", factory = AppContainer.atendimentoViewModelFactory(apptId))
+        }
+        val atendState: AtendimentoUiState = if (atendVm != null) atendVm.state.collectAsStateWithLifecycle().value else AtendimentoUiState()
+        var elapsedSeconds by remember { mutableIntStateOf(0) }
+        if (appointmentId != null) {
+            LaunchedEffect(appointmentId) {
+                while (true) {
+                    kotlinx.coroutines.delay(1000)
+                    elapsedSeconds++
+                }
+            }
+        }
 
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             if (state.loading) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -194,7 +257,36 @@ fun ProntuarioScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+                // BUG CRÍTICO corrigido (2026-07-29, achado em teste real de device):
+                // ProntuarioScreen não tinha NENHUM jeito de persistir o rascunho da
+                // avaliação (Ba Gang, língua, pulso, motivo, flags) — cada `edit{}` do
+                // SupremoViewModel só atualiza `_state.draft` em memória. O único lugar
+                // que chamava `supremoVm.save()` era o botão "Rascunho" de
+                // AtendimentoScreen (fluxo via Agenda), nunca esta tela — o caminho que
+                // a médica realmente usa pra abrir o prontuário de um paciente (CRM →
+                // paciente → Prontuário). Resultado: preencher qualquer coisa aqui e
+                // sair da tela perdia tudo, em silêncio.
                 Box(
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.extraLarge)
+                        .background(if (supremoState.saving) MaterialTheme.colorScheme.outline else SemanticSuccess)
+                        .clickable(enabled = !supremoState.saving) { supremoVm.save() }
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                ) {
+                    if (supremoState.saving) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color.White)
+                    } else {
+                        Text(
+                            "Salvar",
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            color = Color.White,
+                        )
+                    }
+                }
+                Spacer(Modifier.width(8.dp))
+                // Já estamos num atendimento (appointmentId != null): o botão "Atender" some,
+                // porque o banner logo abaixo já cumpre esse papel ("Finalizar atendimento").
+                if (appointmentId == null) Box(
                     modifier = Modifier
                         .clip(MaterialTheme.shapes.extraLarge)
                         .background(MaterialTheme.colorScheme.primary)
@@ -207,6 +299,40 @@ fun ProntuarioScreen(
                         color = Color.White,
                     )
                 }
+            }
+
+            if (appointmentId != null) {
+                AtendimentoBanner(
+                    elapsedSeconds = elapsedSeconds,
+                    finalizing = atendState.finalizing,
+                    onFinalize = {
+                        supremoVm.save()
+                        val summary = buildString {
+                            if (supremoState.draft.chiefComplaint.isNotBlank()) appendLine("Queixa: ${supremoState.draft.chiefComplaint}")
+                            if (supremoState.draft.orientations.isNotBlank()) appendLine("Orientações: ${supremoState.draft.orientations}")
+                        }.trim()
+                        atendVm?.finalize(summary, onFinalizedAtendimento)
+                    },
+                )
+                atendState.error?.let {
+                    Text(it, color = SemanticError, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp), style = MaterialTheme.typography.bodySmall)
+                }
+            }
+
+            // Feedback de salvar — sucesso via Toast (some sozinho), erro fica visível
+            // até a médica ver (nunca só no Log, mesma regra do resto do app).
+            LaunchedEffect(supremoState.savedAt) {
+                if (!supremoState.savedAt.isNullOrBlank()) {
+                    android.widget.Toast.makeText(context, "Prontuário salvo.", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+            supremoState.error?.let {
+                Text(
+                    it,
+                    color = SemanticError,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
 
             // ── Safety alerts — always visible, before any tab content ──
@@ -261,12 +387,16 @@ fun ProntuarioScreen(
                     onAcceptReviewOfSystems = supremoVm::acceptReviewOfSystemsSuggestion,
                     onDismissSuggestion = supremoVm::dismissChiefComplaintSuggestion,
                     onOpenAnamnese = { tab = ProntTab.ANAMNESE.ordinal },
-                    onOpenEvolucao = { onOpenEvolucao(state.patientId) },
+                    onOpenEvolucao = { tab = ProntTab.EVOLUCAO.ordinal },
+                    onSetRegionEva = supremoVm::setRegionEva,
+                    onToggleRelieving = supremoVm::toggleRelieving,
+                    onToggleAggravating = supremoVm::toggleAggravating,
                 )
                 ProntTab.ANAMNESE -> AnamneseTab(supremoVm)
                 ProntTab.PLANO -> PlanoTab(
                     supremoState, onOverride = onOverride,
                     onOrientationsChange = supremoVm::updateOrientations,
+                    onToggleTechnique = supremoVm::toggleTechnique,
                     onSynthesize = {
                         supremoVm.synthesizeDiagnosis(
                             labSummary = buildLabSummary(exameState),
@@ -283,6 +413,9 @@ fun ProntuarioScreen(
                 ProntTab.PRESCRICAO -> PrescricaoTab(prescricaoVm)
                 ProntTab.EVOLUCAO -> EvolucaoTab(
                     entries = state.entries,
+                    history = evolucaoState.history,
+                    evaFor = evolucaoVm::evaFor,
+                    comparison = evolucaoVm.comparison(),
                     onAdd = { editingEntry = null; showSessionDialog = true },
                     onEdit = { e -> editingEntry = e; showSessionDialog = true },
                     onDelete = { e -> confirmDelete = e },
@@ -367,6 +500,10 @@ private fun initialsOfPatient(name: String): String {
 
 // ── RESUMO ──────────────────────────────────────────────────────────────
 
+private val relievingOptions = listOf("Repouso", "Calor", "Movimento leve", "Pressão", "Alongamento")
+private val aggravatingOptions = listOf("Frio", "Umidade", "Estresse", "Longo período sentado", "Esforço físico", "Noite")
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ResumoTab(
     state: com.bioacupunt.prontuario.presentation.ProntuarioUiState,
@@ -379,6 +516,9 @@ private fun ResumoTab(
     onDismissSuggestion: () -> Unit,
     onOpenAnamnese: () -> Unit,
     onOpenEvolucao: () -> Unit,
+    onSetRegionEva: (com.bioacupunt.prontuario.domain.safety.BodyRegion, Int) -> Unit,
+    onToggleRelieving: (String) -> Unit,
+    onToggleAggravating: (String) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -396,7 +536,7 @@ private fun ResumoTab(
             SupremoCard {
                 Text("Motivo da Consulta", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                 Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
+                SpellCheckedTextField(
                     value = supremoState.draft.chiefComplaint,
                     onValueChange = onChiefComplaintChange,
                     placeholder = { Text("Descreva livremente o que a paciente trouxe hoje...") },
@@ -417,13 +557,47 @@ private fun ResumoTab(
             }
         }
         item {
+            // Vinha só do wizard de Atendimento (que editava o mesmo MtcAssessment por
+            // fora do Prontuário) — trazido pra cá na unificação dos dois fluxos numa
+            // tela só. `bodyMarks`/EVA já existiam no domínio, só não tinham UI aqui.
+            SupremoCard {
+                SectionHeader(title = "Mapa corporal", subtitle = "Toque na região · toque de novo para ciclar a intensidade (EVA)")
+                Spacer(Modifier.height(10.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    com.bioacupunt.prontuario.domain.safety.BodyRegion.entries.forEach { region ->
+                        val eva = supremoState.draft.bodyMarks.firstOrNull { it.region == region }?.intensity ?: 0
+                        val label = if (eva > 0) "${region.label} · $eva" else region.label
+                        SelectableChip(label, eva > 0, {
+                            val next = when (eva) { 0 -> 3; 3 -> 6; 6 -> 9; else -> 0 }
+                            onSetRegionEva(region, next)
+                        })
+                    }
+                }
+            }
+        }
+        item {
+            SupremoCard {
+                Text("O QUE MELHORA", style = MaterialTheme.typography.labelMedium, color = Primary)
+                Spacer(Modifier.height(8.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    relievingOptions.forEach { f -> SelectableChip(f, f in supremoState.draft.relievingFactors, { onToggleRelieving(f) }) }
+                }
+                Spacer(Modifier.height(14.dp))
+                Text("O QUE PIORA", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
+                Spacer(Modifier.height(8.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    aggravatingOptions.forEach { f -> SelectableChip(f, f in supremoState.draft.aggravatingFactors, { onToggleAggravating(f) }) }
+                }
+            }
+        }
+        item {
             SupremoCard {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("Diagnóstico MTC atual", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                     TextButton(onClick = onOpenAnamnese) { Text("Revisar →") }
                 }
                 Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
+                SpellCheckedTextField(
                     value = state.diagnosis,
                     onValueChange = { onUpdate(null, null, it, null) },
                     label = { Text("Diagnóstico") },
@@ -435,7 +609,7 @@ private fun ResumoTab(
             SupremoCard {
                 Text("Resumo", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                 Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
+                SpellCheckedTextField(
                     value = state.summary,
                     onValueChange = { onUpdate(it, null, null, null) },
                     modifier = Modifier.fillMaxWidth(),
@@ -568,7 +742,7 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
                 if (selectedPatterns.isNotEmpty()) {
                     Spacer(Modifier.height(14.dp))
                     selectedPatterns.forEach { pattern ->
-                        OutlinedTextField(
+                        SpellCheckedTextField(
                             value = pattern.notes,
                             onValueChange = { viewModel.updatePatternNotes(pattern.organ, it) },
                             label = { Text("Notas — ${pattern.organ.label}") },
@@ -629,7 +803,7 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
                     }
                 }
                 Spacer(Modifier.height(14.dp))
-                OutlinedTextField(
+                SpellCheckedTextField(
                     value = tongue.notes,
                     onValueChange = { viewModel.updateTongueNotes(it) },
                     label = { Text("Notas (forma, espessura, umidade, o que não coube nos chips)") },
@@ -649,7 +823,7 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
+                SpellCheckedTextField(
                     value = state.draft.pulse.notes,
                     onValueChange = { viewModel.updatePulseNotes(it) },
                     label = { Text("Notas gerais do pulso") },
@@ -731,11 +905,13 @@ internal fun PulseCard(wrist: Wrist, position: PulsePosition, readings: List<Pul
 
 // ── PLANO ───────────────────────────────────────────────────────────────
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PlanoTab(
     supremoState: com.bioacupunt.prontuario.presentation.SupremoUiState,
     onOverride: ((String) -> Unit)? = null,
     onOrientationsChange: (String) -> Unit = {},
+    onToggleTechnique: (com.bioacupunt.prontuario.domain.safety.Technique) -> Unit = {},
     onSynthesize: () -> Unit = {},
     onAcceptTcm: () -> Unit = {},
     onAcceptBiomedical: () -> Unit = {},
@@ -754,6 +930,27 @@ private fun PlanoTab(
                     verdict = supremoState.verdict,
                     onOverride = onOverride,
                 )
+            }
+        }
+        item {
+            // Vinha só do wizard de Atendimento — trazido pra cá na unificação. Não é só
+            // cosmético: é a técnica marcada aqui que o motor de segurança usa pra decidir
+            // regras específicas de técnica (ex.: eletroacupuntura × marca-passo). Sem
+            // este card em algum lugar do Prontuário, quem só usasse esta tela nunca
+            // conseguiria marcar a técnica, e essas regras nunca disparariam de verdade.
+            val securePrefs = com.bioacupunt.di.AppContainer.securePreferences
+            val enabledNames = remember {
+                securePrefs.enabledTechniquesCsv.split(",").filter { it.isNotBlank() }.toSet()
+                    .ifEmpty { com.bioacupunt.prontuario.domain.safety.Technique.entries.map { it.name }.toSet() }
+            }
+            SupremoCard {
+                Text("Técnicas selecionadas", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
+                Spacer(Modifier.height(10.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    com.bioacupunt.prontuario.domain.safety.Technique.entries.filter { it.name in enabledNames }.forEach { t ->
+                        SelectableChip(t.label, t in supremoState.proposal.techniques, { onToggleTechnique(t) })
+                    }
+                }
             }
         }
         // ── SÍNTESE DIAGNÓSTICA IA ────────────────────────────────
@@ -784,7 +981,7 @@ private fun PlanoTab(
             SupremoCard {
                 Text("Plano terapêutico", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                 Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
+                SpellCheckedTextField(
                     value = supremoState.draft.orientations,
                     onValueChange = onOrientationsChange,
                     modifier = Modifier.fillMaxWidth(),
@@ -806,6 +1003,10 @@ private fun ExamesTab(vm: ExameViewModel) {
     var addExam by remember { mutableStateOf(false) }
     var addMed by remember { mutableStateOf(false) }
     var addAllergy by remember { mutableStateOf(false) }
+    var examFilter by remember { mutableStateOf<ExamResultTag?>(null) }
+    val filteredExams = remember(state.exams, examFilter) {
+        state.exams.filter { examFilter == null || it.resultTag == examFilter }
+    }
 
     LaunchedEffect(state.error) {
         val msg = state.error
@@ -851,11 +1052,22 @@ private fun ExamesTab(vm: ExameViewModel) {
                     Text("Exames laboratoriais", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                     TextButton(onClick = { addExam = true }) { Text("+ Adicionar") }
                 }
+                if (state.exams.size > 1) {
+                    Spacer(Modifier.height(6.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        FilterChip(selected = examFilter == null, onClick = { examFilter = null }, label = { Text("Todos") })
+                        ExamResultTag.entries.forEach { t ->
+                            FilterChip(selected = examFilter == t, onClick = { examFilter = if (examFilter == t) null else t }, label = { Text(t.label) })
+                        }
+                    }
+                }
                 Spacer(Modifier.height(6.dp))
                 if (state.exams.isEmpty()) {
                     Text("Sem registros.", style = MaterialTheme.typography.bodySmall, color = TextMuted)
+                } else if (filteredExams.isEmpty()) {
+                    Text("Nenhum exame corresponde ao filtro.", style = MaterialTheme.typography.bodySmall, color = TextMuted)
                 } else {
-                    state.exams.forEach { e ->
+                    filteredExams.forEach { e ->
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -970,8 +1182,8 @@ private fun PrescricaoTab(vm: PrescricaoViewModel) {
             val selectedClasse = state.selectedClasse
             when {
                 state.query.isNotBlank() -> items(state.results, key = { it.id }) { med ->
-                    Card(onClick = { vm.selectMedicamento(med) }, modifier = Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(12.dp)) {
+                    SupremoCard {
+                        Column(Modifier.fillMaxWidth().clickable { vm.selectMedicamento(med) }) {
                             Text(med.nomeComercial, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                             Text(
                                 "${med.principiosAtivos.joinToString()} · ${med.classeTerapeutica}",
@@ -1022,7 +1234,7 @@ private fun PrescricaoTab(vm: PrescricaoViewModel) {
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(state.via, vm::onViaChanged, label = { Text("Via de administração") }, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(state.observacoes, vm::onObservacoesChanged, label = { Text("Observações") }, modifier = Modifier.fillMaxWidth())
+                    SpellCheckedTextField(state.observacoes, vm::onObservacoesChanged, label = { Text("Observações") }, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(12.dp))
                     val blocked = state.verdict?.isBlocked == true
                     Button(
@@ -1071,21 +1283,63 @@ private fun PrescricaoTab(vm: PrescricaoViewModel) {
 @Composable
 private fun EvolucaoTab(
     entries: List<ProntuarioEntry>,
+    history: List<MtcAssessment>,
+    evaFor: (MtcAssessment) -> Int?,
+    comparison: com.bioacupunt.prontuario.presentation.EvolucaoComparison,
     onAdd: () -> Unit,
     onEdit: (ProntuarioEntry) -> Unit,
     onDelete: (ProntuarioEntry) -> Unit,
 ) {
+    var query by remember { mutableStateOf("") }
+    var typeFilter by remember { mutableStateOf<ProntuarioEntryType?>(null) }
+    val filteredEntries = remember(entries, query, typeFilter) {
+        entries
+            .filter { typeFilter == null || it.type == typeFilter }
+            .filter { query.isBlank() || it.body.contains(query, ignoreCase = true) || it.doctorName.contains(query, ignoreCase = true) }
+    }
+
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        // Gráfico de EVA + comparação automática primeira-vs-última sessão — antes só
+        // existiam numa tela separada (EvolucaoScreen, removida 2026-08-04); trazidos
+        // pra dentro desta aba pra não ter dois lugares diferentes mostrando o mesmo
+        // histórico de jeitos diferentes.
+        item { EvaTrendCard(history, evaFor = evaFor) }
+        if (comparison.hasData) {
+            item { ComparisonBanner(comparison) }
+        }
         item {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Text("Linha do tempo · Evoluções", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier.weight(1f))
                 TextButton(onClick = onAdd) { Text("+ Nova") }
             }
         }
+        if (entries.isNotEmpty()) {
+            item {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    placeholder = { Text("Buscar no texto das evoluções…") },
+                    leadingIcon = { Icon(Icons.Default.Search, null, modifier = Modifier.size(18.dp)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodySmall,
+                )
+            }
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                    FilterChip(selected = typeFilter == null, onClick = { typeFilter = null }, label = { Text("Todas") })
+                    ProntuarioEntryType.entries.forEach { t ->
+                        FilterChip(selected = typeFilter == t, onClick = { typeFilter = if (typeFilter == t) null else t }, label = { Text(t.label) })
+                    }
+                }
+            }
+        }
         if (entries.isEmpty()) {
             item { Text("Sem registros.", color = TextMuted, style = MaterialTheme.typography.bodySmall) }
+        } else if (filteredEntries.isEmpty()) {
+            item { Text("Nenhuma evolução corresponde ao filtro.", color = TextMuted, style = MaterialTheme.typography.bodySmall) }
         } else {
-            items(entries, key = { it.id }) { e ->
+            items(filteredEntries, key = { it.id }) { e ->
                 SupremoCard {
                     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.weight(1f)) {
@@ -1105,6 +1359,126 @@ private fun EvolucaoTab(
     }
 }
 
+/** Portado de EvolucaoScreen.kt (removida) — mesmo cálculo, mesmo visual. */
+@Composable
+private fun EvaTrendCard(history: List<MtcAssessment>, evaFor: (MtcAssessment) -> Int?) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
+            .padding(18.dp),
+    ) {
+        Text("Gráfico de tendência · EVA", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
+        Spacer(Modifier.height(4.dp))
+        val points = history.takeLast(8).mapNotNull { a -> evaFor(a)?.let { a to it } }
+        if (points.isEmpty()) {
+            Text("Sem sessões com dor registrada ainda.", style = MaterialTheme.typography.bodySmall, color = TextMuted, modifier = Modifier.padding(top = 8.dp))
+            return@Column
+        }
+        Spacer(Modifier.height(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().height(90.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            points.forEach { (assessment, eva) ->
+                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f)
+                            .height((eva.coerceIn(0, 10) * 6 + 6).dp)
+                            .clip(MaterialTheme.shapes.extraSmall)
+                            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Accent, Primary))),
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text("$eva", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+                    Text(assessment.date.take(5), style = MaterialTheme.typography.labelSmall, color = TextMuted, maxLines = 1)
+                }
+            }
+        }
+    }
+}
+
+/** Portado de EvolucaoScreen.kt (removida) — mesmo cálculo, mesmo visual. */
+@Composable
+private fun ComparisonBanner(comparison: com.bioacupunt.prontuario.presentation.EvolucaoComparison) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(Icons.AutoMirrored.Filled.TrendingUp, null, tint = Primary, modifier = Modifier.size(20.dp))
+        Column {
+            Text("Comparação automática", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Primary)
+            Spacer(Modifier.height(2.dp))
+            val parts = buildList {
+                if (comparison.tongueFrom != null && comparison.tongueTo != null) {
+                    add("língua passou de ${comparison.tongueFrom.label.lowercase()} → ${comparison.tongueTo.label.lowercase()}")
+                }
+                if (comparison.evaFrom != null && comparison.evaTo != null) {
+                    add("EVA de ${comparison.evaFrom} para ${comparison.evaTo}")
+                }
+            }
+            Text(
+                parts.joinToString("; ").ifBlank { "Ainda sem dados suficientes para comparar." }
+                    .replaceFirstChar { it.uppercase() } + ".",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            if (comparison.evaFrom != null && comparison.evaTo != null) {
+                Text(
+                    if (comparison.evaImproved) "Melhora consistente." else if (comparison.evaTo!! > comparison.evaFrom!!) "Piora — revisar plano." else "Estável.",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = if (comparison.evaImproved) SemanticSuccess else if (comparison.evaTo!! > comparison.evaFrom!!) SemanticError else TextMuted,
+                )
+            }
+        }
+    }
+}
+
+/** Banner de sessão ativa — substitui o timer/"Finalizar atendimento" que antes só
+ * existiam no wizard `AtendimentoScreen` (removido). */
+@Composable
+private fun AtendimentoBanner(elapsedSeconds: Int, finalizing: Boolean, onFinalize: () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(SemanticWarningBg)
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Icon(Icons.Default.Timer, null, tint = SemanticWarning, modifier = Modifier.size(16.dp))
+                Text(
+                    "Atendimento em andamento · ${formatElapsed(elapsedSeconds)}",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = SemanticWarning,
+                )
+            }
+            Button(onClick = onFinalize, enabled = !finalizing, colors = ButtonDefaults.buttonColors(containerColor = Primary)) {
+                if (finalizing) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), color = Color.White, strokeWidth = 2.dp)
+                } else {
+                    Text("Finalizar atendimento")
+                }
+            }
+        }
+    }
+}
+
+private fun formatElapsed(totalSeconds: Int): String {
+    val m = totalSeconds / 60
+    val s = totalSeconds % 60
+    return "%d:%02d".format(m, s)
+}
+
 @Composable
 private fun SessionFormDialog(entry: ProntuarioEntry?, onDismiss: () -> Unit, onSave: (ProntuarioEntryType, String) -> Unit) {
     var type by remember { mutableStateOf(entry?.type ?: ProntuarioEntryType.EVOLUTION) }
@@ -1122,7 +1496,7 @@ private fun SessionFormDialog(entry: ProntuarioEntry?, onDismiss: () -> Unit, on
                     }
                 }
                 OutlinedTextField(value = doctor, onValueChange = { doctor = it }, label = { Text("Responsável") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                OutlinedTextField(value = body, onValueChange = { body = it }, label = { Text("Evolução") }, modifier = Modifier.fillMaxWidth(), minLines = 4)
+                SpellCheckedTextField(value = body, onValueChange = { body = it }, label = { Text("Evolução") }, modifier = Modifier.fillMaxWidth(), minLines = 4)
             }
         },
         confirmButton = { TextButton(onClick = { if (body.isNotBlank()) onSave(type, "$doctor\n\n$body") }) { Text("Salvar") } },
@@ -1168,6 +1542,11 @@ private fun DocumentosTab(vm: ExameViewModel) {
         }
     }
 
+    var query by remember { mutableStateOf("") }
+    val filteredDocuments = remember(state.documents, query) {
+        if (query.isBlank()) state.documents else state.documents.filter { it.name.contains(query, ignoreCase = true) }
+    }
+
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -1175,34 +1554,44 @@ private fun DocumentosTab(vm: ExameViewModel) {
                 TextButton(onClick = { pickerLauncher.launch(arrayOf("*/*")) }) { Text("+ Adicionar") }
             }
         }
+        if (state.documents.size > 1) {
+            item {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    placeholder = { Text("Buscar por nome…") },
+                    leadingIcon = { Icon(Icons.Default.Search, null, modifier = Modifier.size(18.dp)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
         if (state.documents.isEmpty()) {
             item { Text("Sem documentos anexados.", color = TextMuted, style = MaterialTheme.typography.bodySmall) }
+        } else if (filteredDocuments.isEmpty()) {
+            item { Text("Nenhum documento corresponde à busca.", color = TextMuted, style = MaterialTheme.typography.bodySmall) }
         } else {
-            items(state.documents, key = { it.id }) { d ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(MaterialTheme.colorScheme.surface)
-                        .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
-                        .clickable {
-                            runCatching {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(d.uri)).apply {
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                })
-                            }
+            items(filteredDocuments, key = { it.id }) { d ->
+                SupremoCard(
+                    modifier = Modifier.clickable {
+                        runCatching {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(d.uri)).apply {
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            })
                         }
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    },
                 ) {
-                    Icon(Icons.Default.Description, null, tint = Primary, modifier = Modifier.size(22.dp))
-                    Spacer(Modifier.width(12.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(d.name, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium), maxLines = 1)
-                        Text(formatDocMeta(d.mimeType, d.sizeBytes), style = MaterialTheme.typography.labelSmall, color = TextMuted)
-                    }
-                    IconButton(onClick = { vm.deleteDocument(d.id) }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Close, null, tint = TextMuted, modifier = Modifier.size(16.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Description, null, tint = Primary, modifier = Modifier.size(22.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(d.name, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium), maxLines = 1)
+                            Text(formatDocMeta(d.mimeType, d.sizeBytes), style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                        }
+                        IconButton(onClick = { vm.deleteDocument(d.id) }, modifier = Modifier.size(32.dp)) {
+                            Icon(Icons.Default.Close, null, tint = TextMuted, modifier = Modifier.size(16.dp))
+                        }
                     }
                 }
             }
@@ -1520,18 +1909,31 @@ private fun SimpleTwoFieldDialog(title: String, label1: String, label2: String, 
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ExamDialog(onDismiss: () -> Unit, onSave: (String, String, ExamResultTag) -> Unit) {
     var name by remember { mutableStateOf("") }
+    // Antes: OutlinedTextField livre com placeholder "AAAA-MM-DD" — sem DatePicker,
+    // aberto a formato inconsistente (e sem base confiável pra um futuro filtro por
+    // data). DatePicker real garante o formato ISO sempre, sem a médica precisar digitar.
     var date by remember { mutableStateOf(java.time.LocalDate.now().toString()) }
     var tag by remember { mutableStateOf(ExamResultTag.PENDING) }
+    var showDatePicker by remember { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Novo exame", fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome do exame") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Data (AAAA-MM-DD)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                OutlinedTextField(
+                    value = date,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Data") },
+                    trailingIcon = { IconButton(onClick = { showDatePicker = true }) { Icon(Icons.Default.CalendarMonth, "Escolher data") } },
+                    modifier = Modifier.fillMaxWidth().clickable { showDatePicker = true },
+                    singleLine = true,
+                )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ExamResultTag.entries.forEach { t ->
                         FilterChip(selected = tag == t, onClick = { tag = t }, label = { Text(t.label) })
@@ -1542,4 +1944,25 @@ private fun ExamDialog(onDismiss: () -> Unit, onSave: (String, String, ExamResul
         confirmButton = { TextButton(onClick = { if (name.isNotBlank()) onSave(name.trim(), date.trim(), tag) }) { Text("Salvar") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
+
+    if (showDatePicker) {
+        val initialMillis = runCatching {
+            java.time.LocalDate.parse(date).atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
+        }.getOrNull()
+        val pickerState = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    pickerState.selectedDateMillis?.let { millis ->
+                        date = java.time.Instant.ofEpochMilli(millis).atZone(java.time.ZoneOffset.UTC).toLocalDate().toString()
+                    }
+                    showDatePicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancelar") } },
+        ) {
+            DatePicker(state = pickerState)
+        }
+    }
 }

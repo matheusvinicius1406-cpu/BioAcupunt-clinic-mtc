@@ -80,21 +80,7 @@ class SecurePreferences(context: Context) {
         get() = prefs.getBoolean("google_drive_linked", false)
         set(value) = edit { it.putBoolean("google_drive_linked", value) }
 
-    var geminiApiKey: String?
-        get() = prefs.getString("gemini_api_key", null)
-        set(value) = if (value.isNullOrBlank()) edit { it.remove("gemini_api_key") } else edit { it.putString("gemini_api_key", value) }
-
-    /**
-     * True once the doctor has answered the cloud-AI consent dialog (accept or decline).
-     * Gates [com.bioacupunt.ai.config.AiConfigManager.isCloudEnabled], which defaults to
-     * false until this flips true — a patient's name/appointment data must never reach
-     * Gemini before she has explicitly seen and answered the LGPD notice.
-     */
-    var cloudConsentAsked: Boolean
-        get() = prefs.getBoolean("cloud_consent_asked", false)
-        set(value) = edit { it.putBoolean("cloud_consent_asked", value) }
-
-    /** URL de onde baixar o modelo local (.task do Gemma). Vazio = usa o padrão do código. */
+    /** URL de onde baixar o modelo local (.task). Vazio = usa o padrão do código. */
     var localModelUrl: String
         get() = prefs.getString("local_model_url", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("local_model_url") } else edit { it.putString("local_model_url", value) }
@@ -197,6 +183,12 @@ class SecurePreferences(context: Context) {
     var clinicWorkDaysCsv: String
         get() = prefs.getString("clinic_work_days", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("clinic_work_days") } else edit { it.putString("clinic_work_days", value) }
+
+    /** Código do idioma de destino do tradutor automático da Biblioteca (ex.: "pt-BR", "en").
+     * Vazio = usa o padrão ([com.bioacupunt.biblioteca.domain.model.TranslationLanguage.default]). */
+    var translationTargetLanguage: String
+        get() = prefs.getString("translation_target_language", "") ?: ""
+        set(value) = if (value.isBlank()) edit { it.remove("translation_target_language") } else edit { it.putString("translation_target_language", value) }
 
     fun clearAll() {
         edit { it.clear() }

@@ -13,19 +13,23 @@ sealed class Screen(val route: String, val label: String) {
     data object Ajustes     : Screen("ajustes",     "Ajustes")
 
     // Secondary screens (não aparecem na bottom nav)
-    data object Prontuario  : Screen("prontuario/{patientId}", "Prontuário") {
+    //
+    // `appointmentId` é query param OPCIONAL (default 0L = "fora de um atendimento").
+    // Quando > 0, o Prontuário entra em "modo atendimento" (timer de sessão + botão
+    // "Finalizar atendimento") — ver ProntuarioScreen. Isto substitui o que antes era
+    // uma tela separada (`Atendimento`, removida 2026-08-04): o wizard de 5 passos
+    // editava o MESMO MtcAssessment que as abas Anamnese/Plano já editam — duas
+    // superfícies para o mesmo dado. Unificado numa tela só, por pedido explícito.
+    data object Prontuario  : Screen("prontuario/{patientId}?appointmentId={appointmentId}", "Prontuário") {
         // `route` above is the *pattern* NavHost registers a destination for.
         // Navigating there needs a concrete path with the placeholder filled
         // in — string-concatenating "$route/$id" instead (as this call site
         // used to) produces "prontuario/{patientId}/123", which matches no
         // registered destination and throws at navigate() time.
-        fun routeFor(patientId: Long) = "prontuario/$patientId"
-    }
-    data object Atendimento : Screen("atendimento/{appointmentId}", "Atendimento") {
-        fun routeFor(appointmentId: Long) = "atendimento/$appointmentId"
-    }
-    data object Evolucao : Screen("evolucao/{patientId}", "Evolução Clínica") {
-        fun routeFor(patientId: Long) = "evolucao/$patientId"
+        fun routeFor(patientId: Long, appointmentId: Long = 0L): String {
+            val base = "prontuario/$patientId"
+            return if (appointmentId > 0L) "$base?appointmentId=$appointmentId" else base
+        }
     }
     data object Flashcards  : Screen("flashcards",  "Flashcards")
     data object Simulador   : Screen("simulador",   "Simulador")

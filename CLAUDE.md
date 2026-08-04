@@ -102,6 +102,20 @@ assim — registrado aqui pra nenhuma sessão futura precisar relitigar do zero:
   ferramentas de verdade (busca web, agenda) implementadas e conectadas. Próxima
   sessão de IA: isso — mantendo R1/R2/R4 intocados no caminho clínico.
 
+**2026-07-29 — DECISÃO DE PRODUTO: nuvem (Gemini) removida do app. IA é 100%
+on-device agora, sem exceção.** Pedido explícito da médica: "exclua a função do
+gemini e faça funcionar, qualquer modelo bom". `CloudAiProvider`, `CloudConsentDialog`,
+`AiConfigManager`/`AndroidAiConfigManager`, `AiSecretsProvider`/`AndroidAiSecretsProvider`
+foram deletados; `AiRequest.allowWebSearch` (existia só pro Google Search grounding do
+Gemini) foi removido; o toggle "IA na nuvem" e o campo de chave de API saíram de
+Ajustes > IA; `SecurePreferences.geminiApiKey`/`cloudConsentAsked` saíram do schema de
+prefs. O `aiOrchestrator` em `AppContainer.kt` registra só `LocalLlmProvider` — sem
+provider disponível (modelo não baixado ainda), a UI diz isso e oferece baixar, nunca
+finge responder. Isso não revoga a intenção de "assistente livre" do parágrafo acima —
+buscar na internet, se algum dia for implementado de verdade, precisa de um mecanismo
+próprio (não a integração Gemini que foi removida). R1/R2/R4 continuam sem nenhum diff.
+Detalhe do que foi trocado: ver "Onde parei (2026-07-29, parte 3)" mais abaixo.
+
 **2026-07-27 — pedido de a IA inferir o diagnóstico direto foi recusado na ocasião.**
 Vide decisão abaixo.
 
@@ -113,9 +127,10 @@ e do R4 (geração de conteúdo para a biblioteca).
 O que foi construído:
 - **`ClinicalSynthesisUseCase`** — recebe TODOS os dados do prontuário (MtcAssessment,
   histórico, língua, pulso, Ba Gang, Zang Fu, fatores de piora/melhora, exames,
-  medicações), busca evidência na biblioteca curada (RAG), e quando não acha, permite
-  busca na web (Gemini + Google Search). Gera uma sugestão estruturada em JSON:
-  diagnóstico MTC + CID biomédico + diagnósticos diferenciais + plano terapêutico.
+  medicações), busca evidência na biblioteca curada (RAG). Gera uma sugestão
+  estruturada em JSON: diagnóstico MTC + CID biomédico + diagnósticos diferenciais +
+  plano terapêutico. (Nota 2026-07-29: a busca na web via Gemini foi removida junto
+  com o resto da integração de nuvem — hoje só usa a IA local + a biblioteca.)
 - **`ClinicalSynthesis`** (modelo de domínio) — `ClinicalDiagnosis.kt` — contém
   `TcmDiagnosisSuggestion`, `BiomedicalDiagnosisSuggestion`, `DifferentialSuggestion`,
   `TherapeuticSuggestion`, `EvidenceSource`, `ConfidenceLevel`.
@@ -138,16 +153,15 @@ ClinicalSynthesisUseCase
   ├── 1. buildClinicalProfile() — monta perfil completo do MtcAssessment
   ├── 2. mtcRetriever.retrieve() — busca RAG na biblioteca (FTS4)
   ├── 3. buildPrompt() — constrói o prompt com evidência (se houver)
-  ├── 4. AiRequest(preferLocal = grounding.hasEvidence) — prefere local se achou evidência;
-  │     allowWebSearch = !grounding.hasEvidence — busca web se não achou na biblioteca
+  ├── 4. AiRequest(preferLocal = true) — único provider do app é o modelo local
   └── 5. parseResult() — extrai JSON e retorna ClinicalSynthesis
 ```
 
 Decisões de design desta implementação:
 - O `ClinicalSynthesisUseCase` é um caminho **separado** — não substitui nem compete com
   `AskLibraryUseCase` (RAG do chat) nem com `ClinicalSafetyEngine` (segurança).
-- `preferLocal` é `true` apenas quando a biblioteca achou evidência; caso contrário,
-  `false` para permitir que o cloud provider (Gemini com Google Search) seja selecionado.
+- `preferLocal = true` sempre (2026-07-29: não há mais provider de nuvem pra escolher
+  entre — ver "Escopo da IA").
 - A médica aceita cada componente individualmente: TCM, biomédico, plano.
 - Os ícones usados são do core Material Icons (`Star`, `Description`, `Search`, `Medication`,
   `Check`, `Close`, `Warning`, `Refresh`) para evitar dependência do pacote extended.
@@ -429,6 +443,166 @@ direção clara de onde deveria chegar:
   anteriores.
 - **As regras clínicas precisam do aval da médica.** `ClinicalSafetyEngine.kt` é
   legível de propósito — ela audita sem saber Kotlin.
+
+### Onde parei (2026-08-04) — Tradutor da Biblioteca, corretor ortográfico, Prontuário unificado
+
+Três pedidos na mesma sessão. Antes de codar, negociado via `AskUserQuestion` (mesmo
+padrão de sempre): tradução publica direto (sem gate de revisão, mas sempre rotulada
+"automática, não revisada"), corretor usa o serviço nativo do Android (não LLM), e o
+Prontuário foi investigado a fundo antes de qualquer mudança — o plano só avançou
+depois da médica decidir os três pontos ambíguos abaixo.
+
+**1) Tradutor automático da Biblioteca.** Todo artigo aprovado na Curadoria dispara
+tradução em background (`ArticleTranslationWorker`, WorkManager — mesmo padrão do
+`ModelDownloadWorker`, sobrevive à navegação) via IA local, seção por seção
+(`TranslateArticleUseCase.chunkContent` preserva o nível do heading — de propósito
+NÃO reaproveita `MarkdownSections`, que descarta essa informação). Status
+(pendente/processando/concluída/erro) persistido em `article_translations` (Room v24,
+`MIGRATION_23_24`, sem FK — mesmo raciocínio de medicamentos/flashcards). Idioma de
+destino configurável em Ajustes > IA (`SecurePreferences.translationTargetLanguage`,
+default PT-BR — a maioria do acervo curado vem de fontes em inglês). Visível no
+detalhe do artigo (`ArticleDetailSheet`, seção "TRADUÇÃO AUTOMÁTICA") com botão
+"Traduzir para X" (cobre o backlog já aprovado antes desta feature) e "Tentar de
+novo" em erro. **Nunca** entra na busca/RAG — isso continua indexando só o texto
+original aprovado por humano; a tradução é puramente um overlay de exibição.
+
+**2) Corretor ortográfico.** `SpellCheckService` (novo, `core/spellcheck/`) é uma
+casca fina sobre `android.view.textservice.TextServicesManager` — o serviço de
+correção que já existe em todo aparelho Android, não um motor próprio nem IA.
+`MtcTermsDictionary` filtra jargão de MTC/pinyin/código de ponto (`LI4`, `ST36`) antes
+de qualquer coisa chegar ao corretor, pra não sublinhar "Zang Fu" como erro.
+`SpellCheckedTextField` (novo, `ui/components/`) substitui `OutlinedTextField` nos 9
+campos de texto livre do Prontuário — sublinha a palavra suspeita (via
+`VisualTransformation`, sem alterar o texto real) e mostra um chip com sugestões +
+"Ignorar" (ignorar vale só pra sessão da tela, não persiste — se incomodar toda
+sessão, o lugar certo é crescer o dicionário, não este estado).
+
+**3) Prontuário unificado — a parte que mais mudou de escopo.** Investigação (agente
+Explore, sem código ainda) achou um bug de performance real e duas duplicações de
+navegação. A médica decidiu os três pontos via `AskUserQuestion`:
+
+- **Debounce corrigido**: `SupremoViewModel.edit()`/`updateProposal()` disparavam
+  `rescreenAsync()` (2 queries Room) a CADA TECLA em qualquer campo de texto livre —
+  sem debounce nenhum. Agora é um único coletor reativo em `init` (`_state.map { draft
+  to proposal }.distinctUntilChanged().debounce(400ms).collectLatest { rescreen() }`),
+  mesmo padrão já usado pra sugestão extrativa da IA. `rescreenAsync()` foi removida
+  (ficou sem chamador).
+- **Atendimento deixou de ser uma tela separada.** `AtendimentoScreen.kt` (wizard de
+  5 passos) e as abas Anamnese/Plano do Prontuário editavam o MESMO `MtcAssessment`
+  com UIs diferentes — pedido explícito da médica ("transforme um só prontuario").
+  Antes de apagar o wizard, comparado campo a campo com as abas: **mapa corporal
+  (EVA por região)**, **toggles manuais de melhora/piora** e **seleção de técnica**
+  (`Technique` — alimenta o motor de segurança pra regras técnica-específicas, ex.
+  eletroacupuntura × marca-passo) só existiam no wizard. Portados pra ResumoTab/
+  PlanoTab antes de qualquer coisa ser removida — checagem deliberada contra
+  regressão silenciosa, não um "apagar e ver o que quebra". `Screen.Prontuario` ganhou
+  `appointmentId` opcional via query param (`prontuario/{patientId}?appointmentId=`);
+  presente ⇒ banner com timer de sessão + "Finalizar atendimento" (reusa
+  `AtendimentoViewModel`, fecha o `Appointment` e grava a evolução). Agenda aponta
+  direto pra lá agora. `AtendimentoScreen.kt` deletado (555 linhas).
+- **Evolução unificada.** Existiam duas telas de histórico diferentes: a aba
+  `EVOLUCAO` (lista simples) e `EvolucaoScreen.kt` (gráfico de EVA + comparação
+  automática primeira-vs-última sessão). A médica escolheu unificar — o gráfico/
+  comparação foram portados pra dentro da aba (reaproveita `EvolucaoViewModel`
+  existente, sem duplicar a lógica de comparação). `EvolucaoScreen.kt` deletado,
+  `Screen.Evolucao` removida, MoreItem "Evolução" do menu global removido (era um
+  segundo seletor de paciente duplicado, agora redundante).
+- **`attachmentsJson` removido do domínio** (`ProntuarioEntry`) — nunca foi lido/
+  escrito por nenhuma UI. A coluna **continua** na `ProntuarioEntryEntity`/migração
+  SQL: "migração é aditiva, nunca remove coluna" é regra travada deste projeto
+  especificamente pra evitar o crash de validação de schema do Room contra
+  instalações que já têm a tabela — documentado com comentário na Entity pra próxima
+  sessão não estranhar a assimetria.
+- Além disso: Prescrição/Documentos migrados pro design system Supremo (eram os
+  únicos dois pontos com `Card`/`OutlinedTextField` cru do Material3); busca no
+  seletor de paciente (reaproveitando o padrão já usado no CRM, que o seletor do
+  Prontuário nunca tinha copiado); filtros de texto/tipo na aba Evolução, filtro por
+  `resultTag` em Exames, busca por nome em Documentos; `ExamDialog` trocou o campo de
+  data livre por `DatePicker` real (habilita filtro por data confiável no futuro).
+
+**Não incluído nesta fatia** (decisão de escopo, não esquecimento): tablet/tela
+larga (layout de coluna única foi considerado suficiente — investigação não achou
+nada realmente quebrado em mobile); `PharmaClassBrowser.kt` (usado também por
+`FarmacologiaScreen`, fora do Prontuário — não tocado pra não misturar escopo);
+`AtendimentoScreen`/Anamnese-Plano continuarem sendo "a mesma coisa, duas entradas"
+não é mais verdade (foi resolvido), mas a pergunta paralela de unificar melhor a
+apresentação dentro das próprias abas (ex.: Ba Gang/Zang Fu/Língua/Pulso hoje são
+todos dentro de uma aba só "Anamnese" já bem carregada) fica pra uma sessão futura
+se a médica achar que ainda está denso.
+
+**Suite: todos os testes verdes** (tradutor: 14 novos incl. `TranslateArticleUseCaseTest`
+sob Robolectric por usar `org.json.JSONObject`, `ArticleTranslationRepositoryTest`,
+`ArticleTranslationMigrationTest`, `LibraryReviewViewModelTest` novo — nunca tinha
+teste; corretor: `SpellCheckTokenizerTest` + `MtcTermsDictionaryTest`, ambos puros,
+sem Android; Prontuário: 3 testes novos em `SupremoViewModelTest` travando a
+regressão do debounce). `compileDebugKotlin` e `assembleDebug` verdes em cada etapa
+(validado incrementalmente, não só no final). **Nada testado em device real** —
+mesma ressalva de sempre, sobretudo relevante aqui: `SpellCheckService` depende do
+serviço de correção de texto real do Android, que não roda sob JVM puro nem
+Robolectric — a integração ponta-a-ponta (sublinhado aparecendo de verdade, chip de
+sugestão no lugar certo) só se confirma num aparelho.
+
+### Onde parei (2026-07-29, parte 3) — Gemini removido, download do modelo via WorkManager, banner de prontidão na Inteligência
+
+Pedido explícito da médica: "faça a area de inteligencia do seu jeito, ela não presta
+e não funciona, exclua a função do gemini e faça funcionar, qualquer modelo bom. faça
+o seu melhor e me surpreenda." Investigado com evidência de device antes de agir (mesma
+disciplina da parte 2): confirmado via `adb shell run-as ... ls -la files/` que o
+download do modelo (`phi-4-mini-instruct-q8.task.part`) estava travado, duas vezes
+seguidas, no MESMO byte count exato (344204) — não era queda de rede (isso daria
+tamanhos diferentes a cada tentativa), era a coroutine do download sendo cancelada.
+
+**Causa raiz encontrada em `LocalModelCard.kt`**: o botão "Baixar modelo" disparava
+`rememberCoroutineScope().launch { manager.download(url) }` — uma coroutine presa ao
+ciclo de vida da Composable. Sair da tela de Ajustes (trocar de aba, o Android
+recompor a UI) no meio de um download de ~3.9GB cancelava a coroutine, sempre no mesmo
+ponto porque o teste era sempre repetido do mesmo jeito. Corrigido com
+**`ModelDownloadWorker`** (novo, `ai/data/provider/ModelDownloadWorker.kt`) — um
+`CoroutineWorker` que sobrevive à navegação e ao app indo pra background, seguindo o
+mesmo padrão já usado por `SyncWorker`/`SyncWorkerFactory` (constructor
+`(Context, WorkerParameters)` puro, resolvido por reflection já que
+`SyncWorkerFactory.createWorker` devolve `null` pra qualquer classe que não seja
+`SyncWorker` — WorkManager cai pro fallback padrão automaticamente, não precisou tocar
+na factory). `LocalModelManager.state` já era um `StateFlow` num singleton
+(`AppContainer.localModelManager`) — a UI observava o lugar certo o tempo todo; o único
+bug era ONDE a chamada a `download()` rodava. `runAttemptCount < 5` limita retry (uma
+queda de wifi merece nova tentativa; um hash adulterado ou URL quebrada, R3, não vai
+virar sucesso só de insistir — sem teto o Worker ficaria retentando pra sempre).
+`ModelDownloadWorker.enqueue(context, url)` é o único ponto de enfileiramento,
+reusado tanto por `LocalModelCard` (Ajustes) quanto pelo banner novo abaixo.
+
+**Gemini removido por completo**, não só desligado — pedido explícito de exclusão, não
+de "manter desativado por padrão" como era antes (ver decisão 2026-07-29 em "Escopo da
+IA" acima para o raciocínio completo). Deletados: `CloudAiProvider.kt`,
+`CloudConsentDialog.kt`, `AiConfigManager.kt`/`AndroidAiConfigManager.kt`,
+`AiSecretsProvider.kt`/`AndroidAiSecretsProvider.kt`. Removidos: `AiRequest.allowWebSearch`
+(só existia pro Google Search grounding do Gemini — nenhum provider restante o usa),
+o registro do `cloudAiProvider` e o scorer de "local ganha +1000" em `AppContainer.kt`
+(virou desnecessário — só há um provider registrado agora), a seção "IA na nuvem
+(opcional)" inteira de `AjustesScreen.kt` (toggle + campo de chave de API), o diálogo
+de consentimento LGPD de primeiro acesso em `BioAcupuntNavHost.kt`, e
+`SecurePreferences.geminiApiKey`/`cloudConsentAsked`. Ajustados (não deletados, só
+paravam de setar `allowWebSearch`): `ClinicalSynthesisUseCase.kt` (`preferLocal` agora
+sempre `true`), `GenerateStudyMaterialUseCase.kt`, `UnifiedAiChatViewModel.kt`.
+`ClinicalSynthesisUseCaseTest.kt` teve os dois testes de `allowWebSearch` substituídos
+por um teste único confirmando `preferLocal == true` com ou sem evidência. R1/R2/R4
+sem nenhum diff — a remoção foi inteiramente no roteamento de provider, nunca nos
+gates de segurança/evidência.
+
+**Banner de prontidão do modelo na própria tela de Inteligência** (a contribuição
+"me surpreenda", além do pedido literal): antes, a única forma de a médica descobrir
+que a IA não tinha modelo baixado era mandar uma pergunta e receber "assistente não
+configurado" — sem indicação de que precisava ir em Ajustes > IA, ou de que já estava
+baixando. Agora `InteligenciaScreen.kt` observa `LocalModelManager.state` direto
+(mesmo `StateFlow` de `LocalModelCard`) e mostra, sem sair do chat: progresso de
+download em tempo real, botão "Baixar agora" quando ausente, botão "Tentar de novo"
+quando falhou — reaproveitando o mesmo `ModelDownloadWorker.enqueue(...)`.
+
+**Verificação**: `compileDebugKotlin` verde (achou e corrigiu 1 erro real — `registry
+.register()` é suspend, precisa de `runBlocking` ao simplificar o bloco que registrava
+os dois providers). `testDebugUnitTest`/`assembleDebug`/instalação em device: ver
+resultado no fim desta entrada ou na próxima sessão se a verificação não tiver sido
+concluída ainda quando isto foi escrito.
 
 ### Onde parei (2026-07-29, parte 2) — Inteligência ganha contexto de paciente, auditoria de 12 itens
 

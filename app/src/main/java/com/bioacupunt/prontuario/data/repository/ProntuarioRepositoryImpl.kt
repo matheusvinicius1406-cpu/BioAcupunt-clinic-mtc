@@ -50,7 +50,6 @@ class ProntuarioRepositoryImpl(private val dao: ProntuarioDao) : ProntuarioRepos
             date = entry.date,
             type = entry.type.name,
             body = entry.body,
-            attachmentsJson = entry.attachmentsJson,
             updatedAt = now
         )
         val id = dao.saveEntry(entity)
@@ -66,7 +65,6 @@ class ProntuarioRepositoryImpl(private val dao: ProntuarioDao) : ProntuarioRepos
             date = entry.date,
             type = entry.type.name,
             body = entry.body,
-            attachmentsJson = entry.attachmentsJson,
             updatedAt = now
         )
         dao.saveEntry(entity)

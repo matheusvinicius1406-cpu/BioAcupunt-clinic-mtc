@@ -18,8 +18,7 @@ import org.robolectric.RobolectricTestRunner
  * [ChiefComplaintExtraction.EMPTY] em silêncio, sempre.
  *
  * Roda sob Robolectric (não um JUnit puro) porque `org.json.JSONObject` — usado
- * pelo parser desta classe, mesma biblioteca que `CloudAiProvider` já usa pro
- * payload do Gemini — é um stub que lança em cima do android.jar puro; só o
+ * pelo parser desta classe — é um stub que lança em cima do android.jar puro; só o
  * shadow do Robolectric devolve o comportamento real.
  */
 @RunWith(RobolectricTestRunner::class)

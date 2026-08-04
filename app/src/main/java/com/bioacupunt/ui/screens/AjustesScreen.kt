@@ -374,119 +374,82 @@ private fun ClinicTab() {
 @Composable
 private fun AiApisTab() {
     val cacheManager = remember { com.bioacupunt.di.AppContainer.cacheManager }
-    val configManager = remember { com.bioacupunt.di.AppContainer.aiConfigManager }
-    val secretsProvider = remember { com.bioacupunt.di.AppContainer.aiSecretsProvider }
     val securePrefs = remember { com.bioacupunt.di.AppContainer.securePreferences }
-    val scope = rememberCoroutineScope()
 
-    // Toggle + chave da IA na nuvem são estado REAL, lidos/escritos no AiConfigManager
-    // e no AiSecretsProvider (suspend). Antes esta aba tinha "Agentes de IA" com
-    // toggles fantasma — inclusive um "Assistente Clínico: diagnóstico energético"
-    // que sugeria IA decidindo clínica (proibido por R1/R4). Removidos.
-    var cloudEnabled by remember { mutableStateOf(false) }
-    var apiKey by remember { mutableStateOf("") }
-    var keyRevealed by remember { mutableStateOf(false) }
-    var keySaved by remember { mutableStateOf(false) }
+    // Estado REAL, lido/escrito em SecurePreferences. Antes esta aba tinha "Agentes de
+    // IA" com toggles fantasma — inclusive um "Assistente Clínico: diagnóstico
+    // energético" que sugeria IA decidindo clínica (proibido por R1/R4) — e depois um
+    // toggle de IA na nuvem (Gemini), removido em 2026-07-29: o app roda 100% sobre o
+    // modelo local, sem nuvem, sem chave de API, sem dado clínico saindo do aparelho.
     var modelUrl by remember { mutableStateOf("") }
     var modelUrlSaved by remember { mutableStateOf(false) }
+    // Fechado por padrão: a médica NÃO precisa colar URL nenhuma — o app baixa o modelo
+    // sozinho no Wi-Fi (ModelDownloadWorker.enqueueAutomatic, no start do app). Este campo
+    // é só para quem quiser hospedar o arquivo por conta própria, e ficava aberto e em
+    // primeiro lugar antes, convidando a colar uma URL qualquer — foi exatamente o que
+    // aconteceu (URL de uma página GGUF, que o R3 recusou, deixando a IA "quebrada").
+    var advancedOpen by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        cloudEnabled = configManager.isCloudEnabled()
-        apiKey = secretsProvider.apiKeyFor("gemini").orEmpty()
         modelUrl = securePrefs.localModelUrl
     }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { SectionHeader("IA local (offline)") }
-        item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        "Avançado: hospede o arquivo do modelo (.task) você mesmo (S3, R2, CDN de sua escolha) " +
-                            "e informe a URL de download abaixo. O app verifica o SHA-256 fixado no código antes " +
-                            "de confiar no arquivo — uma URL errada ou um arquivo adulterado falha a verificação " +
-                            "e nunca é aceito.",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    OutlinedTextField(
-                        value = modelUrl,
-                        onValueChange = { modelUrl = it; modelUrlSaved = false },
-                        label = { Text("URL de download do modelo") },
-                        placeholder = { Text("Deixe vazio para usar o padrão (Hugging Face)") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Button(
-                        onClick = { securePrefs.localModelUrl = modelUrl.trim(); modelUrlSaved = true },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar URL do modelo")
-                    }
-                    if (modelUrlSaved) {
-                        Text("URL salva.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
-                    }
-                }
-            }
-        }
+        item { SectionHeader("IA local (100% offline)") }
         item { LocalModelCard() }
 
-        item { SectionHeader("IA na nuvem (opcional)") }
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
-            ) {
-                Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(20.dp))
-                    Text(
-                        "Ao ligar, texto pode ser enviado a um servidor externo (Google Gemini) — deixa de ser 100% offline. Isso inclui o assistente livre (perguntas administrativas/gerais) e o Motivo da Consulta do prontuário, quando usado para organizar automaticamente o que você já escreveu. Diagnóstico, triagem de segurança e veto clínico continuam 100% determinísticos, sem IA, sempre no aparelho. A IA local continua sendo o padrão e tem prioridade quando disponível. Com a nuvem ligada, o assistente livre também pode buscar no Google em tempo real usando a mesma chave — sem cadastro adicional.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                    )
+            TextButton(onClick = { advancedOpen = !advancedOpen }) {
+                Icon(if (advancedOpen) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(6.dp))
+                Text("Avançado: usar minha própria URL do modelo", style = MaterialTheme.typography.labelMedium)
+            }
+        }
+        if (advancedOpen) {
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            "Você não precisa mexer aqui — o app já baixa o modelo sozinho. Isto serve só se " +
+                                "você quiser hospedar o arquivo .task por conta própria (S3, R2, CDN). Precisa ser " +
+                                "o link direto do arquivo .task, não o endereço da página do modelo; qualquer outra " +
+                                "coisa é ignorada e o app volta ao padrão. O SHA-256 fixado no código é conferido " +
+                                "antes de o arquivo ser aceito — arquivo trocado ou adulterado nunca roda.",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        OutlinedTextField(
+                            value = modelUrl,
+                            onValueChange = { modelUrl = it; modelUrlSaved = false },
+                            label = { Text("URL de download do modelo (.task)") },
+                            placeholder = { Text("Vazio = padrão embutido, que já funciona") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Button(
+                                onClick = { securePrefs.localModelUrl = modelUrl.trim(); modelUrlSaved = true },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar")
+                            }
+                            OutlinedButton(
+                                onClick = { modelUrl = ""; securePrefs.localModelUrl = ""; modelUrlSaved = true },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Icon(Icons.Default.Refresh, null); Spacer(Modifier.width(8.dp)); Text("Usar padrão")
+                            }
+                        }
+                        if (modelUrlSaved) {
+                            Text("Salvo.", style = MaterialTheme.typography.labelMedium, color = statusColors().success)
+                        }
+                    }
                 }
             }
         }
-        item {
-            SettingsSwitchRow(
-                Icons.Default.Cloud,
-                "Usar IA na nuvem",
-                "Fallback quando não há modelo local. Desligado = 100% offline.",
-                cloudEnabled,
-                { checked ->
-                    cloudEnabled = checked
-                    scope.launch { configManager.setCloudEnabled(checked) }
-                },
-            )
-        }
-        if (cloudEnabled) {
-            item {
-                OutlinedTextField(
-                    value = apiKey,
-                    onValueChange = { apiKey = it; keySaved = false },
-                    label = { Text("Chave da API (Google Gemini)") },
-                    singleLine = true,
-                    visualTransformation = if (keyRevealed) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(),
-                    leadingIcon = { Icon(Icons.Default.Key, null) },
-                    trailingIcon = {
-                        IconButton(onClick = { keyRevealed = !keyRevealed }) {
-                            Icon(if (keyRevealed) Icons.Default.VisibilityOff else Icons.Default.Visibility, "Mostrar/ocultar chave")
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-            item {
-                Button(
-                    onClick = { scope.launch { secretsProvider.setApiKey("gemini", apiKey.trim()); keySaved = true } },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                ) { Icon(Icons.Default.Save, null); Spacer(Modifier.width(8.dp)); Text("Salvar chave") }
-            }
-            if (keySaved) {
-                item { Text("Chave salva. A IA na nuvem e a busca no Google ficam disponíveis no chat.", style = MaterialTheme.typography.labelMedium, color = statusColors().success) }
-            }
-        }
+
+        item { SectionHeader("Tradução automática da Biblioteca") }
+        item { TranslationLanguageCard(securePrefs) }
 
         item { SectionHeader("Desempenho / Cache") }
         item {
@@ -495,6 +458,58 @@ private fun AiApisTab() {
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+    }
+}
+
+/**
+ * Idioma de destino do tradutor automático da Biblioteca (ver `ArticleTranslationWorker`,
+ * disparado pela Curadoria logo após aprovar um artigo). Estado REAL persistido em
+ * [com.bioacupunt.security.SecurePreferences.translationTargetLanguage] — não um
+ * `remember { mutableStateOf(...) }` decorativo (essa é a diferença do "Idioma" da aba
+ * Sistema, que hoje só mostra "PT-BR" fixo sem gravar nada: aquilo é o idioma de INTERFACE
+ * do app, um escopo maior e diferente, deixado como está nesta sessão).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TranslationLanguageCard(securePrefs: com.bioacupunt.security.SecurePreferences) {
+    var expanded by remember { mutableStateOf(false) }
+    var selected by remember {
+        mutableStateOf(
+            com.bioacupunt.biblioteca.domain.model.TranslationLanguage.byCode(securePrefs.translationTargetLanguage)
+                ?: com.bioacupunt.biblioteca.domain.model.TranslationLanguage.default,
+        )
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            "Todo artigo aprovado na Curadoria é traduzido automaticamente pela IA local, logo " +
+                "após a aprovação, para o idioma abaixo — publicado direto, sem revisão humana. " +
+                "É sempre identificada como tradução automática onde aparece na Biblioteca.",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+            OutlinedTextField(
+                value = selected.label,
+                onValueChange = {},
+                readOnly = true,
+                modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                label = { Text("Idioma de destino") },
+                leadingIcon = { Icon(Icons.Default.Language, null, tint = Primary) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            )
+            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                com.bioacupunt.biblioteca.domain.model.TranslationLanguage.entries.forEach { lang ->
+                    DropdownMenuItem(
+                        text = { Text(lang.label) },
+                        onClick = {
+                            selected = lang
+                            securePrefs.translationTargetLanguage = lang.code
+                            expanded = false
+                        },
+                    )
+                }
+            }
         }
     }
 }

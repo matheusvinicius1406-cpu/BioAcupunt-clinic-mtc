@@ -86,10 +86,10 @@ class UnifiedAiChatViewModel(
     /**
      * Resumo factual do paciente (nome, sessões, última visita, queixa principal
      * registrada no CRM) — nunca raciocínio clínico. Só alimenta [runFallback]
-     * via [AiRequest.context] (mesmo mecanismo que [LocalLlmProvider]/
-     * [com.bioacupunt.ai.data.provider.CloudAiProvider] já sabem renderizar). O
-     * caminho RAG ([askLibrary]) nunca vê isto — seu prompt continua inteiramente
-     * definido por [MtcRetriever], gate R2 sem nenhuma alteração.
+     * via [AiRequest.context] (mesmo mecanismo que [LocalLlmProvider] já sabe
+     * renderizar). O caminho RAG ([askLibrary]) nunca vê isto — seu prompt
+     * continua inteiramente definido por [MtcRetriever], gate R2 sem nenhuma
+     * alteração.
      */
     private var patientContext: Map<String, String> = emptyMap()
 
@@ -166,11 +166,6 @@ class UnifiedAiChatViewModel(
      * Chamado exclusivamente depois que [askLibrary] já devolveu [AskLibraryUseCase.Answer.NoEvidence]
      * — ou seja, depois que o gate R2 já rejeitou o caminho RAG para esta pergunta. Não é um atalho
      * paralelo: é o que acontece DEPOIS que o portão já fechou essa porta.
-     *
-     * `allowWebSearch = true` deixa o provider de nuvem (Gemini, quando habilitado pela médica em
-     * Ajustes > IA) buscar no Google de verdade antes de responder — grounding nativo da própria
-     * API, sem chave/serviço extra. O provider local (Gemma on-device) simplesmente ignora a flag,
-     * já que não tem acesso à internet; a busca é só um recurso a mais, nunca uma dependência.
      */
     private suspend fun runFallback(question: String): UnifiedChatTurn {
         // Memoria de sessao: as ultimas mensagens da conversa atual (ja vivem em
@@ -198,7 +193,6 @@ class UnifiedAiChatViewModel(
             context = patientContext + historyContext,
             preferLocal = true,
             taskHint = "general-chat",
-            allowWebSearch = true,
         )
         return generateAiResponse(request).fold(
             onSuccess = { result -> UnifiedChatTurn(UnifiedChatRole.ASSISTANT, result.text) },

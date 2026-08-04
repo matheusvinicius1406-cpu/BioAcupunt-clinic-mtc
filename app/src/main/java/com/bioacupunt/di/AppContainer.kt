@@ -299,6 +299,21 @@ object AppContainer {
     val libraryStagingRepository: com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository by lazy {
         com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository(bibliotecaDao)
     }
+
+    // ── Biblioteca: tradutor automático (roda após aprovação na Curadoria) ──
+    val articleTranslationDao: com.bioacupunt.biblioteca.data.local.ArticleTranslationDao by lazy {
+        database.articleTranslationDao()
+    }
+    val articleTranslationRepository: com.bioacupunt.biblioteca.data.repository.ArticleTranslationRepository by lazy {
+        com.bioacupunt.biblioteca.data.repository.ArticleTranslationRepository(articleTranslationDao)
+    }
+    val translateArticleUseCase: com.bioacupunt.biblioteca.domain.usecase.TranslateArticleUseCase by lazy {
+        com.bioacupunt.biblioteca.domain.usecase.TranslateArticleUseCase(aiRepository)
+    }
+    fun translationTargetLanguage(): com.bioacupunt.biblioteca.domain.model.TranslationLanguage =
+        com.bioacupunt.biblioteca.domain.model.TranslationLanguage.byCode(securePreferences.translationTargetLanguage)
+            ?: com.bioacupunt.biblioteca.domain.model.TranslationLanguage.default
+
     val libraryReviewViewModelFactory: com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory by lazy {
         com.bioacupunt.biblioteca.presentation.LibraryReviewViewModelFactory(
             repo = libraryStagingRepository,
@@ -306,6 +321,13 @@ object AppContainer {
             generateStudyMaterial = generateStudyMaterialUseCase,
             flashcardRepository = flashcardRepository,
             simulatedCaseRepository = simulatedCaseRepository,
+            onArticleApproved = { article ->
+                _seederScope.launch {
+                    com.bioacupunt.biblioteca.data.worker.ArticleTranslationWorker.enqueue(
+                        appContext, article.id, translationTargetLanguage(),
+                    )
+                }
+            },
         )
     }
 
@@ -569,62 +591,21 @@ object AppContainer {
     }
 
     /**
-     * Provider de nuvem OPCIONAL. DESLIGADO por padrão (offline-first). Fica sempre
-     * registrado, mas `isAvailable()` só é verdadeiro quando a médica habilita a nuvem
-     * em Ajustes > IA E existe uma chave de API. Serve apenas o fallback livre e o RAG
-     * grounded — nunca a segurança clínica (R1) e sempre depois do gate R2.
+     * 100% on-device, sem nuvem. O provider de nuvem (Gemini) foi removido de propósito
+     * (2026-07-29, pedido explícito da médica) — o app inteiro roda sobre o modelo local
+     * (Phi-4 Mini Instruct) ou não responde. Sem provider disponível o orquestrador
+     * devolve NoProviderAvailable e a UI diz que o assistente ainda não está pronto
+     * (baixe o modelo em Ajustes > IA). "Não sei responder" é uma resposta segura; uma
+     * resposta falsa vestida de resposta não é. Não existe mais um provider de mentira
+     * aqui para registrar por acidente: MockProvider/FakeProvider foram deletados antes
+     * disso, e não há chave de API nem dado clínico que possa vazar para fora do aparelho.
      */
-    val cloudAiProvider: com.bioacupunt.ai.data.provider.CloudAiProvider by lazy {
-        com.bioacupunt.ai.data.provider.CloudAiProvider(
-            configManager = aiConfigManager,
-            secretsProvider = aiSecretsProvider,
-        )
-    }
-
     private val aiOrchestrator: com.bioacupunt.ai.orchestrator.AiOrchestrator by lazy {
         com.bioacupunt.ai.orchestrator.ScoredAiOrchestrator(
             providers = com.bioacupunt.ai.registry.SimpleProviderRegistry().also { registry ->
-                kotlinx.coroutines.runBlocking {
-                    // Offline-first: o modelo no dispositivo (LocalModelManager.MODEL_ID,
-                    // hoje Phi-4 Mini Instruct) é o provider padrão. Reporta
-                    // isAvailable() == false até o arquivo estar presente
-                    // E verificado contra o SHA-256 fixado (R3); nesse meio-tempo o
-                    // orquestrador devolve "IA não configurada" (degrada, não quebra) —
-                    // a menos que a nuvem opcional esteja ligada.
-                    registry.register(localLlmProvider)
-                    // Nuvem opcional, sempre registrada mas desligada por padrão: só entra
-                    // no roteamento quando a médica habilita + fornece chave (LGPD). Dado
-                    // clínico não sai do aparelho sem esse consentimento explícito.
-                    registry.register(cloudAiProvider)
-                    // Não existe mais um provider de mentira aqui para registrar por
-                    // acidente: MockProvider ("Mock resposta para: <prompt>") e
-                    // FakeProvider foram DELETADOS do projeto. Eles não eram usados por
-                    // nenhum teste, e reportavam isAvailable() == true sem condição
-                    // nenhuma — bastava um registro distraído para a médica receber
-                    // texto de espaço reservado no assistente clínico.
-                    //
-                    // Sem provider disponível o orquestrador devolve NoProviderAvailable
-                    // e a UI diz que o assistente não está configurado. "Não sei
-                    // responder" é uma resposta segura; uma resposta falsa vestida de
-                    // resposta não é.
-                }
+                kotlinx.coroutines.runBlocking { registry.register(localLlmProvider) }
             },
             healthRegistry = com.bioacupunt.ai.health.DefaultHealthRegistry(),
-            // Local-first scorer: whenever the on-device model is a candidate it wins,
-            // so the cloud is a genuine fallback, never the default. Both providers only
-            // reach scoring after passing isAvailable(), so this simply orders the ones
-            // that qualified. Keeping patient data on the device is the tie-breaker.
-            scoreProvider = { _, scores ->
-                scores
-                    .map { s ->
-                        if (s.providerId == com.bioacupunt.ai.data.provider.LocalLlmProvider.PROVIDER_ID) {
-                            s.copy(score = s.score + 1000.0)
-                        } else {
-                            s
-                        }
-                    }
-                    .sortedByDescending { it.score }
-            },
         )
     }
     val aiRepository: com.bioacupunt.ai.core.AiRepository by lazy {
@@ -671,12 +652,6 @@ object AppContainer {
     }
     val generateAiResponse: com.bioacupunt.ai.domain.usecase.GenerateAiResponseUseCase by lazy {
         com.bioacupunt.ai.domain.usecase.GenerateAiResponseUseCase(aiRepository)
-    }
-    val aiConfigManager: com.bioacupunt.ai.config.AiConfigManager by lazy {
-        com.bioacupunt.ai.config.AndroidAiConfigManager(appContext)
-    }
-    val aiSecretsProvider: com.bioacupunt.ai.config.AiSecretsProvider by lazy {
-        com.bioacupunt.ai.config.AndroidAiSecretsProvider(appContext)
     }
 
     // ── Inteligência: chat único (RAG-gated com fallback livre) ────

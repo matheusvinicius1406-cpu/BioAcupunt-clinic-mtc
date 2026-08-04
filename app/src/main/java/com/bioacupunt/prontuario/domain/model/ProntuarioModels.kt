@@ -14,7 +14,6 @@ data class ProntuarioEntry(
     val date: String = "",
     val type: ProntuarioEntryType = ProntuarioEntryType.EVOLUTION,
     val body: String = "",
-    val attachmentsJson: String = "[]",
     val syncedAt: String? = null,
     val createdAt: String = "",
     val updatedAt: String = ""

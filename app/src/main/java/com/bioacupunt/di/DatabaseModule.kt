@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 22
+    private const val DB_VERSION = 24
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -151,6 +151,8 @@ object DatabaseModule {
         if (current >= 20) migrations.add(MIGRATION_19_20)
         if (current >= 21) migrations.add(MIGRATION_20_21)
         if (current >= 22) migrations.add(MIGRATION_21_22)
+        if (current >= 23) migrations.add(MIGRATION_22_23)
+        if (current >= 24) migrations.add(MIGRATION_23_24)
         return migrations
     }
 
@@ -906,6 +908,48 @@ object DatabaseModule {
             database.execSQL(
                 "CREATE INDEX IF NOT EXISTS `index_medicamentos_classeTerapeutica_situacaoAtiva` " +
                     "ON `medicamentos` (`classeTerapeutica`, `situacaoAtiva`)"
+            )
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // v23 — `reports.patientName` (achado de auditoria, 2026-07-29)
+    //
+    // O diálogo "Gerar relatório" sempre pediu o nome do paciente, mas o valor
+    // digitado era descartado — o `Report` construído no onClick nunca lia essa
+    // variável. Coluna nova, texto livre (não resolvida pra `patientId`: um
+    // match automático por nome poderia ligar o relatório ao paciente errado).
+    // ═════════════════════════════════════════════════════════════════════
+    private val MIGRATION_22_23 = object : androidx.room.migration.Migration(22, 23) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE reports ADD COLUMN patientName TEXT NOT NULL DEFAULT ''")
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // v24 — Tradutor automático da Biblioteca (article_translations)
+    //
+    // Uma linha por (articleId, targetLanguage) — sem FK para biblioteca_nodes, mesmo
+    // raciocínio de medicamentos/flashcards/simulated_cases: reaprovar ou reimportar um
+    // artigo nunca pode travar numa FK. Sem DEFAULT no SQL — mesma regra de v18+.
+    // ═════════════════════════════════════════════════════════════════════
+    private val MIGRATION_23_24 = object : androidx.room.migration.Migration(23, 24) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `article_translations` (
+                    `articleId` TEXT NOT NULL,
+                    `targetLanguage` TEXT NOT NULL,
+                    `status` TEXT NOT NULL,
+                    `title` TEXT NOT NULL,
+                    `summary` TEXT NOT NULL,
+                    `content` TEXT NOT NULL,
+                    `tagsCsv` TEXT NOT NULL,
+                    `errorMessage` TEXT NOT NULL,
+                    `updatedAt` INTEGER NOT NULL,
+                    PRIMARY KEY(`articleId`, `targetLanguage`)
+                )
+                """.trimIndent(),
             )
         }
     }

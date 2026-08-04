@@ -11,5 +11,6 @@ fun ReportEntity.toDomain() = Report(
     filtersJson = filtersJson,
     generatedAt = generatedAt,
     patientId = patientId,
+    patientName = patientName,
     status = runCatching { ReportStatus.valueOf(status) }.getOrDefault(ReportStatus.DRAFT)
 )

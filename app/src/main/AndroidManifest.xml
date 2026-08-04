@@ -6,6 +6,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!--
+      O modelo de IA local tem ~3,9GB. Um CoroutineWorker comum é morto pelo sistema em
+      10 minutos, o que torna esse download impossível de concluir (confirmado no device:
+      parou exatamente aos ~12 min). Rodar como serviço em primeiro plano remove esse teto
+      e, de quebra, dá à médica uma notificação com o progresso em vez de um download
+      invisível. dataSync é o tipo correto: transferência de dados iniciada pela usuária.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".BioAcupuntApp"
         android:allowBackup="false"
@@ -34,6 +45,13 @@
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="remove" />
+
+        <!-- Declara o tipo do serviço de primeiro plano usado por ModelDownloadWorker
+             (obrigatório a partir da API 34). Sem isto, setForeground() lança em runtime. -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
     </application>
 
 </manifest>

@@ -23,7 +23,6 @@ fun ProntuarioEntryEntity.toDomain() = ProntuarioEntry(
         else -> com.bioacupunt.prontuario.domain.model.ProntuarioEntryType.EVOLUTION
     },
     body = body,
-    attachmentsJson = attachmentsJson,
     syncedAt = syncedAt,
     createdAt = createdAt,
     updatedAt = updatedAt

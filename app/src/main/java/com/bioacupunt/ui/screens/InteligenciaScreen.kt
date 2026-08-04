@@ -23,17 +23,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bioacupunt.ai.data.provider.LocalModelManager
+import com.bioacupunt.ai.data.provider.ModelDownloadWorker
 import com.bioacupunt.ai.presentation.UnifiedAiChatViewModel
 import com.bioacupunt.ai.presentation.UnifiedChatRole
 import com.bioacupunt.ai.presentation.UnifiedChatTurn
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.ui.theme.Accent
 import com.bioacupunt.ui.theme.Primary
+import com.bioacupunt.ui.theme.SemanticError
 import com.bioacupunt.ui.theme.TextMuted
 import kotlinx.coroutines.launch
 
@@ -70,6 +74,9 @@ fun InteligenciaScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val modelManager = remember { AppContainer.localModelManager }
+    val modelState by modelManager.state.collectAsState(initial = LocalModelManager.State.Absent)
 
     LaunchedEffect(state.messages.size) {
         if (state.messages.isNotEmpty()) scope.launch { listState.animateScrollToItem(state.messages.size - 1) }
@@ -100,6 +107,14 @@ fun InteligenciaScreen(
             }
         }
         HorizontalDivider()
+
+        // ── Prontidão do modelo local — a médica nunca deveria descobrir que a IA
+        // não está pronta só ao mandar uma pergunta e ver "IA não configurada".
+        // Baixar daqui usa o mesmo WorkManager de Ajustes > IA (ModelDownloadWorker),
+        // então sobrevive a sair desta tela no meio do download.
+        AnimatedVisibility(visible = modelState !is LocalModelManager.State.Ready, enter = fadeIn(), exit = fadeOut()) {
+            ModelReadinessBanner(state = modelState, context = context)
+        }
 
         // ── Paciente em foco (só quando o chat foi aberto a partir do Prontuário) ──
         AnimatedVisibility(
@@ -193,6 +208,55 @@ fun InteligenciaScreen(
                 modifier = Modifier.size(44.dp).clip(CircleShape).background(Primary),
             ) {
                 Icon(Icons.AutoMirrored.Filled.Send, null, tint = Color.White)
+            }
+        }
+    }
+}
+
+/**
+ * Faixa compacta de prontidão do modelo local. Antes disto, a médica só descobria que
+ * a IA não tinha modelo baixado ao receber "assistente não configurado" no meio de uma
+ * pergunta — a única forma de agir era navegar até Ajustes > IA, um passo a mais que
+ * ela não sabia que precisava dar. Aqui ela vê e resolve sem sair do chat.
+ */
+@Composable
+private fun ModelReadinessBanner(state: LocalModelManager.State, context: android.content.Context) {
+    val securePrefs = remember { AppContainer.securePreferences }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f))
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+    ) {
+        when (state) {
+            is LocalModelManager.State.Downloading -> {
+                val pct = (state.progress * 100).toInt().coerceIn(0, 100)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.Download, null, tint = Primary, modifier = Modifier.size(16.dp))
+                    Text("Baixando modelo local… $pct% (pode sair desta tela, o download continua)", style = MaterialTheme.typography.labelSmall)
+                }
+                Spacer(Modifier.height(6.dp))
+                LinearProgressIndicator(progress = { state.progress.coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth())
+            }
+            is LocalModelManager.State.Failed -> {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.ErrorOutline, null, tint = SemanticError, modifier = Modifier.size(16.dp))
+                    Text("Falha ao baixar o modelo: ${state.message}", style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))
+                    TextButton(
+                        onClick = { ModelDownloadWorker.enqueue(context, LocalModelManager.resolveUrl(securePrefs.localModelUrl)) },
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                    ) { Text("Tentar de novo") }
+                }
+            }
+            else -> {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.Info, null, tint = Primary, modifier = Modifier.size(16.dp))
+                    Text("IA local ainda não baixada — respostas indisponíveis até baixar.", style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))
+                    TextButton(
+                        onClick = { ModelDownloadWorker.enqueue(context, LocalModelManager.resolveUrl(securePrefs.localModelUrl)) },
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                    ) { Text("Baixar agora") }
+                }
             }
         }
     }

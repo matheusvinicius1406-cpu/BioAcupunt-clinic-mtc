@@ -14,6 +14,14 @@ data class Report(
     val filtersJson: String = "{}",
     val generatedAt: String = "",
     val patientId: Long? = null,
+    /**
+     * Achado de auditoria (2026-07-29): a médica digitava o nome do paciente no
+     * diálogo "Gerar relatório" e o valor era descartado — nunca chegava aqui.
+     * Texto livre, não resolvido pra um `patientId` real: um match automático por
+     * nome poderia ligar o relatório ao paciente errado (nome duplicado, typo), o
+     * que é pior que não linkar nenhum.
+     */
+    val patientName: String = "",
     val status: ReportStatus = ReportStatus.DRAFT
 )
 

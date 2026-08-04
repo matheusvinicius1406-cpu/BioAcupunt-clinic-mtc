@@ -181,6 +181,7 @@ private fun ReportTemplateCard(tpl: ReportTemplate, onGenerate: (com.bioacupunt.
                             type = tpl.id,
                             title = tpl.title,
                             generatedAt = java.time.Instant.now().toString(),
+                            patientName = patientName.trim(),
                             status = com.bioacupunt.relatorios.domain.model.ReportStatus.READY
                         )
                         onGenerate(report)
@@ -221,13 +222,21 @@ private fun GeneratedReportsTab(reports: List<com.bioacupunt.relatorios.domain.m
                         Spacer(Modifier.width(10.dp))
                         Column(Modifier.weight(1f)) {
                             Text(r.title, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium))
-                            Text(date, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                if (r.patientName.isNotBlank()) "${r.patientName} · $date" else date,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
                         // Compartilhar via ACTION_SEND (a folha do sistema já inclui
                         // "Salvar em Arquivos", cobrindo o antigo botão Download morto).
                         IconButton(
                             onClick = {
-                                val text = "Relatório: ${r.title}\nGerado em: $date"
+                                val text = buildString {
+                                    append("Relatório: ${r.title}\n")
+                                    if (r.patientName.isNotBlank()) append("Paciente: ${r.patientName}\n")
+                                    append("Gerado em: $date")
+                                }
                                 val send = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                                     type = "text/plain"
                                     putExtra(android.content.Intent.EXTRA_SUBJECT, r.title)

@@ -1,6 +1,5 @@
 package com.bioacupunt.ai.system
 
-import com.bioacupunt.ai.config.AiSecretsProvider
 import com.bioacupunt.ai.core.AiCapability
 import com.bioacupunt.ai.core.AiModelDescriptor
 import com.bioacupunt.ai.core.AiProvider

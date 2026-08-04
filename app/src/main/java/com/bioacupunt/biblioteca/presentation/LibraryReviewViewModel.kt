@@ -38,6 +38,12 @@ class LibraryReviewViewModel(
     private val generateStudyMaterial: GenerateStudyMaterialUseCase? = null,
     private val flashcardRepository: FlashcardRepository? = null,
     private val simulatedCaseRepository: SimulatedCaseRepository? = null,
+    /**
+     * Dispara o tradutor automático (ver `ArticleTranslationWorker`) logo após a aprovação —
+     * mesmo gancho que [triggerStudyMaterialGeneration], mesma tela. `null` em testes que não
+     * exercitam tradução, mesmo padrão dos outros parâmetros opcionais desta classe.
+     */
+    private val onArticleApproved: ((com.bioacupunt.biblioteca.domain.model.MtcArticle) -> Unit)? = null,
 ) : ViewModel() {
 
     val pending: StateFlow<List<LibraryStagingRepository.StagedArticle>> =
@@ -92,7 +98,10 @@ class LibraryReviewViewModel(
         val article = pending.value.firstOrNull { it.article.id == id }?.article
         if (repo.approve(id, now())) {
             onContentChanged?.invoke()
-            if (article != null) triggerStudyMaterialGeneration(article)
+            if (article != null) {
+                triggerStudyMaterialGeneration(article)
+                onArticleApproved?.invoke(article)
+            }
         } else {
             _feedback.value = "Não foi possível aprovar este item — ele pode ter sido removido ou tem um registro corrompido."
         }
@@ -205,9 +214,10 @@ class LibraryReviewViewModelFactory(
     private val generateStudyMaterial: GenerateStudyMaterialUseCase? = null,
     private val flashcardRepository: FlashcardRepository? = null,
     private val simulatedCaseRepository: SimulatedCaseRepository? = null,
+    private val onArticleApproved: ((com.bioacupunt.biblioteca.domain.model.MtcArticle) -> Unit)? = null,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return LibraryReviewViewModel(repo, onContentChanged, generateStudyMaterial, flashcardRepository, simulatedCaseRepository) as T
+        return LibraryReviewViewModel(repo, onContentChanged, generateStudyMaterial, flashcardRepository, simulatedCaseRepository, onArticleApproved) as T
     }
 }

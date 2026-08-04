@@ -15,8 +15,8 @@ import java.time.Instant
  * - Diferente do [AskLibraryUseCase] (R2: responde perguntas com RAG, gate `if (!hasEvidence)`)
  * - Diferente do [StructureChiefComplaintUseCase] (extrativo: só reorganiza texto já escrito)
  * - Este é **generativo contextual**: recebe dados estruturados do prontuário, busca evidência na
- *   biblioteca E online (quando a nuvem está habilitada), e sintetiza uma hipótese diagnóstica
- *   completa que a médica revisa, edita, aceita ou descarta.
+ *   biblioteca curada, e sintetiza uma hipótese diagnóstica completa que a médica revisa, edita,
+ *   aceita ou descarta.
  *
  * ## Guardrails clínicos
  * - R1 intacto: `ClinicalSafetyEngine` nunca é importado aqui — a sugestão de plano não passa
@@ -62,18 +62,15 @@ class ClinicalSynthesisUseCase(
             "Nenhum artigo específico encontrado na biblioteca para este quadro clínico."
         }
 
-        // 4. Chama a IA — se a biblioteca tiver evidência, prefere processamento local (RAG).
-        //    Se não tiver, permite busca na web via cloud (Gemini) para encontrar info relevante.
-        //    Nota: preferLocal=false permite que o orquestrador escolha o cloud provider que
-        //    suporta webSearch — quando true, o provider local ganha +1000 de score.
+        // 4. Chama a IA local (único provider do app — sem nuvem, sem chave de API,
+        //    dado clínico nunca sai do aparelho).
         val request = AiRequest(
             prompt = buildPrompt(clinicalProfile, evidenceSection),
             systemPrompt = CLINICAL_SYNTHESIS_PROMPT,
             temperature = 0.3,
             maxTokens = 3072,
-            preferLocal = grounding.hasEvidence,
+            preferLocal = true,
             taskHint = "clinical-synthesis",
-            allowWebSearch = !grounding.hasEvidence,
         )
 
         return ai.generate(request).fold(

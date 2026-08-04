@@ -54,6 +54,11 @@ class SupremoViewModelTest {
         var saveCount = 0
             private set
 
+        /** `MtcAssessmentRepository.screen()` sempre lê `flagsHistory` — contar isto
+         * conta quantas vezes a triagem de segurança de fato rodou contra o Room. */
+        var screenCalls = 0
+            private set
+
         override fun observeForPatient(pid: Long): Flow<List<MtcAssessmentEntity>> = flowOf(emptyList())
         override fun observeLatest(pid: Long): Flow<MtcAssessmentEntity?> = flowOf(null)
         override suspend fun getById(id: Long): MtcAssessmentEntity? = lastSaved
@@ -63,7 +68,10 @@ class SupremoViewModelTest {
             return 1L
         }
         override suspend fun delete(id: Long) {}
-        override suspend fun flagsHistory(pid: Long): List<String> = emptyList()
+        override suspend fun flagsHistory(pid: Long): List<String> {
+            screenCalls++
+            return emptyList()
+        }
         override suspend fun latestGestationalWeeks(pid: Long): Int? = null
         override suspend fun count(pid: Long): Int = 0
         override suspend fun temperatureDistribution(): List<BucketCount> = emptyList()
@@ -177,6 +185,70 @@ class SupremoViewModelTest {
         advanceUntilIdle()
 
         assertEquals("Três digitações em sequência rápida devem virar UMA chamada, não três", 1, ai.generateCalls)
+    }
+
+    // -- Debounce da re-triagem (rescreen) --------------------------------
+
+    /**
+     * Antes, `edit{}`/`updateProposal` disparavam `rescreenAsync()` sem debounce — cada
+     * tecla digitada em Motivo da Consulta/Plano/notas virava uma query no Room. Isto
+     * trava a regressão: uma rajada de edições rápidas deve settar numa única execução
+     * da triagem, não uma por edição.
+     */
+    @Test
+    fun rapidEdits_settleToASingleScreenRun_notOnePerKeystroke() = runTest(dispatcher) {
+        val dao = FakeDao()
+        val vm = SupremoViewModel(MtcAssessmentRepository(dao), patientId = 1L)
+        advanceUntilIdle() // init roda rescreen() uma vez — baseline
+        val callsAfterInit = dao.screenCalls
+
+        vm.updateChiefComplaint("D")
+        advanceTimeBy(100)
+        vm.updateChiefComplaint("Do")
+        advanceTimeBy(100)
+        vm.updateChiefComplaint("Dor lombar")
+        advanceTimeBy(500)
+        advanceUntilIdle()
+
+        assertEquals(
+            "Três edições em sequência rápida devem virar UMA re-triagem, não três",
+            callsAfterInit + 1,
+            dao.screenCalls,
+        )
+    }
+
+    /** A triagem continua rodando de verdade após a médica parar de digitar — o
+     * debounce adia a query, nunca a cancela pra sempre. */
+    @Test
+    fun editThenPause_stillRunsTheScreenEventually() = runTest(dispatcher) {
+        val dao = FakeDao()
+        val vm = SupremoViewModel(MtcAssessmentRepository(dao), patientId = 1L)
+        advanceUntilIdle()
+        val callsAfterInit = dao.screenCalls
+
+        vm.updateChiefComplaint("Dor lombar há duas semanas")
+        advanceUntilIdle()
+
+        assertTrue("A edição precisa disparar a triagem depois do debounce assentar", dao.screenCalls > callsAfterInit)
+    }
+
+    @Test
+    fun toggleTechnique_alsoDebouncesTheScreenRun() = runTest(dispatcher) {
+        val dao = FakeDao()
+        val vm = SupremoViewModel(MtcAssessmentRepository(dao), patientId = 1L)
+        advanceUntilIdle()
+        val callsAfterInit = dao.screenCalls
+
+        vm.toggleTechnique(com.bioacupunt.prontuario.domain.safety.Technique.NEEDLING)
+        advanceTimeBy(100)
+        vm.toggleTechnique(com.bioacupunt.prontuario.domain.safety.Technique.MOXIBUSTION)
+        advanceUntilIdle()
+
+        assertEquals(
+            "Duas mudanças de proposta em sequência rápida também devem settar numa re-triagem só",
+            callsAfterInit + 1,
+            dao.screenCalls,
+        )
     }
 
     @Test
