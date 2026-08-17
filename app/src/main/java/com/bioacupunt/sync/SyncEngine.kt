@@ -41,6 +41,7 @@ class SyncEngine(
     private val conflictDao: SyncConflictDao,
     private val writers: Map<String, SyncEntityWriter>,
     private val now: () -> String = { java.time.Instant.now().toString() },
+    private val status: com.bioacupunt.observability.SyncStatusManager? = null,
 ) {
 
     /** What one sync run produced. */
@@ -63,9 +64,16 @@ class SyncEngine(
         IllegalStateException("No sync writer registered for entity type '$entityType'")
 
     suspend fun syncOnce(): Report {
-        val pushReport = push()
-        val pullReport = pull()
-        return pushReport.copy(pulled = pullReport.pulled, hasMore = pullReport.hasMore)
+        status?.markSyncing()
+        return try {
+            val pushReport = push()
+            val pullReport = pull()
+            status?.markSuccess()
+            pushReport.copy(pulled = pullReport.pulled, hasMore = pullReport.hasMore)
+        } catch (e: Exception) {
+            status?.markError(e.localizedMessage)
+            throw e
+        }
     }
 
     // ── Push ─────────────────────────────────────────────────────────────

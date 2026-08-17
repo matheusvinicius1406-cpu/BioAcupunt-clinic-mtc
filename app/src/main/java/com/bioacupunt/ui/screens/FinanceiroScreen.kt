@@ -134,9 +134,9 @@ private fun FinStat(modifier: Modifier, label: String, value: String) {
     val cs = MaterialTheme.colorScheme
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(cs.surface)
-            .border(1.dp, cs.outline, RoundedCornerShape(20.dp))
+            .border(1.dp, cs.outline, RoundedCornerShape(18.dp))
             .padding(horizontal = 16.dp, vertical = 14.dp),
     ) {
         Text(label.uppercase(), style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant)
@@ -151,10 +151,10 @@ private fun FinCard(content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(22.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(cs.surface)
-            .border(1.dp, cs.outline, RoundedCornerShape(22.dp))
-            .padding(horizontal = 20.dp, vertical = 18.dp),
+            .border(1.dp, cs.outline, RoundedCornerShape(18.dp))
+            .padding(16.dp),
         content = content,
     )
 }

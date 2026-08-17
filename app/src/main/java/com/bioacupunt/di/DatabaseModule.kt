@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 24
+    private const val DB_VERSION = 25
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -153,6 +153,7 @@ object DatabaseModule {
         if (current >= 22) migrations.add(MIGRATION_21_22)
         if (current >= 23) migrations.add(MIGRATION_22_23)
         if (current >= 24) migrations.add(MIGRATION_23_24)
+        if (current >= 25) migrations.add(MIGRATION_24_25)
         return migrations
     }
 
@@ -933,6 +934,22 @@ object DatabaseModule {
     // raciocínio de medicamentos/flashcards/simulated_cases: reaprovar ou reimportar um
     // artigo nunca pode travar numa FK. Sem DEFAULT no SQL — mesma regra de v18+.
     // ═════════════════════════════════════════════════════════════════════
+    private val MIGRATION_24_25 = object : androidx.room.migration.Migration(24, 25) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `knowledge_core_entities` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `canonical_name` TEXT NOT NULL, `aliases_json` TEXT NOT NULL, `summary` TEXT NOT NULL, `content` TEXT NOT NULL, `metadata_json` TEXT NOT NULL, `source_ids_json` TEXT NOT NULL, `citation_ids_json` TEXT NOT NULL, `evidence_ids_json` TEXT NOT NULL, `version` TEXT NOT NULL, `status` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `reviewed_at` INTEGER, PRIMARY KEY(`id`))")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_core_entities_type` ON `knowledge_core_entities` (`type`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_core_entities_canonical_name` ON `knowledge_core_entities` (`canonical_name`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_core_entities_status` ON `knowledge_core_entities` (`status`)")
+            database.execSQL("CREATE TABLE IF NOT EXISTS `knowledge_core_relations` (`source_entity_id` TEXT NOT NULL, `relation_type` TEXT NOT NULL, `target_entity_id` TEXT NOT NULL, `evidence_ids_json` TEXT NOT NULL, `confidence` REAL, `provenance_json` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`source_entity_id`, `relation_type`, `target_entity_id`))")
+            database.execSQL("CREATE TABLE IF NOT EXISTS `knowledge_core_sources` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `locator` TEXT, `license` TEXT, `metadata_json` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            database.execSQL("CREATE TABLE IF NOT EXISTS `knowledge_core_citations` (`id` TEXT NOT NULL, `source_id` TEXT NOT NULL, `locator` TEXT, `excerpt` TEXT, PRIMARY KEY(`id`))")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_core_citations_source_id` ON `knowledge_core_citations` (`source_id`)")
+            database.execSQL("CREATE TABLE IF NOT EXISTS `knowledge_core_evidence` (`id` TEXT NOT NULL, `claim` TEXT NOT NULL, `citation_ids_json` TEXT NOT NULL, `level` TEXT, `confidence` REAL, PRIMARY KEY(`id`))")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_core_evidence_claim` ON `knowledge_core_evidence` (`claim`)")
+            database.execSQL("CREATE TABLE IF NOT EXISTS `knowledge_core_provenance` (`entity_id` TEXT NOT NULL, `original_source` TEXT NOT NULL, `original_id` TEXT NOT NULL, `original_type` TEXT NOT NULL, `source_reference` TEXT, `migration_version` TEXT NOT NULL, `imported_at` INTEGER NOT NULL, PRIMARY KEY(`entity_id`, `original_source`, `original_id`))")
+        }
+    }
+
     private val MIGRATION_23_24 = object : androidx.room.migration.Migration(23, 24) {
         override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL(

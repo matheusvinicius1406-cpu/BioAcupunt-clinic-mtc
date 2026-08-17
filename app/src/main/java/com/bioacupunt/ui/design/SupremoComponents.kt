@@ -74,6 +74,29 @@ fun SupremoCard(
 }
 
 /**
+ * Clickable variant of [SupremoCard] — same surface, same radius, with a real
+ * ripple instead of a dead `Card(onClick=...)` from Material that each screen
+ * styled differently. Replaces the raw M3 `Card(onClick = ...)` calls.
+ */
+@Composable
+fun SupremoClickableCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(SupremoSurface)
+            .border(1.dp, Outline, RoundedCornerShape(18.dp))
+            .clickable(onClick = onClick)
+            .padding(16.dp),
+        content = content,
+    )
+}
+
+/**
  * Section heading. Serif, with a short gold rule under it — the one deliberate
  * flourish in the system, borrowed from clinical/editorial typesetting. It signals
  * "this is a document about a person", not "this is a CRUD form".

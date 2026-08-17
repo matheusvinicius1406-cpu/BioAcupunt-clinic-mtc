@@ -266,7 +266,9 @@ private fun ModelReadinessBanner(state: LocalModelManager.State, context: androi
 private fun ChatBubble(turn: UnifiedChatTurn) {
     val isUser = turn.role == UnifiedChatRole.USER
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start) {
-        Column(horizontalAlignment = if (isUser) Alignment.End else Alignment.Start, modifier = Modifier.widthIn(max = 280.dp)) {
+        // Balão largo: 280dp fixo espremia a resposta em telefones grandes e
+        // pior, em tablets. Proporcional à tela, com teto razoável para leitura.
+        Column(horizontalAlignment = if (isUser) Alignment.End else Alignment.Start, modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth(0.92f)) {
             Box(
                 modifier = Modifier
                     .clip(

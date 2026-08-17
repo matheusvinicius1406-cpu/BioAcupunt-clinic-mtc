@@ -52,6 +52,20 @@
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync"
             tools:node="merge" />
+
+        <!-- Lembretes de consulta (AlarmManager + notificação). O receiver de
+             exibição é disparado pelo alarme; o de boot reconstrói os alarmes,
+             que o sistema apaga em reboot. -->
+        <receiver
+            android:name=".agenda.AppointmentReminderReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".agenda.AppointmentBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

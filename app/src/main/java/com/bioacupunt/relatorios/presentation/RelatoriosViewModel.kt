@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.core.util.Result
 import com.bioacupunt.relatorios.domain.model.Report
+import com.bioacupunt.relatorios.domain.usecase.GenerateReportUseCase
 import com.bioacupunt.relatorios.domain.usecase.ObserveReports
 import com.bioacupunt.relatorios.domain.usecase.RelatoriosUseCases
 import com.bioacupunt.relatorios.domain.usecase.SaveReport
@@ -18,17 +19,26 @@ import kotlinx.coroutines.launch
 data class RelatoriosUiState(
     val reports: List<Report> = emptyList(),
     val loading: Boolean = false,
-    val error: String? = null
+    val generating: Boolean = false,
+    val error: String? = null,
+    val generateError: String? = null,
+    val lastGenerated: Report? = null,
 )
 
-class RelatoriosViewModelFactory(private val cases: RelatoriosUseCases) : ViewModelProvider.Factory {
+class RelatoriosViewModelFactory(
+    private val cases: RelatoriosUseCases,
+    private val generateReport: GenerateReportUseCase,
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return RelatoriosViewModel(cases) as T
+        return RelatoriosViewModel(cases, generateReport) as T
     }
 }
 
-class RelatoriosViewModel(private val cases: RelatoriosUseCases) : ViewModel() {
+class RelatoriosViewModel(
+    private val cases: RelatoriosUseCases,
+    private val generateReport: GenerateReportUseCase,
+) : ViewModel() {
     private val _state = MutableStateFlow(RelatoriosUiState())
     val state: StateFlow<RelatoriosUiState> = _state.asStateFlow()
 
@@ -45,15 +55,39 @@ class RelatoriosViewModel(private val cases: RelatoriosUseCases) : ViewModel() {
         }
     }
 
-    fun generate(report: Report) {
+    /**
+     * Gera o relatório a partir do prontuário REAL do paciente (nome digitado no
+     * diálogo resolve contra o CRM) e salva. Erro (paciente não encontrado, nome
+     * ambíguo, falha de banco) chega em [RelatoriosUiState.generateError] — nunca
+     * é descartado em silêncio, nunca gera relatório vazio.
+     */
+    fun generate(type: String, title: String, patientName: String) {
+        if (_state.value.generating) return
         viewModelScope.launch {
-            _state.update { it.copy(loading = true, error = null) }
-            val result = cases.save(report)
-            if (result is Result.Error) {
-                _state.update { it.copy(loading = false, error = result.kind.userMessage) }
-            } else {
-                _state.update { it.copy(loading = false) }
+            _state.update { it.copy(generating = true, generateError = null) }
+            when (val result = generateReport(type, title, patientName)) {
+                is Result.Success -> {
+                    val saved = cases.save(result.data)
+                    _state.update {
+                        if (saved is Result.Error) {
+                            it.copy(generating = false, generateError = saved.kind.userMessage)
+                        } else {
+                            it.copy(generating = false, lastGenerated = savedOr(result.data, saved))
+                        }
+                    }
+                }
+                is Result.Error -> _state.update {
+                    it.copy(generating = false, generateError = result.kind.userMessage)
+                }
+                Result.Loading -> Unit
             }
         }
     }
+
+    private fun savedOr(generated: Report, saved: Result<Report>): Report =
+        (saved as? Result.Success)?.data ?: generated
+
+    fun clearGenerateError() = _state.update { it.copy(generateError = null) }
+
+    fun clearLastGenerated() = _state.update { it.copy(lastGenerated = null) }
 }

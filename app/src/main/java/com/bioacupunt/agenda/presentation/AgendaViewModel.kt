@@ -98,6 +98,10 @@ class AgendaViewModel(
             if (result is com.bioacupunt.core.util.Result.Error) {
                 _state.update { it.copy(isLoading = false, error = result.kind.userMessage) }
             } else {
+                // Consulta cancelada/no-show/finalizada não tem lembrete pendente.
+                if (status == AppointmentStatus.CANCELLED || status == AppointmentStatus.NO_SHOW || status == AppointmentStatus.COMPLETED) {
+                    runCatching { com.bioacupunt.di.AppContainer.appointmentReminderScheduler.cancel(appointmentId) }
+                }
                 _state.update { it.copy(isLoading = false) }
             }
         }
@@ -127,6 +131,16 @@ class AgendaViewModel(
             if (result is com.bioacupunt.core.util.Result.Error) {
                 _state.update { it.copy(isLoading = false, error = result.kind.userMessage) }
             } else {
+                // Consulta nova = lembrete novo (se notificações ligadas e horário futuro).
+                runCatching {
+                    com.bioacupunt.di.AppContainer.appointmentReminderScheduler.schedule(
+                        appointmentId = (result as? com.bioacupunt.core.util.Result.Success)?.data?.id ?: 0L,
+                        patientName = patientName,
+                        dateIso = appointment.date,
+                        time = time,
+                        type = appointment.type,
+                    )
+                }
                 _state.update { it.copy(isLoading = false) }
             }
         }

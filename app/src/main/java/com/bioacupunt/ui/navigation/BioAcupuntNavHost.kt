@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -75,6 +76,22 @@ fun BioAcupuntNavHost(
     // dado clínico não pode ficar acessível só porque uma sessão antiga existia.
     val startDestination = Screen.Login.route
 
+    // Telas secundárias (empurradas na pilha, não abas da bottom nav) que não têm
+    // seta própria de voltar dentro do conteúdo — a seta vive no header compartilhado.
+    // Telas como Conflitos/Curadoria/Pipeline/Flashcards/Prontuário já têm a própria;
+    // abas (Dashboard/CRM/Prontuário-tab/Biblioteca) não devem ter seta nenhuma.
+    val headerBackRoutes = remember {
+        setOf(
+            Screen.Agenda.route,
+            Screen.Ajustes.route,
+            Screen.Financeiro.route,
+            Screen.Relatorios.route,
+            Screen.Farmacologia.route,
+            Screen.Simulador.route,
+        )
+    }
+    val showHeaderBack = currentRoute in headerBackRoutes
+
     fun navigateTab(route: String) {
         navController.navigate(route) {
             popUpTo(Screen.Dashboard.route) { saveState = true }
@@ -107,7 +124,12 @@ fun BioAcupuntNavHost(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { if (showShell) SupremoHeader(onAvatarClick = { navigateTab(Screen.CRM.route) }) },
+        topBar = {
+            if (showShell) SupremoHeader(
+                onAvatarClick = { navigateTab(Screen.CRM.route) },
+                onBack = if (showHeaderBack) ({ navController.popBackStack() }) else null,
+            )
+        },
         bottomBar = {
             if (showShell) {
                 SupremoBottomNav(
@@ -259,7 +281,7 @@ fun BioAcupuntNavHost(
             }
             composable(Screen.Flashcards.route)  { FlashcardsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Simulador.route)   { SimuladorScreen() }
-            composable(Screen.AiAssistant.route) { InteligenciaScreen() }
+            composable(Screen.AiAssistant.route) { InteligenciaScreen(onBack = { navController.popBackStack() }) }
             composable(
                 route = Screen.AiAssistantPatient.route,
                 arguments = listOf(androidx.navigation.navArgument("patientId") { type = androidx.navigation.NavType.LongType })
@@ -314,7 +336,10 @@ fun BioAcupuntNavHost(
 
 /** Mockup header: ☯ logo, "Olá, Dra. …", date · Supremo badge, sync chip, theme toggle, avatar. */
 @Composable
-private fun SupremoHeader(onAvatarClick: () -> Unit) {
+private fun SupremoHeader(
+    onAvatarClick: () -> Unit,
+    onBack: (() -> Unit)? = null,
+) {
     val cs = MaterialTheme.colorScheme
     val userName = remember { AppContainer.authRepository.getCurrentUser()?.name.orEmpty() }
     val today = remember {
@@ -330,6 +355,12 @@ private fun SupremoHeader(onAvatarClick: () -> Unit) {
                 .padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (onBack != null) {
+                IconButton(onClick = onBack, modifier = Modifier.size(34.dp)) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar", tint = cs.onSurfaceVariant, modifier = Modifier.size(22.dp))
+                }
+                Spacer(Modifier.width(2.dp))
+            }
             Box(
                 modifier = Modifier
                     .size(34.dp)
@@ -397,18 +428,45 @@ private fun SupremoHeader(onAvatarClick: () -> Unit) {
 @Composable
 private fun SyncChip() {
     val cs = MaterialTheme.colorScheme
-    val pulse = rememberInfiniteTransition(label = "sync")
-    val a by pulse.animateFloat(0.4f, 1f, infiniteRepeatable(tween(800), RepeatMode.Reverse), label = "dot")
+    // Estado REAL do SyncEngine (SyncStatusManager), não um pulso decorativo que
+    // rodava 24/7 em todas as telas e nunca refletia nada: o chip só anima quando
+    // há uma sincronização de verdade em andamento.
+    val status by com.bioacupunt.di.AppContainer.syncStatusManager.status.collectAsState()
+    val syncing = status == com.bioacupunt.observability.SyncStatus.Syncing
+    val errored = status is com.bioacupunt.observability.SyncStatus.Error
+
+    val dotAlpha = if (syncing) {
+        val pulse = rememberInfiniteTransition(label = "sync")
+        val a by pulse.animateFloat(0.4f, 1f, infiniteRepeatable(tween(800), RepeatMode.Reverse), label = "dot")
+        a
+    } else {
+        1f
+    }
+
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
-            .background(cs.primaryContainer)
+            .background(if (errored) cs.errorContainer else cs.primaryContainer)
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Box(modifier = Modifier.size(6.dp).clip(CircleShape).alpha(a).background(cs.primary))
-        Text("sync", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold), color = cs.primary)
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .alpha(dotAlpha)
+                .background(if (errored) cs.error else cs.primary)
+        )
+        Text(
+            when {
+                errored -> "erro"
+                syncing -> "sync…"
+                else -> "sync"
+            },
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+            color = if (errored) cs.error else cs.primary,
+        )
     }
 }
 

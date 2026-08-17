@@ -103,7 +103,13 @@ class SyncEngineTest {
         writers: Map<String, SyncEntityWriter>,
         stateDao: SyncStateDao = FakeStateDao(),
         conflictDao: SyncConflictDao = FakeConflictDao(),
-    ) = SyncEngine(api, stateDao, conflictDao, writers) { "2026-07-18T10:00:00Z" }
+    ) = SyncEngine(
+        api = api,
+        stateDao = stateDao,
+        conflictDao = conflictDao,
+        writers = writers,
+        now = { "2026-07-18T10:00:00Z" },
+    )
 
     // ── The rule the old worker broke ────────────────────────────────────
 

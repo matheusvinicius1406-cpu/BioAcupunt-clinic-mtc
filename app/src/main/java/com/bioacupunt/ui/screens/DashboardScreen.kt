@@ -2,8 +2,6 @@ package com.bioacupunt.ui.screens
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -149,9 +147,12 @@ fun DashboardScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                FooterBadge("✓ Selo de Excelência Clínica", solid = true)
+                // Badges honestos: dados reais da instalação, sem selo inventado
+                // nem versão de mentira ("Selo de Excelência Clínica" e
+                // "v2.1.0 · Supabase" eram hardcoded — o backend é Neon hoje).
+                FooterBadge("BioAcupunt ${com.bioacupunt.BuildConfig.VERSION_NAME}", solid = true)
                 Spacer(Modifier.width(8.dp))
-                FooterBadge("v2.1.0 · Supabase", solid = false)
+                FooterBadge("Offline-first · dados no aparelho", solid = false)
             }
         }
     }
@@ -362,23 +363,17 @@ private fun KanbanColumnCard(col: KanbanColumn, onCardClick: (Long) -> Unit) {
             }
             Spacer(Modifier.height(10.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                col.cards.forEachIndexed { index, c ->
+                col.cards.forEach { c ->
                     val interactionSource = remember { MutableInteractionSource() }
-                    AnimatedVisibility(
-                        visibleState = remember { MutableTransitionState(false).apply { targetState = true } },
-                        enter = Motion.listItemEnter(index),
-                    ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .pressable(interactionSource)
                             .clip(MaterialTheme.shapes.medium)
                             .background(MaterialTheme.colorScheme.background)
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = LocalIndication.current,
                             ) { onCardClick(c.patientId) }
-                            // ≥44dp target: the kanban is tapped one-handed, standing.
                             .heightIn(min = 48.dp)
                             .padding(start = 8.dp, top = 9.dp, bottom = 9.dp, end = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -394,7 +389,6 @@ private fun KanbanColumnCard(col: KanbanColumn, onCardClick: (Long) -> Unit) {
                             Text(c.name, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium), maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Text(c.note, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
-                    }
                     }
                 }
             }

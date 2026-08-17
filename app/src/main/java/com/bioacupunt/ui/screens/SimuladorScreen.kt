@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bioacupunt.di.AppContainer
 import com.bioacupunt.educacao.domain.model.SimulatedCase
 import com.bioacupunt.educacao.presentation.SimuladorViewModel
+import com.bioacupunt.ui.design.SupremoClickableCard
 import com.bioacupunt.ui.theme.CatBlue
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.TextMuted
@@ -392,8 +393,8 @@ private fun ClinicalCaseList(cases: List<SimulatedCase>, onSelect: (SimulatedCas
             }
         }
         items(cases, key = { it.key }) { case ->
-            Card(onClick = { onSelect(case) }, modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
-                Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+            SupremoClickableCard(onClick = { onSelect(case) }, modifier = Modifier.fillMaxWidth()) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(case.title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                         Text(case.category, style = MaterialTheme.typography.bodySmall, color = TextMuted)

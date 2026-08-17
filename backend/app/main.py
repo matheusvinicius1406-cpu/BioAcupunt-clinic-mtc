@@ -24,6 +24,7 @@ from app.api.routers import (
     crm,
     health,
     library,
+    knowledge,
     patients,
     reports,
     sync,
@@ -83,6 +84,7 @@ app.include_router(crm.router)
 app.include_router(appointments.router)
 app.include_router(transactions.router)
 app.include_router(library.router)
+app.include_router(knowledge.router)
 app.include_router(reports.router)
 app.include_router(sync.router)
 

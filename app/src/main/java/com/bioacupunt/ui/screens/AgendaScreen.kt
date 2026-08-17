@@ -18,10 +18,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import com.bioacupunt.ui.design.SupremoCard
 import com.bioacupunt.ui.theme.CatBlue
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.TextMuted
-import com.bioacupunt.ui.theme.premiumShadow
+import com.bioacupunt.ui.theme.supremeShadow
 import com.bioacupunt.ui.theme.statusColors
 import com.bioacupunt.agenda.domain.model.Appointment
 import com.bioacupunt.agenda.domain.model.AppointmentStatus
@@ -59,7 +60,7 @@ fun AgendaScreen(viewModel: AgendaViewModel? = null, onOpenAtendimento: (Long, L
             FloatingActionButton(
                 onClick = { showNewAppointment = true },
                 containerColor = Primary,
-                modifier = Modifier.premiumShadow(shape = MaterialTheme.shapes.large, elevationDp = 18.dp)
+                modifier = Modifier.supremeShadow(shape = MaterialTheme.shapes.large, elevation = 18.dp)
             ) { Icon(Icons.Default.Add, null, tint = Color.White) }
         }
     ) { padding ->
@@ -369,8 +370,8 @@ private fun AppointmentCard(appt: Appointment, onStatusChange: (AppointmentStatu
     val options = nextStatusOptions(status)
     var menuExpanded by remember { mutableStateOf(false) }
     val canAttend = status == AppointmentStatus.SCHEDULED || status == AppointmentStatus.CONFIRMED || status == AppointmentStatus.IN_PROGRESS
-    Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+    SupremoCard(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.width(52.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(appt.time, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = Primary))
                 Text("${appt.durationMin}min", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

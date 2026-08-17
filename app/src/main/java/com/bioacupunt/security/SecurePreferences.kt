@@ -190,6 +190,17 @@ class SecurePreferences(context: Context) {
         get() = prefs.getString("translation_target_language", "") ?: ""
         set(value) = if (value.isBlank()) edit { it.remove("translation_target_language") } else edit { it.putString("translation_target_language", value) }
 
+    /** Lembretes de consulta: ligado/desligado (default ligado) e minutos de
+     * antecedência (default 30). ALIMENTAM [com.bioacupunt.agenda.AppointmentReminderScheduler]
+     * — não são estado decorativo: o toggle escreve aqui e o scheduler lê daqui. */
+    var notificationsEnabled: Boolean
+        get() = prefs.getBoolean("notifications_enabled", true)
+        set(value) = edit { it.putBoolean("notifications_enabled", value) }
+
+    var reminderMinutesBefore: Int
+        get() = prefs.getInt("reminder_minutes_before", 30)
+        set(value) = edit { it.putInt("reminder_minutes_before", value.coerceIn(5, 60)) }
+
     fun clearAll() {
         edit { it.clear() }
     }

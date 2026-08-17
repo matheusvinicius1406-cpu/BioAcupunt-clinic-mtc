@@ -35,6 +35,7 @@ import com.bioacupunt.di.AppContainer
 import com.bioacupunt.pharma.domain.model.FormularioMedicamento
 import com.bioacupunt.pharma.domain.model.Medicamento
 import com.bioacupunt.pharma.presentation.FarmacologiaViewModel
+import com.bioacupunt.ui.design.SupremoClickableCard
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.TextMuted
 import com.bioacupunt.ui.theme.statusColors
@@ -74,18 +75,16 @@ fun FarmacologiaScreen() {
             // Busca ativa: resultados de texto, do jeito que já era.
             state.query.isNotBlank() -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(state.results, key = { it.id }) { med ->
-                    Card(
+                    SupremoClickableCard(
                         onClick = { vm.selectMedicamento(med) },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     ) {
-                        Column(Modifier.padding(12.dp)) {
-                            Text(med.nomeComercial, fontWeight = FontWeight.SemiBold)
-                            Text(
-                                "${med.principiosAtivos.joinToString()} · ${med.classeTerapeutica}",
-                                style = MaterialTheme.typography.bodySmall, color = TextMuted,
-                            )
-                        }
+                        Text(med.nomeComercial, fontWeight = FontWeight.SemiBold)
+                        Text(
+                            "${med.principiosAtivos.joinToString()} · ${med.classeTerapeutica}",
+                            style = MaterialTheme.typography.bodySmall, color = TextMuted,
+                            modifier = Modifier.padding(top = 2.dp),
+                        )
                     }
                 }
                 if (!state.isSearching && state.results.isEmpty()) {

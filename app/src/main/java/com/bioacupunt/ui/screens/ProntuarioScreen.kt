@@ -710,6 +710,28 @@ private fun AnamneseTab(viewModel: SupremoViewModel) {
                         SelectableChip(flag.label, flag in flags, { viewModel.toggleFlag(flag) })
                     }
                 }
+                // Semanas de gestação: alimenta a regra de trimestre do motor de
+                // segurança (eletroacupuntura no 1º trimestre). Antes a regra existia
+                // e era testada, mas nenhuma tela chamava updateGestationalWeeks —
+                // o alerta era logicamente inalcançável. Visível quando a flag
+                // Gestação está marcada.
+                if (ClinicalFlag.PREGNANCY in flags) {
+                    Spacer(Modifier.height(14.dp))
+                    Text(
+                        "Semanas de gestação (trimestre da gestante)",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    OutlinedTextField(
+                        value = state.draft.gestationalWeeks?.toString().orEmpty(),
+                        onValueChange = { viewModel.updateGestationalWeeks(it.toIntOrNull()) },
+                        label = { Text("Semanas") },
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
 

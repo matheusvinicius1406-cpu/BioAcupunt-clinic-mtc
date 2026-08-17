@@ -121,6 +121,11 @@ class MainActivity : FragmentActivity() {
                     AppLock.locked.value = true
                 }
             }
+            // Lembretes de consulta: reagenda sempre que o app volta ao primeiro plano.
+            // Idempotente e barato (uma query + AlarmManager); o boot receiver cobre
+            // o caso de o app nem ter aberto ainda.
+            com.bioacupunt.agenda.AppointmentReminderScheduler.ensureChannel(this)
+            AppContainer.rescheduleAppointmentReminders()
         }
     }
 }

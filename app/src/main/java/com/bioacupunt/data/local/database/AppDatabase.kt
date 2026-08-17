@@ -9,6 +9,13 @@ import com.bioacupunt.data.local.model.AuditTrailEntity
 import com.bioacupunt.biblioteca.data.local.fts.ArticleFtsEntity
 import com.bioacupunt.biblioteca.data.local.ArticleTranslationEntity
 import com.bioacupunt.biblioteca.data.local.ArticleTranslationDao
+import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreDao
+import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreEntityEntity
+import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreRelationEntity
+import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreSourceEntity
+import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreCitationEntity
+import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreEvidenceEntity
+import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreProvenanceEntity
 
 /**
  * BIOACUPUNT SUPREMO — DATABASE (v19)
@@ -87,8 +94,14 @@ import com.bioacupunt.biblioteca.data.local.ArticleTranslationDao
 
         // === Tradutor automático da Biblioteca (v24) ===
         com.bioacupunt.biblioteca.data.local.ArticleTranslationEntity::class,
+        KnowledgeCoreEntityEntity::class,
+        KnowledgeCoreRelationEntity::class,
+        KnowledgeCoreSourceEntity::class,
+        KnowledgeCoreCitationEntity::class,
+        KnowledgeCoreEvidenceEntity::class,
+        KnowledgeCoreProvenanceEntity::class,
     ],
-    version = 24,
+    version = 25,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -128,4 +141,5 @@ abstract class AppDatabase : RoomDatabase() {
 
     // === Tradutor automático da Biblioteca DAO (v24) ===
     abstract fun articleTranslationDao(): com.bioacupunt.biblioteca.data.local.ArticleTranslationDao
+    abstract fun knowledgeCoreDao(): KnowledgeCoreDao
 }

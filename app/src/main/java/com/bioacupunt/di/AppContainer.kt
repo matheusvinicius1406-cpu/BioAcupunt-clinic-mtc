@@ -162,6 +162,7 @@ object AppContainer {
             api = RetrofitInstance.syncApi,
             stateDao = syncStateDao,
             conflictDao = syncConflictDao,
+            status = syncStatusManager,
             writers = mapOf(
                 "patient" to com.bioacupunt.sync.CrmPatientSyncWriter(
                     dao = crmPatientDao,
@@ -464,6 +465,20 @@ object AppContainer {
         com.bioacupunt.agenda.data.repository.AppointmentRepositoryImpl(appointmentDao, tenantManager)
     }
 
+    // ── Lembretes de consulta (AlarmManager real) ──────────
+    val appointmentReminderScheduler: com.bioacupunt.agenda.AppointmentReminderScheduler by lazy {
+        com.bioacupunt.agenda.AppointmentReminderScheduler(appContext, appointmentDao, securePreferences)
+    }
+
+    /** Reagenda os alarmes de consulta (boot, volta ao primeiro plano, mudança de preferência). */
+    fun rescheduleAppointmentReminders() {
+        val tenant = runCatching { tenantManager.currentTenantId() }.getOrNull() ?: return
+        _seederScope.launch {
+            runCatching { appointmentReminderScheduler.rescheduleAll(tenant) }
+                .onFailure { com.bioacupunt.observability.AppLogger.e("AppContainer", "rescheduleAppointmentReminders falhou", it) }
+        }
+    }
+
     // ── Use Cases ──────────────────────────────────────────
     val getPatients: GetPatients by lazy { GetPatients(patientRepository) }
     val createPatient: CreatePatient by lazy { CreatePatient(patientRepository) }
@@ -539,8 +554,24 @@ object AppContainer {
     val relatoriosUseCases: com.bioacupunt.relatorios.domain.usecase.RelatoriosUseCases by lazy {
         com.bioacupunt.relatorios.domain.usecase.RelatoriosUseCases(reportRepository)
     }
+    /**
+     * Geração REAL de relatórios a partir do prontuário do paciente (nunca IA
+     * inventando conteúdo clínico — ver o use case). O nome digitado no diálogo
+     * resolve contra o CRM; sem paciente correspondente, erro honesto, nunca
+     * relatório vazio.
+     */
+    val generateReportUseCase: com.bioacupunt.relatorios.domain.usecase.GenerateReportUseCase by lazy {
+        com.bioacupunt.relatorios.domain.usecase.GenerateReportUseCase(
+            crmPatientRepository = crmPatientRepository,
+            mtcAssessmentRepository = mtcAssessmentRepository,
+            appointmentRepository = appointmentRepository,
+            clinicName = { runCatching { securePreferences.clinicName }.getOrDefault("").ifBlank { "Clínica BioAcupunt" } },
+            professionalName = { runCatching { securePreferences.professionalName }.getOrDefault("").ifBlank { "Dra. Camila" } },
+            tcleText = { runCatching { securePreferences.tcleText }.getOrDefault("") },
+        )
+    }
     val relatoriosViewModelFactory: com.bioacupunt.relatorios.presentation.RelatoriosViewModelFactory by lazy {
-        com.bioacupunt.relatorios.presentation.RelatoriosViewModelFactory(relatoriosUseCases)
+        com.bioacupunt.relatorios.presentation.RelatoriosViewModelFactory(relatoriosUseCases, generateReportUseCase)
     }
     val financeiroViewModelFactory: com.bioacupunt.financeiro.presentation.FinanceiroViewModelFactory by lazy {
         com.bioacupunt.financeiro.presentation.FinanceiroViewModelFactory(

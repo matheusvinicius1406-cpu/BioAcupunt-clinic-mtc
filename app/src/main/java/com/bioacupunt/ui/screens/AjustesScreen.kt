@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.*
 import coil.compose.AsyncImage
+import com.bioacupunt.ui.design.SectionHeader
 import com.bioacupunt.ui.theme.GoogleBlue
 import com.bioacupunt.ui.theme.Primary
 import com.bioacupunt.ui.theme.SemanticError
@@ -220,7 +221,36 @@ private fun ClinicTab() {
                 .split(",").filter { it.isNotBlank() }.toSet(),
         )
     }
-    var gdriveLinked by remember { mutableStateOf(securePrefs.googleDriveLinked) }
+    // Estado REAL do Google Drive: derivado da conta OAuth conectada (GoogleSignIn),
+    // nunca de uma pref que o switch escrevia sem logar em lugar nenhum (anti-padrão
+    // "estado que finge ser real"). Ligar o switch inicia o fluxo de login de verdade.
+    val driveClient = remember { com.bioacupunt.di.AppContainer.googleDriveClient }
+    var gdriveAccount by remember { mutableStateOf(driveClient.lastAccount()) }
+    var gdriveBusy by remember { mutableStateOf(false) }
+    var gdriveStatus by remember { mutableStateOf<String?>(null) }
+    var gdriveError by remember { mutableStateOf(false) }
+    val gdriveLinked = gdriveAccount != null
+
+    fun reportGdrive(msg: String, isError: Boolean = false) {
+        gdriveStatus = msg
+        gdriveError = isError
+    }
+
+    val gdriveSignInLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        driveClient.accountFromResult(result.data)
+            .onSuccess { acc ->
+                gdriveAccount = acc
+                securePrefs.googleDriveLinked = true
+                reportGdrive("Conectada como ${acc.email}.")
+            }
+            .onFailure { e ->
+                gdriveAccount = driveClient.lastAccount()
+                securePrefs.googleDriveLinked = gdriveAccount != null
+                reportGdrive(e.localizedMessage ?: "Não foi possível conectar ao Google.", isError = true)
+            }
+    }
     var tcleText by remember {
         mutableStateOf(
             securePrefs.tcleText.ifBlank {
@@ -315,9 +345,28 @@ private fun ClinicTab() {
             SettingsSwitchRow(
                 icon = Icons.Default.Cloud,
                 title = "Google Drive",
-                subtitle = if (gdriveLinked) "Conectado — backup automático ativo" else "Não conectado. Ative para backup automático",
+                subtitle = if (gdriveLinked)
+                    "Conectada: ${gdriveAccount?.email.orEmpty().ifBlank { "conta Google" }} — backup na aba Segurança"
+                else
+                    "Não conectada. Ative para fazer backup na sua conta Google",
                 checked = gdriveLinked,
-                onCheck = { gdriveLinked = it; securePrefs.googleDriveLinked = it },
+                enabled = !gdriveBusy,
+                onCheck = { enable ->
+                    if (enable) {
+                        reportGdrive("")
+                        gdriveSignInLauncher.launch(driveClient.signInIntent())
+                    } else {
+                        gdriveBusy = true
+                        reportGdrive("")
+                        scope.launch {
+                            driveClient.signOut()
+                            gdriveAccount = null
+                            securePrefs.googleDriveLinked = false
+                            gdriveBusy = false
+                            reportGdrive("Desconectada do Google.")
+                        }
+                    }
+                },
                 iconColor = GoogleBlue
             )
         }
@@ -327,21 +376,51 @@ private fun ClinicTab() {
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = GoogleBlue.copy(alpha = 0.08f))
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
+                    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Google Drive conectado", style = MaterialTheme.typography.labelMedium.copy(color = GoogleBlue))
-                        Text("Prontuários · Laudos · Fotos de evolução — sincronizados automaticamente", style = MaterialTheme.typography.bodySmall)
-                        Spacer(Modifier.height(8.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = {
-                scope.launch {
-                    com.bioacupunt.di.AppContainer.backupManager.createBackupBytes().onSuccess { bytes ->
-                        com.bioacupunt.di.AppContainer.googleDriveClient.lastAccount()?.let { acc ->
-                            com.bioacupunt.di.AppContainer.googleDriveClient.uploadBackup(acc, com.bioacupunt.backup.BackupManager.suggestedFileName(), bytes)
+                        Text("O backup do banco local vai para a sua conta Google (escopo mínimo drive.file). Fluxo completo em Ajustes > Segurança > Backup.", style = MaterialTheme.typography.bodySmall)
+                        gdriveStatus?.takeIf { it.isNotBlank() }?.let { msg ->
+                            Text(
+                                msg,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (gdriveError) statusColors().danger else GoogleBlue,
+                            )
                         }
-                    }
-                }
-            }, modifier = Modifier.weight(1f)) { Text("Fazer backup agora") }
-                            OutlinedButton(onClick = { gdriveLinked = false; securePrefs.googleDriveLinked = false }, modifier = Modifier.weight(1f)) { Text("Desconectar") }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedButton(
+                                onClick = {
+                                    val acc = gdriveAccount ?: return@OutlinedButton
+                                    gdriveBusy = true
+                                    reportGdrive("Enviando backup…")
+                                    scope.launch {
+                                        com.bioacupunt.di.AppContainer.backupManager.createBackupBytes()
+                                            .onSuccess { bytes ->
+                                                com.bioacupunt.di.AppContainer.googleDriveClient
+                                                    .uploadBackup(acc, com.bioacupunt.backup.BackupManager.suggestedFileName(), bytes)
+                                                    .onSuccess { reportGdrive("Backup enviado ao Drive com sucesso.") }
+                                                    .onFailure { reportGdrive(it.localizedMessage ?: "Falha ao enviar backup.", isError = true) }
+                                            }
+                                            .onFailure { reportGdrive(it.localizedMessage ?: "Falha ao criar backup.", isError = true) }
+                                        gdriveBusy = false
+                                    }
+                                },
+                                enabled = !gdriveBusy,
+                                modifier = Modifier.weight(1f),
+                            ) { Text(if (gdriveBusy) "Enviando…" else "Fazer backup agora") }
+                            OutlinedButton(
+                                onClick = {
+                                    gdriveBusy = true
+                                    scope.launch {
+                                        driveClient.signOut()
+                                        gdriveAccount = null
+                                        securePrefs.googleDriveLinked = false
+                                        gdriveBusy = false
+                                        reportGdrive("Desconectada do Google.")
+                                    }
+                                },
+                                enabled = !gdriveBusy,
+                                modifier = Modifier.weight(1f),
+                            ) { Text("Desconectar") }
                         }
                     }
                 }
@@ -742,8 +821,10 @@ private fun SystemTab() {
     var resetting by remember { mutableStateOf(false) }
     var resetMessage by remember { mutableStateOf<String?>(null) }
     var darkMode by remember { mutableStateOf(false) }
-    var notificationsEnabled by remember { mutableStateOf(true) }
-    var reminderMin by remember { mutableIntStateOf(30) }
+    // Estado REAL de notificações: lido/escrito em SecurePreferences e aplicado no
+    // AppointmentReminderScheduler (AlarmManager) — não é mais um toggle decorativo.
+    var notificationsEnabled by remember { mutableStateOf(securePrefs.notificationsEnabled) }
+    var reminderMin by remember { mutableIntStateOf(securePrefs.reminderMinutesBefore) }
     var cacheKb by remember { mutableStateOf(0L) }
     var language by remember { mutableStateOf("Português (Brasil)") }
     var serverUrl by remember { mutableStateOf(securePrefs.serverUrl) }
@@ -796,11 +877,36 @@ private fun SystemTab() {
         }
 
         item { SectionHeader("Notificações") }
-        item { SettingsSwitchRow(Icons.Default.Notifications, "Notificações de Consultas", "Alertas sobre consultas do dia", notificationsEnabled, { notificationsEnabled = it }) }
+        item {
+            SettingsSwitchRow(
+                icon = Icons.Default.Notifications,
+                title = "Notificações de Consultas",
+                subtitle = if (notificationsEnabled) "Lembrete antes de cada consulta" else "Desligadas — nenhum lembrete será agendado",
+                checked = notificationsEnabled,
+                onCheck = { enabled ->
+                    notificationsEnabled = enabled
+                    securePrefs.notificationsEnabled = enabled
+                    // Aplica AGORA: ligar reagenda os alarmes, desligar cancela todos.
+                    com.bioacupunt.di.AppContainer.rescheduleAppointmentReminders()
+                },
+            )
+        }
         item {
             Column {
                 Text("Lembrete antes da consulta: $reminderMin min", style = MaterialTheme.typography.bodySmall)
-                Slider(value = reminderMin.toFloat(), onValueChange = { reminderMin = it.toInt() }, valueRange = 5f..60f, steps = 10, colors = SliderDefaults.colors(thumbColor = Primary, activeTrackColor = Primary))
+                Slider(
+                    value = reminderMin.toFloat(),
+                    onValueChange = { reminderMin = it.toInt() },
+                    // Persistir e reagendar só ao soltar o slider — não uma escrita
+                    // criptografada + rebuild de alarmes por frame durante o arraste.
+                    onValueChangeFinished = {
+                        securePrefs.reminderMinutesBefore = reminderMin
+                        com.bioacupunt.di.AppContainer.rescheduleAppointmentReminders()
+                    },
+                    valueRange = 5f..60f,
+                    steps = 10,
+                    colors = SliderDefaults.colors(thumbColor = Primary, activeTrackColor = Primary),
+                )
             }
         }
 
@@ -848,8 +954,9 @@ private fun SystemTab() {
                     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             "Apaga todos os pacientes, financeiro e prontuários DESTE build de teste " +
-                                "e recarrega os dados de demonstração. Nunca afeta um build de produção " +
-                                "(instalado pela médica) — este botão nem aparece nele.",
+                                "e recarrega o catálogo ANVISA (dado público de referência). Não recria " +
+                                "pacientes de demonstração. Nunca afeta um build de produção (instalado " +
+                                "pela médica) — este botão nem aparece nele.",
                             style = MaterialTheme.typography.bodySmall,
                         )
                         OutlinedButton(
@@ -905,7 +1012,7 @@ private fun SystemTab() {
             onDismissRequest = { showResetConfirm = false },
             icon = { Icon(Icons.Default.DeleteForever, null, tint = statusColors().danger) },
             title = { Text("Resetar dados de teste?") },
-            text = { Text("Apaga TODOS os pacientes, financeiro e prontuários deste build de teste e recarrega os dados de demonstração. Não pode ser desfeito.") },
+            text = { Text("Apaga TODOS os pacientes, financeiro e prontuários deste build de teste e recarrega o catálogo ANVISA. Não pode ser desfeito.") },
             confirmButton = {
                 TextButton(onClick = {
                     showResetConfirm = false
@@ -924,14 +1031,9 @@ private fun SystemTab() {
 }
 
 // ── Shared components ─────────────────────────────────────────
-@Composable
-private fun SectionHeader(title: String) {
-    Text(
-        title,
-        style = MaterialTheme.typography.labelLarge.copy(color = Primary, fontWeight = FontWeight.SemiBold),
-        modifier = Modifier.padding(top = 4.dp)
-    )
-}
+// SectionHeader é o do design system (com régua dourada) — antes havia um privado
+// aqui com estilo diferente (labelLarge solto), o que fazia as seções de Ajustes
+// parecerem de outra tela. Um design system só é um se usado em todo lugar.
 
 @Composable
 private fun SettingsTextField(
