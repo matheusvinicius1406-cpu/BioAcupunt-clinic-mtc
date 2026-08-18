@@ -710,8 +710,11 @@ object AppContainer {
     // NoEvidence para TODA pergunta. Voltamos ao backend que de fato tem acervo.
     // O portão R2 (if (!hasEvidence)) mora no MtcRetriever/AskLibraryUseCase e segue
     // intacto — trocar o backend não o reabre.
+    val knowledgeCoreSearchBackend: com.bioacupunt.mtc.knowledge.data.KnowledgeCoreSearchBackend by lazy {
+        com.bioacupunt.mtc.knowledge.data.KnowledgeCoreSearchBackend(knowledgeSearchRepository)
+    }
     val mtcRetriever: com.bioacupunt.biblioteca.domain.search.MtcRetriever by lazy {
-        com.bioacupunt.biblioteca.domain.search.MtcRetriever(ftsSearchService)
+        com.bioacupunt.biblioteca.domain.search.MtcRetriever(knowledgeCoreSearchBackend)
     }
 
     /**

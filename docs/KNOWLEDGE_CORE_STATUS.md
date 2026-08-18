@@ -397,16 +397,32 @@ Two `KnowledgeRepository` classes in different packages will cause import confus
 
 - [x] **Align backend Pydantic model** with Android domain model (version, metadata, timestamps, provenance.imported_at)
 - [ ] **Backend Knowledge Core tables** — decided: backend stays read-only from `library_nodes` for now
-- [ ] **PipelineService → knowledge_core_entities** — deferred to Phase 2 (search migration)
-- [ ] **BibliotecaViewModel → knowledge_core_entities** — deferred to Phase 2 (search migration)
+- [x] **MtcRetriever → KnowledgeCoreSearchBackend** — MtcRetriever now uses Knowledge Core (Phase 2)
+- [ ] **PipelineService → knowledge_core_entities** — deferred to Phase 3 (write migration)
+- [ ] **BibliotecaViewModel → knowledge_core_entities** — deferred to Phase 3 (read migration)
 
-### NOT in Phase 1 (future phases):
+### Phase 2 Status:
+
+- [x] Coverage audit (KnowledgeCoverageAudit)
+- [x] FTS4 index (KnowledgeCoreFtsEntity + Syncer + Dao)
+- [x] KnowledgeSearchRepository (canonical search boundary)
+- [x] KnowledgeCoreSearchBackend (adapter for MtcRetriever)
+- [x] SearchDualRun (comparison tool with MTC regression dataset)
+- [x] Migration v25→v26 (FTS4 virtual table)
+- [x] MtcRetriever migrated to Knowledge Core
+- [x] Legacy reference classification (LEGACY_REFERENCE_CLASSIFICATION.md)
+- [ ] Run LegacyImporter on device to populate Knowledge Core
+- [ ] Execute dual-run and compare results
+- [ ] Migrate BibliotecaViewModel
+- [ ] Deprecate FtsSearchService / HybridSearchService
+
+### NOT in Phase 2 (future phases):
 
 - Graph traversal queries
 - Evidence Engine
 - Differential Engine
 - Copilot
-- Population of Knowledge Core with MTC content
+- Population of Knowledge Core with MTC content (manual via Curadoria)
 
 ---
 
