@@ -21,7 +21,7 @@ import com.bioacupunt.data.local.database.AppDatabase
 import com.bioacupunt.data.local.database.KnowledgeNodeDao
 import com.bioacupunt.data.remote.PatientApi
 import com.bioacupunt.data.remote.RetrofitInstance
-import com.bioacupunt.data.repository.KnowledgeRepository
+import com.bioacupunt.data.repository.LegacyKnowledgeNodeRepository
 import com.bioacupunt.patient.data.local.PatientDao
 import com.bioacupunt.patient.data.repository.PatientRepositoryImpl
 import com.bioacupunt.patient.domain.repository.PatientRepository
@@ -199,6 +199,7 @@ object AppContainer {
     val syncStateDao: com.bioacupunt.sync.data.local.SyncStateDao by lazy { database.syncStateDao() }
     val syncConflictDao: com.bioacupunt.sync.data.local.SyncConflictDao by lazy { database.syncConflictDao() }
     val knowledgeNodeDao: KnowledgeNodeDao by lazy { database.knowledgeNodeDao() }
+    val knowledgeCoreDao: com.bioacupunt.mtc.knowledge.data.KnowledgeCoreDao by lazy { database.knowledgeCoreDao() }
     val crmPatientDao: com.bioacupunt.crm.data.local.CrmPatientDao by lazy { database.crmPatientDao() }
     val appointmentDao: com.bioacupunt.agenda.data.local.AppointmentDao by lazy { database.appointmentDao() }
     val transacaoDao: com.bioacupunt.financeiro.data.local.TransacaoDao by lazy { database.transacaoDao() }
@@ -295,6 +296,49 @@ object AppContainer {
     val bibliotecaDao: com.bioacupunt.biblioteca.data.local.BibliotecaDao by lazy { database.bibliotecaDao() }
     val favoriteArticleDao: com.bioacupunt.biblioteca.data.local.FavoriteArticleDao by lazy { database.favoriteArticleDao() }
     val articleSearchDao: com.bioacupunt.biblioteca.data.local.dao.ArticleSearchDao by lazy { database.articleSearchDao() }
+
+    // ── Knowledge Core (canonical knowledge boundary) ─────────────────
+    val knowledgeCoreRepository: com.bioacupunt.mtc.knowledge.repository.KnowledgeRepository by lazy {
+        com.bioacupunt.mtc.knowledge.repository.RoomKnowledgeRepository(knowledgeCoreDao)
+    }
+    val knowledgeCoreImporter: com.bioacupunt.mtc.knowledge.repository.KnowledgeCoreImporter by lazy {
+        com.bioacupunt.mtc.knowledge.repository.KnowledgeCoreImporter(knowledgeCoreDao)
+    }
+    val libraryAdapter: com.bioacupunt.mtc.knowledge.data.LibraryAdapter by lazy {
+        com.bioacupunt.mtc.knowledge.data.LibraryAdapter()
+    }
+    val mkisAdapter: com.bioacupunt.mtc.knowledge.data.MkisAdapter by lazy {
+        com.bioacupunt.mtc.knowledge.data.MkisAdapter()
+    }
+    val knowledgeCoreFtsSyncer: com.bioacupunt.mtc.knowledge.data.KnowledgeCoreFtsSyncer by lazy {
+        com.bioacupunt.mtc.knowledge.data.KnowledgeCoreFtsSyncer { database.openHelper.writableDatabase }
+    }
+    val knowledgeCoreFtsDao: com.bioacupunt.mtc.knowledge.data.KnowledgeCoreFtsDao by lazy {
+        com.bioacupunt.mtc.knowledge.data.KnowledgeCoreFtsDao { database.openHelper.writableDatabase }
+    }
+    val knowledgeSearchRepository: com.bioacupunt.mtc.knowledge.repository.KnowledgeSearchRepository by lazy {
+        com.bioacupunt.mtc.knowledge.repository.RoomKnowledgeSearchRepository(
+            knowledgeCoreDao,
+        ) { database.openHelper.writableDatabase }
+    }
+    val knowledgeCoverageAudit: com.bioacupunt.mtc.knowledge.data.KnowledgeCoverageAudit by lazy {
+        com.bioacupunt.mtc.knowledge.data.KnowledgeCoverageAudit(
+            bibliotecaDao,
+            knowledgeNodeDao,
+            knowledgeCoreDao,
+            libraryAdapter,
+            mkisAdapter,
+        )
+    }
+    val legacyImporter: com.bioacupunt.mtc.knowledge.data.LegacyImporter by lazy {
+        com.bioacupunt.mtc.knowledge.data.LegacyImporter(
+            bibliotecaDao,
+            knowledgeNodeDao,
+            knowledgeCoreImporter,
+            libraryAdapter,
+            mkisAdapter,
+        )
+    }
 
     // ── Biblioteca: pipeline de ingestão + curadoria ───────
     val libraryStagingRepository: com.bioacupunt.biblioteca.data.repository.LibraryStagingRepository by lazy {

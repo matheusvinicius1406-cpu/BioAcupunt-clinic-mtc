@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 25
+    private const val DB_VERSION = 26
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -154,6 +154,7 @@ object DatabaseModule {
         if (current >= 23) migrations.add(MIGRATION_22_23)
         if (current >= 24) migrations.add(MIGRATION_23_24)
         if (current >= 25) migrations.add(MIGRATION_24_25)
+        if (current >= 26) migrations.add(MIGRATION_25_26)
         return migrations
     }
 
@@ -947,6 +948,13 @@ object DatabaseModule {
             database.execSQL("CREATE TABLE IF NOT EXISTS `knowledge_core_evidence` (`id` TEXT NOT NULL, `claim` TEXT NOT NULL, `citation_ids_json` TEXT NOT NULL, `level` TEXT, `confidence` REAL, PRIMARY KEY(`id`))")
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_knowledge_core_evidence_claim` ON `knowledge_core_evidence` (`claim`)")
             database.execSQL("CREATE TABLE IF NOT EXISTS `knowledge_core_provenance` (`entity_id` TEXT NOT NULL, `original_source` TEXT NOT NULL, `original_id` TEXT NOT NULL, `original_type` TEXT NOT NULL, `source_reference` TEXT, `migration_version` TEXT NOT NULL, `imported_at` INTEGER NOT NULL, PRIMARY KEY(`entity_id`, `original_source`, `original_id`))")
+        }
+    }
+
+    private val MIGRATION_25_26 = object : androidx.room.migration.Migration(25, 26) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // FTS5 virtual table for Knowledge Core full-text search
+            database.execSQL("CREATE VIRTUAL TABLE IF NOT EXISTS `knowledge_core_fts` USING fts4(`canonical_name`, `aliases`, `summary`, `content`)")
         }
     }
 

@@ -4,7 +4,7 @@ import com.bioacupunt.data.local.database.KnowledgeNodeDao
 import com.bioacupunt.data.local.model.KnowledgeNodeEntity
 import kotlinx.coroutines.flow.Flow
 
-class KnowledgeRepository(
+class LegacyKnowledgeNodeRepository(
     private val dao: KnowledgeNodeDao
 ) {
     val allNodes: Flow<List<KnowledgeNodeEntity>> = dao.getAllNodes()

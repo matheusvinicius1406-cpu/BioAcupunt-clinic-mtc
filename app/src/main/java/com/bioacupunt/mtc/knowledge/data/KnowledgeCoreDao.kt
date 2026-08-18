@@ -8,14 +8,32 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface KnowledgeCoreDao {
+    // ── Read ─────────────────────────────────────────────────────────
     @Query("SELECT * FROM knowledge_core_entities WHERE id = :id") suspend fun getById(id: String): KnowledgeCoreEntityEntity?
     @Query("SELECT * FROM knowledge_core_entities WHERE canonical_name LIKE '%' || :query || '%' OR summary LIKE '%' || :query || '%' OR content LIKE '%' || :query || '%' ORDER BY canonical_name LIMIT :limit") suspend fun search(query: String, limit: Int): List<KnowledgeCoreEntityEntity>
     @Query("SELECT * FROM knowledge_core_entities ORDER BY canonical_name") fun observeAll(): Flow<List<KnowledgeCoreEntityEntity>>
+    @Query("SELECT * FROM knowledge_core_entities WHERE type = :type ORDER BY canonical_name") suspend fun getByType(type: String): List<KnowledgeCoreEntityEntity>
+    @Query("SELECT * FROM knowledge_core_entities WHERE status = :status ORDER BY canonical_name") suspend fun getByStatus(status: String): List<KnowledgeCoreEntityEntity>
+    @Query("SELECT * FROM knowledge_core_entities WHERE id IN (:ids)") suspend fun getByIds(ids: List<String>): List<KnowledgeCoreEntityEntity>
+
+    // ── Count ────────────────────────────────────────────────────────
+    @Query("SELECT COUNT(*) FROM knowledge_core_entities") suspend fun countAll(): Int
+    @Query("SELECT COUNT(*) FROM knowledge_core_entities WHERE type = :type") suspend fun countByType(type: String): Int
+
+    // ── Relations ─────────────────────────────────────────────────────
     @Query("SELECT * FROM knowledge_core_relations WHERE source_entity_id = :entityId OR target_entity_id = :entityId") suspend fun getRelations(entityId: String): List<KnowledgeCoreRelationEntity>
+    @Query("SELECT * FROM knowledge_core_relations WHERE source_entity_id = :entityId") suspend fun getEdgesFrom(entityId: String): List<KnowledgeCoreRelationEntity>
+    @Query("SELECT * FROM knowledge_core_relations WHERE target_entity_id = :entityId") suspend fun getEdgesTo(entityId: String): List<KnowledgeCoreRelationEntity>
+
+    // ── Write ─────────────────────────────────────────────────────────
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertEntities(items: List<KnowledgeCoreEntityEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertRelations(items: List<KnowledgeCoreRelationEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertSources(items: List<KnowledgeCoreSourceEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertCitations(items: List<KnowledgeCoreCitationEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertEvidence(items: List<KnowledgeCoreEvidenceEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertProvenance(items: List<KnowledgeCoreProvenanceEntity>)
+
+    // ── Delete ────────────────────────────────────────────────────────
+    @Query("DELETE FROM knowledge_core_entities WHERE id = :id") suspend fun deleteById(id: String)
+    @Query("DELETE FROM knowledge_core_relations WHERE source_entity_id = :entityId OR target_entity_id = :entityId") suspend fun deleteRelationsFor(entityId: String)
 }

@@ -100,8 +100,10 @@ import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreProvenanceEntity
         KnowledgeCoreCitationEntity::class,
         KnowledgeCoreEvidenceEntity::class,
         KnowledgeCoreProvenanceEntity::class,
+
+        // === Knowledge Core FTS5 (v26) — created via raw SQL, not Room entity ===
     ],
-    version = 25,
+    version = 26,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -142,4 +144,5 @@ abstract class AppDatabase : RoomDatabase() {
     // === Tradutor automático da Biblioteca DAO (v24) ===
     abstract fun articleTranslationDao(): com.bioacupunt.biblioteca.data.local.ArticleTranslationDao
     abstract fun knowledgeCoreDao(): KnowledgeCoreDao
+    // KnowledgeCoreFtsDao is not a Room DAO — uses raw SQL for FTS5 virtual table
 }
