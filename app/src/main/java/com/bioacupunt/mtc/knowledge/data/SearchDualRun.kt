@@ -121,37 +121,53 @@ class SearchDualRun(
     companion object {
         private const val TAG = "SearchDualRun"
 
-        /** MTC search regression dataset */
+        /** MTC search regression dataset — 32 queries covering all categories */
         val MTC_QUERIES = listOf(
-            // Syndromes
+            // Syndromes (4)
             "Estagnação de Qi do Fígado",
             "Deficiência de Yin do Rim",
             "Síndrome do frio",
-            // Symptoms
+            "Calor-Vento",
+            // Symptoms (5)
             "Insônia",
             "Dor lombar",
             "Cefaleia",
             "Ansiedade",
-            // Points
+            "Tontura",
+            // Points (5)
             "LI4",
             "ST36",
             "SP6",
             "LV3",
-            // Meridians
+            "GV20",
+            // Meridians (3)
             "Meridiano do Pulmão",
             "Meridiano do Fígado",
-            // Formulas
+            "Meridiano do Baço",
+            // Formulas (3)
             "Xiao Yao San",
             "Liu Wei Di Huang Wan",
-            // Herbs
+            "Bu Zhong Yi Qi Tang",
+            // Herbs (3)
             "Chai Hu",
             "Huang Qi",
-            // Techniques
+            "Ren Shen",
+            // Techniques (2)
             "Moxabustão",
             "Eletroacupuntura",
-            // Mixed
+            // Etiology (2)
+            "causa de estagnação",
+            "fator patogênico externo",
+            // Diagnosis (2)
+            "diagnóstico diferencial",
+            "observação da língua",
+            // Treatment (2)
             "tratamento de dor",
-            "ponto de acqua",
+            "princípio de tratamento",
+            // Chinese terms (1)
+            "气虚",
+            // Alternatives (2)
+            "ponto de aqua",
             "qi e sangue",
         )
     }

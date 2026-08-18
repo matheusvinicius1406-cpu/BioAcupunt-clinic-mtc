@@ -11,6 +11,17 @@ import com.bioacupunt.data.local.database.VecSearchResult
 import com.bioacupunt.observability.AppLogger
 
 /**
+ * DEPRECATED — este serviço busca em `knowledge_nodes` + `vec_knowledge_nodes`,
+ * ambas as tabelas VAZIAS (MKIS pipeline nunca populou dados).
+ *
+ * O MtcRetriever agora usa [KnowledgeCoreSearchBackend] que busca no
+ * Knowledge Core (fonte canônica). Este serviço é mantido apenas para
+ * backward compatibility temporária e será removido após migração completa.
+ *
+ * Para buscas futuras, use [KnowledgeSearchRepository].
+ *
+ * ---
+ *
  * SERVIÇO DE BUSCA HÍBRIDA — funde resultados de FTS5 (textual) com sqlite-vec
  * (semântico/vetorial) usando Reciprocal Rank Fusion (RRF).
  *

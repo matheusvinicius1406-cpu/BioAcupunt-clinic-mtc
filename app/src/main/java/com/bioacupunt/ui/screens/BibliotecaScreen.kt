@@ -350,11 +350,10 @@ fun BibliotecaScreen(
         )
     }
 
-    // ── MKIS node detail sheet ────────────────────────────
-    state.selectedMkisNode?.let { node ->
-        MkisDetailSheet(
-            node = node,
-            score = state.selectedMkisNodeScore,
+    // ── Search result detail sheet ────────────────────────
+    state.selectedResultItem?.let { item ->
+        SearchResultDetailSheet(
+            item = item,
             onDismiss = vm::clearSelectedNode,
         )
     }
@@ -461,6 +460,30 @@ private fun FlowRowCompat(tags: List<String>) {
             Box(modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 10.dp, vertical = 2.dp)) {
                 Text(tag, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Primary)
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchResultDetailSheet(
+    item: com.bioacupunt.biblioteca.presentation.HybridResultItem,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(item.title, style = MaterialTheme.typography.titleMedium)
+            if (item.summary.isNotBlank()) {
+                Text(item.summary, style = MaterialTheme.typography.bodyMedium)
+            }
+            Text(
+                "Score: ${"%.2f".format(item.score)}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

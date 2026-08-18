@@ -585,8 +585,7 @@ object AppContainer {
         com.bioacupunt.biblioteca.presentation.BibliotecaViewModelFactory(
             askLibrary = askLibrary,
             toggleFavoriteArticle = com.bioacupunt.biblioteca.domain.usecase.ToggleFavoriteArticle(favoriteArticleDao),
-            hybridSearchService = hybridSearchService,
-            knowledgeNodeDao = database.knowledgeNodeDao(),
+            searchBackend = knowledgeCoreSearchBackend,
             observeFavorites = favoriteArticleDao.observeAll().map { list -> list.map { fav -> fav.articleId }.toSet() },
             observeApprovedArticles = libraryStagingRepository.observeApprovedArticles(),
         )
@@ -650,6 +649,12 @@ object AppContainer {
             vecRepo = vecKnowledgeNodeRepository,
             embeddingService = embeddingService,
             contentExtractor = contentExtractor,
+        )
+    }
+    val pipelineBridge: com.bioacupunt.mtc.knowledge.data.PipelineBridge by lazy {
+        com.bioacupunt.mtc.knowledge.data.PipelineBridge(
+            mkisAdapter = mkisAdapter,
+            importer = knowledgeCoreImporter,
         )
     }
 

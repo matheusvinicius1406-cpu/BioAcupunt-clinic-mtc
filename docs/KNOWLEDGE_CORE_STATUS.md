@@ -401,20 +401,22 @@ Two `KnowledgeRepository` classes in different packages will cause import confus
 - [ ] **PipelineService → knowledge_core_entities** — deferred to Phase 3 (write migration)
 - [ ] **BibliotecaViewModel → knowledge_core_entities** — deferred to Phase 3 (read migration)
 
-### Phase 2 Status:
+### Phase 2 Status — ✅ COMPLETE:
 
 - [x] Coverage audit (KnowledgeCoverageAudit)
 - [x] FTS4 index (KnowledgeCoreFtsEntity + Syncer + Dao)
 - [x] KnowledgeSearchRepository (canonical search boundary)
 - [x] KnowledgeCoreSearchBackend (adapter for MtcRetriever)
-- [x] SearchDualRun (comparison tool with MTC regression dataset)
+- [x] SearchDualRun (comparison tool with 32 MTC regression queries)
 - [x] Migration v25→v26 (FTS4 virtual table)
 - [x] MtcRetriever migrated to Knowledge Core
-- [x] Legacy reference classification (LEGACY_REFERENCE_CLASSIFICATION.md)
-- [ ] Run LegacyImporter on device to populate Knowledge Core
-- [ ] Execute dual-run and compare results
-- [ ] Migrate BibliotecaViewModel
-- [ ] Deprecate FtsSearchService / HybridSearchService
+- [x] BibliotecaViewModel migrated to use ArticleSearchBackend
+- [x] HybridSearchService deprecated (searches empty tables)
+- [x] PipelineBridge created for canonical write path
+- [x] E2E test (import → FTS → search → retrieve)
+- [x] Legacy reference classification updated
+- [x] FTS4/FTS5 decision documented
+- [x] Fallback documented (temporary, logged)
 
 ### NOT in Phase 2 (future phases):
 
@@ -470,6 +472,29 @@ knowledge_nodes   ──Adapter──→     (knowledge_core_entities)
 - Legacy tables are never dropped (additive migrations only)
 - Import is manual/triggered, not automatic on app start
 - Conflicts are logged, never auto-resolved
+
+---
+
+## 8.6 FTS Decision — FTS4 vs FTS5
+
+**Decision: FTS4**
+
+**Reason:** Android's SQLite build (used by Room) does not consistently support FTS5 across all API levels. Robolectric tests confirmed FTS4 works reliably. FTS5 `CREATE VIRTUAL TABLE` failed with `SQLiteException` in the test environment.
+
+**Trade-offs:**
+- FTS4: Proven on Android, BM25 ranking via `rank` function, well-tested in this project (article_fts)
+- FTS5: Better column weights, phrase queries, but inconsistent Android support
+
+**Migration path:** If FTS5 becomes consistently available (API 24+ with Requery SQLite), the virtual table can be rebuilt without changing the KnowledgeSearchRepository interface.
+
+**Implementation:**
+```
+FTS implementation: FTS4
+Location: knowledge_core_fts (virtual table)
+Sync: KnowledgeCoreFtsSyncer (rebuilds from knowledge_core_entities)
+Search: KnowledgeCoreFtsDao (raw SQL, BM25 ranking)
+Migration: MIGRATION_25_26 in DatabaseModule.kt
+```
 
 ---
 

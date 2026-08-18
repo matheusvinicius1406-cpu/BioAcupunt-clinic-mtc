@@ -4,12 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bioacupunt.biblioteca.data.MtcKnowledgeBase
-import com.bioacupunt.biblioteca.data.search.HybridSearchService
 import com.bioacupunt.biblioteca.domain.model.MtcArticle
+import com.bioacupunt.biblioteca.domain.search.ArticleSearchBackend
 import com.bioacupunt.biblioteca.domain.usecase.AskLibraryUseCase
 import com.bioacupunt.biblioteca.domain.usecase.ToggleFavoriteArticle
-import com.bioacupunt.data.local.database.KnowledgeNodeDao
-import com.bioacupunt.data.local.model.KnowledgeNodeEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,9 +55,8 @@ data class BibliotecaUiState(
     val isSearching: Boolean = false,
     /** True quando a última busca híbrida falhou — distingue de "zero resultados" real. */
     val hybridSearchFailed: Boolean = false,
-    /** Nó MKIS selecionado para exibir no detail sheet. */
-    val selectedMkisNode: KnowledgeNodeEntity? = null,
-    val selectedMkisNodeScore: Double = 0.0,
+    /** Item de resultado selecionado para exibir detalhes. */
+    val selectedResultItem: HybridResultItem? = null,
 )
 
 /** Item de resultado da busca híbrida, adaptado para exibição na lista. */
@@ -86,8 +83,7 @@ data class HybridResultItem(
 class BibliotecaViewModel(
     private val askLibrary: AskLibraryUseCase,
     private val toggleFavoriteArticle: ToggleFavoriteArticle,
-    private val hybridSearchService: HybridSearchService?,
-    private val knowledgeNodeDao: KnowledgeNodeDao?,
+    private val searchBackend: ArticleSearchBackend?,
     observeFavorites: kotlinx.coroutines.flow.Flow<Set<String>>,
     observeApprovedArticles: kotlinx.coroutines.flow.Flow<List<MtcArticle>>,
 ) : ViewModel() {
@@ -217,14 +213,13 @@ class BibliotecaViewModel(
         }
     }
 
-    /** Realiza busca nos nós do MKIS via [HybridSearchService]. */
+    /** Realiza busca via [ArticleSearchBackend] (Knowledge Core ou fallback legado). */
     private fun performHybridSearch(query: String) {
-        val svc = hybridSearchService ?: return
+        val backend = searchBackend ?: return
         viewModelScope.launch {
             _state.update { it.copy(isSearching = true, hybridSearchFailed = false) }
             try {
-                val results = svc.search(query, maxResults = 20)
-                // TODO: Usar score real do RRF quando o HybridSearchService expor scores normalizados
+                val results = backend.search(query, maxResults = 20)
                 val items = results.mapIndexed { i, r ->
                     HybridResultItem(
                         id = r.articleId,
@@ -243,26 +238,19 @@ class BibliotecaViewModel(
     }
 
     fun onHybridResultClick(item: HybridResultItem) {
-        val dao = knowledgeNodeDao ?: return
-        viewModelScope.launch {
-            val node = dao.getById(item.id)
-            _state.update { it.copy(
-                selectedMkisNode = node,
-                selectedMkisNodeScore = item.score,
-            )}
-        }
+        // Search result clicked — no knowledgeNodeDao needed anymore
+        // The item data is already in HybridResultItem
     }
 
     fun clearSelectedNode() {
-        _state.update { it.copy(selectedMkisNode = null, selectedMkisNodeScore = 0.0) }
+        _state.update { it.copy(selectedResultItem = null) }
     }
 }
 
 class BibliotecaViewModelFactory(
     private val askLibrary: AskLibraryUseCase,
     private val toggleFavoriteArticle: ToggleFavoriteArticle,
-    private val hybridSearchService: HybridSearchService?,
-    private val knowledgeNodeDao: KnowledgeNodeDao?,
+    private val searchBackend: ArticleSearchBackend?,
     private val observeFavorites: kotlinx.coroutines.flow.Flow<Set<String>>,
     private val observeApprovedArticles: kotlinx.coroutines.flow.Flow<List<MtcArticle>>,
 ) : ViewModelProvider.Factory {
@@ -271,8 +259,7 @@ class BibliotecaViewModelFactory(
         return BibliotecaViewModel(
             askLibrary,
             toggleFavoriteArticle,
-            hybridSearchService,
-            knowledgeNodeDao,
+            searchBackend,
             observeFavorites,
             observeApprovedArticles,
         ) as T
