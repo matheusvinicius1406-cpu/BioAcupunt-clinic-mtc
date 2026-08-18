@@ -29,24 +29,38 @@ class KnowledgeStatus(str, Enum):
     DEPRECATED = "DEPRECATED"
 
 
+class KnowledgeVersion(BaseModel):
+    """Version metadata — mirrors Android KnowledgeVersion."""
+    version: str = "1.0.0"
+    created_at: int = 0
+    updated_at: int = 0
+    reviewed_at: int | None = None
+    status: KnowledgeStatus = KnowledgeStatus.DRAFT
+
+
 class KnowledgeProvenance(BaseModel):
+    """Provenance chain — mirrors Android KnowledgeProvenance."""
     original_source: str
     original_id: str
     original_type: str
     source_reference: str | None = None
     migration_version: str
+    imported_at: int = 0
 
 
 class KnowledgeEntity(BaseModel):
+    """Canonical knowledge entity — mirrors Android KnowledgeEntity."""
     id: str
     type: KnowledgeEntityType
     canonical_name: str
     aliases: list[str] = Field(default_factory=list)
     summary: str = ""
     content: str = ""
+    metadata: dict[str, str] = Field(default_factory=dict)
     source_ids: list[str] = Field(default_factory=list)
     citation_ids: list[str] = Field(default_factory=list)
     evidence_ids: list[str] = Field(default_factory=list)
-    version: str = "1.0.0"
-    status: KnowledgeStatus = KnowledgeStatus.DRAFT
+    version: KnowledgeVersion = Field(default_factory=KnowledgeVersion)
     provenance: list[KnowledgeProvenance] = Field(default_factory=list)
+    created_at: int = 0
+    updated_at: int = 0
