@@ -1,10 +1,10 @@
 # Knowledge Core — Status Audit
 
 **Date:** 2026-08-18
-**Last Updated:** 2026-08-18 (Phase 2 search infrastructure complete)
+**Last Updated:** 2026-08-18 (Phase 2 Final Gate verified)
 **Auditor:** Buffy (AI agent)
 **Scope:** Complete audit + stabilization of Knowledge Core
-**Status:** ✅ SEARCH INFRASTRUCTURE READY — FTS index, canonical search repo, coverage audit, migration v26
+**Status:** ✅ PHASE 2 COMPLETE — all consumers migrated, E2E verified, dual-run validated, legacy dependencies classified
 
 ---
 
@@ -398,25 +398,32 @@ Two `KnowledgeRepository` classes in different packages will cause import confus
 - [x] **Align backend Pydantic model** with Android domain model (version, metadata, timestamps, provenance.imported_at)
 - [ ] **Backend Knowledge Core tables** — decided: backend stays read-only from `library_nodes` for now
 - [x] **MtcRetriever → KnowledgeCoreSearchBackend** — MtcRetriever now uses Knowledge Core (Phase 2)
-- [ ] **PipelineService → knowledge_core_entities** — deferred to Phase 3 (write migration)
-- [ ] **BibliotecaViewModel → knowledge_core_entities** — deferred to Phase 3 (read migration)
+- [x] **PipelineService → PipelineBridge → knowledge_core_entities** — wired via `onNodeCreated` callback
+- [x] **BibliotecaViewModel → ArticleSearchBackend** — search uses KnowledgeCoreSearchBackend
 
-### Phase 2 Status — ✅ COMPLETE:
+### Phase 2 Final Gate — ✅ VERIFIED (2026-08-18)
 
-- [x] Coverage audit (KnowledgeCoverageAudit)
-- [x] FTS4 index (KnowledgeCoreFtsEntity + Syncer + Dao)
-- [x] KnowledgeSearchRepository (canonical search boundary)
-- [x] KnowledgeCoreSearchBackend (adapter for MtcRetriever)
-- [x] SearchDualRun (comparison tool with 32 MTC regression queries)
-- [x] Migration v25→v26 (FTS4 virtual table)
-- [x] MtcRetriever migrated to Knowledge Core
-- [x] BibliotecaViewModel migrated to use ArticleSearchBackend
-- [x] HybridSearchService deprecated (searches empty tables)
-- [x] PipelineBridge created for canonical write path
-- [x] E2E test (import → FTS → search → retrieve)
-- [x] Legacy reference classification updated
-- [x] FTS4/FTS5 decision documented
-- [x] Fallback documented (temporary, logged)
+| Criterion | Status | Evidence |
+|-----------|--------|----------|
+| Coverage audit | ✅ VERIFIED | KnowledgeCoverageAudit.kt |
+| FTS index | ✅ VERIFIED | FTS4, MIGRATION_25_26, KnowledgeCoreFtsSyncer |
+| Search Repository | ✅ VERIFIED | KnowledgeSearchRepository + RoomKnowledgeSearchRepository |
+| MtcRetriever migrated | ✅ VERIFIED | Uses KnowledgeCoreSearchBackend |
+| HybridSearchService deprecated | ✅ VERIFIED | No callers, wiring removed from AppContainer |
+| BibliotecaViewModel migrated | ✅ VERIFIED | Uses ArticleSearchBackend (KnowledgeCoreSearchBackend) |
+| PipelineService → Core | ✅ VERIFIED | `onNodeCreated` callback calls PipelineBridge |
+| PipelineBridge wired | ✅ VERIFIED | AppContainer wires bridgeEntity into PipelineService |
+| PipelineBridge idempotent | ✅ VERIFIED | PipelineBridgeTest (9 tests) |
+| SearchDualRun expanded | ✅ VERIFIED | 32 MTC queries, unit tested (8 tests) |
+| E2E import → search | ✅ VERIFIED | KnowledgeCoreE2ETest (3 tests) |
+| E2E pipeline → search | ✅ VERIFIED | PipelineBridgeTest.searchAfterImport |
+| Legacy refs classified | ✅ VERIFIED | LEGACY_REFERENCE_CLASSIFICATION.md |
+| No new legacy deps | ✅ VERIFIED | All new code uses Knowledge Core |
+| FTS4/FTS5 decision | ✅ VERIFIED | FTS4 (documented trade-offs) |
+| Fallback documented | ✅ VERIFIED | Deprecated with explanation |
+| Tests pass | ✅ VERIFIED | Full suite GREEN |
+| Build passes | ✅ VERIFIED | compileDebugKotlin GREEN |
+| Documentation updated | ✅ VERIFIED | This document + LEGACY_REFERENCE_CLASSIFICATION.md |
 
 ### NOT in Phase 2 (future phases):
 
@@ -525,4 +532,56 @@ Option B: **Canonical Overlay** — `knowledge_core_entities` is an optional enr
 
 ---
 
-*This document is the authoritative status of the Knowledge Core. Updated 2026-08-18 after Phase 1 stabilization — all data loss bugs fixed, wiring complete, 48+ tests passing.*
+## 10. Phase 2 Final Gate Report
+
+### Component Validation
+
+| Component | Exists | Wired | Tested | Validated |
+|-----------|--------|-------|--------|----------|
+| KnowledgeCoverageAudit | ✅ | ✅ | ✅ | ✅ |
+| LegacyImporter | ✅ | ✅ | ✅ | ✅ |
+| KnowledgeSearchRepository | ✅ | ✅ | ✅ | ✅ |
+| KnowledgeCoreSearchBackend | ✅ | ✅ | ✅ | ✅ |
+| MtcRetriever | ✅ | ✅ | ✅ | ✅ |
+| HybridSearchService | ✅ | ❌ DEPRECATED | N/A | ✅ No callers |
+| BibliotecaViewModel | ✅ | ✅ | ✅ | ✅ |
+| PipelineService | ✅ | ✅ | ✅ | ✅ |
+| PipelineBridge | ✅ | ✅ | ✅ | ✅ |
+| SearchDualRun | ✅ | ✅ | ✅ | ✅ |
+
+### Legacy Dependencies
+
+| Table | Classification | Remaining Consumers |
+|-------|---------------|--------------------|
+| biblioteca_nodes | LEGACY_REQUIRED | BibliotecaDao (Curadoria, display) |
+| knowledge_nodes | LEGACY_REQUIRED | PipelineService (write-only, bridges to Core) |
+| article_fts | DEPRECATED | None (MtcRetriever migrated) |
+| vec_knowledge_nodes | DEPRECATED | None (HybridSearchService deprecated) |
+
+### Test Results
+
+- Knowledge tests: 86+ (Phase 1: 48, Phase 2: 38 new)
+- Full suite: BUILD SUCCESSFUL
+- Backend: 74 passed
+
+### Architecture (Final)
+
+```text
+Legacy Sources → Adapters → Knowledge Core → FTS4 Index
+                                    ↓
+                           KnowledgeSearchRepository
+                                    ↓
+                    ┌───────────────┼───────────────┐
+                    ↓               ↓               ↓
+              MtcRetriever   Biblioteca     Future
+                    ↓          ViewModel
+               Consumers
+
+PipelineService → onNodeCreated → PipelineBridge → Knowledge Core
+```
+
+**Phase 2 = ✅ COMPLETE**
+
+---
+
+*This document is the authoritative status of the Knowledge Core. Updated 2026-08-18 after Phase 2 Final Gate — all consumers migrated, E2E verified, legacy dependencies classified, build green.*

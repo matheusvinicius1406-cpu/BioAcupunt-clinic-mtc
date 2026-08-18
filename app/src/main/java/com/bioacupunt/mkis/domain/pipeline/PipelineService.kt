@@ -51,6 +51,12 @@ class PipelineService(
     private val vecRepo: VecKnowledgeNodeRepository,
     private val embeddingService: EmbeddingService,
     private val contentExtractor: ContentExtractor,
+    /**
+     * Called after a KnowledgeNodeEntity is inserted into knowledge_nodes.
+     * Used by PipelineBridge to sync the node into the canonical Knowledge Core.
+     * If null, no canonical sync occurs (legacy-only mode).
+     */
+    private val onNodeCreated: (suspend (KnowledgeNodeEntity) -> Unit)? = null,
 ) {
     // ======================== Estados ========================
 
@@ -354,6 +360,14 @@ class PipelineService(
         )
 
         knowledgeNodeDao.insert(node)
+
+        // Bridge to canonical Knowledge Core
+        try {
+            onNodeCreated?.invoke(node)
+        } catch (e: Exception) {
+            AppLogger.e(TAG, "Failed to bridge node to Knowledge Core: ${node.title}", e)
+        }
+
         return nodeId
     }
 

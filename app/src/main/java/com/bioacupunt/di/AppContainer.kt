@@ -642,6 +642,12 @@ object AppContainer {
     }
 
     // ── Pipeline Service (MKIS On-Device) ─────────────────
+    val pipelineBridge: com.bioacupunt.mtc.knowledge.data.PipelineBridge by lazy {
+        com.bioacupunt.mtc.knowledge.data.PipelineBridge(
+            mkisAdapter = mkisAdapter,
+            importer = knowledgeCoreImporter,
+        )
+    }
     val pipelineService: com.bioacupunt.mkis.domain.pipeline.PipelineService by lazy {
         com.bioacupunt.mkis.domain.pipeline.PipelineService(
             ingestionJobDao = database.ingestionJobDao(),
@@ -649,12 +655,7 @@ object AppContainer {
             vecRepo = vecKnowledgeNodeRepository,
             embeddingService = embeddingService,
             contentExtractor = contentExtractor,
-        )
-    }
-    val pipelineBridge: com.bioacupunt.mtc.knowledge.data.PipelineBridge by lazy {
-        com.bioacupunt.mtc.knowledge.data.PipelineBridge(
-            mkisAdapter = mkisAdapter,
-            importer = knowledgeCoreImporter,
+            onNodeCreated = { node -> pipelineBridge.bridgeEntity(node) },
         )
     }
 
@@ -699,22 +700,10 @@ object AppContainer {
         )
     }
 
-    // ── Busca Híbrida: FTS5 + sqlite-vec (MKIS On-Device) ────
-    val hybridSearchService: com.bioacupunt.biblioteca.data.search.HybridSearchService by lazy {
-        com.bioacupunt.biblioteca.data.search.HybridSearchService(
-            vecRepo = vecKnowledgeNodeRepository,
-            embeddingService = embeddingService,
-        )
-    }
-
-    // RAG backend = FtsSearchService (FTS4 sobre os 16 artigos fixos revisados + o
-    // que a médica aprova na Curadoria). O commit e78f5bf havia trocado para o
-    // hybridSearchService (MKIS knowledge_nodes), mas esse store nasce vazio, a perna
-    // FTS5 lançava (rank_bm25 inexistente) e a perna vetorial (sqlite-vec + embeddings)
-    // não roda no SQLite do framework Android — resultado: AskLibrary respondia
-    // NoEvidence para TODA pergunta. Voltamos ao backend que de fato tem acervo.
-    // O portão R2 (if (!hasEvidence)) mora no MtcRetriever/AskLibraryUseCase e segue
-    // intacto — trocar o backend não o reabre.
+    // RAG backend = KnowledgeCoreSearchBackend (FTS4 sobre o Knowledge Core canônico).
+    // O hybridSearchService foi removido — buscava knowledge_nodes + vec_knowledge_nodes,
+    // ambas vazias. O Knowledge Core é agora a fonte de verdade para busca.
+    // O portão R2 (if (!hasEvidence)) mora no MtcRetriever/AskLibraryUseCase e segue intacto.
     val knowledgeCoreSearchBackend: com.bioacupunt.mtc.knowledge.data.KnowledgeCoreSearchBackend by lazy {
         com.bioacupunt.mtc.knowledge.data.KnowledgeCoreSearchBackend(knowledgeSearchRepository)
     }
