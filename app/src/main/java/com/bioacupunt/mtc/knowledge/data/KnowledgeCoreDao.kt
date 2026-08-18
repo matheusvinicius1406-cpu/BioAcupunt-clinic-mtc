@@ -24,6 +24,17 @@ interface KnowledgeCoreDao {
     @Query("SELECT * FROM knowledge_core_relations WHERE source_entity_id = :entityId OR target_entity_id = :entityId") suspend fun getRelations(entityId: String): List<KnowledgeCoreRelationEntity>
     @Query("SELECT * FROM knowledge_core_relations WHERE source_entity_id = :entityId") suspend fun getEdgesFrom(entityId: String): List<KnowledgeCoreRelationEntity>
     @Query("SELECT * FROM knowledge_core_relations WHERE target_entity_id = :entityId") suspend fun getEdgesTo(entityId: String): List<KnowledgeCoreRelationEntity>
+    @Query("SELECT * FROM knowledge_core_relations WHERE source_entity_id = :sourceId AND target_entity_id = :targetId") suspend fun getEdgesBetween(sourceId: String, targetId: String): List<KnowledgeCoreRelationEntity>
+
+    // ── Evidence Chain ──────────────────────────────────────────────
+    @Query("SELECT * FROM knowledge_core_evidence WHERE id = :id") suspend fun getEvidenceById(id: String): KnowledgeCoreEvidenceEntity?
+    @Query("SELECT * FROM knowledge_core_evidence WHERE id IN (:ids)") suspend fun getEvidenceByIds(ids: List<String>): List<KnowledgeCoreEvidenceEntity>
+    @Query("SELECT * FROM knowledge_core_citations WHERE id = :id") suspend fun getCitationById(id: String): KnowledgeCoreCitationEntity?
+    @Query("SELECT * FROM knowledge_core_citations WHERE id IN (:ids)") suspend fun getCitationsByIds(ids: List<String>): List<KnowledgeCoreCitationEntity>
+    @Query("SELECT * FROM knowledge_core_citations WHERE source_id = :sourceId") suspend fun getCitationsBySource(sourceId: String): List<KnowledgeCoreCitationEntity>
+    @Query("SELECT * FROM knowledge_core_sources WHERE id = :id") suspend fun getSourceById(id: String): KnowledgeCoreSourceEntity?
+    @Query("SELECT * FROM knowledge_core_sources WHERE id IN (:ids)") suspend fun getSourcesByIds(ids: List<String>): List<KnowledgeCoreSourceEntity>
+    @Query("SELECT * FROM knowledge_core_provenance WHERE entity_id = :entityId") suspend fun getProvenanceByEntity(entityId: String): List<KnowledgeCoreProvenanceEntity>
 
     // ── Write ─────────────────────────────────────────────────────────
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertEntities(items: List<KnowledgeCoreEntityEntity>)

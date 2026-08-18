@@ -622,6 +622,46 @@ object AppContainer {
         )
     }
 
+    // ── Clinical Intelligence (Phase 3) ──────────────────────
+    val knowledgeGraphRepository: com.bioacupunt.mtc.knowledge.repository.KnowledgeGraphRepository by lazy {
+        com.bioacupunt.mtc.knowledge.repository.RoomKnowledgeGraphRepository(knowledgeCoreDao)
+    }
+    val evidenceResolver: com.bioacupunt.mtc.knowledge.domain.EvidenceResolver by lazy {
+        com.bioacupunt.mtc.knowledge.domain.EvidenceResolver(knowledgeCoreDao)
+    }
+    val evidenceEngine: com.bioacupunt.mtc.knowledge.domain.EvidenceEngine by lazy {
+        com.bioacupunt.mtc.knowledge.domain.EvidenceEngine(
+            knowledgeRepository = knowledgeCoreRepository,
+            graphRepository = knowledgeGraphRepository,
+            evidenceResolver = evidenceResolver,
+        )
+    }
+    val differentialEngine: com.bioacupunt.mtc.knowledge.domain.DifferentialEngine by lazy {
+        com.bioacupunt.mtc.knowledge.domain.DifferentialEngine(
+            knowledgeRepository = knowledgeCoreRepository,
+            graphRepository = knowledgeGraphRepository,
+            evidenceEngine = evidenceEngine,
+        )
+    }
+    val missingDataEngine: com.bioacupunt.mtc.knowledge.domain.MissingDataEngine by lazy {
+        com.bioacupunt.mtc.knowledge.domain.MissingDataEngine(
+            graphRepository = knowledgeGraphRepository,
+        )
+    }
+    val clinicalIntelligenceEngine: com.bioacupunt.mtc.knowledge.domain.ClinicalIntelligenceEngine by lazy {
+        com.bioacupunt.mtc.knowledge.domain.ClinicalIntelligenceEngine(
+            differentialEngine = differentialEngine,
+            evidenceEngine = evidenceEngine,
+            missingDataEngine = missingDataEngine,
+            evidenceResolver = evidenceResolver,
+        )
+    }
+    val runClinicalIntelligenceUseCase: com.bioacupunt.mtc.knowledge.domain.RunClinicalIntelligenceUseCase by lazy {
+        com.bioacupunt.mtc.knowledge.domain.RunClinicalIntelligenceUseCase(
+            engine = clinicalIntelligenceEngine,
+        )
+    }
+
     // ── AI ─────────────────────────────────────────────────
     val localModelManager: com.bioacupunt.ai.data.provider.LocalModelManager by lazy {
         com.bioacupunt.ai.data.provider.LocalModelManager(appContext)

@@ -216,6 +216,7 @@ class KnowledgeImporterTest {
             .filter { it.source_entity_id == entityId || it.target_entity_id == entityId }
         override suspend fun getEdgesFrom(entityId: String) = relations.filter { it.source_entity_id == entityId }
         override suspend fun getEdgesTo(entityId: String) = relations.filter { it.target_entity_id == entityId }
+        override suspend fun getEdgesBetween(sourceId: String, targetId: String) = relations.filter { it.source_entity_id == sourceId && it.target_entity_id == targetId }
         override suspend fun getByType(type: String) = entities.filter { it.type == type }
         override suspend fun getByStatus(status: String) = entities.filter { it.status == status }
         override suspend fun getByIds(ids: List<String>) = entities.filter { it.id in ids }
@@ -236,5 +237,13 @@ class KnowledgeImporterTest {
         override suspend fun insertCitations(items: List<KnowledgeCoreCitationEntity>) { citations.addAll(items) }
         override suspend fun insertEvidence(items: List<KnowledgeCoreEvidenceEntity>) { evidence.addAll(items) }
         override suspend fun insertProvenance(items: List<KnowledgeCoreProvenanceEntity>) { provenance.addAll(items) }
+        override suspend fun getEvidenceById(id: String) = evidence.find { it.id == id }
+        override suspend fun getEvidenceByIds(ids: List<String>) = evidence.filter { it.id in ids }
+        override suspend fun getCitationById(id: String) = citations.find { it.id == id }
+        override suspend fun getCitationsByIds(ids: List<String>) = citations.filter { it.id in ids }
+        override suspend fun getCitationsBySource(sourceId: String) = citations.filter { it.source_id == sourceId }
+        override suspend fun getSourceById(id: String) = sources.find { it.id == id }
+        override suspend fun getSourcesByIds(ids: List<String>) = sources.filter { it.id in ids }
+        override suspend fun getProvenanceByEntity(entityId: String) = provenance.filter { it.entity_id == entityId }
     }
 }

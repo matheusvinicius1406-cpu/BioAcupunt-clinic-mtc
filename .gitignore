@@ -51,3 +51,19 @@ __pycache__/
 # working state, not project source. Worktrees can be 100+ MB; never commit them.
 /.claude-flow
 /.claude/worktrees
+
+# Research — cloned open-source reference repos (local study cache, not versioned)
+research/open_source/repositories/
+research/open_source/**/.git
+research/open_source/**/build
+research/open_source/**/node_modules
+research/open_source/**/venv
+research/open_source/**/.cache
+research/open_source/**/*.bin
+research/open_source/**/*.onnx
+research/open_source/**/*.pt
+research/open_source/**/*.pth
+research/open_source/**/*.safetensors
+research/open_source/**/model checkpoints
+research/open_source/**/__pycache__
+research/open_source/**/*.egg-info
