@@ -47,10 +47,10 @@ class KnowledgeCoreMigrationTest {
     }
 
     @Test
-    fun migrationsCoverVersions1Through26() {
+    fun migrationsCoverVersions1Through27() {
         val migrations = DatabaseModule.migrations()
-        assertTrue("Expected at least 25 migrations", migrations.size >= 25)
+        assertTrue("Expected at least 26 migrations", migrations.size >= 26)
         assertEquals(1, migrations.first().startVersion)
-        assertEquals(26, migrations.last().endVersion)
+        assertEquals(27, migrations.last().endVersion)
     }
 }

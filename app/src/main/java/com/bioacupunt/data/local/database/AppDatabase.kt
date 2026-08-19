@@ -102,8 +102,16 @@ import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreProvenanceEntity
         KnowledgeCoreProvenanceEntity::class,
 
         // === Knowledge Core FTS5 (v26) — created via raw SQL, not Room entity ===
+
+        // === Clinical Workflow Platform (v27) ===
+        com.bioacupunt.clinic.data.local.EncounterEntity::class,
+        com.bioacupunt.clinic.data.local.ClinicalNoteEntity::class,
+        com.bioacupunt.clinic.data.local.TreatmentPlanEntity::class,
+        com.bioacupunt.clinic.data.local.FollowUpEntity::class,
+        com.bioacupunt.clinic.data.local.StructuredObservationEntity::class,
+        com.bioacupunt.clinic.data.local.QuestionnaireResponseEntity::class,
     ],
-    version = 26,
+    version = 27,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -145,4 +153,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun articleTranslationDao(): com.bioacupunt.biblioteca.data.local.ArticleTranslationDao
     abstract fun knowledgeCoreDao(): KnowledgeCoreDao
     // KnowledgeCoreFtsDao is not a Room DAO — uses raw SQL for FTS5 virtual table
+
+    // === Clinical Workflow Platform DAOs (v27) ===
+    abstract fun encounterDao(): com.bioacupunt.clinic.data.local.EncounterDao
+    abstract fun clinicalNoteDao(): com.bioacupunt.clinic.data.local.ClinicalNoteDao
+    abstract fun treatmentPlanDao(): com.bioacupunt.clinic.data.local.TreatmentPlanDao
+    abstract fun followUpDao(): com.bioacupunt.clinic.data.local.FollowUpDao
+    abstract fun structuredObservationDao(): com.bioacupunt.clinic.data.local.StructuredObservationDao
+    abstract fun questionnaireResponseDao(): com.bioacupunt.clinic.data.local.QuestionnaireResponseDao
 }

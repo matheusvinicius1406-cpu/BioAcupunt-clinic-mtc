@@ -662,6 +662,90 @@ object AppContainer {
         )
     }
 
+    // ── Clinical Copilot (Phase 4) ──────────────────────────
+    val intentDetector: com.bioacupunt.copilot.retrieval.IntentDetector by lazy {
+        com.bioacupunt.copilot.retrieval.IntentDetector()
+    }
+    val queryNormalizer: com.bioacupunt.copilot.retrieval.QueryNormalizer by lazy {
+        com.bioacupunt.copilot.retrieval.QueryNormalizer()
+    }
+    val hybridRetriever: com.bioacupunt.copilot.retrieval.HybridRetriever by lazy {
+        com.bioacupunt.copilot.retrieval.HybridRetriever(
+            lexicalBackend = com.bioacupunt.copilot.retrieval.LexicalSearchBackend(knowledgeSearchRepository),
+            vectorBackend = null, // vector search not yet wired (deferred)
+            graphBackend = com.bioacupunt.copilot.retrieval.GraphRetrievalBackend(knowledgeGraphRepository),
+            metadataBackend = com.bioacupunt.copilot.retrieval.MetadataFilterBackend(knowledgeSearchRepository),
+        )
+    }
+    val retrievalReranker: com.bioacupunt.copilot.retrieval.RetrievalReranker by lazy {
+        com.bioacupunt.copilot.retrieval.RetrievalReranker()
+    }
+    val contextBuilder: com.bioacupunt.copilot.rag.ContextBuilder by lazy {
+        com.bioacupunt.copilot.rag.ContextBuilder()
+    }
+    val evidenceGate: com.bioacupunt.copilot.rag.EvidenceGate by lazy {
+        com.bioacupunt.copilot.rag.EvidenceGate()
+    }
+    val copilotEvidenceResolutionService: com.bioacupunt.copilot.rag.EvidenceResolutionService by lazy {
+        com.bioacupunt.copilot.rag.EvidenceResolutionService(evidenceResolver)
+    }
+    val groundedResponseGenerator: com.bioacupunt.copilot.rag.GroundedResponseGenerator by lazy {
+        com.bioacupunt.copilot.rag.GroundedResponseGenerator(aiRepository, copilotEvidenceResolutionService)
+    }
+    val responseValidator: com.bioacupunt.copilot.rag.ResponseValidator by lazy {
+        com.bioacupunt.copilot.rag.ResponseValidator()
+    }
+    val clinicalIntelligenceIntegration: com.bioacupunt.copilot.clinical.ClinicalIntelligenceIntegration by lazy {
+        com.bioacupunt.copilot.clinical.ClinicalIntelligenceIntegration(
+            clinicalIntelligenceEngine = clinicalIntelligenceEngine,
+            runClinicalIntelligenceUseCase = runClinicalIntelligenceUseCase,
+        )
+    }
+    val copilotPatientContextProvider: com.bioacupunt.copilot.patient.PatientContextProvider by lazy {
+        com.bioacupunt.copilot.patient.PatientContextProvider(
+            patientRepository = object : com.bioacupunt.copilot.patient.PatientContextProvider.PatientContextRepository {
+                override suspend fun getPatientContext(patientId: Long): com.bioacupunt.copilot.retrieval.PatientContext? = null
+                override suspend fun getRecentObservations(patientId: Long, limit: Int): List<String> = emptyList()
+                override suspend fun getRelevantHistory(patientId: Long): List<String> = emptyList()
+                override suspend fun getCurrentAssessment(patientId: Long): String? = null
+            }
+        )
+    }
+    val explainDifferentialUseCase: com.bioacupunt.copilot.clinical.ExplainDifferentialUseCase by lazy {
+        com.bioacupunt.copilot.clinical.ExplainDifferentialUseCase()
+    }
+    val explainMissingDataUseCase: com.bioacupunt.copilot.clinical.ExplainMissingDataUseCase by lazy {
+        com.bioacupunt.copilot.clinical.ExplainMissingDataUseCase()
+    }
+    val copilotRouter: com.bioacupunt.copilot.CopilotRouter by lazy {
+        com.bioacupunt.copilot.CopilotRouter()
+    }
+    val clinicalCopilotEngine: com.bioacupunt.copilot.ClinicalCopilotEngine by lazy {
+        com.bioacupunt.copilot.ClinicalCopilotEngine(
+            intentDetector = intentDetector,
+            entityRecognizer = com.bioacupunt.copilot.retrieval.EntityRecognizer(knowledgeSearchRepository),
+            queryNormalizer = queryNormalizer,
+            hybridRetriever = hybridRetriever,
+            reranker = retrievalReranker,
+            contextBuilder = contextBuilder,
+            evidenceGate = evidenceGate,
+            evidenceResolutionService = copilotEvidenceResolutionService,
+            groundedResponseGenerator = groundedResponseGenerator,
+            responseValidator = responseValidator,
+            clinicalIntelligenceIntegration = clinicalIntelligenceIntegration,
+            patientContextProvider = copilotPatientContextProvider,
+            explainDifferentialUseCase = explainDifferentialUseCase,
+            explainMissingDataUseCase = explainMissingDataUseCase,
+            copilotRouter = copilotRouter,
+        )
+    }
+    val evidenceExplorer: com.bioacupunt.copilot.evidence.EvidenceExplorer by lazy {
+        com.bioacupunt.copilot.evidence.EvidenceExplorer(
+            evidenceResolutionService = copilotEvidenceResolutionService,
+            graphRepository = knowledgeGraphRepository,
+        )
+    }
+
     // ── AI ─────────────────────────────────────────────────
     val localModelManager: com.bioacupunt.ai.data.provider.LocalModelManager by lazy {
         com.bioacupunt.ai.data.provider.LocalModelManager(appContext)

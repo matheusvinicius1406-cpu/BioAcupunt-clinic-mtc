@@ -21,7 +21,7 @@ object DatabaseModule {
     // annotation processor and is not retained for runtime reflection — which
     // crashed every database access with "AppDatabase must be annotated with
     // @Database".
-    private const val DB_VERSION = 26
+    private const val DB_VERSION = 27
 
     /** Byte offset of `user_version` in the SQLite file header. */
     private const val USER_VERSION_OFFSET = 60L
@@ -155,6 +155,7 @@ object DatabaseModule {
         if (current >= 24) migrations.add(MIGRATION_23_24)
         if (current >= 25) migrations.add(MIGRATION_24_25)
         if (current >= 26) migrations.add(MIGRATION_25_26)
+        if (current >= 27) migrations.add(com.bioacupunt.clinic.data.local.MIGRATION_26_27)
         return migrations
     }
 
