@@ -56,7 +56,7 @@
 
 | Rule | Violation | Test |
 |------|-----------|------|
-| Person is canonical | Duplicate identity creation | Integration test |
+| User is canonical (auth), Person is canonical (CRM contact) | Duplicate identity creation | Integration test |
 | PatientProfile extends Person | Direct patient creation without person | Integration test |
 | User is separate | User == Person assumption | Unit test |
 

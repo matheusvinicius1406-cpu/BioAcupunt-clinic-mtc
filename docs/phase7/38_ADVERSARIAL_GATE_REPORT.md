@@ -19,7 +19,7 @@ The previous Phase 7 architecture analysis contained **multiple critical errors*
 | CRM modules | 63 | 63 (but sizes vary 1-391 files) | **MISLEADING** |
 | Commercial modules to exclude | 18 | 18+ (auth has SSO Enterprise files) | **UNDERCOUNTED** |
 | Enterprise files in CRM closure | 0 | 14 (auth: 10, jwt: 4) | **MISSED** |
-| Workflow runtime imports | "20+" | 443 | **SEVERELY UNDERCOUNTED** |
+| Workflow runtime imports | "20+" | 2,371 | **SEVERELY UNDERCOUNTED** |
 | Type-only vs runtime imports | Not distinguished | 90%+ are type-only for entities | **CRITICAL ERROR** |
 
 ---
@@ -43,9 +43,9 @@ The previous Phase 7 architecture analysis contained **multiple critical errors*
 
 | Claim | Status | Evidence |
 |-------|--------|----------|
-| Person is canonical identity | ✅ CONFIRMED | Entity-only, no business logic |
+| Person is canonical identity | ❌ REJECTED | User is canonical identity; Person is entity-only CRM contact |
 | PatientProfile extends Person | ✅ CONFIRMED | 1:1 relationship is sound |
-| Schema-per-tenant is optimal | ⚠️ UNPROVEN | Need sensitivity analysis |
+| Schema-per-tenant is optimal | ✅ CONFIRMED | See Tenancy Analysis (10): 137/190 + Workspace Kernel (14) |
 | CRM modules have type-only imports | ✅ CONFIRMED | `EntityRelation<T>` is pure type alias |
 | Workflow has billing dependency | ✅ CONFIRMED | 6 billing imports verified |
 
@@ -62,7 +62,7 @@ The previous Phase 7 architecture analysis contained **multiple critical errors*
 **Evidence:**
 ```
 Person: 11 type-only imports, 2 runtime imports
-Company: 8 type-only imports, 1 runtime import
+Company: 8 type-only imports, 0 runtime imports (entity-only)
 Opportunity: 9 type-only imports, 1 runtime import
 ```
 
@@ -91,7 +91,7 @@ dashboard:  154 files (LARGE)
 
 **Previous:** Said workflow needs "billing adaptation."
 
-**Actual:** Workflow has 443 runtime imports, including:
+**Actual:** Workflow has 2,371 runtime imports (2,389 total minus 18 type-only), including:
 - billing (6) — COMMERCIAL
 - usage (4) — COMMERCIAL
 - AI modules (several)
@@ -200,7 +200,7 @@ dashboard:  154 files (LARGE)
 
 | Finding | Status |
 |---------|--------|
-| Schema-per-tenant recommendation | UNPROVEN (need sensitivity analysis) |
+| Schema-per-tenant recommendation | CONFIRMED (see Tenancy Analysis 10 + Tenant/Workspace Kernel 14) |
 | Column-per-tenant for Android | UNPROVEN (need sync contract verification) |
 | Tenant resolution mechanism | UNPROVEN (need implementation verification) |
 
@@ -287,7 +287,7 @@ dashboard:  154 files (LARGE)
 
 | Finding | Status |
 |---------|--------|
-| Workflow is high-coupling module | CONFIRMED (443 imports) |
+| Workflow is high-coupling module | CONFIRMED (2,371 runtime imports) |
 | Dashboard is medium-coupling module | CONFIRMED (154 files) |
 | twenty-orm is bottleneck | CONFIRMED |
 
@@ -339,7 +339,7 @@ dashboard:  154 files (LARGE)
 | Component | Blast Radius | Reason |
 |-----------|-------------|--------|
 | auth module | HIGH | SSO Enterprise files |
-| workflow module | CRITICAL | 443 imports, deep coupling |
+| workflow module | CRITICAL | 2,371 runtime imports, deep coupling |
 | jwt module | MEDIUM | Enterprise key rotation |
 | usage module | HIGH | Workflow depends on it |
 
@@ -387,7 +387,7 @@ dashboard:  154 files (LARGE)
 | CRM Core size | 63 modules | NEEDS RECALCULATION | Type-only imports |
 | Auth approach | Use as-is | MUST REMOVE SSO | Enterprise files |
 | Workflow approach | Remove billing | MUST FULLY REVIEW | Deep coupling |
-| Tenancy | Schema-per-tenant | UNPROVEN | Need sensitivity |
+| Tenancy | Schema-per-tenant | CONFIRMED | Sensitivity analysis in docs 10, 14 |
 
 ---
 

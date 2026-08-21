@@ -13,8 +13,8 @@
 | Conclusion | Reason | New Finding |
 |------------|--------|-------------|
 | "63 modules in CRM Core" | Type-only imports inflated count | ~240+ modules (workflow dominates) |
-| "Auth is clean" | SSO Enterprise files missed | Auth has 16 SSO files to remove |
-| "Workflow needs billing adaptation" | Underestimated coupling | Workflow has 1370 runtime imports |
+| "Auth is clean" | SSO Enterprise files missed | Auth has 22 SSO files to remove |
+| "Workflow needs billing adaptation" | Underestimated coupling | Workflow has 2,371 runtime imports |
 | "Enterprise files = 0 in closure" | Missed auth/jwt | 14 Enterprise files in auth/jwt |
 | "All CRM modules equal" | Different sizes | 1-391 files per module |
 
@@ -33,7 +33,7 @@
 | task | 47 | 27 | 20 | SMALL-RUNTIME |
 | note | 46 | 27 | 19 | SMALL-RUNTIME |
 | timeline | 54 | 37 | 17 | SMALL-RUNTIME |
-| workflow | 1864 | 1370 | 494 | MASSIVE-RUNTIME |
+| workflow | 2389 | 2371 | 18 | MASSIVE-RUNTIME |
 | dashboard | 628 | 452 | 176 | LARGE-RUNTIME |
 
 ### 2.2 Auth Module Decomposition
@@ -42,7 +42,7 @@
 |----------|-------|--------|
 | Core Auth | ~35 | KEEP |
 | Optional OAuth | ~28 | KEEP (optional) |
-| Enterprise SSO | ~16 | REMOVE |
+| Enterprise SSO | ~22 | REMOVE |
 
 ### 2.3 Enterprise Files in Closure
 
@@ -95,7 +95,7 @@ Optional OAuth (~28 files)
 ├── Microsoft OAuth
 └── OAuth Propagator
 
-Enterprise SSO (~16 files) — EXCLUDED
+Enterprise SSO (~22 files) — EXCLUDED
 ├── OIDC
 ├── SAML
 └── Enterprise Features Guard
@@ -322,7 +322,7 @@ WorkspaceMember (Platform) ← maps to TenantMember
 **Components to remove:**
 - Billing (10 imports in workflow)
 - Usage (4 imports in workflow)
-- SSO (16 files in auth)
+- SSO (22 files in auth)
 - JWT rotation (4 files in jwt)
 
 **Total:** ~34 files/imports
@@ -336,7 +336,7 @@ WorkspaceMember (Platform) ← maps to TenantMember
 **Status:** VERIFIED
 
 **Components to remove:**
-- Auth SSO (16 files)
+- Auth SSO (22 files)
 - JWT rotation (4 files)
 - **TOTAL:** 20 files
 

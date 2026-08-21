@@ -102,12 +102,13 @@ PatientProfile (Extension of Person)
 
 ### 2.1 Canonical Identity Rule
 
-**Person is the canonical identity for a real person.**
+**User is canonical for authentication. Person is canonical for CRM contacts.**
 
-- One Person entity per real person
-- PatientProfile extends Person (1:1 relationship)
-- User is separate (system auth, not the same as Person)
-- No duplicate identities allowed
+- User: platform-wide auth identity (cross-tenant, email-unique)
+- Person: CRM-specific contact representation (tenant-scoped, entity-only)
+- PatientProfile extends Person (1:1 FK relationship)
+- No duplicate identities across Person/PatientProfile
+- Auth must NEVER depend on Person entity
 
 ### 2.2 Identity Relationships
 
@@ -197,7 +198,7 @@ Created → Active → Inactive
 
 | Rule | Status |
 |------|--------|
-| Person is canonical | ✅ Defined |
+| User is canonical (auth) | ✅ Defined | Person is canonical (CRM contact) |
 | PatientProfile extends Person | ✅ Defined |
 | User is separate | ✅ Defined |
 | No duplicate identity | ✅ Enforced |

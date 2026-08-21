@@ -95,8 +95,8 @@ Business logic: Timeline activity service, event processing
 
 ```
 Files: 391
-Runtime imports: 1370
-Type-only imports: 494
+Runtime imports: 2,371
+Type-only imports: 18
 Business logic: Complete workflow engine
 ```
 
@@ -128,7 +128,7 @@ Business logic: Dashboard management, chart data
 | task | 8 | 27 | ~10 | SMALL-RUNTIME |
 | note | 8 | 27 | ~10 | SMALL-RUNTIME |
 | timeline | 11 | 37 | ~15 | SMALL-RUNTIME |
-| workflow | 391 | 1370 | ~100+ | MASSIVE-RUNTIME |
+| workflow | 391 | 2371 | 18 | MASSIVE-RUNTIME |
 | dashboard | 154 | 452 | ~50+ | LARGE-RUNTIME |
 
 ---
@@ -161,7 +161,7 @@ The CRM entity kernel is **bimodal**:
 1. **Thin entities can be extracted immediately** — person, company, opportunity, attachment
 2. **Rich modules can be extracted with effort** — task, note, timeline
 3. **Full engines need special handling** — workflow, dashboard
-4. **Workflow is the critical decision** — 391 files, 1370 runtime imports
+4. **Workflow is the critical decision** — 391 files, 2,371 runtime imports
 5. **Dashboard is deferrable** — 154 files, can be added later
 
 ---

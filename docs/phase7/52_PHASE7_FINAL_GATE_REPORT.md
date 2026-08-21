@@ -28,7 +28,7 @@
 ## 2. Architecture Recovered
 
 ### Platform
-- Auth (core: 35 files, SSO: 16 files)
+- Auth (core: 35 files, SSO: 22 files)
 - JWT (core: 8 files, Enterprise: 4 files)
 - Tenant/Workspace (7 files, billing-coupled)
 - Metadata engine (40+ modules, essential)
@@ -87,7 +87,7 @@ Healthcare
   └── ProfessionalProfile (extends User, 1:1)
 ```
 
-**Person is NOT canonical identity.** User is canonical for authentication. Person is CRM-specific contact representation.
+**Person is NOT canonical identity.** User is canonical for authentication. Person is CRM-specific contact representation (entity-only, 1 file, zero business logic).
 
 ---
 
@@ -103,7 +103,7 @@ Auth Core (35 files)
   ├── AuthResolver (core)
   └── AuthService (core)
 
-SSO (16 files) → REMOVED from imports
+SSO (22 files) → REMOVED from imports
   ├── SSOAuthController
   ├── SamlAuthStrategy
   ├── AuthSsoService
@@ -214,7 +214,7 @@ Knowledge Search (BioAcupunt existing)
 
 ```
 Workflow (391 files)
-  ├── 443 runtime imports
+  ├── 2,371 runtime imports
   ├── 140 engine dependencies
   ├── billing coupling (6 imports)
   ├── AI tools
@@ -327,7 +327,7 @@ FORBIDDEN:
 
 | Component | Status | Action |
 |-----------|--------|--------|
-| SSO (16 files) | EXCLUDED | Remove from imports |
+| SSO (22 files) | EXCLUDED | Remove from imports |
 | Billing (15+ files) | EXCLUDED | Replace with BioAcupunt |
 | Usage (5+ files) | EXCLUDED | Remove |
 | 2FA (3 files) | DEFERRED | Optional security |

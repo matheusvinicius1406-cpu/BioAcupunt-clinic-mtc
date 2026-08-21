@@ -16,8 +16,8 @@
 | C-03a | 283 Enterprise files exist | grep count | HIGH | Verify they are not in CRM closure | **UNPROVEN** | Need to check if Enterprise files are in CRM closure |
 | C-04 | CoreEngineModule can be decomposed safely | It imports 79 modules | MEDIUM | Verify CRM doesn't need CoreEngineModule | **UNPROVEN** | Need to verify |
 | C-05 | Workflow requires adaptation because of billing | 6 billing imports found | HIGH | Remove billing, check what breaks | **CONFIRMED** | Billing dependency is real |
-| C-06 | Schema-per-tenant is the optimal tenancy model | Multi-criteria analysis (137/190) | MEDIUM | Sensitivity analysis | **UNPROVEN** | Need sensitivity analysis |
-| C-07 | Person is canonical identity | Domain modeling | MEDIUM | Verify no duplicate identity | **CONFIRMED** | Person is entity-only, no business logic |
+| C-06 | Schema-per-tenant is the optimal tenancy model | Multi-criteria analysis (137/190) | MEDIUM | Sensitivity analysis | **CONFIRMED** | Tenancy Analysis (10) + Tenant/Workspace Kernel (14) |
+| C-07 | Person is canonical identity | Domain modeling | MEDIUM | Verify no duplicate identity | **REJECTED** | User is canonical for auth; Person is CRM entity-only |
 | C-08 | PatientProfile should extend Person | 1:1 relationship design | MEDIUM | Verify healthcare needs | **CONFIRMED** | Pattern is sound |
 | C-09 | Enterprise components can be removed from CRM closure | File-level grep | LOW | Verify they are not in transitive closure | **UNPROVEN** | Need to check |
 | C-10 | CRM can be isolated from Healthcare | Domain boundary design | MEDIUM | Test cross-context writes | **UNPROVEN** | Need to verify |
@@ -26,7 +26,7 @@
 | C-13 | Android can interact through contracts | Sync contract design | LOW | Verify sync protocol | **UNPROVEN** | Need to verify |
 | C-14 | Twenty can remain reasonably upstream-compatible | Fork strategy | LOW | Analyze upstream churn | **UNPROVEN** | Need to analyze |
 | C-15 | The proposed 63-module closure is sufficient | Static analysis | LOW | Runtime reachability test | **REJECTED** | See C-15a |
-| C-15a | Workflow module alone has 443 runtime imports | Import analysis | HIGH | Verify counts | **CONFIRMED** | Workflow is massively coupled |
+| C-15a | Workflow module alone has 2,371 runtime imports | Import analysis | HIGH | Verify counts | **CONFIRMED** | Workflow is massively coupled |
 | C-16 | No critical hidden dependency remains | Static analysis | LOW | Runtime tracing | **UNPROVEN** | Need runtime tracing |
 | C-17 | No critical licensing issue remains | License audit | MEDIUM | Verify AGPL compliance | **UNPROVEN** | Need to verify |
 | C-18 | The migration boundary is complete | Design document | LOW | Verify all entities mapped | **UNPROVEN** | Need to verify |
@@ -69,7 +69,7 @@
 
 **Previous Analysis:** Said workflow needs "billing adaptation."
 
-**Actual:** Workflow has 443 runtime imports, including:
+**Actual:** Workflow has 2,371 runtime imports, including:
 - billing (6 imports) - COMMERCIAL
 - usage (4 imports) - COMMERCIAL
 - AI modules (several)

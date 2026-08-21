@@ -155,7 +155,7 @@ The SSO files are imported by:
 - `create-sso-connected-account.service.ts` (SSO-specific)
 
 **To remove SSO:**
-1. Remove 16 SSO files
+1. Remove 22 SSO files
 2. Remove SSO imports from `auth.module.ts`
 3. Verify build passes
 

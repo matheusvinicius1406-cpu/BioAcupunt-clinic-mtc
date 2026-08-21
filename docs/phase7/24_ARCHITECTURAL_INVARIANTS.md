@@ -30,7 +30,7 @@
 | I-08 | Cross-tenant access is forbidden | Tenant filter in all queries |
 | I-09 | Clinical internals are not CRM dependencies | CRM → Healthcare via reference only |
 | I-10 | Commercial modules cannot be hidden dependencies | No billing/SSO in CRM closure |
-| I-11 | Identity duplication is minimized | Person is canonical identity |
+| I-11 | Identity duplication is minimized | User is canonical (auth), Person is canonical (CRM contact) |
 | I-12 | Domain boundaries are enforced automatically | Architecture fitness functions |
 
 ## 4. Data Invariants

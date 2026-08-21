@@ -11,11 +11,15 @@
 
 ```
 Total files: 391
-Total imports: 1864
-Runtime imports: 1370
-Type-only imports: 494
-Engine dependencies: 140
+Total imports: 2,389
+Runtime imports: 2,371  ⚠️ CRITICAL: Do not include in MVP extraction
+Type-only imports: 18
+Engine dependencies: ~100+
 ```
+
+> **⚠️ CRITICAL WARNING:** Workflow has 2,371 runtime imports — the highest of any module.
+> This module is DEFERRED from MVP extraction. Any future attempt to include it
+> must account for this massive coupling. Post-MVP refactoring required.
 
 ### 1.2 Responsibility Map
 
@@ -75,7 +79,7 @@ WORKFLOW ENGINE (391 files)
 | Engine Command Menu | ~3 | DEFER |
 | Engine Application | ~5 | DEFER |
 | Engine Event Logs | ~3 | KEEP (audit) |
-| **TOTAL** | **~1370** | — |
+| **TOTAL** | **~2,371** | — |
 
 ---
 
@@ -91,7 +95,7 @@ WORKFLOW ENGINE (391 files)
 - Upstream compatible
 
 **Cons:**
-- Massive closure (1370 runtime imports)
+- Massive closure (2,371 runtime imports)
 - Deep engine coupling
 - Commercial dependencies must be removed
 - Hard to maintain

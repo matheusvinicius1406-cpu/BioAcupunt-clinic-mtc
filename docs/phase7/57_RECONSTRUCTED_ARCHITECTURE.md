@@ -246,7 +246,7 @@ event-logs/
 |-----------|-------|--------|
 | Billing (workflow) | 6 imports | Remove |
 | Usage (workflow) | 4 imports | Remove |
-| SSO (auth) | 16 files | Remove |
+| SSO (auth) | 22 files | Remove |
 | JWT rotation (jwt) | 4 files | Remove |
 | **TOTAL** | **~30 files** | — |
 
