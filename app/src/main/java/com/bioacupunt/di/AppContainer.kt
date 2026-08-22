@@ -703,12 +703,13 @@ object AppContainer {
     }
     val copilotPatientContextProvider: com.bioacupunt.copilot.patient.PatientContextProvider by lazy {
         com.bioacupunt.copilot.patient.PatientContextProvider(
-            patientRepository = object : com.bioacupunt.copilot.patient.PatientContextProvider.PatientContextRepository {
-                override suspend fun getPatientContext(patientId: Long): com.bioacupunt.copilot.retrieval.PatientContext? = null
-                override suspend fun getRecentObservations(patientId: Long, limit: Int): List<String> = emptyList()
-                override suspend fun getRelevantHistory(patientId: Long): List<String> = emptyList()
-                override suspend fun getCurrentAssessment(patientId: Long): String? = null
-            }
+            patientRepository = com.bioacupunt.copilot.patient.RoomPatientContextRepository(
+                mtcAssessmentDao = database.mtcAssessmentDao(),
+                exameDao = database.exameDao(),
+                encounterDao = database.encounterDao(),
+                observationDao = database.structuredObservationDao(),
+                tenantId = tenantManager.requireTenantId(),
+            )
         )
     }
     val explainDifferentialUseCase: com.bioacupunt.copilot.clinical.ExplainDifferentialUseCase by lazy {
