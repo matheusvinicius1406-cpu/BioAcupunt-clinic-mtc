@@ -23,6 +23,7 @@ from app.api.routers import (
     clinics,
     crm,
     health,
+    identity_map,
     library,
     knowledge,
     patients,
@@ -81,6 +82,7 @@ app.include_router(auth.router)
 app.include_router(clinics.router)
 app.include_router(patients.router)
 app.include_router(crm.router)
+app.include_router(identity_map.router)
 app.include_router(appointments.router)
 app.include_router(transactions.router)
 app.include_router(library.router)

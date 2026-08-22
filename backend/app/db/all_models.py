@@ -12,6 +12,7 @@ from app.models.audit import DataAccessLog
 from app.models.auth import RefreshSession
 from app.models.clinic import Clinic
 from app.models.crm_patient import CrmPatient
+from app.models.identity_map import CrmIdentityMap
 from app.models.library_node import LibraryNode
 from app.models.patient import Patient
 from app.models.sync import ClinicRevision
@@ -22,6 +23,7 @@ __all__ = [
     "Appointment",
     "ClinicRevision",
     "CrmPatient",
+    "CrmIdentityMap",
     "DataAccessLog",
     "RefreshSession",
     "Clinic",

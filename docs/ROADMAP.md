@@ -1,20 +1,27 @@
 # BioAcupunt — Official Roadmap
 
-**Last Updated:** 2026-08-18
+**Last Updated:** 2026-08-20
 **Status:** Canonical — replaces all previous conflicting roadmaps
+**Source:** Clinical Intelligence 2.0 Master Roadmap (Phases 1–12)
 
 ---
 
-## Phase 0 — Audit & Foundation ✅
+## Current State
 
-**Status:** HISTORICALLY COMPLETE
-
-- Repository audit
-- Architecture documentation
-- Risk identification
-- Module mapping
-- Anti-pattern catalog
-- CLAUDE.md established
+```
+PHASE 1  — ✅ COMPLETE   Knowledge Core
+PHASE 2  — ✅ COMPLETE   Canonical Search
+PHASE 3  — ✅ COMPLETE   Clinical Intelligence
+PHASE 4  — ✅ COMPLETE   RAG / GraphRAG / Copilot
+PHASE 5  — ✅ COMPLETE   Clinical Workflow Platform
+PHASE 6  — 🚧 CURRENT    Multimodal Clinical Intelligence + Knowledge Operations
+PHASE 7  — ⏳ NEXT       BioAcupunt CRM
+PHASE 8  — ⏳            DDD + Architecture + Security Hardening
+PHASE 9  — ⏳            Product Experience + Frontend Transformation
+PHASE 10 — ⏳            Scale + SaaS + Commercial Platform
+PHASE 11 — ⏳            Multiprofessional Clinical Platform
+PHASE 12 — ⏳            Open Source + Technology Evolution
+```
 
 ---
 
@@ -48,70 +55,241 @@
 - E2E tests (import → search, pipeline → search)
 - Legacy dependencies classified
 - 86+ tests passing
-- Documentation updated
 
 ---
 
-## Phase 3 — Clinical Intelligence
+## Phase 3 — Clinical Intelligence ✅
 
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 
-### 3A — Knowledge Graph Engine
-- [ ] Graph DAO queries (getEdgesFrom, getEdgesTo, getEntitiesByType)
-- [ ] KnowledgeGraphRepository interface
-- [ ] RoomKnowledgeGraphRepository (BFS traversal)
-- [ ] Graph tests (FakeDao with pre-populated graph)
-- [ ] Graph search integration (enrich FTS with graph neighbors)
-
-### 3B — Evidence & Differential
-- [ ] EvidenceResolver (evidence IDs → full traces)
-- [ ] ClinicalObservations model
-- [ ] PatternScoringEngine (deterministic)
-- [ ] MissingDataEngine
-- [ ] Integration with ClinicalSynthesisUseCase
-- [ ] Clinical Intelligence Orchestrator (pipeline stages)
-- [ ] E2E tests
+- KnowledgeGraphRepository (BFS traversal, graph queries)
+- EvidenceResolver (evidence IDs → full traces, provenance chain)
+- DifferentialEngine (deterministic pattern scoring)
+- MissingDataEngine (identifies missing differentiating features)
+- ClinicalIntelligenceEngine (orchestrator)
+- RunClinicalIntelligenceUseCase (end-to-end pipeline)
+- Knowledge graph models (entity/edge/path types)
+- E2E tests, benchmark tests, regression tests
+- 389 tests (Phase 1–3 cumulative), 0 failures
 
 ---
 
-## Phase 4 — RAG / GraphRAG / Copilot
+## Phase 4 — RAG / GraphRAG / Copilot ✅
 
-**Status:** FUTURE
+**Status:** COMPLETE
 
-- BM25 scoring (Bm25Scorer)
-- Entity recognition in queries (EntityRecognizer)
-- Hybrid retrieval (HybridRetriever)
-- Reranker (evidence-based)
-- CopilotUseCase (contextual, patient-aware)
-- Copilot UI in InteligenciaScreen
-
----
-
-## Phase 5 — Clinic Intelligence Platform
-
-**Status:** FUTURE
-
-- Modo Atendimento (clinical session mode)
-- Clinical NLP (text → structured observation)
-- STT integration
-- FHIR adapter layer
-- Questionnaire pattern for configurable anamnesis
-- Timeline longitudinal
-- Session comparison
+- IntentDetector (11 intent types)
+- EntityRecognizer (patient, point, pattern, formula extraction)
+- QueryNormalizer (query preprocessing)
+- HybridRetriever (lexical FTS5 + graph + metadata backends)
+- Deduplicator + ScoreNormalizer + RetrievalReranker
+- ContextBuilder (budget-limited structured context)
+- EvidenceGate (R2 enforcement — no evidence = no model call)
+- EvidenceResolutionService + EvidenceExplorer
+- GroundedResponseGenerator + ResponseValidator
+- ClinicalCopilotEngine (full orchestrator)
+- CopilotRouter (intent → tool mapping)
+- CopilotScreen UI (context indicator, evidence panel, differential, missing data)
+- ExplainDifferentialUseCase + ExplainMissingDataUseCase
+- ModelRouter (local only)
+- PromptAssembler
+- 144 new tests, 533 cumulative, 0 failures
 
 ---
 
-## Phase 6 — Multimodal / Knowledge Operations
+## Phase 5 — Clinical Workflow Platform ✅
 
-**Status:** FUTURE
+**Status:** COMPLETE
 
-- Tongue Vision (image analysis)
-- Pulse analysis (sensor integration)
-- 3D Anatomy (acupoint visualization)
-- DICOM viewer (OHIF-based)
-- Knowledge Packs (CMS)
-- Versioning advanced
-- MTC Radar
+### Encounter Domain
+- Encounter (PLANNED → IN_PROGRESS → COMPLETED/CANCELLED)
+- ClinicalNote (SOAP/MTC_EVOLUTION, DRAFT → FINAL)
+- TreatmentPlan (AI suggestion → professional confirm)
+- FollowUp (SCHEDULED → COMPLETED/MISSED/CANCELLED)
+
+### Observation Lifecycle
+- StructuredObservation (DRAFT → REVIEWED → CONFIRMED / REJECTED)
+- Source tracking (PATIENT_REPORTED / PRACTITIONER_OBSERVED / AI_EXTRACTED_DRAFT)
+- AI never auto-promotes to CONFIRMED
+
+### Clinical NLP
+- Deterministic regex extraction (no LLM)
+- Symptoms, temporal patterns, clinical findings, negation
+
+### Speech-to-Text
+- SpeechToTextEngine interface
+- AndroidSpeechToTextEngine (Android SpeechRecognizer)
+- FakeSpeechToTextEngine (test double)
+
+### Questionnaires
+- Versioned, conditional logic, item → observation mapping
+- QuestionnaireToObservationMapper (mapped items → DRAFT observations)
+
+### Timeline & Longitudinal
+- ClinicalTimeline (7 event types aggregated)
+- BuildLongitudinalPatientContextUseCase (focused subset for copilot)
+
+### Clinical Drafts
+- GenerateClinicalDraftUseCase (never auto-finalizes)
+- CompareClinicalSessionsUseCase (structured comparison)
+
+### FHIR Interoperability
+- FHIR mapping layer (Patient, Encounter, Observation, Note, CarePlan, Flag)
+- ExportPatientToFhirUseCase (user-initiated, never automatic)
+
+### Room Migration
+- v27: 6 new tables, additive, no DEFAULT, soft delete, tenantId + index
+
+### Tests
+- 48 new Phase 5 tests, 581 cumulative, 0 failures
+
+---
+
+## Phase 6 — Multimodal Clinical Intelligence & Knowledge Operations
+
+**Status:** 🚧 CURRENT TARGET
+
+### Mission
+
+Transform the structured clinical platform into a multimodal, visual, auditable, updatable, knowledge-operated platform.
+
+### 6A — Knowledge Operations
+- [ ] KnowledgePack, KnowledgePackManifest, KnowledgePackValidator
+- [ ] KnowledgePackInstaller, KnowledgePackRollback, KnowledgePackDiff
+- [ ] Pack manifest: packId, version, schemaVersion, publisher, status, checksums, signature
+- [ ] Pack validation pipeline: Manifest → Schema → Checksum → Signature → Reference → Version Compatibility → Stage → Activate
+- [ ] Atomic installation: CURRENT → NEW → STAGING → VALIDATION → ACTIVATION (fail-safe: current stays active)
+- [ ] Rollback: ACTIVE → PREVIOUS VALID VERSION
+- [ ] Entity versioning: entityId, version, status (ACTIVE/DEPRECATED/RETIRED), packId
+- [ ] Provenance: Source, Citation, Evidence, Version, Pack, Reviewer
+- [ ] Knowledge Pack Diff: ADDED / REMOVED / CHANGED / DEPRECATED (human-auditable)
+- [ ] Editorial lifecycle: AUTHOR → DRAFT → REVIEW → CLINICAL APPROVAL → PUBLISH → PACK → INSTALL → ACTIVE
+- [ ] Offline knowledge updates: Remote Pack → Download → Validate → Checksum → Signature → Stage → Activate
+- [ ] Update UI states: CURRENT / AVAILABLE / DOWNLOADING / VALIDATING / STAGED / ACTIVE / FAILED / ROLLED BACK
+
+### 6B — Clinical Media Domain
+- [ ] ClinicalMedia model (IMAGE / AUDIO / VIDEO / DOCUMENT)
+- [ ] Metadata: id, patientId, encounterId, type, uri, mimeType, hash, source, capturedAt, device, processingVersion
+- [ ] Media security: authentication, authorization, encryption, retention, deletion, backup, export, audit
+- [ ] No clinical data in public paths or uncontrolled URLs
+
+### 6C — Tongue / Vision Foundation
+- [ ] TongueObservation (color, shape, coating, moisture, cracks, marks, movement, specialFindings, imageId)
+- [ ] Lifecycle: CAPTURED → FEATURES_EXTRACTED → DRAFT → REVIEWED → CONFIRMED / REJECTED
+- [ ] Tongue Image Pipeline: Photo → Image Validation → Preprocessing → Vision Engine → Feature Extraction → Draft Observation → Human Review → Confirmed
+- [ ] VisionEngine abstraction (input: image → output: VisionResult with features, regions, confidence, modelName)
+- [ ] Rule: VISION ≠ DIAGNOSIS — always AI_DRAFT until human review
+- [ ] Tongue regions: tip, center, root, left, right
+- [ ] Interpretations from Knowledge Core, never invented
+
+### 6D — Pulse Foundation
+- [ ] PulseObservation (depth, rate, strength, width, quality, left, right, cun, guan, chi)
+- [ ] PulseInputProvider abstraction (MANUAL / DEVICE / IMPORTED / AI_ASSISTED)
+- [ ] PulseFeature (value, unit, confidence, source)
+- [ ] Pulse analysis: Raw Data → Features → Draft Interpretation → Knowledge Core → Human Review
+- [ ] Never: Pulse Sensor → Automatic Diagnosis
+
+### 6E — Anatomy / Atlas Foundation
+- [ ] AnatomicalRegion, AnatomicalStructure, MeridianSegment, AcupointLocation
+- [ ] Spatial model: coordinateSystem, latitude, longitude, depth, anatomicalReference
+- [ ] Acupoint spatial relation: Acupoint → LocatedOn → AnatomicalRegion
+- [ ] Meridian layer: Meridian → MeridianSegment → Acupoint
+- [ ] Atlas UI (2D first): Body → Region → Meridian → Point → Point Detail
+- [ ] Acupoint detail: name, code, meridian, location, actions, indications, combinations, anatomy, evidence, sources
+- [ ] 3D abstractions only: AtlasRenderer, SpatialLayer, AnatomyLayer, MeridianLayer, AcupointLayer
+- [ ] Consumes existing Knowledge Core
+
+### 6F — Integration / Validation / Hardening
+- [ ] Multimodal → Clinical Intelligence: only confirmed observations feed clinical facts
+- [ ] Copilot multimodal: questions about tongue/pulse history, confirmed vs detected
+- [ ] Audit trail: PackInstalled, PackActivated, MediaCaptured, VisionAnalyzed, ObservationConfirmed, PulseRecorded, etc.
+- [ ] Security audit: media encryption, access control, Keystore, backup, export, delete, trusted keys, signature validation
+- [ ] Performance: pack validation/installation, search after update, vision inference, atlas rendering (median, p95, max)
+- [ ] Device validation: Knowledge Pack update, Camera, Image picker, Media storage, Copilot, Atlas, Offline mode
+- [ ] Regression: Phase 1–5 all green
+- [ ] Documentation: PHASE_6_READINESS, KNOWLEDGE_PACKS, MULTIMODAL, TONGUE, PULSE, ATLAS, KNOWLEDGE_OPERATIONS, MEDIA_SECURITY
+
+### Tests Required (Phase 6)
+- Pack: valid pack, invalid manifest/checksum/signature, missing entity, duplicate entity, version mismatch, rollback, activation, failed installation
+- Vision: valid/invalid image, model unavailable, success/failure, low confidence, review lifecycle
+- Media: capture, upload, metadata, hash, authorization, delete, export, backup
+- Pulse: manual input, device abstraction, missing values, validation, status lifecycle, source tracking
+- Atlas: point lookup, meridian lookup, anatomical relation, missing coordinate, evidence linkage
+
+### E2E Required (Phase 6)
+- Knowledge: Pack → Validate → Checksum → Signature → Stage → Activate → Search → Graph → Evidence
+- Tongue: Image → Vision → Features → Draft → Review → Confirmed → Clinical Intelligence
+- Pulse: Input → Observation → Review → Confirmed → Clinical Intelligence
+- Atlas: Point Search → Acupoint → Meridian → Anatomy → Evidence → UI
+
+---
+
+## Phase 7 — BioAcupunt CRM
+
+**Status:** ⏳ NEXT (after Phase 6)
+
+- Integrate/adapt Twenty CRM
+- Patient 360
+- Pipelines, Tasks, Activities, Workflows
+- Unified Timeline
+- Respect Twenty license, no disconnected clinical DB
+
+---
+
+## Phase 8 — DDD + Architecture + Security Hardening
+
+**Status:** ⏳
+
+- Domain-Driven Design, Bounded Contexts
+- Dependency boundaries
+- Secret management, encryption, threat modeling
+- Authorization, tenant isolation, security testing
+- Supply-chain security, observability, production hardening
+
+---
+
+## Phase 9 — Product Experience + Frontend Transformation
+
+**Status:** ⏳
+
+- Design System, Brand, Navigation
+- Patient 360 UX, Encounter UX, Copilot UX, Evidence UX
+- Accessibility, responsive UX, performance
+- Product must convey: confidence, precision, professionalism, security, authority
+
+---
+
+## Phase 10 — Scale + SaaS + Commercial Platform
+
+**Status:** ⏳
+
+- Multi-tenancy, organizations, workspaces
+- RBAC, billing, subscriptions, entitlements, usage metering
+- Scalable API, queues, caching, observability, backup, disaster recovery
+- Web, desktop, feature flags, operational scaling
+- Priority: Modular Monolith → Measure → Extract services only when necessary
+
+---
+
+## Phase 11 — Multiprofessional Clinical Platform
+
+**Status:** ⏳
+
+- Shared Clinical Core + Specialty Modules
+- Specialties: MTC, Acupuntura, Medicina, Biomedicina, Nutrição, Fisioterapia, Veterinária
+- Each specialty: Clinical Model, Questionnaires, Knowledge, Protocols, Templates, Assessment, Workflow, Copilot Context
+- Never mix specialty knowledge automatically
+
+---
+
+## Phase 12 — Open Source + Technology Evolution
+
+**Status:** ⏳
+
+- Open Source First, self-host when beneficial, reduce vendor lock-in
+- Technology radar: ADOPT / TRIAL / ASSESS / HOLD / REJECT
+- Flow: NEED → RESEARCH → LICENSE → SECURITY → BENCHMARK → COST → PROTOTYPE → INTEGRATE → MONITOR
+- Maintain: docs/TECHNOLOGY_RADAR.md
 
 ---
 
@@ -126,16 +304,45 @@
 7. **All writes check Result** (no silently discarded errors)
 8. **Every LazyColumn has a key** (no index collision crashes)
 
+## Global Clinical Rule
+
+```
+OBSERVE → STRUCTURE → RETRIEVE → REASON → DRAFT → REVIEW → CONFIRM → RECORD → FOLLOW-UP
+```
+
+Never: `LLM → FACT` · Never: `VISION → DIAGNOSIS` · Never: `AI → FINAL CLINICAL RECORD`
+
+## Global Security Rule
+
+All sensitive data treated as potentially protected: patient data, clinical notes, audio, images, documents, tokens, credentials, API keys, private keys, session data. Apply: encryption, access control, least privilege, audit, retention, deletion, secure backup, secure export, secret management.
+
+## Execution Rule
+
+Preserve existing functionality. Minimize diffs. Reuse code. Test. Document. Audit dependencies. Verify licenses. Protect data.
+
+Never: hardcode API keys, expose secrets, copy restrictive datasets, copy proprietary content, ignore licenses, break regressions, persist AI as fact without review, invent evidence.
+
+## Phase Gate (end of each sub-phase)
+
+```
+BUILD → UNIT TESTS → INTEGRATION TESTS → REGRESSION → DOCUMENTATION → GATE
+```
+
+Proceed only when gate passes or limitation is explicitly documented.
+
+## Documentation Required (each phase)
+
+readiness · architecture · security · tests · limitations · final report
+
 ---
 
 ## Version History
 
 | Date | Change |
 |------|--------|
-| 2026-08-18 | Official roadmap established, replaces all conflicting versions |
-| 2026-07-25 | Phase 0-2 completed |
-| 2026-07-27 | Phase 3 architecture designed |
-| 2026-08-18 | Phase 3 readiness assessed, reference repos cataloged |
+| 2026-08-20 | Expanded to 12-phase roadmap (Clinical Intelligence 2.0 Master) |
+| 2026-08-18 | Official roadmap established (6 phases) |
+| 2026-07-25 | Phase 0–2 completed |
 
 ---
 
