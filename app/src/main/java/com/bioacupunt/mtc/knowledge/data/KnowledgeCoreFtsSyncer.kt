@@ -81,7 +81,7 @@ class KnowledgeCoreFtsSyncer(
                 // Update existing
                 db.execSQL(
                     "UPDATE knowledge_core_fts SET canonical_name = ?, aliases = ?, summary = ?, content = ? WHERE rowid = ?",
-                    arrayOf(canonicalName, aliases, summary, content, rowid)
+                    arrayOf(canonicalName, aliases, summary, content, rowid.toString())
                 )
             } else {
                 cursor.close()

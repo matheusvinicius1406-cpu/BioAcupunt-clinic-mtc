@@ -83,7 +83,7 @@ class RoomKnowledgeSearchRepository(
             val db = databaseProvider()
             val cursor = db.query(
                 "SELECT rowid, rank FROM knowledge_core_fts WHERE knowledge_core_fts MATCH ? ORDER BY rank LIMIT ?",
-                arrayOf(ftsQuery, limit)
+                arrayOf<String?>(ftsQuery, limit.toString())
             )
             val rowids = mutableListOf<Long>()
             while (cursor.moveToNext()) {

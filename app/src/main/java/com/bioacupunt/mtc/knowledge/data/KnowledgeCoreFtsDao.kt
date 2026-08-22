@@ -28,7 +28,7 @@ class KnowledgeCoreFtsDao(
         try {
             val cursor = db.query(
                 "SELECT rowid, rank FROM knowledge_core_fts WHERE knowledge_core_fts MATCH ? ORDER BY rank LIMIT ?",
-                arrayOf(query, limit)
+                arrayOf<String?>(query, limit.toString())
             )
             while (cursor.moveToNext()) {
                 results.add(FtsSearchResult(
