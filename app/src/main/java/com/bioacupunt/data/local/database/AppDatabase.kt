@@ -110,8 +110,29 @@ import com.bioacupunt.mtc.knowledge.data.KnowledgeCoreProvenanceEntity
         com.bioacupunt.clinic.data.local.FollowUpEntity::class,
         com.bioacupunt.clinic.data.local.StructuredObservationEntity::class,
         com.bioacupunt.clinic.data.local.QuestionnaireResponseEntity::class,
+
+        // === Knowledge Pack Operations (v28) ===
+        com.bioacupunt.mtc.knowledge.data.InstalledPackEntity::class,
+
+        // === Clinical Media (v29) ===
+        com.bioacupunt.clinic.data.local.ClinicalMediaEntity::class,
+
+        // === CRM Extended (v30) ===
+        com.bioacupunt.crm.data.local.CrmPersonEntity::class,
+        com.bioacupunt.crm.data.local.CrmOrganizationEntity::class,
+        com.bioacupunt.crm.data.local.CrmLeadEntity::class,
+        com.bioacupunt.crm.data.local.CrmPipelineEntity::class,
+        com.bioacupunt.crm.data.local.PipelineStageEntity::class,
+        com.bioacupunt.crm.data.local.CrmTaskEntity::class,
+        com.bioacupunt.crm.data.local.CrmActivityEntity::class,
+        com.bioacupunt.crm.data.local.CrmTagEntity::class,
+        com.bioacupunt.crm.data.local.CrmIdentityMapEntity::class,
+
+        // === Phase 6B: Tongue + Pulse Observations (v31) ===
+        com.bioacupunt.clinic.data.local.TongueObservationEntity::class,
+        com.bioacupunt.clinic.data.local.PulseObservationEntity::class,
     ],
-    version = 27,
+    version = 31,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -161,4 +182,25 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun followUpDao(): com.bioacupunt.clinic.data.local.FollowUpDao
     abstract fun structuredObservationDao(): com.bioacupunt.clinic.data.local.StructuredObservationDao
     abstract fun questionnaireResponseDao(): com.bioacupunt.clinic.data.local.QuestionnaireResponseDao
+
+    // === Knowledge Pack Operations DAOs (v28) ===
+    abstract fun installedPackDao(): com.bioacupunt.mtc.knowledge.data.InstalledPackDao
+
+    // === Clinical Media DAOs (v29) ===
+    abstract fun clinicalMediaDao(): com.bioacupunt.clinic.data.local.ClinicalMediaDao
+
+    // === CRM Extended DAOs (v30) ===
+    abstract fun crmPersonDao(): com.bioacupunt.crm.data.local.CrmPersonDao
+    abstract fun crmOrganizationDao(): com.bioacupunt.crm.data.local.CrmOrganizationDao
+    abstract fun crmLeadDao(): com.bioacupunt.crm.data.local.CrmLeadDao
+    abstract fun crmPipelineDao(): com.bioacupunt.crm.data.local.CrmPipelineDao
+    abstract fun pipelineStageDao(): com.bioacupunt.crm.data.local.PipelineStageDao
+    abstract fun crmTaskDao(): com.bioacupunt.crm.data.local.CrmTaskDao
+    abstract fun crmActivityDao(): com.bioacupunt.crm.data.local.CrmActivityDao
+    abstract fun crmTagDao(): com.bioacupunt.crm.data.local.CrmTagDao
+    abstract fun crmIdentityMapDao(): com.bioacupunt.crm.data.local.CrmIdentityMapDao
+
+    // === Phase 6B: Tongue + Pulse Observation DAOs (v31) ===
+    abstract fun tongueObservationDao(): com.bioacupunt.clinic.data.local.TongueObservationDao
+    abstract fun pulseObservationDao(): com.bioacupunt.clinic.data.local.PulseObservationDao
 }
