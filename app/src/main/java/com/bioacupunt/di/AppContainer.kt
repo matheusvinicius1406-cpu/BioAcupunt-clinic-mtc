@@ -496,6 +496,58 @@ object AppContainer {
         com.bioacupunt.financeiro.data.repository.TransacaoRepositoryImpl(transacaoDao, tenantManager)
     }
 
+    // ── Phase 6 DAOs + Repositories ──────────────────────────
+    val installedPackDao: com.bioacupunt.mtc.knowledge.data.InstalledPackDao by lazy {
+        database.installedPackDao()
+    }
+    val installedPackRepository: com.bioacupunt.mtc.knowledge.repository.InstalledPackRepository by lazy {
+        com.bioacupunt.mtc.knowledge.data.RoomInstalledPackRepository(installedPackDao)
+    }
+    val clinicalMediaDao: com.bioacupunt.clinic.data.local.ClinicalMediaDao by lazy {
+        database.clinicalMediaDao()
+    }
+    val clinicalMediaRepository: com.bioacupunt.clinic.repository.ClinicalMediaRepository by lazy {
+        com.bioacupunt.clinic.data.local.RoomClinicalMediaRepository(clinicalMediaDao, tenantManager.requireTenantId())
+    }
+    val tongueObservationDao: com.bioacupunt.clinic.data.local.TongueObservationDao by lazy {
+        database.tongueObservationDao()
+    }
+    val tongueObservationRepository: com.bioacupunt.clinic.domain.repository.TongueObservationRepository by lazy {
+        com.bioacupunt.clinic.data.local.RoomTongueObservationRepository(tongueObservationDao, tenantManager.requireTenantId())
+    }
+    val pulseObservationDao: com.bioacupunt.clinic.data.local.PulseObservationDao by lazy {
+        database.pulseObservationDao()
+    }
+    val pulseObservationRepository: com.bioacupunt.clinic.domain.repository.PulseObservationRepository by lazy {
+        com.bioacupunt.clinic.data.local.RoomPulseObservationRepository(pulseObservationDao, tenantManager.requireTenantId())
+    }
+
+    // ── Phase 7 CRM Extended DAOs + Repositories ─────────────
+    val crmPersonDao: com.bioacupunt.crm.data.local.CrmPersonDao by lazy {
+        database.crmPersonDao()
+    }
+    val crmOrganizationDao: com.bioacupunt.crm.data.local.CrmOrganizationDao by lazy {
+        database.crmOrganizationDao()
+    }
+    val crmLeadDao: com.bioacupunt.crm.data.local.CrmLeadDao by lazy {
+        database.crmLeadDao()
+    }
+    val crmPipelineDao: com.bioacupunt.crm.data.local.CrmPipelineDao by lazy {
+        database.crmPipelineDao()
+    }
+    val crmTaskDao: com.bioacupunt.crm.data.local.CrmTaskDao by lazy {
+        database.crmTaskDao()
+    }
+    val crmActivityDao: com.bioacupunt.crm.data.local.CrmActivityDao by lazy {
+        database.crmActivityDao()
+    }
+    val crmTagDao: com.bioacupunt.crm.data.local.CrmTagDao by lazy {
+        database.crmTagDao()
+    }
+    val crmIdentityMapDao: com.bioacupunt.crm.data.local.CrmIdentityMapDao by lazy {
+        database.crmIdentityMapDao()
+    }
+
     // ── Repositories ───────────────────────────────────────
     val patientRepository: PatientRepository by lazy {
         PatientRepositoryImpl(RetrofitInstance.api, database, syncScheduler)
